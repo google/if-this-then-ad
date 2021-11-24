@@ -5,7 +5,8 @@
   "private": true,
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js", 
+    "lint": "eslint \"**/*.{js,ts}\" --quiet --fix"
   },
   "engines": {
     "node": ">= 12.0.0"
