@@ -1,6 +1,6 @@
 {
-  "name": "helloworld",
-  "description": "Simple hello world sample in Node",
+  "name": "iftta",
+  "description": "If This Then Ad",
   "version": "1.0.0",
   "private": true,
   "main": "index.js",
