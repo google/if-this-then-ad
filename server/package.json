@@ -13,6 +13,7 @@
     "lint": "tsc --noEmit && eslint \"**/*.{js,ts}\" --quiet --fix",
     "copy-static": "ts-node copyStatic.ts", 
     "build-prod": "npm run pre-build && npm run build && npm run copy-static && npm run post-build",
+    "build-dist": "npm run pre-build && npm run compile && npm run copy-static && npm run post-build",
     "serve": "node ../dist/index.js"
   },
   "engines": {

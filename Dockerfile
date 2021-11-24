@@ -1,12 +1,16 @@
-FROM node:16
+FROM node:16 AS builder
 
-WORKDIR /app
+WORKDIR /build
 COPY server/ ./
-RUN npm install 
-#RUN npm test 
 
-# Listen on port 8080
+#RUN npm test 
+RUN npm run build-dist
+
+FROM builder as dist 
+WORKDIR /app
+COPY /dist /app 
+
+#Listen on port 8080
 EXPOSE 8080
 
-#ENTRYPOINT node index.js
 CMD ["node", "index.js"]
