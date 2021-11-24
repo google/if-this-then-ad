@@ -5,8 +5,15 @@
   "private": true,
   "main": "index.js",
   "scripts": {
-    "start": "node index.js", 
-    "lint": "eslint \"**/*.{js,ts}\" --quiet --fix"
+    "start": "node index.ts",
+    "compile": "tsc",
+    "pre-build": "rm -rf ../dist",
+    "build": "tsc && npm run lint",
+    "post-build": "cd ../dist && npm install",
+    "lint": "tsc --noEmit && eslint \"**/*.{js,ts}\" --quiet --fix",
+    "copy-static": "ts-node copyStatic.ts", 
+    "build-prod": "npm run pre-build && npm run build && npm run copy-static && npm run post-build",
+    "serve": "node ../dist/index.js"
   },
   "engines": {
     "node": ">= 12.0.0"
@@ -14,6 +21,14 @@
   "author": "Google LLC",
   "license": "Apache-2.0",
   "dependencies": {
-    "express": "^4.17.1"
+    "@types/express": "^4.17.13",
+    "@types/node": "^16.11.10",
+    "express": "^4.17.1",
+    "typescript": "^4.5.2"
+  },
+  "devDependencies": {
+    "@types/shelljs": "^0.8.9",
+    "shelljs": "^0.8.4",
+    "ts-node": "^10.4.0"
   }
 }
