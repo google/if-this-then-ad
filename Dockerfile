@@ -3,7 +3,8 @@ FROM node:16 AS builder
 WORKDIR /build
 COPY server/ ./
 
-#RUN npm test 
+# adding global temporarily
+RUN npm install -g tsc
 RUN npm run build-dist
 
 FROM builder as dist 
