@@ -1,5 +1,5 @@
 # build artefacts
-../dist/*
+dist/*
 # 3rd party libs
 /src/public/
 # custom definition files

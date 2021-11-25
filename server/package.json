@@ -7,13 +7,13 @@
   "scripts": {
     "start": "node index.ts",
     "compile": "npx tsc",
-    "pre-build": "rm -rf ../dist",
+    "pre-build": "rm -rf dist",
     "build": "tsc && npm run lint",
-    "post-build": "cd ../dist && npm install",
+    "post-build": "cd dist/ && npm install",
     "lint": "npx tsc --noEmit && eslint \"**/*.{js,ts}\" --quiet --fix",
-    "copy-static": "mkdir -p ../dist/static && cp -R static/ ../dist/static/ && cp package* ../dist", 
-    "build-prod": "npm run pre-build && npm run build && npm run copy-static && npm run post-build",
-    "build-dist": "npm run pre-build && npm run compile && npm run copy-static && npm run post-build",
+    "copy-static": "cp -R public dist/ && cp package* dist/", 
+    "build-local": "npm run pre-build && npm run build && npm run copy-static && npm run post-build",
+    "build-dist": "npm run compile && npm run copy-static && npm run post-build",
     "serve": "node ../dist/index.js"
   },
   "engines": {
