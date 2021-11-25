@@ -12,7 +12,7 @@
     "post-build": "cd dist/ && npm install",
     "lint": "npx tsc --noEmit && eslint \"**/*.{js,ts}\" --quiet --fix",
     "copy-static": "cp -R public dist/ && cp package* dist/",
-    "build-local": "npm install --production=false && npm run pre-build && npm run build && npm run copy-static && npm run post-build",
+    "build-local": "npm install --production=false && npm run build && npm run copy-static && npm run post-build",
     "build-dist": "npm i typescript && npm run compile && npm run copy-static && npm run post-build",
     "serve": "node dist/index.js",
     "w-typescript": "npx tsc -w",
