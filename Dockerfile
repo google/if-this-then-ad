@@ -12,11 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM node:16
-
+# Build Angular client
+FROM node:16 AS client-build
 WORKDIR /app
+COPY client/ ./
+RUN npm install
+RUN npm run build
+
+# Build server and move Angular to /dist
+FROM node:16 AS server-build
+WORKDIR /app
+COPY --from=client-build /app/dist/client ./static
 COPY server/ ./
-RUN npm install 
+RUN npm install
+
 #RUN npm test 
 
 # Listen on port 8080
