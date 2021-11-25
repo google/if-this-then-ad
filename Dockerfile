@@ -29,4 +29,4 @@ RUN npm run build-dist
 #Listen on port 8080
 EXPOSE 8080
 
-CMD ["node", "index.js"]
+CMD ["node", "/dist/index.js"]

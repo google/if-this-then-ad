@@ -13,11 +13,54 @@
 # limitations under the License.
 
 steps:
-- name: node
-  entrypoint: npm
-  args: ['install']
-  dir: 'server'
+# - name: node
+#   entrypoint: npm
+#   args: ['build-dist']
+#   dir: 'server'
 #- name: node
 #  entrypoint: npm
 #  args: ['test']
-#	dir: 'server'
+# dir: 'server'
+
+# Build the image from source
+- name: gcr.io/cloud-builders/docker
+  id: Build iftta image 
+  args: ['build', '-f', 'Dockerfile', '.', '-t', 'gcr.io/$PROJECT_ID/iftta:$SHORT_SHA']
+
+# TODO: Tag container with semver 
+
+# Push image to GCR
+- name: gcr.io/cloud-builders/docker
+  id: Push IFTTA image
+  args: ['push', 'gcr.io/$PROJECT_ID/iftta:$SHORT_SHA']
+
+# Deploy to cloudrun 
+
+# - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
+#   args:
+#     - run
+#     - services
+#     - update
+#     - $_SERVICE_NAME
+#     - '--platform=managed'
+#     - '--image=gcr.io/$PROJECT_ID/iftta:$SHORT_SHA'
+#     - >-
+#       --labels=managed-by=gcp-cloud-build-deploy-cloud-run,commit-sha=$COMMIT_SHA,gcb-build-id=$BUILD_ID,gcb-trigger-id=$_TRIGGER_ID,$_LABELS
+#     - '--region=$_DEPLOY_REGION'
+#     - '--quiet'
+#   id: Deploy
+#   entrypoint: gcloud
+# images:
+#   - '$_GCR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA'
+# options:
+#   substitutionOption: ALLOW_LOOSE
+# substitutions:
+#   _DEPLOY_REGION: europe-west3
+#   _LABELS: gcb-trigger-id=9116aebd-34d1-4d8a-ae86-7d46b89eae77
+#   _TRIGGER_ID: 9116aebd-34d1-4d8a-ae86-7d46b89eae77
+#   _GCR_HOSTNAME: eu.gcr.io
+#   _PLATFORM: managed
+#   _SERVICE_NAME: test-cloud-build
+# tags:
+#   - gcp-cloud-build-deploy-cloud-run
+#   - gcp-cloud-build-deploy-cloud-run-managed
