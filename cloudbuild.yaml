@@ -13,26 +13,17 @@
 # limitations under the License.
 
 steps:
-# - name: node
-#   entrypoint: npm
-#   args: ['build-dist']
-#   dir: 'server'
-#- name: node
-#  entrypoint: npm
-#  args: ['test']
-# dir: 'server'
-
 # Build the image from source
 - name: gcr.io/cloud-builders/docker
   id: Build iftta image 
-  args: ['build', '-f', 'Dockerfile', '.', '-t', 'gcr.io/$PROJECT_ID/iftta:$SHORT_SHA']
+  args: ['build', '-f', 'Dockerfile', '.', '-t', 'eu.gcr.io/$PROJECT_ID/iftta/iftta-service:$SHORT_SHA']
 
 # TODO: Tag container with semver 
 
 # Push image to GCR
 - name: gcr.io/cloud-builders/docker
   id: Push IFTTA image
-  args: ['push', 'gcr.io/$PROJECT_ID/iftta:$SHORT_SHA']
+  args: ['push', 'eu.gcr.io/$PROJECT_ID/iftta/iftta-service:$SHORT_SHA']
 
 # Deploy to cloudrun 
 
