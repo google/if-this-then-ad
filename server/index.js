@@ -2,6 +2,7 @@
 
 const express = require('express');
 const app = express();
+const logger = require('./util/logger');
 
 const port = process.env.PORT || 8080;
 
@@ -15,7 +16,6 @@ app.get('/', (req, res) => {
   res.send(`Hello ${name}! For Max and Kevin :-)`);
 });
 
-
 app.listen(port, () => {
-  console.log(`helloworld: listening on port ${port}`);
+  logger.info(`Listening on port ${port}`);
 });
