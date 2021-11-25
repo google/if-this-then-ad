@@ -1,0 +1,16 @@
+{
+  "name": "iftta - git pre-commit",
+  "description": "If This Then Ad - git pre-commit",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {},
+  "engines": {
+    "node": ">= 12.0.0"
+  },
+  "author": "Google LLC",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "eslint": "^8.3.0",
+    "prettier": "^2.4.1"
+  }
+}
