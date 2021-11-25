@@ -1,8 +1,8 @@
 
 import {Request, Response, Router} from 'express';
+
 // eslint-disable-next-line new-cap
 const router = Router();
-const path = require('path');
 
 // Controllers
 const someController = require('../controllers/some');
@@ -15,9 +15,6 @@ router.get('/', (req:Request, res:Response) => {
   res.send(`Hello ${name}! For Max and Kevin :-)`);
 });
 
-router.use('*', (req:Request, res:Response) => {
-  res.sendFile(path.join(__dirname, '../', 'static', 'index.html'));
-});
 
 export default router;
 
