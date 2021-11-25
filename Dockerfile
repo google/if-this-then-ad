@@ -24,11 +24,9 @@ FROM node:16 AS server-build
 WORKDIR /app
 COPY --from=client-build /app/dist/client ./static
 COPY server/ ./
-RUN npm install
+RUN npm run build-dist
 
-#RUN npm test 
-
-# Listen on port 8080
+#Listen on port 8080
 EXPOSE 8080
 
-CMD ["node", "index.js"]
+CMD ["node", "/dist/index.js"]
