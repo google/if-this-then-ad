@@ -34,7 +34,6 @@ steps:
     - $_SERVICE_NAME
     - '--image=$_GCR_HOSTNAME/$PROJECT_ID/$_SERVICE_NAME/$_IMAGE_NAME:$SHORT_SHA'
     - '--platform=managed'
-    - >-
     - '--region=$_DEPLOY_REGION'
     - '--port=$_SERVICE_PORT'
     - '--quiet'
@@ -46,12 +45,10 @@ options:
   substitutionOption: ALLOW_LOOSE
 substitutions:
   _DEPLOY_REGION: europe-west3
-  _LABELS: gcb-trigger-id=9116aebd-34d1-4d8a-ae86-7d46b89eae77
-  _TRIGGER_ID: 9116aebd-34d1-4d8a-ae86-7d46b89eae77
   _GCR_HOSTNAME: eu.gcr.io
   _PLATFORM: managed
   _SERVICE_NAME: iftta
   _SERVICE_PORT: '8080'
   _IMAGE_NAME: 'iftta-service'
 tags:
-  - iftta-service
+  - iftta-service-$SHORT_SHA
