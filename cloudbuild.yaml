@@ -1,0 +1,9 @@
+steps:
+- name: node
+  entrypoint: npm
+  args: ['install']
+  dir: 'server'
+#- name: node
+#  entrypoint: npm
+#  args: ['test']
+#	dir: 'server'
