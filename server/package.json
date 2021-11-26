@@ -16,7 +16,8 @@
     "build-dist": "npm i typescript && npm run compile && npm run copy-static && npm run post-build",
     "w-typescript": "npx tsc -w",
     "w-node": "nodemon dist/index.js",
-    "dev": "concurrently -k -p \"[{name}]\" -n \"TypeScript,Node\" -c \"yellow.bold,green.bold\" \"npm run w-typescript\" \"npm run w-node\""
+    "dev": "concurrently -k -p \"[{name}]\" -n \"TypeScript,Node\" -c \"yellow.bold,green.bold\" \"npm run w-typescript\" \"npm run w-node\"",
+    "test": "jest"
   },
   "engines": {
     "node": ">= 12.0.0"
@@ -30,6 +31,14 @@
     "typescript": "^4.5.2"
   },
   "devDependencies": {
+    "@types/jest": "^27.0.3",
+    "@typescript-eslint/eslint-plugin": "^5.4.0",
+    "@typescript-eslint/parser": "^5.4.0",
+    "eslint-config-google": "^0.14.0",
+    "prettier": "^2.5.0",
+    "eslint": "^8.3.0",
+    "typescript": "^4.5.2",
+    "jest": "^27.3.1",
     "concurrently": "^6.4.0",
     "nodemon": "^2.0.15",
     "typescript": "^4.5.2"
