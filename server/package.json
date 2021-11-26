@@ -5,16 +5,18 @@
   "private": true,
   "main": "index.js",
   "scripts": {
-    "start": "node index.ts",
+    "start": "node dist/index.js",
     "compile": "npx tsc",
-    "pre-build": "rm -rf ../dist",
-    "build": "tsc && npm run lint",
-    "post-build": "cd ../dist && npm install",
+    "reset": "rm -Rf dist && rm -Rf node_modules",
+    "build": "npx tsc && npm run lint",
+    "post-build": "cd dist/ && npm install",
     "lint": "npx tsc --noEmit && eslint \"**/*.{js,ts}\" --quiet --fix",
-    "copy-static": "mkdir -p ../dist/static && cp -R static/ ../dist/static/ && cp package* ../dist", 
-    "build-prod": "npm run pre-build && npm run build && npm run copy-static && npm run post-build",
-    "build-dist": "npm run pre-build && npm run compile && npm run copy-static && npm run post-build",
-    "serve": "node ../dist/index.js"
+    "copy-static": "cp -R public dist/ && cp package* dist/",
+    "build-local": "npm install --production=false && npm run build && npm run copy-static && npm run post-build",
+    "build-dist": "npm i typescript && npm run compile && npm run copy-static && npm run post-build",
+    "w-typescript": "npx tsc -w",
+    "w-node": "nodemon dist/index.js",
+    "dev": "concurrently -k -p \"[{name}]\" -n \"TypeScript,Node\" -c \"yellow.bold,green.bold\" \"npm run w-typescript\" \"npm run w-node\""
   },
   "engines": {
     "node": ">= 12.0.0"
@@ -28,5 +30,8 @@
     "typescript": "^4.5.2"
   },
   "devDependencies": {
+    "concurrently": "^6.4.0",
+    "nodemon": "^2.0.15",
+    "typescript": "^4.5.2"
   }
 }
