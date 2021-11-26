@@ -1,13 +1,13 @@
-
 import app from './app';
+import logger from './util/logger';
 
 /**
  * Start Express
  */
-const port = 8080;
+const port = app.get('port');
 const server = app.listen(port, () => {
-  console.log(`Server listening on port ${port}`);
-  console.log('ctrl + C to kill it');
+  logger.info(`Server listening on port ${port}`);
+  logger.info('ctrl + C to kill it');
 });
 
 export default server;

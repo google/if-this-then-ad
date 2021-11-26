@@ -13,7 +13,6 @@
 # limitations under the License.
 
 # Build Angular client
-# Build Angular client
 FROM node:16 AS client-build
 WORKDIR /app
 COPY client/ ./
@@ -31,6 +30,7 @@ FROM node:16 AS final-build
 WORKDIR /app
 COPY --from=server-build /app/dist/ ./
 COPY --from=client-build /app/dist/client/ ./public
+
 
 # Listen on port 8080
 EXPOSE 8080

@@ -1,5 +1,4 @@
-
-import {Request, Response, Router} from 'express';
+import { Request, Response, Router } from 'express';
 
 // eslint-disable-next-line new-cap
 const router = Router();
@@ -12,7 +11,7 @@ router.get('/api/some', someController.hello);
 
 router.get('/', (req:Request, res:Response) => {
   const name = process.env.NAME || 'World';
-  res.send(`Hello ${name}! For Max and Kevin :-)`);
+  res.send(`Hello ${name}! IFTTA`);
 });
 
 
