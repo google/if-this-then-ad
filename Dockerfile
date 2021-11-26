@@ -13,20 +13,26 @@
 # limitations under the License.
 
 # Build Angular client
+# Build Angular client
 FROM node:16 AS client-build
 WORKDIR /app
 COPY client/ ./
 RUN npm install
 RUN npm run build
 
-# Build server and move Angular to /dist
+# Build NodeJS server
 FROM node:16 AS server-build
 WORKDIR /app
-COPY --from=client-build /app/dist/client ./static
 COPY server/ ./
 RUN npm run build-dist
 
-#Listen on port 8080
+# Merge both builds
+FROM node:16 AS final-build
+WORKDIR /app
+COPY --from=server-build /app/dist/ ./
+COPY --from=client-build /app/dist/client/ ./public
+
+# Listen on port 8080
 EXPOSE 8080
 
 CMD ["node", "index.js"]
