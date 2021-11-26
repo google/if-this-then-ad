@@ -11,20 +11,12 @@
     "build": "npx tsc && npm run lint",
     "post-build": "cd dist/ && npm install",
     "lint": "npx tsc --noEmit && eslint \"**/*.{js,ts}\" --quiet --fix",
-<<<<<<< HEAD
-    "copy-static": "mkdir -p ../dist/static && cp -R static/ ../dist/static/ && cp package* ../dist",
-    "build-prod": "npm run pre-build && npm run build && npm run copy-static && npm run post-build",
-    "build-dist": "npm run pre-build && npm run compile && npm run copy-static && npm run post-build",
-    "serve": "node ../dist/index.js",
-    "test": "jest"
-=======
     "copy-static": "cp -R public dist/ && cp package* dist/",
     "build-local": "npm install --production=false && npm run build && npm run copy-static && npm run post-build",
     "build-dist": "npm i typescript && npm run compile && npm run copy-static && npm run post-build",
     "w-typescript": "npx tsc -w",
     "w-node": "nodemon dist/index.js",
     "dev": "concurrently -k -p \"[{name}]\" -n \"TypeScript,Node\" -c \"yellow.bold,green.bold\" \"npm run w-typescript\" \"npm run w-node\""
->>>>>>> origin/main
   },
   "engines": {
     "node": ">= 12.0.0"
@@ -34,22 +26,12 @@
   "dependencies": {
     "@types/express": "^4.17.13",
     "@types/node": "^16.11.10",
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "typescript": "^4.5.2"
   },
   "devDependencies": {
-<<<<<<< HEAD
-    "@types/jest": "^27.0.3",
-    "@typescript-eslint/eslint-plugin": "^5.4.0",
-    "@typescript-eslint/parser": "^5.4.0",
-    "eslint-config-google": "^0.14.0",
-    "prettier": "^2.5.0",
-    "eslint": "^8.3.0",
-    "typescript": "^4.5.2",
-    "jest": "^27.3.1"
-=======
     "concurrently": "^6.4.0",
     "nodemon": "^2.0.15",
     "typescript": "^4.5.2"
->>>>>>> origin/main
   }
 }
