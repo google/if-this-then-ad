@@ -5,7 +5,19 @@
   "private": true,
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node dist/index.js",
+    "compile": "npx tsc",
+    "reset": "rm -Rf dist && rm -Rf node_modules",
+    "build": "npx tsc && npm run lint",
+    "post-build": "cd dist/ && npm install",
+    "lint": "npx tsc --noEmit && eslint \"**/*.{js,ts}\" --quiet --fix",
+    "copy-static": "cp -R public dist/ && cp package* dist/",
+    "build-local": "npm install --production=false && npm run build && npm run copy-static && npm run post-build",
+    "build-dist": "npm i typescript && npm run compile && npm run copy-static && npm run post-build",
+    "w-typescript": "npx tsc -w",
+    "w-node": "nodemon dist/index.js",
+    "dev": "concurrently -k -p \"[{name}]\" -n \"TypeScript,Node\" -c \"yellow.bold,green.bold\" \"npm run w-typescript\" \"npm run w-node\"",
+    "test": "jest"
   },
   "engines": {
     "node": ">= 12.0.0"
@@ -14,7 +26,22 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@google-cloud/logging-winston": "^4.1.1",
+    "winston": "^3.3.3",
     "express": "^4.17.1",
-    "winston": "^3.3.3"
+    "typescript": "^4.5.2"
+  },
+  "devDependencies": {
+    "@types/jest": "^27.0.3",
+    "@types/express": "^4.17.13",
+    "@types/node": "^16.11.10",
+    "@typescript-eslint/eslint-plugin": "^5.4.0",
+    "@typescript-eslint/parser": "^5.4.0",
+    "eslint-config-google": "^0.14.0",
+    "prettier": "^2.5.0",
+    "eslint": "^8.3.0",
+    "typescript": "^4.5.2",
+    "jest": "^27.3.1",
+    "concurrently": "^6.4.0",
+    "nodemon": "^2.0.15"
   }
 }
