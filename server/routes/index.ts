@@ -1,4 +1,4 @@
-import { Request, Response, Router } from 'express';
+import {Request, Response, Router} from 'express';
 
 // eslint-disable-next-line new-cap
 const router = Router();
