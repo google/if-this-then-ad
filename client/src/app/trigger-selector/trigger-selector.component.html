@@ -1,1 +1,12 @@
-<h1>{{ source }}</h1>
+<div class="wrapper">
+    <h1>{{ source }}: Select the data point</h1>
+    <div id="data-points">
+        <app-box 
+            *ngFor="let dataPoint of dataPoints" 
+            [source]="dataPoint"
+        ></app-box>
+    </div>
+    <div class="back">
+        <a routerLink=".."> &lt;&lt; Back</a>
+    </div>
+</div>

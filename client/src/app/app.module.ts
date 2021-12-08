@@ -9,13 +9,15 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { SourceSelectorComponent } from './source-selector/source-selector.component';
 import { BoxComponent } from './box/box.component';
 import { TriggerSelectorComponent } from './trigger-selector/trigger-selector.component';
+import { AddRuleComponent } from './add-rule/add-rule.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     SourceSelectorComponent,
     BoxComponent,
-    TriggerSelectorComponent
+    TriggerSelectorComponent,
+    AddRuleComponent
   ],
   imports: [
     BrowserModule,
