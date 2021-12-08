@@ -10,6 +10,7 @@ import { SourceSelectorComponent } from './source-selector/source-selector.compo
 import { BoxComponent } from './box/box.component';
 import { TriggerSelectorComponent } from './trigger-selector/trigger-selector.component';
 import { AddRuleComponent } from './add-rule/add-rule.component';
+import { BackLinkComponent } from './back-link/back-link.component';
 
 @NgModule({
   declarations: [
@@ -17,7 +18,8 @@ import { AddRuleComponent } from './add-rule/add-rule.component';
     SourceSelectorComponent,
     BoxComponent,
     TriggerSelectorComponent,
-    AddRuleComponent
+    AddRuleComponent,
+    BackLinkComponent
   ],
   imports: [
     BrowserModule,
