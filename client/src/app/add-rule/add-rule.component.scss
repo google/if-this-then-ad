@@ -16,7 +16,7 @@
     cursor: pointer;
 
     &:hover {
-        box-shadow: 2px 2px #777;
+        box-shadow: 2px 2px #000;
     }
 }
 
@@ -31,8 +31,13 @@
 
 .inactive-button {
     background: #888;
+    cursor: not-allowed;
 
     .add {
         display: none;
+    }
+
+    &:hover {
+        box-shadow: 2px 2px #888;
     }
 }
