@@ -1,23 +1,23 @@
-
 import express from 'express';
 import session from 'express-session';
 import cors from 'cors';
 import path from 'path';
-import passport from 'passport';
 import router from './routes';
 import env from 'dotenv';
-// import * as passportConfig from './config/passportConfig';
+import passportSetup from './config/passportSetup';
+
 // Loading env file config
-const config = env.config();
-if (config.error) {
+const envConfig = env.config();
+if (envConfig.error) {
   console.log('Error loading configuration from .env file');
-  throw config.error;
+  throw envConfig.error;
 }
 
-console.log('--- Configuration loaded ---');
-console.log(config.parsed);
+let app = express();
 
-const app = express();
+
+const config = envConfig.parsed;
+
 
 const PORT = process.env.PORT || 8080;
 
@@ -25,7 +25,6 @@ const PORT = process.env.PORT || 8080;
  * Express configuration
  */
 
-app.set('config', config.parsed);
 app.set('port', PORT);
 
 app.use(cors());
@@ -38,10 +37,9 @@ app.use(express.urlencoded({extended: true}));
 app.use(session({
   resave: true,
   saveUninitialized: true,
-  secret: `${process.env.SESSION_SECRET}`,
+  secret: config.SESSION_SECRET,
 }));
-app.use(passport.initialize());
-app.use(passport.session());
+app = passportSetup.init(app);
 
 app.use('/', router);
 
