@@ -18,7 +18,6 @@ router.get('/auth/google',
 router.get('/auth/oauthcallback',
     passport.authenticate('google',
         {failureRedirect: '/auth/login'}),
-
     (req:Request, res:Response) => {
       res.redirect('/auth/done');
     },
@@ -32,4 +31,3 @@ router.get('/', (req: Request, res: Response) => {
 });
 
 export default router;
-

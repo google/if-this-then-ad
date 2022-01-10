@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     /* Language and Environment */
-    "target": "es2016",                                  /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */
+    "target": "es2016" /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */,
     /* Modules */
     "module": "commonjs" /* Specify what module code is generated. */,
     "outDir": "dist" /* Specify an output folder for all emitted files. */,
@@ -15,6 +15,6 @@
     "noImplicitReturns": true,
       "noImplicitThis": true,
       "noImplicitAny": false,
-      "strictNullChecks": true
+      "strictNullChecks": true,
   }
 }
