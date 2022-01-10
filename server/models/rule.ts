@@ -12,7 +12,7 @@ export class Rule {
   /**
    * Entity name, used to form the datastore key = <Entity name>, <id>
    */
-  entityName: string = "rule";
+  entityName: string = 'rule';
 
   /**
    * Unique rule ID (used to access the configuration in DB)
@@ -23,7 +23,7 @@ export class Rule {
    * Datastore key to access objects in db
    */
   datastoreKey: any;
-  
+
   /**
    * The configuration "JSON"
    */
@@ -39,18 +39,18 @@ export class Rule {
     this.configuration = configuration || {};
 
     this.datastore = new Datastore();
-    this.datastoreKey = this.datastore.key([ this.entityName, this.id ]);
+    this.datastoreKey = this.datastore.key([this.entityName, this.id]);
   }
 
   /**
    * Save the rule configuration to DB
    */
   async save() {
-    const saveObject: Object = { 
+    const saveObject: Object = {
       key: this.datastoreKey,
       data: this.configuration,
     };
-    
+
     await this.datastore.save(saveObject);
   }
 
