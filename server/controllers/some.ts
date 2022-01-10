@@ -5,7 +5,7 @@ import {Request, Response} from 'express';
  * @param {Request} req
  * @param {Response}res
  */
-function hello(req:Request, res:Response) {
+function hello(req: Request, res: Response) {
   res.send('Some Controller');
 }
 

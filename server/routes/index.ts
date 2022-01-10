@@ -16,6 +16,4 @@ router.get('/', (req:Request, res:Response) => {
   res.send(`Hello ${name}! IFTTA`);
 });
 
-
 export default router;
-

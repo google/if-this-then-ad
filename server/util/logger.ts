@@ -21,9 +21,7 @@ if (process.env.NODE_ENV === 'production') {
   // Create a basic console logger
   logger = winston.createLogger({
     level: 'info',
-    transports: [
-      new winston.transports.Console(),
-    ],
+    transports: [new winston.transports.Console()],
   });
 }
 
