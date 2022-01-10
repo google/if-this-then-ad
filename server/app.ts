@@ -9,8 +9,8 @@ import log from './util/logger';
 // Loading env file config
 const envConfig = env.config();
 if (envConfig.error || envConfig.parsed == null) {
-  log.error('Error loading configuration from .env file');
-  throw envConfig.error;
+    log.error('Error loading configuration from .env file');
+    throw envConfig.error;
 }
 
 let app = express();
@@ -28,11 +28,13 @@ app.use(express.static(path.join(__dirname, './public')));
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
-app.use(session({
-  resave: true,
-  saveUninitialized: true,
-  secret: config.SESSION_SECRET,
-}));
+app.use(
+    session({
+        resave: true,
+        saveUninitialized: true,
+        secret: config.SESSION_SECRET,
+    })
+);
 app = PassportSetup.init(app);
 
 app.use('/', router);
