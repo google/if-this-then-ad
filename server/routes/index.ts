@@ -6,8 +6,9 @@ const router = Router();
 // Controllers
 const ruleController = require('../controllers/rule');
 
-// Routes
+// Routes: Rules
 router.get('/api/rule/save', ruleController.save);
+router.get('/api/rule/get/:id', ruleController.get);
 
 // Default '/' route
 router.get('/', (req:Request, res:Response) => {
