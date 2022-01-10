@@ -1,23 +1,22 @@
 
-import { Request, Response } from 'express';
+import {Request, Response} from 'express';
 import passport from 'passport';
-import env from 'dotenv';
+import log from '../util/logger';
 
 export const showLogin = (req: Request, res: Response) => {
-    res.send('<a href="/auth/google" class="button">Sign in with Google</a>');
+  res.send('<a href="/auth/google" class="button">Sign in with Google</a>');
 };
 
 export const googleOAuthCallBack = (req: Request, res:Response) => {
-    const authCode = req.query['code']; 
-    console.log('Called back')
-    console.log(' --------------------')
-    console.log(authCode);
-    console.log(' --------------------')
+  const authCode = req.query['code'];
 
-    passport.authenticate('google', {failureRedirect: '/auth/login'}), (req:Request, res:Response) =>{
+  log.debug(' --------------------');
+  log.debug(`Authorization Code : ${authCode}`);
+  log.debug(' --------------------');
 
-        console.log('auth done... ')
-        res.redirect('/auth/done');
-    };
-    // res.send("Called back");
-}
+  passport.authenticate('google',
+      {failureRedirect: '/auth/login'}),
+  (req:Request, res:Response) =>{
+    res.redirect('/auth/done');
+  };
+};

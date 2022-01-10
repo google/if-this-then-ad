@@ -1,12 +1,14 @@
-
-
 export interface User {
-
-    email : string, 
-    profileId: string, 
-    authToken : string,
-    refreshToken: string, 
-    fullName: string, 
-    gender: string,
-    picture: string 
+    id?: number,
+    profileId: number,
+    displayName: string,
+    givenName?: string,
+    familyName?: string,
+    gender?: string,
+    email: string,
+    verified: boolean,
+    profilePhoto?: string,
+    locale?: string, 
+    authToken?: string, 
+    refreshToken?: string
 }

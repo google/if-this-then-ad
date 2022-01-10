@@ -1,44 +1,66 @@
-import { Application } from "express";
-import Google from "../auth/GoogleStrategy";
+import {Application, Request, Response, NextFunction} from 'express';
+import GoogleStrategy from '../auth/GoogleStrategy';
 import passport from 'passport';
+import log from '../util/logger';
 
+/**
+ * Passport Setup
+ */
 class PassportSetup {
+/**
+ * Init passport
+ * @param { Application } app
+ * @return {any}
+ */
+  public init(app: Application): any {
+    app = app.use(passport.initialize());
+    app = app.use(passport.session());
 
-    public init(app: any): any {
+    passport.serializeUser(function(user, done) {
+      done(null, user);
+    });
 
-        console.log('Initialising passport ')
-        app = app.use(passport.initialize())
-        app = app.use(passport.session());
+    passport.deserializeUser<any, any>((user, done) => {
+      done(null, user);
+    });
 
-        passport.serializeUser(function(user, done){
-            done(null, user);
-        });
-
-        passport.deserializeUser<any, any>((user, done) => {
-            done(null, user)
-        });
-
-        Google.initialise(passport);
-        return app;
+    GoogleStrategy.initialise(passport);
+    log.info('Initialised  Passport with Google strategy');
+    return app;
+  }
+  /**
+ * Checks if request is authenticated.
+ * @param { Request } req
+ * @param { Response } res
+ * @param { NextFunction } next
+ * @return {any}
+ */
+  public isAuthenticated(req:Request, res:Response, next:NextFunction): any {
+    if (req.isAuthenticated()) {
+      return next();
     }
+    log.info('request not be authenticated, please login');
+    return res.redirect('/auth/login');
+  }
 
-    public isAuthenticated(req, res, next): any {
-        if (req.isAuthenticated()) {
-            return next();
-        }
-        console.log('request not be authenticated, please login');
-        return res.redirect('/auth/login');
-    }
+  /**
+ * Checks if request is authorized.
+ * @param { Request } req
+ * @param { Response } res
+ * @param { NextFunction } next
+ * @return {any}
+ */
+  public isAuthorized(req:Request, res:Response, next:NextFunction): any {
+    const provider = req.path.split('/').slice(-1)[0];
+    const token = req.user?.tokens.find((token) => token.kind === provider);
+    log.debug(`is Authorized : ${token}`);
 
-    public isAuthorized(req, res, next): any {
-        const provider = req.path.split('/').slice(-1)[0];
-        const token = req.user.tokens.find(token => token.kind === provider);
-        if (token) {
-            return next();
-        } else {
-            return res.redirect(`/auth/${provider}`);
-        }
+    if (token) {
+      return next();
+    } else {
+      return res.redirect(`/auth/${provider}`);
     }
+  }
 }
 
 export default new PassportSetup();
