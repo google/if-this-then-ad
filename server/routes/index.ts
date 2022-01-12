@@ -4,17 +4,13 @@ import {Request, Response, Router} from 'express';
 const router = Router();
 
 // Controllers
-const ruleController = require('../controllers/rule');
-const userController = require('../controllers/user');
+const entityProxy = require('../controllers/entityProxy');
 
 // Routes:
-//  - Rules
-router.get('/api/rule/save', ruleController.save);
-router.get('/api/rule/get/:id', ruleController.get);
-//  - Users
-router.get('/api/user/save', userController.save);
-router.get('/api/user/get/:id', userController.get);
-router.get('/api/user/list', userController.list);
+//  - API to access the entities from the storage
+router.get('/api/:entity/create', entityProxy.create);
+router.get('/api/:entity/list', entityProxy.list);
+router.get('/api/:entity/get/:id', entityProxy.get);
 
 // Default '/' route
 router.get('/', (req:Request, res:Response) => {
@@ -22,6 +18,4 @@ router.get('/', (req:Request, res:Response) => {
   res.send(`Hello ${name}! IFTTA`);
 });
 
-
 export default router;
-

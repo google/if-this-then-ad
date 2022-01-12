@@ -1,5 +1,5 @@
 import { DatastoreEntity } from './datastoreEntity';
 
-export class User extends DatastoreEntity {
+export default class User extends DatastoreEntity {
     entityName: string = 'user';
 }
