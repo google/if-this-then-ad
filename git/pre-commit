@@ -28,5 +28,5 @@ cd $SERVER_DIR
 npm run pre-commit
 
 # Test the client side
-cd $PROJECT_DIR/client
-npm run test-no-browser
+#cd $PROJECT_DIR/client
+#npm run test-no-browser
