@@ -9,8 +9,7 @@ import { Router } from '@angular/router';
 export class BoxComponent implements OnInit {
   @Input() source: string = '';
 
-  constructor(public router: Router) {
-  }
+  constructor(public router: Router) { }
 
   ngOnInit(): void {
   }

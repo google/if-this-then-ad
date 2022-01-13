@@ -10,11 +10,6 @@ import { ActivatedRoute, Params } from '@angular/router';
 export class TriggerSelectorComponent implements OnInit {
   paramSubscription: any;
   source: string|null = '';
-  dataPoints: Array<string> = [
-    'Temperature',
-    'Wind speed',
-    'Rain',
-  ];
 
   constructor(private route: ActivatedRoute) {
     this.source = this.route.snapshot.queryParamMap.get('source');

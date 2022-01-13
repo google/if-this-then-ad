@@ -7,9 +7,9 @@ import { Component, OnInit } from '@angular/core';
 })
 export class SourceSelectorComponent implements OnInit {
   triggers: Array<string> = [
-    'Weather',
-    'Bundesliga',
-    'Pollen',
+    'weather',
+    'bundesliga',
+    'pollen',
   ];
 
   constructor() { }
