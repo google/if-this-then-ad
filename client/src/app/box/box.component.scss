@@ -1,0 +1,15 @@
+.box {
+    margin: 10px;
+    width: 100px;
+    height: 100px;
+    border: 1px solid black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+    cursor: pointer;
+
+    &:hover {
+        border: 2px solid black;
+    }
+}
