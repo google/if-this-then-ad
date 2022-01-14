@@ -11,7 +11,6 @@ import log from './util/logger';
 const envConfig = env.config();
 if (envConfig.error || envConfig.parsed == null) {
   log.error('Error loading configuration from .env file');
-  throw envConfig.error;
 }
 
 let app = express();
