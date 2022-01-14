@@ -1,14 +1,17 @@
 import {Request, Response} from 'express';
 
-/**
- * Hello route
- * @param {Request} req
- * @param {Response}res
- */
-function hello(req: Request, res: Response) {
-  res.send('Some Controller');
+
+class SomeController {
+  /**
+    * Hello route
+    * @param {Request} req
+    * @param {Response}res
+    */
+
+  public async hello(req: Request, res: Response) {
+    res.send('Some Controller');
+  }
 }
 
-module.exports = {
-  hello,
-};
+export default new SomeController();
+

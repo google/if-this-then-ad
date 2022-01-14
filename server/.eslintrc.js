@@ -5,7 +5,7 @@ module.exports = {
     es2021: true,
     node: true,
   },
-  extends: ['google'],
+//   extends: ['google'],
   parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaVersion: 13,

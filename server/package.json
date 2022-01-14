@@ -36,8 +36,10 @@
         "passport": "^0.5.2",
         "passport-google-oauth20": "^2.0.0",
         "passport-google-oidc": "^0.1.0",
-        "typescript": "^4.5.2",
-        "winston": "^3.3.3"
+       "typescript": "^4.5.4",
+        "winston": "^3.3.3", 
+        "@google-cloud/datastore": "^6.6.2",
+        "body-parser": "^1.19.1"
     },
     "devDependencies": {
         "@types/cors": "^2.8.12",
@@ -56,6 +58,6 @@
         "jest": "^27.3.1",
         "nodemon": "^2.0.15",
         "prettier": "^2.5.0",
-        "typescript": "^4.5.2"
+        "typescript": "^4.5.4"
     }
 }

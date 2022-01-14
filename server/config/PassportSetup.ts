@@ -57,6 +57,7 @@ class PassportSetup {
   public isAuthorized(req: Request, res: Response, next: NextFunction): any {
     // TODO: check for existence of the token
     // otherwise redirect to /api/auth/google
+    return true;
   }
 }
 

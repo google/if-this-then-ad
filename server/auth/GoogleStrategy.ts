@@ -1,6 +1,5 @@
 import {Strategy} from 'passport-google-oauth20';
-import {User} from '../models/User';
-import dotenv from 'dotenv';
+import User from '../models/user';
 import log from '../util/logger';
 import {PassportStatic} from 'passport';
 import {Request} from 'express';
@@ -9,15 +8,12 @@ import {Request} from 'express';
  * Configuring Google Strategy
  */
 class GoogleStrategy {
- 
-
   /**
-     * Configures passport strategy
-     *
-     * @param {PassportStatic} _passport Passport to Initialise
-     */
+       * Configures passport strategy
+       *
+       * @param {PassportStatic} _passport Passport to Initialise
+       */
   public static initialise(_passport: PassportStatic): any {
-
     _passport.use(
         new Strategy(
             {
@@ -37,7 +33,9 @@ class GoogleStrategy {
               // successful authentication
 
               const jsonProfile = JSON.parse(profile._json);
-              const user: User = {
+
+              const userData = {
+                id: profile.id,
                 profileId: profile.id,
                 displayName: profile.displayName,
                 givenName: profile.name.givenName,
@@ -51,6 +49,8 @@ class GoogleStrategy {
                 locale: jsonProfile.locale,
                 tokenProvider: profile.provider,
               };
+
+              const user = new User(profile.id, userData);
 
               log.debug(`User : ${JSON.stringify(user, null, 4)}`);
 
