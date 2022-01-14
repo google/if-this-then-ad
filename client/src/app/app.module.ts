@@ -6,10 +6,16 @@ import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { SourceSelectorComponent } from './source-selector/source-selector.component';
+import { BoxComponent } from './box/box.component';
+import { TriggerSelectorComponent } from './trigger-selector/trigger-selector.component';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    SourceSelectorComponent,
+    BoxComponent,
+    TriggerSelectorComponent
   ],
   imports: [
     BrowserModule,
