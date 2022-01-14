@@ -23,9 +23,10 @@ PROJECT_DIR=$(pwd)
 SERVER_DIR=$PROJECT_DIR/server
 CLIENT_DIR=$PROJECT_DIR/client
 
+# Test the server side
 cd $SERVER_DIR
 npm run pre-commit
 
-# Requires browser
+# Test the client side
 #cd $PROJECT_DIR/client
-#npm test
+#npm run test-no-browser
