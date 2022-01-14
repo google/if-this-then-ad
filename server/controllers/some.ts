@@ -6,9 +6,9 @@ import {Request, Response} from 'express';
  * @param {Response}res
  */
 function hello(req: Request, res: Response) {
-    res.send('Some Controller');
+  res.send('Some Controller');
 }
 
 module.exports = {
-    hello,
+  hello,
 };
