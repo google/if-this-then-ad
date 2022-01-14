@@ -9,11 +9,11 @@ const entityProxy = require('../controllers/entityProxy');
 
 // Routes:
 //  - API to access the entities from the storage
-router.post('/api/:entity/create', entityProxy.create);
-router.get('/api/:entity/list', entityProxy.list);
+router.post('/api/:entity/create/:id', entityProxy.create);
+router.put('/api/:entity/update/:id', entityProxy.update);
 router.get('/api/:entity/get/:id', entityProxy.get);
-//router.delete('/api/:entity/delete/:id', entityProxy.delete);
-//router.patch('/api/:entity/update/:id', entityProxy.update);
+router.delete('/api/:entity/delete/:id', entityProxy.deleteEntity);
+router.get('/api/:entity/list', entityProxy.list);
 
 // Default '/' route
 router.get('/', (req:Request, res:Response) => {

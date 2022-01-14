@@ -91,4 +91,23 @@ export class DatastoreEntity {
 
     return entities;
   }
+
+  /**
+   * Delete entity from DB
+   */
+  async deleteEntity() {
+    await this.datastore.delete(this.createKey(), (err:Error) => {
+      if (err) {
+        throw err;
+      }
+    });
+  }
+
+  /**
+   * Update entity in DB
+   */
+  async update(data?: Object) {
+    this.data = data || this.data;
+    this.save();
+  }
 }

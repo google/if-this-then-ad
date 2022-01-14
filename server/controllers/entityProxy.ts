@@ -45,16 +45,16 @@ function sendRes(res: Response, data?: Object, errorMessage?: string) {
 }
 
 /**
- * Save entity to db
+ * Save entity to db (create/update)
  * @param {Request} req Request
  * @param {Response}res Response
  */
-async function create(req:Request, res:Response) {
-  const id:string = 'UniqueID';
-  const configuration:Object = {test: '123'};
+async function save(req:Request, res:Response) {
+  const id:string = req.params.id;
+  const data:Object = req.body;
 
   try {
-    const entity = await createModelObject(req.params.entity, id, configuration);
+    const entity = await createModelObject(req.params.entity, id, data);
     await entity.save();
     sendRes(res);
   } catch (e: unknown) {
@@ -64,7 +64,25 @@ async function create(req:Request, res:Response) {
 }
 
 /**
- * Get rule info
+ * Update entity in db (proxy function)
+ * @param {Request} req Request
+ * @param {Response}res Response
+ */
+async function update(req:Request, res:Response) {
+  return await save(req, res);
+}
+
+/**
+ * Create entity in db (proxy function)
+ * @param {Request} req Request
+ * @param {Response}res Response
+ */
+async function create(req:Request, res:Response) {
+  return await save(req, res);
+}
+
+/**
+ * Get entity info
  * @param {Request} req Request
  * @param {Response}res Response
  */
@@ -82,7 +100,7 @@ async function get(req:Request, res:Response) {
 }
 
 /**
- * List users
+ * List entities
  * @param {Request} req Request
  * @param {Response}res Response
  */
@@ -96,6 +114,24 @@ async function list(req:Request, res:Response) {
   }
 }
 
+/**
+ * Delete entity
+ * @param {Request} req Request
+ * @param {Response}res Response
+ */
+async function deleteEntity(req:Request, res:Response) {
+  const id:string = req.params.id;
+
+  try {
+    const entity = await createModelObject(req.params.entity, id);
+    await entity.deleteEntity();
+    sendRes(res);
+  } catch (e: unknown) {
+    const { message } = e as Error;
+    sendRes(res, {}, message);
+  }
+}
+
 module.exports = {
-  create, get, list,
+  create, update, get, list, deleteEntity,
 };
