@@ -1,0 +1,3 @@
+interface FireStoreCollection{
+    name: string;
+}

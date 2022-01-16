@@ -44,7 +44,7 @@ class PassportSetup {
       return next();
     }
     log.info('request not be authenticated, please login');
-    return res.redirect('/auth/login');
+    return res.redirect('/api/auth/login');
   }
 
   /**

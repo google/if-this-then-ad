@@ -17,7 +17,8 @@ let app = express();
 const config = envConfig.parsed;
 
 log.info(`LOG LEVEL SETTING : ${process.env.LOG_LEVEL}`);
-log.debug(`Loaded configuration : ${JSON.stringify(config, null, 2)}`);
+log.debug('Loaded following configuration')
+console.debug(config)
 const PORT = process.env.PORT || 8080;
 app.set('PORT', PORT);
 /**

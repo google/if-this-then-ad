@@ -27,7 +27,10 @@
     "author": "Google LLC",
     "license": "Apache-2.0",
     "dependencies": {
+        "@google-cloud/datastore": "^6.6.2",
+        "@google-cloud/firestore": "^5.0.2",
         "@google-cloud/logging-winston": "^4.1.1",
+        "body-parser": "^1.19.1",
         "cors": "^2.8.5",
         "dotenv": "^10.0.0",
         "express": "^4.17.1",
@@ -36,10 +39,8 @@
         "passport": "^0.5.2",
         "passport-google-oauth20": "^2.0.0",
         "passport-google-oidc": "^0.1.0",
-       "typescript": "^4.5.4",
-        "winston": "^3.3.3", 
-        "@google-cloud/datastore": "^6.6.2",
-        "body-parser": "^1.19.1"
+        "typescript": "^4.5.4",
+        "winston": "^3.3.3"
     },
     "devDependencies": {
         "@types/cors": "^2.8.12",
