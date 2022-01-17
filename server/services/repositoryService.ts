@@ -1,5 +1,4 @@
 import log from '../util/logger';
-const Firestore = require('@google-cloud/firestore');
 
 
 class RepositoryService<T> {
@@ -13,14 +12,7 @@ class RepositoryService<T> {
             throw new Error('Collection name must be specified');
         }
         this.fireStoreCollection = collection;
-
-        this.db = new Firestore({
-            projectId: 'if-this-then-ad'
-        });
-
-        // TODO : Perform a check elsewhere to ensure no undefined 
-        // properties are sent
-        this.db.settings({ ignoreUndefinedProperties: true});
+        this.db = collection.db;
     }
 
     async save<T >(obj: T): Promise<string> {

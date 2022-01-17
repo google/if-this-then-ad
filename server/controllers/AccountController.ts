@@ -3,11 +3,13 @@
 import { Request, Response } from 'express';
 import Repository from '../services/repositoryService';
 import log from '../util/logger'
+import Collections from '../services/collectionFactory';
 
-const usersCollection: FireStoreCollection = { name: 'users' };
+const usersCollection = Collections.getUsersCollection();
 const userRepo = new Repository<User>(usersCollection);
 
-
+//TODO: add exception handling 
+//      input data validation
 export const listAccounts = async (req: Request, res: Response) => {
 
     log.debug(req.query);
