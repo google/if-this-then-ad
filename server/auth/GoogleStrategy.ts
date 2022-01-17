@@ -5,7 +5,7 @@ import { Request } from 'express';
 import Repository from '../services/repositoryService';
 import Collections from '../services/collectionFactory';
 
-const usersCollection = Collections.get('user');
+const usersCollection = Collections.get('users');
 const userRepo = new Repository<User>(usersCollection);
 /**
  * Configuring Google Strategy
