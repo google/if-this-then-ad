@@ -3,8 +3,9 @@ import log from '../util/logger';
 import { PassportStatic } from 'passport';
 import { Request } from 'express';
 import Repository from '../services/repositoryService';
+import Collections from '../services/collectionFactory';
 
-const usersCollection: FireStoreCollection = { name: 'users' };
+const usersCollection = Collections.get('user');
 const userRepo = new Repository<User>(usersCollection);
 /**
  * Configuring Google Strategy
@@ -21,7 +22,7 @@ class GoogleStrategy {
         
         if(process.env.WEB_HOST != typeof('undefined') || process.env.WEB_HOST as string != ''){
             CALLBACK_URL = 'https://' + process.env.PORT + '-' + process.env.WEB_HOST + process.env.CALLBACK_ENDPOINT;
-            log.warn(`Set oauth callback URL to ${CALLBACK_URL}, adjust Authorized URLs in client settings accordingly`);
+            log.warn(`Set oauth callback URL to ${CALLBACK_URL}, adjust Authorized URLs in GCP client settings accordingly`);
         }
         
         _passport.use(

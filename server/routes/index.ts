@@ -5,12 +5,8 @@ import someController from '../controllers/some';
 import pass from '../config/PassportSetup';
 import passport from 'passport';
 
-
 // eslint-disable-next-line new-cap
 const router = Router();
-
-// Load Controllers
-const entityProxy = require('../controllers/entityProxy');
 
 // Auth routes
 router.get('/api/auth/login', AuthController.showLogin);
@@ -23,10 +19,7 @@ router.get(
 );
 router.get(
     '/api/auth/oauthcallback',
-    passport.authenticate('google', {failureRedirect: '/api/auth/login'}),
-    (req: Request, res: Response) => {
-      res.redirect('/api/auth/done');
-    },
+    passport.authenticate('google', { failureRedirect: '/api/auth/login', successRedirect: '/api/auth/done'})
 );
 
 router.get('/api/auth/done', AuthController.authDone)
@@ -34,13 +27,7 @@ router.get('/api/auth/done', AuthController.authDone)
 // protected route
 router.get('/api/account', pass.isAuthenticated, someController.hello);
 router.get('/api/test', someController.hello);
-// Routes:
-//  - API to access the entities from the storage
-router.post('/api/:entity/create/:id', entityProxy.create);
-router.put('/api/:entity/update/:id', entityProxy.update);
-router.get('/api/:entity/get/:id', entityProxy.get);
-router.delete('/api/:entity/delete/:id', entityProxy.deleteEntity);
-router.get('/api/:entity/list', entityProxy.list);
+
 
 // Account routes
 router.get('/api/accounts', AccountController.listAccounts);

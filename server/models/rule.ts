@@ -1,5 +1,10 @@
-import {DatastoreEntity} from './datastoreEntity';
 
-export default class Rule extends DatastoreEntity {
-  entityName: string = 'rule';
+interface Rule {
+    id:string;
+    groupId:string;
+    name:string; 
+    dataSourceId: string;
+    dataPoint:string;
+    dataPointCondition:string;
+    dataPointValue:string|number|boolean;
 }
