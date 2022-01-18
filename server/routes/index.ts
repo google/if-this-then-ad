@@ -1,8 +1,8 @@
 import {Request, Response, Router} from 'express';
-import * as AuthController from '../controllers/AuthController';
-import * as AccountController from '../controllers/AccountController'; 
+import * as AuthController from '../controllers/auth-controller';
+import * as AccountController from '../controllers/account-controller'; 
 import someController from '../controllers/some';
-import pass from '../config/PassportSetup';
+import pass from '../config/passport-setup';
 import passport from 'passport';
 
 // eslint-disable-next-line new-cap

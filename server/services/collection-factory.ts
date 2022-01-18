@@ -13,7 +13,7 @@ class CollectionFactory {
     //TODO: Discuss if we want to have a method for each collection type
     // to reduce possibility of typos creeping in.
     public get(collectionName:string){
-        const collection:FireStoreCollection = {name:collectionName, db:this.db}
+        const collection:FirestoreCollection = {name:collectionName, db:this.db}
         return collection;
     }
 }

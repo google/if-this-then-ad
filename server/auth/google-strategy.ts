@@ -2,8 +2,8 @@ import { Strategy } from 'passport-google-oauth20';
 import log from '../util/logger';
 import { PassportStatic } from 'passport';
 import { Request } from 'express';
-import Repository from '../services/repositoryService';
-import Collections from '../services/collectionFactory';
+import Repository from '../services/repository-service';
+import Collections from '../services/collection-factory';
 
 const usersCollection = Collections.get('users');
 const userRepo = new Repository<User>(usersCollection);
@@ -19,8 +19,8 @@ class GoogleStrategy {
     public static initialise(_passport: PassportStatic): any {
 
         let CALLBACK_URL:string = '';
-        
-        if(process.env.WEB_HOST != typeof('undefined') || process.env.WEB_HOST as string != ''){
+       
+        if('undefined' != typeof process.env.WEB_HOST as unknown || process.env.WEB_HOST as string != ''){
             CALLBACK_URL = 'https://' + process.env.PORT + '-' + process.env.WEB_HOST + process.env.CALLBACK_ENDPOINT;
             log.warn(`Set oauth callback URL to ${CALLBACK_URL}, adjust Authorized URLs in GCP client settings accordingly`);
         }

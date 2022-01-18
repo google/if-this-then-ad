@@ -1,9 +1,9 @@
 
 // import Firestore from '@google-cloud/firestore';
 import { Request, Response } from 'express';
-import Repository from '../services/repositoryService';
+import Repository from '../services/repository-service';
 import log from '../util/logger'
-import Collections from '../services/collectionFactory';
+import Collections from '../services/collection-factory';
 
 const usersCollection = Collections.get('users');
 const userRepo = new Repository<User>(usersCollection);

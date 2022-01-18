@@ -4,9 +4,9 @@ import log from '../util/logger';
 class RepositoryService<T> {
 
     db: any;
-    fireStoreCollection: FireStoreCollection;
+    fireStoreCollection: FirestoreCollection;
 
-    constructor(collection: FireStoreCollection) {
+    constructor(collection: FirestoreCollection) {
        
         if(collection.name == "" || collection == null){
             throw new Error('Collection name must be specified');

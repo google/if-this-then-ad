@@ -5,7 +5,7 @@ import path from 'path';
 import router from './routes';
 import bodyParser from 'body-parser';
 import env from 'dotenv';
-import PassportSetup from './config/PassportSetup';
+import PassportSetup from './config/passport-setup';
 import log from './util/logger';
 // Loading env file config
 const envConfig = env.config();
