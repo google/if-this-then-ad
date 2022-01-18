@@ -1,0 +1,96 @@
+<div style="width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center;">
+    <h1>IFTTA</h1>
+    <form>
+        <!-- Data source -->
+        <mat-form-field class="form-element">
+            <mat-label>Data Source</mat-label>
+            <mat-select required>
+                <mat-option *ngFor="let source of sources" name="trigger-source" [value]="source.value">
+                    {{ source.uiValue }}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <!-- Location -->
+        <mat-form-field class="form-element">
+            <mat-label>Location</mat-label>
+            <input matInput name="trigger-value" required>
+        </mat-form-field>
+    </form>
+
+    <form #trigger="ngForm" (ngSubmit)="addTrigger(trigger)">
+        <!-- Name -->
+        <mat-form-field class="form-element">
+            <mat-label>Name</mat-label>
+            <input ngModel="my-name" matInput name="trigger-name" required>
+        </mat-form-field>
+
+        <!-- Type -->
+        <mat-form-field class="form-element">
+            <mat-label>Type</mat-label>
+            <mat-select ngModel="temp" name="trigger-type" required>
+                <mat-option *ngFor="let type of types" [value]="type.value">
+                    {{ type.uiValue }}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <!-- Condition -->
+        <mat-form-field class="form-element">
+            <mat-label>Condition</mat-label>
+            <mat-select ngModel="gt" name="trigger-condition">
+                <mat-option value="gt">&gt;</mat-option>
+                <mat-option value="lt">&lt;</mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <!-- Value -->
+        <mat-form-field class="form-element">
+            <mat-label>Value</mat-label>
+            <input ngModel="25" matInput name="trigger-value" required>
+        </mat-form-field>
+
+        <!-- Add -->
+        <button class="form-element" mat-raised-button color="accent">Add</button><br>
+    </form>
+
+    <h2>All Rules</h2>
+
+    <div *ngIf="triggers && triggers.length">
+        <table mat-table [dataSource]="dataSource">
+            <ng-container matColumnDef="name">
+                <th mat-header-cell *matHeaderCellDef> Name </th>
+                <td mat-cell *matCellDef="let trigger"> {{ trigger.name }} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="type">
+                <th mat-header-cell *matHeaderCellDef> Type </th>
+                <td mat-cell *matCellDef="let trigger"> {{ trigger.type }} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="condition">
+                <th mat-header-cell *matHeaderCellDef> Condition </th>
+                <td mat-cell *matCellDef="let trigger"> {{ trigger.condition }} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="value">
+                <th mat-header-cell *matHeaderCellDef> Value </th>
+                <td mat-cell *matCellDef="let trigger"> {{ trigger.value }} </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+
+        <mat-paginator [pageSizeOptions]="[5, 10, 20]"
+                        showFirstLastButtons 
+                        aria-label="Select page of triggers">
+        </mat-paginator>
+    </div>
+
+    <!--<div *ngIf="triggers && triggers.length" id="triggers">
+        <div *ngFor="let trigger of triggers">
+            <app-trigger [name]='trigger["name"]' [type]='trigger["type"]' [condition]='trigger["condition"]' [value]='trigger["value"]'></app-trigger>
+        </div>
+    </div>-->
+</div>
