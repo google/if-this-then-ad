@@ -1,4 +1,4 @@
-# If This Than Ad (Trigger Based Marketing)
+# If This Then Ad
 
 ## API for entities management
 Supported entity names (`:entity`):
