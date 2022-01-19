@@ -1,3 +1,5 @@
 node_modules/
 */dist/*
 dist
+notes.txt
+.env

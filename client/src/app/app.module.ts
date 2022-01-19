@@ -13,12 +13,18 @@ import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { TriggersComponent } from './triggers/triggers.component';
 import { TriggerComponent } from './trigger/trigger.component';
+import { SourceSelectorComponent } from './source-selector/source-selector.component';
+import { BoxComponent } from './box/box.component';
+import { TriggerSelectorComponent } from './trigger-selector/trigger-selector.component';
 
 @NgModule({
   declarations: [
     AppComponent,
+    SourceSelectorComponent,
+    BoxComponent,
+    TriggerSelectorComponent,
     TriggersComponent,
-    TriggerComponent
+    TriggerComponent,
   ],
   imports: [
     BrowserModule,
