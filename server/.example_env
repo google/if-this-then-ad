@@ -1,0 +1,7 @@
+GOOGLE_CLIENT_ID=''
+GOOGLE_CLIENT_SECRET=''
+OAUTH_CALLBACK_URL='http://localhost:8080/auth/oauthcallback'
+SESSION_SECRET=''
+LOG_LEVEL='DEBUG'
+NODE_ENV='development'
+PORT=8080

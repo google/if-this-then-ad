@@ -18,11 +18,18 @@ if (process.env.NODE_ENV === 'production') {
     ],
   });
 } else {
-  // Create a basic console logger
-  logger = winston.createLogger({
-    level: 'info',
-    transports: [new winston.transports.Console()],
-  });
+  if (process.env.LOG_LEVEL?.toUpperCase() == 'DEBUG') {
+    // Create a basic console logger
+    logger = winston.createLogger({
+      level: 'debug',
+      transports: [new winston.transports.Console()],
+    });
+  } else {
+    logger = winston.createLogger({
+      level: 'info',
+      transports: [new winston.transports.Console()],
+    });
+  }
 }
 
 export default logger;
