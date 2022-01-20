@@ -11,7 +11,7 @@
     limitations under the License.
  */
 
-interface FirestoreCollection{
+interface FirestoreCollection {
     name: string;
-    db:any
+    db: any;
 }

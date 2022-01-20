@@ -11,13 +11,12 @@
     limitations under the License.
  */
 
-
 interface Rule {
-    id:string;
-    groupId:string;
-    name:string; 
+    id: string;
+    groupId: string;
+    name: string;
     dataSourceId: string;
-    dataPoint:string;
-    dataPointCondition:string;
-    dataPointValue:string|number|boolean;
+    dataPoint: string;
+    dataPointCondition: string;
+    dataPointValue: string | number | boolean;
 }

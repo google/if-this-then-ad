@@ -11,19 +11,18 @@
     limitations under the License.
  */
 
-
 interface User {
-    id?:string
+    id?: string;
     profileId: number;
-    displayName ?: string;
-    givenName ?: string;
-    familyName ?: string;
-    gender ?: string;
-    email: string ;
-    verified ?: boolean;
-    profilePhoto ?: string;
-    locale ?: string;
-    authToken ?: string;
-    refreshToken ?: string;
-    tokenProvider: string ;
+    displayName?: string;
+    givenName?: string;
+    familyName?: string;
+    gender?: string;
+    email: string;
+    verified?: boolean;
+    profilePhoto?: string;
+    locale?: string;
+    authToken?: string;
+    refreshToken?: string;
+    tokenProvider: string;
 }

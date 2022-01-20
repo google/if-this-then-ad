@@ -23,15 +23,15 @@ import log from './util/logger';
 // Loading env file config
 const envConfig = env.config();
 if (envConfig.error || envConfig.parsed == null) {
-  log.error('Error loading configuration from .env file');
+    log.error('Error loading configuration from .env file');
 }
 
 let app = express();
 const config = envConfig.parsed;
 
 log.info(`LOG LEVEL SETTING : ${process.env.LOG_LEVEL}`);
-log.debug('Loaded following configuration')
-console.debug(config)
+log.debug('Loaded following configuration');
+console.debug(config);
 const PORT = process.env.PORT || 8080;
 app.set('PORT', PORT);
 /**
@@ -48,10 +48,10 @@ app.use(express.urlencoded({extended: true}));
 
 app.use(
     session({
-      resave: true,
-      saveUninitialized: true,
-      secret: process.env.SESSION_SECRET || 's9hp0VtUkd$FJM$T91lB',
-    }),
+        resave: true,
+        saveUninitialized: true,
+        secret: process.env.SESSION_SECRET || 's9hp0VtUkd$FJM$T91lB',
+    })
 );
 app = PassportSetup.init(app);
 
