@@ -18,7 +18,8 @@ FILES_LIST=$(find $DIR -type f \
     -not -path "*/dist/*" \
     -not -path "*/.*/*" \
     -not -path "license-headers/*" \
-    -not -name ".*")
+    -not -name ".*"
+)
 
 get_license_by_extension() {
     EXTENSION=$(echo $1 | rev | cut -d'.' -f1 | rev)
@@ -40,7 +41,7 @@ FILE_COUNT=0
 for FILE in $FILES_LIST; do
     LICENSE_HEADER=$(get_license_by_extension $FILE)
     if [ -n "$LICENSE_HEADER" ]; then
-        LICENSE_HEADER_LENGTH=$(echo $LICENSE_HEADER | wc -l)
+        LICENSE_HEADER_LENGTH=$(echo "$LICENSE_HEADER" | wc -l | xargs)
         FILE_HEAD=$(head -n $LICENSE_HEADER_LENGTH $FILE)
         if [ "$FILE_HEAD" != "$LICENSE_HEADER" ]; then
             add_license_to_file "$FILE" "$LICENSE_HEADER"
