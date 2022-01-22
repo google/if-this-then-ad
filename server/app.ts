@@ -20,6 +20,9 @@ import bodyParser from 'body-parser';
 import env from 'dotenv';
 import PassportSetup from './config/passport-setup';
 import log from './util/logger';
+const { Firestore } = require('@google-cloud/firestore');
+const { FirestoreStore } = require('@google-cloud/connect-firestore');
+
 // Loading env file config
 const envConfig = env.config();
 if (envConfig.error || envConfig.parsed == null) {
@@ -46,13 +49,27 @@ app.use(express.json());
 app.use(bodyParser.json({type: '*/*'}));
 app.use(express.urlencoded({extended: true}));
 
+// Cookie settings 
+let now = new Date().getTime(); 
+const interval = 3600*24*1000; 
+const cookieExpiresOn = new Date(now+interval); 
+
 app.use(
     session({
-        resave: true,
-        saveUninitialized: true,
+        store: new FirestoreStore({
+            dataset: new Firestore(),
+            kind: 'iftta-sessions',
+        }),
         secret: process.env.SESSION_SECRET || 's9hp0VtUkd$FJM$T91lB',
+        cookie: {
+            secure: true,
+            expires: cookieExpiresOn
+        },
+        resave: false,
+        saveUninitialized: true,
     })
 );
+
 app = PassportSetup.init(app);
 
 app.use('/', router);

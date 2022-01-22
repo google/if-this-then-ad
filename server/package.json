@@ -28,7 +28,7 @@
     "license": "Apache-2.0",
     "dependencies": {
         "@google-cloud/connect-firestore": "^2.0.2",
-        "@google-cloud/firestore": "^5.0.2",
+        "@google-cloud/firestore": "^4.15.1",
         "@google-cloud/logging-winston": "^4.1.1",
         "body-parser": "^1.19.1",
         "cors": "^2.8.5",
