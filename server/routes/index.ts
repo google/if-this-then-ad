@@ -11,7 +11,7 @@
     limitations under the License.
  */
 
-import {Request, Response, Router} from 'express';
+import { Request, Response, Router } from 'express';
 import * as AuthController from '../controllers/auth-controller';
 import * as AccountController from '../controllers/account-controller';
 import someController from '../controllers/some';
@@ -39,6 +39,7 @@ router.get(
 );
 
 router.get('/api/auth/done', AuthController.authDone);
+router.post('/api/auth/logout', AuthController.logout);
 
 // protected route
 router.get('/api/account', pass.isAuthenticated, someController.hello);
@@ -56,5 +57,7 @@ router.get('/', (req: Request, res: Response) => {
     const name = process.env.NAME || 'World';
     res.send(`Hello ${name}! IFTTA`);
 });
+
+
 
 export default router;

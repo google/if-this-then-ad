@@ -11,7 +11,7 @@
     limitations under the License.
  */
 
-import {Application, Request, Response, NextFunction} from 'express';
+import { Application, Request, Response, NextFunction } from 'express';
 import GoogleStrategy from '../auth/google-strategy';
 import passport from 'passport';
 import log from '../util/logger';
@@ -30,10 +30,18 @@ class PassportSetup {
         app = app.use(passport.session());
 
         passport.serializeUser(function (user, done) {
+
             done(null, user);
         });
 
         passport.deserializeUser<any, any>((user, done) => {
+            // puts the user object into req.user 
+            // NOTE: if session.secure = true and you are not on SSL
+            // everything fails silently and user isnt set 
+            // and this method isnt getting called
+            // https://stackoverflow.com/questions/11277779/passportjs-deserializeuser-never-called/23119369#23119369
+
+
             done(null, user);
         });
 

@@ -10,9 +10,7 @@
     See the License for the specific language governing permissions and
     limitations under the License.
  */
-
-// import Firestore from '@google-cloud/firestore';
-import {Request, Response} from 'express';
+import { Request, Response } from 'express';
 import Repository from '../services/repository-service';
 import log from '../util/logger';
 import Collections from '../services/collection-factory';
@@ -52,7 +50,7 @@ export const create = async (req: Request, res: Response) => {
     // };
 
     // can also be done like this
-    const user: User = {...req.body};
+    const user: User = { ...req.body };
 
     const result = await userRepo.save(user);
 
@@ -66,7 +64,7 @@ export const get = async (req: Request, res: Response) => {
 };
 
 export const update = async (req: Request, res: Response) => {
-    const user: User = {...req.body};
+    const user: User = { ...req.body };
     const result = await userRepo.update(req.params.id, user);
 
     return res.json(result);
@@ -76,7 +74,7 @@ export const remove = async (req: Request, res: Response) => {
     const id = req.params.id;
     log.debug(`Deleting document ${id}`);
     await userRepo.delete(id);
-    return res.json({status: 'done'});
+    return res.json({ status: 'done' });
 };
 
 export const getBy = async (req: Request, res: Response) => {

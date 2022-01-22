@@ -46,13 +46,13 @@ app.use(express.static(path.join(__dirname, './public')));
 app.use(express.json());
 
 // Process any request body as JSON, throw error if JSON is not correct
-app.use(bodyParser.json({type: '*/*'}));
-app.use(express.urlencoded({extended: true}));
+app.use(bodyParser.json({ type: '*/*' }));
+app.use(express.urlencoded({ extended: true }));
 
 // Cookie settings 
-let now = new Date().getTime(); 
-const interval = 3600*24*1000; 
-const cookieExpiresOn = new Date(now+interval); 
+let now = new Date().getTime();
+const interval = 3600 * 24 * 1000;
+const cookieExpiresOn = new Date(now + interval);
 
 app.use(
     session({
@@ -62,7 +62,7 @@ app.use(
         }),
         secret: process.env.SESSION_SECRET || 's9hp0VtUkd$FJM$T91lB',
         cookie: {
-            secure: true,
+            secure: false,
             expires: cookieExpiresOn
         },
         resave: false,

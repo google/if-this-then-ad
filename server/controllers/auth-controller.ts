@@ -11,7 +11,7 @@
     limitations under the License.
  */
 
-import {Request, Response} from 'express';
+import { Request, Response } from 'express';
 import passport from 'passport';
 import log from '../util/logger';
 
@@ -35,5 +35,11 @@ export const googleOAuthCallBack = (req: Request, res: Response) => {
 };
 
 export const authDone = (req: Request, res: Response) => {
+
     res.send('Login successful');
 };
+
+export const logout = (req: Request, res: Response) => {
+    req.logOut();
+    res.redirect('/')
+}
