@@ -14,6 +14,8 @@
 import { Request, Response, Router } from 'express';
 import * as AuthController from '../controllers/auth-controller';
 import * as AccountController from '../controllers/account-controller';
+import * as MetadataController from '../controllers/metadata-controller'; 
+
 import someController from '../controllers/some';
 import pass from '../config/passport-setup';
 import passport from 'passport';
@@ -51,6 +53,9 @@ router.get('/api/accounts/:id', AccountController.get);
 router.post('/api/accounts', AccountController.create);
 router.post('/api/accounts/:id', AccountController.update);
 router.delete('/api/accounts/:id', AccountController.remove);
+
+// expose available metadata to the UI. 
+router.get('/api/agents/metadata', MetadataController.getAgentMetadata); 
 
 // Default '/' route
 router.get('/', (req: Request, res: Response) => {

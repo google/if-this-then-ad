@@ -37,8 +37,9 @@ class JobRunner {
         let topic = await this.getTopic(fullTopicName);
 
         if (topic == null) {
-            topic = await this.client.createTopic(name);
+            await this.client.createTopic(name);
             log.info(`New topic created : ${fullTopicName}`)
+            topic = await this.getTopic(fullTopicName);
             const subsId = process.env.AGENTS_TOPIC_ID + '_subs';
             // Creates a subscription on that new topic
             const [subscription] = await topic.createSubscription(subsId);
@@ -63,6 +64,30 @@ class JobRunner {
         // Pull jobs data from firebase 
         // foreach job execute  
         // TODO extend config to include job definition
+        // firestore.getJobs().filter((j) => {
+        //     j.interval < 
+        // })
+
+        // const job = {
+        //     agentId: 'open-weather-map', 
+        //     interval: 30, 
+        //     location: 'Berlin'
+        // }
+
+        // const jobs = [];
+        
+        // agents
+
+
+        // jobs.forEach((job) => {
+
+        //     const agent = agents.get(job.agentId); 
+        //    const result =  agent.execute(job);
+        //     // publish this back pubsub 
+        // })
+
+
+
         const berlinConfig = config;
         let hamburgConfig = Object.create(config);
 

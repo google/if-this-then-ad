@@ -10,7 +10,7 @@
     See the License for the specific language governing permissions and
     limitations under the License.
  */
-
+import {FirestoreCollection} from '../models/fire-store-entity'
 const Firestore = require('@google-cloud/firestore');
 
 class CollectionFactory {

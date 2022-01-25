@@ -11,7 +11,7 @@
     limitations under the License.
  */
 
-interface FirestoreCollection {
+export interface FirestoreCollection {
     name: string;
     db: any;
 }

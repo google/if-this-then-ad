@@ -12,6 +12,7 @@
  */
 
 import log from '../util/logger';
+import {FirestoreCollection} from '../models/fire-store-entity'; 
 
 class RepositoryService<T> {
     db: any;

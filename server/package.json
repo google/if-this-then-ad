@@ -30,6 +30,7 @@
         "@google-cloud/connect-firestore": "^2.0.2",
         "@google-cloud/firestore": "^4.15.1",
         "@google-cloud/logging-winston": "^4.1.1",
+        "@google-cloud/pubsub": "^2.18.4",
         "body-parser": "^1.19.1",
         "cors": "^2.8.5",
         "dotenv": "^10.0.0",
@@ -39,8 +40,10 @@
         "passport": "^0.5.2",
         "passport-google-oauth20": "^2.0.0",
         "passport-google-oidc": "^0.1.0",
+        "ts-node": "^10.4.0",
         "typescript": "^4.5.4",
-        "winston": "^3.3.3"
+        "winston": "^3.3.3", 
+        "open-weather-map-agent": "file:./agents/source-agents/open-weather-map"
     },
     "devDependencies": {
         "@types/cors": "^2.8.12",

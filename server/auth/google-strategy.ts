@@ -17,6 +17,7 @@ import {PassportStatic} from 'passport';
 import {Request} from 'express';
 import Repository from '../services/repository-service';
 import Collections from '../services/collection-factory';
+import {User} from '../models/user'
 
 const usersCollection = Collections.get('users');
 const userRepo = new Repository<User>(usersCollection);

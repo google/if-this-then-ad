@@ -3,7 +3,7 @@ export interface AgentResponse {
 }
 
 export interface IAgent {
-    id: string,
+    agentId: string,
     name: string,
     execute(options: Configuration):Promise<AgentResult>
 }
@@ -17,7 +17,7 @@ export interface Configuration {
     name: string
 }
 
-export interface AgentResult {
+export interface AgentResult  {
     agentId: string,
     agentName: string,
     targetLocation: string,
@@ -31,6 +31,20 @@ export interface AgentResult {
     timestamp: Date
 }
 
+export interface AgentMetadata {
+    agentId: string, 
+    agentName: string,
+    agentType: AgentType,
+    queryable: Array<string>, 
+    dataPoints: Array<DataPoint>
+}
+
+export interface DataPoint {
+    name: string, 
+    displayName: string, 
+    dataType: string |number|boolean |Date
+}
+
 export const WeatherCodes = {
     'THUNDERSTORM': new Set([200, 201, 202, 210, 211, 212, 221, 230, 231, 232]),
     'DRIZZLE': new Set([300, 301, 302, 310, 311, 312, 313, 314, 321]),
@@ -40,3 +54,7 @@ export const WeatherCodes = {
     'CLEAR': new Set([800, 801]),
 }
 
+export enum AgentType {
+    SOURCE = "source-agent", 
+    TARGET = "target-agent"
+}

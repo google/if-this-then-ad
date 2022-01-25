@@ -11,7 +11,7 @@
     limitations under the License.
  */
 
-interface Rule {
+export interface Rule {
     id: string;
     groupId: string;
     name: string;

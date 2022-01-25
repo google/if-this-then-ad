@@ -1,11 +1,12 @@
 import axios, { AxiosInstance } from 'axios'
-import { IAgent, AgentResponse, Configuration, AgentResult, WeatherCodes } from './interfaces';
+import { IAgent, AgentResponse, Configuration, AgentResult, WeatherCodes, AgentMetadata, AgentType } from './interfaces';
 import { config } from './config'
 import log from '../../../util/logger';
 
 class OpenWeatherMap implements IAgent {
-    id: string = "";
-    name: string = "";
+
+    public agentId: string = "open-weather-map";
+    public name: string = "Weather";
 
     private createApiClient(options: Configuration): AxiosInstance {
         const client = axios.create({
@@ -15,7 +16,7 @@ class OpenWeatherMap implements IAgent {
             responseType: 'json'
         });
 
-        this.id = options.id;
+        this.agentId = options.id;
         this.name = options.name;
 
         return client;
@@ -36,7 +37,7 @@ class OpenWeatherMap implements IAgent {
         const code = data.weather[0]?.id;
 
         const weatherResult: AgentResult = {
-            agentId: this.id,
+            agentId: this.agentId,
             agentName: this.name,
             targetLocation: data.name,
             temperature: data.main.temp,
@@ -51,7 +52,8 @@ class OpenWeatherMap implements IAgent {
 
         return weatherResult;
     }
-    public async execute(options: Configuration):Promise<AgentResult> {
+
+    public async execute(options: Configuration): Promise<AgentResult> {
 
         const res = await this.run(options);
         res.data.agentId = options.id;
@@ -59,6 +61,61 @@ class OpenWeatherMap implements IAgent {
         res.data.targetLocation = options.queryLocation;
         const weatherResult = this.transform(res);
         return weatherResult;
+    }
+
+    public async  getAgentMetadata(): Promise<AgentMetadata> {
+        //TODO decide if we should store this metadata as json 
+        // and simply serve that to the caller. 
+
+        const meta: AgentMetadata = {
+            agentId: this.agentId,
+            agentName: this.name,
+            agentType: AgentType.SOURCE,
+            queryable: ["targetLocation"],
+            dataPoints: [{
+                name: "targetLocation",
+                displayName: "Location",
+                dataType: typeof String(),
+            }, {
+                name: "temperature",
+                displayName: "Temperature",
+                dataType: typeof Number(),
+            }, {
+                name: "windSpeed",
+                displayName: "Wind speed",
+                dataType: typeof Number(),
+            }, {
+                name: "clouds",
+                displayName: "Clouds",
+                dataType: typeof Boolean(),
+            }, {
+                name: "rain",
+                displayName: "Rain",
+                dataType: typeof Boolean(),
+            }, {
+                name: "snow",
+                displayName: "Snow",
+                dataType: typeof Boolean(),
+            }, {
+                name: "thunderstorm",
+                displayName: "Thunderstorm",
+                dataType: typeof Boolean(),
+            },
+            {
+                name: "clearSky",
+                displayName: "Clear Sky",
+                dataType: typeof Boolean(),
+            },
+            {
+                name: "timestamp",
+                displayName: "Last execution",
+                dataType: typeof Date(),
+            }
+
+            ]
+
+        }
+        return Promise.resolve(meta);
     }
 }
 

@@ -14,6 +14,7 @@ import { Request, Response } from 'express';
 import Repository from '../services/repository-service';
 import log from '../util/logger';
 import Collections from '../services/collection-factory';
+import {User} from '../models/user'; 
 
 const usersCollection = Collections.get('users');
 const userRepo = new Repository<User>(usersCollection);
