@@ -31,19 +31,20 @@
         "@google-cloud/firestore": "^4.15.1",
         "@google-cloud/logging-winston": "^4.1.1",
         "@google-cloud/pubsub": "^2.18.4",
+        "axios": "^0.25.0",
         "body-parser": "^1.19.1",
         "cors": "^2.8.5",
         "dotenv": "^10.0.0",
         "express": "^4.17.1",
         "express-session": "^1.17.2",
         "googleapis": "^91.0.0",
+        "open-weather-map-agent": "file:./dist/agents/source-agents/open-weather-map",
         "passport": "^0.5.2",
         "passport-google-oauth20": "^2.0.0",
         "passport-google-oidc": "^0.1.0",
         "ts-node": "^10.4.0",
         "typescript": "^4.5.4",
-        "winston": "^3.3.3", 
-        "open-weather-map-agent": "file:./agents/source-agents/open-weather-map"
+        "winston": "^3.3.3"
     },
     "devDependencies": {
         "@types/cors": "^2.8.12",

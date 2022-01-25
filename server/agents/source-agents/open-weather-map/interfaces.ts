@@ -5,16 +5,16 @@ export interface AgentResponse {
 export interface IAgent {
     agentId: string,
     name: string,
-    execute(options: Configuration):Promise<AgentResult>
+    execute(job:Job):Promise<AgentResult>
 }
 
 export interface Configuration {
     baseUrl: string,
     apiKey: string,
     units: string,
-    queryLocation: string,
     id: string,
-    name: string
+    name: string,
+    targetLocation?:string
 }
 
 export interface AgentResult  {
@@ -57,4 +57,14 @@ export const WeatherCodes = {
 export enum AgentType {
     SOURCE = "source-agent", 
     TARGET = "target-agent"
+}
+
+
+export interface Job {
+    jobId: string,
+    agentId: string,
+    query?: {
+        dataPoint: string,
+        value: string | number | boolean
+    }
 }

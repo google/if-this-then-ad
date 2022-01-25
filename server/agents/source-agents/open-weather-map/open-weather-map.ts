@@ -1,5 +1,5 @@
 import axios, { AxiosInstance } from 'axios'
-import { IAgent, AgentResponse, Configuration, AgentResult, WeatherCodes, AgentMetadata, AgentType } from './interfaces';
+import { IAgent, AgentResponse, Configuration, AgentResult, WeatherCodes, AgentMetadata, AgentType, Job } from './interfaces';
 import { config } from './config'
 import log from '../../../util/logger';
 
@@ -12,7 +12,7 @@ class OpenWeatherMap implements IAgent {
         const client = axios.create({
             baseURL: options.baseUrl,
             method: 'GET',
-            params: { q: options.queryLocation, appid: options.apiKey, units: options.units },
+            params: { q: options.targetLocation, appid: options.apiKey, units: options.units },
             responseType: 'json'
         });
 
@@ -53,12 +53,19 @@ class OpenWeatherMap implements IAgent {
         return weatherResult;
     }
 
-    public async execute(options: Configuration): Promise<AgentResult> {
+    private getOptions(job: Job) {
+        const options = Object.create(config);
+        options.targetLocation = job.query?.value
+        return options;
+    }
 
-        const res = await this.run(options);
-        res.data.agentId = options.id;
-        res.data.agentName = options.name;
-        res.data.targetLocation = options.queryLocation;
+    public async execute(job: Job): Promise<AgentResult> {
+
+        const jobOptions = this.getOptions(job);
+        const res = await this.run(jobOptions);
+        res.data.agentId = jobOptions.id;
+        res.data.agentName = jobOptions.name;
+        res.data.targetLocation = jobOptions.targetLocation;
         const weatherResult = this.transform(res);
         return weatherResult;
     }

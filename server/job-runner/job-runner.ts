@@ -2,7 +2,8 @@ const { PubSub } = require('@google-cloud/pubsub');
 import log from '../util/logger';
 import { config } from '../agents/source-agents/open-weather-map/config';
 import OpenWeatherMap from '../agents/source-agents/open-weather-map';
-
+import { AgentResult } from '../agents/source-agents/open-weather-map/interfaces';
+import {Job} from './interfaces'
 
 const pubSubClient = new PubSub();
 
@@ -59,47 +60,35 @@ class JobRunner {
 
         return topic
     }
+    private listAgents(){
+        return {'open-weather-map-agent': new OpenWeatherMap()}
+    }
 
-    private async *runJobs() {
-        // Pull jobs data from firebase 
-        // foreach job execute  
-        // TODO extend config to include job definition
-        // firestore.getJobs().filter((j) => {
-        //     j.interval < 
-        // })
+    private async *runJobs(jobs:Job[]) {
 
-        // const job = {
-        //     agentId: 'open-weather-map', 
-        //     interval: 30, 
-        //     location: 'Berlin'
-        // }
 
-        // const jobs = [];
+        const agents = this.listAgents(); 
         
-        // agents
+        for(let job of jobs){
+            
+            const agent = agents[job.agentId];
+            log.info(`Executing job ${job.jobId} via agent ${job.agentId}`)
+            yield await agent.execute(job)
+        }
 
 
-        // jobs.forEach((job) => {
+        // const berlinConfig = config;
+        // let hamburgConfig = Object.create(config);
 
-        //     const agent = agents.get(job.agentId); 
-        //    const result =  agent.execute(job);
-        //     // publish this back pubsub 
-        // })
+        // hamburgConfig.queryLocation = 'Hamburg, de';
 
+        // const hamburgAgent = new OpenWeatherMap();
+        // const berlinAgent = new OpenWeatherMap();
 
-
-        const berlinConfig = config;
-        let hamburgConfig = Object.create(config);
-
-        hamburgConfig.queryLocation = 'Hamburg, de';
-
-        const hamburgAgent = new OpenWeatherMap();
-        const berlinAgent = new OpenWeatherMap();
-
-        const hamburg = await hamburgAgent.execute(hamburgConfig);
-        yield hamburg;
-        const berlin = await berlinAgent.execute(berlinConfig)
-        yield berlin;
+        // const hamburg = await hamburgAgent.execute(hamburgConfig);
+        // yield hamburg;
+        // const berlin = await berlinAgent.execute(berlinConfig)
+        // yield berlin;
         // results need to be placed into respective PubSub Topic
     }
 
@@ -107,17 +96,43 @@ class JobRunner {
         const topic = await this.init();
 
         // get a list of jobs to execute 
-
+        // mocked for now. 
+        const jobs:Array<Job> = [{
+            jobId: '1',
+            agentId: 'open-weather-map-agent',
+            query: {
+                'dataPoint': 'targetLocation',
+                'value': 'Berlin, de'
+            }
+        }, {
+            jobId: '2',
+            agentId: 'open-weather-map-agent',
+            query: {
+                'dataPoint': 'targetLocation',
+                'value': 'Hamburg, de'
+            }
+        }, {
+            jobId: '3',
+            agentId: 'open-weather-map-agent',
+            query: {
+                'dataPoint': 'targetLocation',
+                'value': 'Munich, de'
+            }
+        }
+        ]
         // execute each job agent 
         // await for yielded results 
-        let jobResultIter = this.runJobs();
+        log.info('Executing jobs on all available agents');
+        let jobResultIter = this.runJobs(jobs);
         let jobResult = jobResultIter.next();
 
         while (!(await jobResult).done) {
             const currentResult = (await jobResult).value
-
+            log.debug('Got result ')
+            log.debug(JSON.stringify(currentResult));
             // publish to the topic created. 
             await topic.publish(Buffer.from(JSON.stringify(currentResult)));
+            log.debug('Published results to PubSub')
             jobResult = jobResultIter.next();
         }
 
