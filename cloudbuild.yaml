@@ -25,15 +25,11 @@ steps:
  
 # TODO: Tag container with semver 
 
-# Push image to GCR
+# Push images to GCR
 - name: gcr.io/cloud-builders/docker
   id: Push IFTTA image
-  args: ['push', '$_GCR_HOSTNAME/$PROJECT_ID/$_SERVICE_NAME/$_IMAGE_NAME:$SHORT_SHA']
+  args: ['push', '-a', '$_GCR_HOSTNAME/$PROJECT_ID/$_SERVICE_NAME/$_IMAGE_NAME']
 
-# Push latest image to GCR
-- name: gcr.io/cloud-builders/docker
-  id: Push Latest IFTTA image
-  args: ['push', '$_GCR_HOSTNAME/$PROJECT_ID/$_SERVICE_NAME/$_IMAGE_NAME:$latest']
 # Deploy to cloudrun 
 
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
