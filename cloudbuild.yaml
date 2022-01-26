@@ -25,10 +25,10 @@ steps:
  
 # TODO: Tag container with semver 
 
-# Push images to GCR
+# Push image to GCR
 - name: gcr.io/cloud-builders/docker
   id: Push IFTTA image
-  args: ['push', '--all-tags', '$_GCR_HOSTNAME/$PROJECT_ID/$_SERVICE_NAME/$_IMAGE_NAME']
+  args: ['push', '$_GCR_HOSTNAME/$PROJECT_ID/$_SERVICE_NAME/$_IMAGE_NAME:$SHORT_SHA']
 
 # Deploy to cloudrun 
 
