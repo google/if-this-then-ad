@@ -31,17 +31,12 @@ class GoogleStrategy {
      * @param {PassportStatic} _passport Passport to Initialise
      */
     public static initialise(_passport: PassportStatic): any {
-        let CALLBACK_URL: string = '';
-        if (process.env.NODE_ENV?.toLowerCase() == 'development' && process.env.WEB_HOST) {
-            // specific to cloud shell editor 
-            CALLBACK_URL = `https://${process.env.PORT}-${process.env.WEB_HOST}${process.env.CALLBACK_ENDPOINT}`
+       
+        if (typeof process.env.OAUTH_CALLBACK_URL == 'undefined'){
+            throw Error('OAUTH_CALLBACK_URL undefined, it must be defined as environment variable')
         }
-        if (process.env.NODE_ENV?.toLowerCase() == 'staging'){
-            CALLBACK_URL = process.env.STAGING_OAUTH_CALLBACK as string
-        }
-
         log.warn(
-            `Set oauth callback URL to ${CALLBACK_URL}, adjust Authorized URLs in GCP client settings accordingly`
+            `Set oauth callback URL to ${ process.env.OAUTH_CALLBACK_URL}, adjust Authorized URLs in GCP client settings accordingly`
         );
         
         _passport.use(
@@ -49,7 +44,7 @@ class GoogleStrategy {
                 {
                     clientID: process.env.GOOGLE_CLIENT_ID,
                     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-                    callbackURL: CALLBACK_URL == 'undefined' ? process.env.OAUTH_CALLBACK_URL : CALLBACK_URL,
+                    callbackURL:  process.env.OAUTH_CALLBACK_URL ,
                     passReqToCallback: true,
                 },
                 async (
