@@ -17,16 +17,14 @@ steps:
 - name: gcr.io/cloud-builders/docker
   id: Build iftta image 
   args: ['build', '-f', 'Dockerfile', '.', '-t', '$_GCR_HOSTNAME/$PROJECT_ID/$_SERVICE_NAME/$_IMAGE_NAME:$SHORT_SHA']
-  options:
-    logging: CLOUD_LOGGING_ONLY
+ 
 # TODO: Tag container with semver 
 
 # Push image to GCR
 - name: gcr.io/cloud-builders/docker
   id: Push IFTTA image
   args: ['push', '$_GCR_HOSTNAME/$PROJECT_ID/$_SERVICE_NAME/$_IMAGE_NAME:$SHORT_SHA']
-  options:
-    logging: CLOUD_LOGGING_ONLY
+ 
 # Deploy to cloudrun 
 
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
