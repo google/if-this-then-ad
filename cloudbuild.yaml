@@ -16,7 +16,12 @@ steps:
 # Build the image from source
 - name: gcr.io/cloud-builders/docker
   id: Build iftta image 
-  args: ['build', '-f', 'Dockerfile', '.', '-t', '$_GCR_HOSTNAME/$PROJECT_ID/$_SERVICE_NAME/$_IMAGE_NAME:$SHORT_SHA', '-t', '$_GCR_HOSTNAME/$PROJECT_ID/$_SERVICE_NAME/$_IMAGE_NAME:latest', '--cache-from', $_GCR_HOSTNAME/$PROJECT_ID/$_SERVICE_NAME/$_IMAGE_NAME:latest']
+  args: ['build', '-f', 'Dockerfile', '.', '-t', '$_GCR_HOSTNAME/$PROJECT_ID/$_SERVICE_NAME/$_IMAGE_NAME:$SHORT_SHA',  '--cache-from', $_GCR_HOSTNAME/$PROJECT_ID/$_SERVICE_NAME/$_IMAGE_NAME:latest']
+
+# Tag built image with latest 
+- name: gcr.io/cloud-builders/docker
+  id: Build iftta image 
+  args: ['tag', '$_GCR_HOSTNAME/$PROJECT_ID/$_SERVICE_NAME/$_IMAGE_NAME:$SHORT_SHA', $_GCR_HOSTNAME/$PROJECT_ID/$_SERVICE_NAME/$_IMAGE_NAME:latest']
  
 # TODO: Tag container with semver 
 
