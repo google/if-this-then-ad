@@ -11,13 +11,13 @@
     limitations under the License.
  */
 
-import {Strategy} from 'passport-google-oauth20';
+import { Strategy } from 'passport-google-oauth20';
 import log from '../util/logger';
-import {PassportStatic} from 'passport';
-import {Request} from 'express';
+import { PassportStatic } from 'passport';
+import { Request } from 'express';
 import Repository from '../services/repository-service';
 import Collections from '../services/collection-factory';
-import {User} from '../models/user'
+import { User } from '../models/user'
 
 const usersCollection = Collections.get('users');
 const userRepo = new Repository<User>(usersCollection);
@@ -32,22 +32,27 @@ class GoogleStrategy {
      */
     public static initialise(_passport: PassportStatic): any {
         let CALLBACK_URL: string = '';
-
-        if (
-            'undefined' != (typeof process.env.WEB_HOST as unknown) ||
-            (process.env.WEB_HOST as string) != ''
-        ) {
-            CALLBACK_URL =
-                'https://' +
-                process.env.PORT +
-                '-' +
-                process.env.WEB_HOST +
-                process.env.CALLBACK_ENDPOINT;
-            log.warn(
-                `Set oauth callback URL to ${CALLBACK_URL}, adjust Authorized URLs in GCP client settings accordingly`
-            );
+        if (process.env.NODE_ENV == 'development') {
+            // specific to cloud shell editor 
+            if ('undefined' != (typeof process.env.WEB_HOST as unknown) ||
+                (process.env.WEB_HOST as string) != '') {
+                CALLBACK_URL =
+                    'https://' +
+                    process.env.PORT +
+                    '-' +
+                    process.env.WEB_HOST +
+                    process.env.CALLBACK_ENDPOINT;
+               
+            }
+        }
+        if (String(process.env.NODE_ENV).toLowerCase() == 'staging'){
+            CALLBACK_URL = process.env.STAGING_OAUTH_CALLBACK as string
         }
 
+        log.warn(
+            `Set oauth callback URL to ${CALLBACK_URL}, adjust Authorized URLs in GCP client settings accordingly`
+        );
+        
         _passport.use(
             new Strategy(
                 {
