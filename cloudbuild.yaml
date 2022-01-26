@@ -20,7 +20,7 @@ steps:
 
 # Tag built image with latest 
 - name: gcr.io/cloud-builders/docker
-  id: Build iftta image 
+  id: Tag latest image
   args: ['tag', '$_GCR_HOSTNAME/$PROJECT_ID/$_SERVICE_NAME/$_IMAGE_NAME:$SHORT_SHA', $_GCR_HOSTNAME/$PROJECT_ID/$_SERVICE_NAME/$_IMAGE_NAME:latest']
  
 # TODO: Tag container with semver 
