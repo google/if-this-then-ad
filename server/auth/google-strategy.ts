@@ -32,20 +32,11 @@ class GoogleStrategy {
      */
     public static initialise(_passport: PassportStatic): any {
         let CALLBACK_URL: string = '';
-        if (process.env.NODE_ENV == 'development') {
+        if (process.env.NODE_ENV?.toLowerCase() == 'development' && process.env.WEB_HOST) {
             // specific to cloud shell editor 
-            if ('undefined' != (typeof process.env.WEB_HOST as unknown) ||
-                (process.env.WEB_HOST as string) != '') {
-                CALLBACK_URL =
-                    'https://' +
-                    process.env.PORT +
-                    '-' +
-                    process.env.WEB_HOST +
-                    process.env.CALLBACK_ENDPOINT;
-               
-            }
+            CALLBACK_URL = `https://${process.env.PORT}-${process.env.WEB_HOST}${process.env.CALLBACK_ENDPOINT}`
         }
-        if (String(process.env.NODE_ENV).toLowerCase() == 'staging'){
+        if (process.env.NODE_ENV?.toLowerCase() == 'staging'){
             CALLBACK_URL = process.env.STAGING_OAUTH_CALLBACK as string
         }
 
@@ -58,7 +49,7 @@ class GoogleStrategy {
                 {
                     clientID: process.env.GOOGLE_CLIENT_ID,
                     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-                    callbackURL: CALLBACK_URL || process.env.OAUTH_CALLBACK_URL,
+                    callbackURL: CALLBACK_URL == 'undefined' ? process.env.OAUTH_CALLBACK_URL : CALLBACK_URL,
                     passReqToCallback: true,
                 },
                 async (
