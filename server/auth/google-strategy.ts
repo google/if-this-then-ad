@@ -33,7 +33,7 @@ class GoogleStrategy {
     public static initialise(_passport: PassportStatic): any {
        
         if (typeof process.env.OAUTH_CALLBACK_URL == 'undefined'){
-            throw Error('OAUTH_CALLBACK_URL undefined, it must be defined as environment variable')
+            throw new Error('OAUTH_CALLBACK_URL undefined, it must be defined as environment variable')
         }
         log.warn(
             `Set oauth callback URL to ${ process.env.OAUTH_CALLBACK_URL}, adjust Authorized URLs in GCP client settings accordingly`
