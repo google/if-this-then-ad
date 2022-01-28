@@ -29,6 +29,7 @@ import { TriggerComponent } from './trigger/trigger.component';
 import { SourceSelectorComponent } from './source-selector/source-selector.component';
 import { BoxComponent } from './box/box.component';
 import { TriggerSelectorComponent } from './trigger-selector/trigger-selector.component';
+import { LoginComponent } from './login/login.component';
 
 @NgModule({
   declarations: [
@@ -38,6 +39,7 @@ import { TriggerSelectorComponent } from './trigger-selector/trigger-selector.co
     TriggerSelectorComponent,
     TriggersComponent,
     TriggerComponent,
+    LoginComponent,
   ],
   imports: [
     BrowserModule,
