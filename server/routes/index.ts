@@ -16,6 +16,7 @@ import * as AuthController from '../controllers/auth-controller';
 import * as AccountController from '../controllers/account-controller';
 import * as MetadataController from '../controllers/metadata-controller'; 
 
+
 import someController from '../controllers/some';
 import pass from '../config/passport-setup';
 import passport from 'passport';
@@ -56,6 +57,8 @@ router.delete('/api/accounts/:id', AccountController.remove);
 
 // expose available metadata to the UI. 
 router.get('/api/agents/metadata', MetadataController.getAgentMetadata); 
+// router.post('/api/agent-results', PubSubController.messageHandler); 
+
 
 // Default '/' route
 router.get('/', (req: Request, res: Response) => {

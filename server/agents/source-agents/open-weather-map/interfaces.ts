@@ -1,4 +1,5 @@
 export interface AgentResponse {
+    jobId: string,
     data: any
 }
 
@@ -14,11 +15,13 @@ export interface Configuration {
     units: string,
     id: string,
     name: string,
-    targetLocation?:string
+    targetLocation?:string, 
+    jobId?:string
 }
 
 export interface AgentResult  {
     agentId: string,
+    jobId: string,
     agentName: string,
     targetLocation: string,
     temperature: number,

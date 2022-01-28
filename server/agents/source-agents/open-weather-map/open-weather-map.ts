@@ -9,26 +9,40 @@ class OpenWeatherMap implements IAgent {
     public name: string = "Weather";
 
     private createApiClient(options: Configuration): AxiosInstance {
+        if (!options.apiKey) {
+            const errorMessage = 'API Key not set, it needs to be set in the env file'
+            log.error(errorMessage)
+            throw new Error(errorMessage);
+        }
         const client = axios.create({
             baseURL: options.baseUrl,
             method: 'GET',
             params: { q: options.targetLocation, appid: options.apiKey, units: options.units },
             responseType: 'json'
         });
-
+        log.debug('HTTP Client created, with options');
+        log.debug(JSON.stringify({ q: options.targetLocation, appid: options.apiKey, units: options.units }))
         this.agentId = options.id;
         this.name = options.name;
 
         return client;
     }
     private async run(options: Configuration): Promise<AgentResponse> {
-
-        let client = this.createApiClient(options);
-        const response = await client.get('/');
-        const agentResponse: AgentResponse = {
-            data: response.data
+        try {
+            let client = this.createApiClient(options);
+            const response = await client.get('/');
+            const agentResponse: AgentResponse = {
+                jobId: options.jobId as string,
+                data: response.data
+            }
+            return Promise.resolve(agentResponse);
+        } catch (err) {
+            log.error(JSON.stringify(err));
         }
-        return Promise.resolve(agentResponse);
+        return {
+            jobId: options.jobId as string,
+            data: ''
+        }
     }
 
     private transform(weatherData: AgentResponse): AgentResult {
@@ -38,6 +52,7 @@ class OpenWeatherMap implements IAgent {
 
         const weatherResult: AgentResult = {
             agentId: this.agentId,
+            jobId: weatherData.jobId,
             agentName: this.name,
             targetLocation: data.name,
             temperature: data.main.temp,
@@ -56,6 +71,7 @@ class OpenWeatherMap implements IAgent {
     private getOptions(job: Job) {
         const options = Object.create(config);
         options.targetLocation = job.query?.value
+        options.jobId = job.jobId;
         return options;
     }
 
@@ -66,6 +82,7 @@ class OpenWeatherMap implements IAgent {
         res.data.agentId = jobOptions.id;
         res.data.agentName = jobOptions.name;
         res.data.targetLocation = jobOptions.targetLocation;
+        res.jobId = jobOptions.jobId;
         const weatherResult = this.transform(res);
         return weatherResult;
     }
