@@ -8,6 +8,7 @@ import { Job } from './interfaces'
 //TODO: replace this with sending messages over pubsub. 
 //Temp coupling between packages/ 
 import rulesEngine from '../packages/rule-engine'
+import { RuleResult } from '../packages/rule-engine/src/interfaces';
 
 
 
@@ -134,23 +135,29 @@ class JobRunner {
 
         // const topic = await this.init();
 
-
         // execute each job agent 
         // await for yielded results 
         log.info('Executing jobs on all available agents');
         let jobResultIter = this.runJobs(jobs);
         let jobResult = jobResultIter.next();
         
+        // collect all actions that need to be performed
+        // on the target systems.
+        let targetActions:Array<RuleResult[]> = []
+
         while(!(await jobResult).done){
             // pass this to rules engine. 
             const currentResult:AgentResult = (await jobResult).value;
 
             log.info('Publishing results to the rule engine'); 
             // log.debug(JSON.stringify(currentResult)); 
-            await rulesEngine.processMessage(currentResult); 
-            
+            const results:Array<RuleResult> = await rulesEngine.processMessage(currentResult); 
+            targetActions.push(results);
             jobResult = jobResultIter.next();
         }
+
+        // call target-agents to execute individual actions 
+
 
 
         // publish results to pubsub. 

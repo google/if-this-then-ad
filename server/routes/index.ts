@@ -15,7 +15,7 @@ import { Request, Response, Router } from 'express';
 import * as AuthController from '../controllers/auth-controller';
 import * as AccountController from '../controllers/account-controller';
 import * as MetadataController from '../controllers/metadata-controller'; 
-
+import * as RulesController from '../controllers/rules-controller'; 
 
 import someController from '../controllers/some';
 import pass from '../config/passport-setup';
@@ -54,6 +54,12 @@ router.get('/api/accounts/:id', AccountController.get);
 router.post('/api/accounts', AccountController.create);
 router.post('/api/accounts/:id', AccountController.update);
 router.delete('/api/accounts/:id', AccountController.remove);
+
+
+// Rules endpoints 
+router.post('/api/rules', RulesController.create); 
+router.get('/api/rules', RulesController.list)
+
 
 // expose available metadata to the UI. 
 router.get('/api/agents/metadata', MetadataController.getAgentMetadata); 

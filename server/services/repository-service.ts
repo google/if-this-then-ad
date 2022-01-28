@@ -19,7 +19,7 @@ class RepositoryService<T> {
     fireStoreCollection: FirestoreCollection;
 
     constructor(collection: FirestoreCollection) {
-        if (collection.name == '' || collection == null) {
+        if (collection == null) {
             throw new Error('Collection name must be specified');
         }
         this.fireStoreCollection = collection;
@@ -28,7 +28,7 @@ class RepositoryService<T> {
 
     async save<T>(obj: T): Promise<string> {
         log.debug('Attempting write to firestore');
-        log.debug(obj);
+        log.debug(JSON.stringify(obj, null, 4));
         try {
 
             const collectionRef = this.db.collection(this.fireStoreCollection.name);

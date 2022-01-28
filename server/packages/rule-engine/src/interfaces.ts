@@ -14,18 +14,40 @@ export interface AgentResult {
 }
 
 export enum CONDITIONS {
-    equals ='eq', 
-    greater = 'gt', 
+    equals = 'eq',
+    greater = 'gt',
     less = 'lt'
 }
 
 export interface Rule {
-    ruleId: string, 
+    ruleId: string,
     jobId: string,
-    agentId: string, 
+    agentId: string,
     agentName: string,
     ruleName: string,
     ruleDatapoint: string,
-    ruleCondition: CONDITIONS.equals | CONDITIONS.greater | CONDITIONS.less, 
-    ruleTargetValue: string|number|boolean, 
+    ruleCondition: CONDITIONS.equals | CONDITIONS.greater | CONDITIONS.less,
+    ruleTargetValue: string | number | boolean,
+    targets?: Array<TargetAgent>
+}
+
+export interface RuleResult {
+    ruleId: string,
+    result: boolean | number, 
+    target: Array<TargetAgent>
+}
+
+interface actionParam {
+    param: string,
+    value: string | number | boolean
+}
+interface TargetActions {
+    action: string,
+    actionParams: Array<actionParam>
+}
+
+export interface TargetAgent {
+    agentId: string,
+    ruleResult: RuleResult,
+    actions: Array<TargetActions>
 }

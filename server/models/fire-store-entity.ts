@@ -10,8 +10,15 @@
     See the License for the specific language governing permissions and
     limitations under the License.
  */
-
 export interface FirestoreCollection {
-    name: string;
+    name: Collection;
     db: any;
+}
+/**
+ * Allowed collection types for use with the 
+ * repository
+ */
+export enum Collection {
+    USERS = 'users',
+    RULES = 'rules',
 }

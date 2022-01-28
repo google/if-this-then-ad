@@ -18,8 +18,9 @@ import { Request } from 'express';
 import Repository from '../services/repository-service';
 import Collections from '../services/collection-factory';
 import { User } from '../models/user'
+import { Collection } from '../models/fire-store-entity';
 
-const usersCollection = Collections.get('users');
+const usersCollection = Collections.get(Collection.USERS);
 const userRepo = new Repository<User>(usersCollection);
 /**
  * Configuring Google Strategy

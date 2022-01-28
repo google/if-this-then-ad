@@ -1,9 +1,9 @@
-import { AgentResult, Rule, CONDITIONS } from '../src/interfaces'
+import { AgentResult, Rule, CONDITIONS, RuleResult } from '../src/interfaces'
 import log from '../../../util/logger';
 
 export class RulesProcessor {
 
-    public async processAgentResult(result: AgentResult) {
+    public async processAgentResult(result: AgentResult): Promise<Array<RuleResult>> {
 
         const rules = await this.getValidRulesForAgent(result);
         // to return RuleEvaluation[] to be passed to target-agents
@@ -48,17 +48,24 @@ export class RulesProcessor {
      * @param rules {Array<Rule>}
      * @param result {AgentResult}
      */
-    public evaluateRulesAgainstResult(rules: Array<Rule>, result: AgentResult) {
+    public evaluateRulesAgainstResult(rules: Array<Rule>, result: AgentResult): Array<RuleResult> {
         // outcome here should be ruleResult[] so that we can action on 
         // the evalations of the result in the next step. 
-
+        let ruleResults: Array<RuleResult> = [];
         rules.map(rule => {
             const evalResult = this.evaluate(rule, result);
+            const ruleResult: RuleResult = {
+                ruleId: rule.ruleId,
+                result: evalResult,
+                target: rule.targets || [] // ensure that targets are configured. 
+            }
+            ruleResults.push(ruleResult)
         });
+        return ruleResults;
     }
 
     // go through each rule
-    public evaluate(rule: Rule, jobResult: AgentResult): Boolean {
+    public evaluate(rule: Rule, jobResult: AgentResult): boolean {
         const dpResult = jobResult[rule.ruleDatapoint];
 
         if (typeof dpResult == 'undefined') {
