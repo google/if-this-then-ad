@@ -16,12 +16,11 @@ const repo = new Repository<Job>(jobsCollection);
  * @param {Rule} rule 
  */
 export const addJob = async (rule: Rule): Promise<string> => {
-
+    log.debug('jobs-controller:addJob');
     log.info('Checking for existing similar jobs'); 
     const agentJobs = await repo.getBy("agentId", rule.agentId);
 
-   
-    // get all jobs for agent. 
+       // get all jobs for agent. 
     const job: Job = {
         agentId: rule.agentId,
         executionInterval: rule.ruleInterval,
@@ -33,8 +32,8 @@ export const addJob = async (rule: Rule): Promise<string> => {
         delete j.id;
         return isDeepStrictEqual(j, job);
     });
+
     log.info(`Found ${existingJobs.length} existing jobs`); 
-    
     log.debug(existingJobs)
 
     if (!existingJobs) {

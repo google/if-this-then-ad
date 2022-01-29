@@ -27,8 +27,8 @@ class RepositoryService<T> {
     }
 
     async save<T>(obj: T): Promise<string> {
-        log.debug('Attempting write to firestore');
-        log.debug(JSON.stringify(obj, null, 4));
+        log.debug('Saving data to firestore');
+        log.debug(JSON.stringify(obj, null, 2));
         try {
 
             const collectionRef = this.db.collection(this.fireStoreCollection.name);
@@ -63,7 +63,7 @@ class RepositoryService<T> {
     }
 
     async get(id: string): Promise<T | undefined> {
-
+        log.debug('Repository:get');
         try {
 
             const docRef = this.db
@@ -84,8 +84,9 @@ class RepositoryService<T> {
     }
 
     async getBy(fieldName: any,
-                fieldValue: string | number | boolean): Promise<T[]> {
+        fieldValue: string | number | boolean): Promise<T[]> {
 
+        log.debug('Repository:getBy')
         let data: Array<T> = [];
         try {
 

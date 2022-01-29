@@ -12,6 +12,7 @@
  */
 
 import express from 'express';
+import {Request, Response, NextFunction} from 'express'
 import session from 'express-session';
 import cors from 'cors';
 import path from 'path';
@@ -33,8 +34,7 @@ let app = express();
 const config = envConfig.parsed;
 
 log.info(`LOG LEVEL SETTING : ${process.env.LOG_LEVEL}`);
-log.debug('Loaded following environment configuration');
-log.debug(JSON.stringify(process.env, null , 4))
+log.debug({...process.env});
 log.debug('-------------------------------END CONFIGURATION----------------');
 const PORT = process.env.PORT || 8080;
 app.set('PORT', PORT);
@@ -50,10 +50,14 @@ app.use(express.json());
 app.use(bodyParser.json({ type: '*/*' }));
 app.use(express.urlencoded({ extended: true }));
 
+
+
+
 // Cookie settings 
 let now = new Date().getTime();
 const interval = 3600 * 24 * 1000;
 const cookieExpiresOn = new Date(now + interval);
+log.debug(`Cookie expires on : ${cookieExpiresOn}`)
 
 app.use(
     session({
@@ -70,6 +74,17 @@ app.use(
         saveUninitialized: true,
     })
 );
+
+export const requestLogger = (req:Request, res:Response, next:NextFunction) => {
+    const message = ` url:${req.url} 
+                      method: ${req.method} 
+                      params: ${JSON.stringify(req.params, null, 2)} 
+                      body: ${JSON.stringify(req.body, null, 2)}`
+    log.debug(message);
+    next();
+}
+
+app.use(requestLogger);
 
 app = PassportSetup.init(app);
 

@@ -12,37 +12,53 @@
  */
 
 import winston from 'winston';
-
 // Imports the Google Cloud client library for Winston
-import {LoggingWinston} from '@google-cloud/logging-winston';
+import { LoggingWinston } from '@google-cloud/logging-winston';
+import { REQUEST_LOG_SUFFIX } from '@google-cloud/logging-winston/build/src/middleware/express';
+const { format, transports } = winston;
 
-let logger: winston.Logger;
+const logFormat = format.printf(info => `${info.timestamp} ${info.level} ${info.message} `);
 
-if (process.env.NODE_ENV === 'production') {
-    // Create a Winston logger that streams to Stackdriver Logging
-    // Logs will be written to: "projects/YOUR_PROJECT_ID/logs/winston_log"
-    const loggingWinston = new LoggingWinston();
-    logger = winston.createLogger({
-        level: 'info',
-        transports: [
-            new winston.transports.Console(),
-            // Add Stackdriver Logging
+const getTransportsForEnv = () => {
+    const env = process.env.NODE_ENV;
+    if (env === 'production') {
+        // for Prod add stackdriver logging
+        const loggingWinston = new LoggingWinston();
+        return [
+            new transports.Console({
+                format: format.combine(
+                    format.timestamp({
+                        format: 'YYYY-MM-DD HH:mm:ss'
+                    }),
+                    format.json()
+                )
+
+            }),
             loggingWinston,
-        ],
-    });
-} else {
-    if (process.env.LOG_LEVEL?.toUpperCase() == 'DEBUG') {
-        // Create a basic console logger
-        logger = winston.createLogger({
-            level: 'debug',
-            transports: [new winston.transports.Console()],
-        });
-    } else {
-        logger = winston.createLogger({
-            level: 'info',
-            transports: [new winston.transports.Console()],
-        });
+        ]
     }
+    // for all other envs
+    return [
+        new transports.Console({
+            format: format.combine(
+                format.colorize({ message: true, level: true }),
+                format.timestamp({
+                    format: 'YYYY-MM-DD HH:mm:ss'
+                }),
+                logFormat
+            )
+        }
+        )];
 }
+
+const logger = winston.createLogger({
+    level: process.env.NODE_ENV === 'production' ? 'info' : 'debug',
+    format: format.combine(
+        format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+        format.metadata({ fillExcept: ['message', 'level', 'timestamp'] })
+    ),
+    transports: getTransportsForEnv(),
+    exitOnError: false
+});
 
 export default logger;
