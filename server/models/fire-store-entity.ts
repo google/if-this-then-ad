@@ -21,4 +21,5 @@ export interface FirestoreCollection {
 export enum Collection {
     USERS = 'users',
     RULES = 'rules',
+    JOBS = 'jobs',
 }

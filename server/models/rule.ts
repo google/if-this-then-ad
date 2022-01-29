@@ -19,11 +19,16 @@ export enum CONDITIONS {
 }
 
 export interface Rule {
-    ruleId: string,
-    jobId: string,
+    id?: string,
+    jobId?: string,
     agentId: string,
     agentName: string,
+    agentQueryable: {
+        dataPoint: string,
+        value: string | number | boolean
+    },
     ruleName: string,
+    ruleInterval: number,
     ruleDatapoint: string,
     ruleCondition: CONDITIONS.equals | CONDITIONS.greater | CONDITIONS.less,
     ruleTargetValue: string | number | boolean,
@@ -47,6 +52,6 @@ interface TargetActions {
 
 export interface TargetAgent {
     agentId: string,
-    ruleResult: RuleResult,
+    ruleResult?: RuleResult,
     actions: Array<TargetActions>
 }
