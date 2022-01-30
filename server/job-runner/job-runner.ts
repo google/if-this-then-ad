@@ -1,9 +1,24 @@
 const { PubSub } = require('@google-cloud/pubsub');
 import log from '../util/logger';
-import { config } from '../agents/source-agents/open-weather-map/config';
 import OpenWeatherMap from '../agents/source-agents/open-weather-map';
 import { AgentResult } from '../agents/source-agents/open-weather-map/interfaces';
-import { Job } from './interfaces'
+import { Job , ExecutionTime, _Timestamp} from './interfaces'
+import Repository from '../services/repository-service';
+import Collections from '../services/collection-factory';
+import { Collection } from "../models/fire-store-entity";
+
+//TODO: deal with leaking firestore _Timestamp object
+
+
+// setting up useful date manipulation functions
+// wrapping them into date object to make it easier
+// to remember what we are dealing with. 
+const date = {
+    add: require('date-fns/add'), 
+    isAfter: require('date-fns/isAfter'), 
+    isBefore:require('date-fns/isBefore'),
+    isValid: require('date-fns/isValid')
+}
 
 //TODO: replace this with sending messages over pubsub. 
 //Temp coupling between packages/ 
@@ -13,14 +28,16 @@ import { RuleResult } from '../packages/rule-engine/src/interfaces';
 
 
 const pubSubClient = new PubSub();
-
+const jobsCollection = Collections.get(Collection.JOBS);
+const repo = new Repository<Job>(jobsCollection);
 
 class JobRunner {
 
     client: any;
-
-    constructor(client: any) {
+    jobsRepo: Repository<Job>;
+    constructor(client: any, repository: Repository<Job>) {
         this.client = client;
+        this.jobsRepo = repository;
     }
 
     private async getTopic(name: string) {
@@ -98,40 +115,62 @@ class JobRunner {
         for (let job of jobs) {
 
             const agent = agents[job.agentId];
-            log.info(`Executing job ${job.jobId} via agent ${job.agentId}`)
+            log.info(`Executing job ${job.id} via agent ${job.agentId}`)
             yield await agent.execute(job)
         }
 
     }
 
-    public async runAll() {
-       
+    private async updateJobExecutionTimes(jobs: Array<ExecutionTime>){
 
-        // get a list of jobs to execute 
-        // mocked for now. 
-        const jobs: Array<Job> = [{
-            jobId: '1',
-            agentId: 'open-weather-map-agent',
-            query: {
-                'dataPoint': 'targetLocation',
-                'value': 'Berlin, de'
-            }
-        }, {
-            jobId: '2',
-            agentId: 'open-weather-map-agent',
-            query: {
-                'dataPoint': 'targetLocation',
-                'value': 'Hamburg, de'
-            }
-        }, {
-            jobId: '3',
-            agentId: 'open-weather-map-agent',
-            query: {
-                'dataPoint': 'targetLocation',
-                'value': 'Munich, de'
+        for(let j of jobs){
+            let job = await this.jobsRepo.get(j.jobId);
+            if (job){
+                job.lastExecution = _Timestamp.now();
+                await this.jobsRepo.update(j.jobId, job); 
+                log.info(`Set lastExecution time: ${j.lastExecution} on job : ${j.jobId}`)
             }
         }
-        ]
+    }
+    public async runAll() {
+
+        // get a list of jobs to execute 
+        log.info('Fetching job list to execute'); 
+        const allJobs: Job[] = await this.jobsRepo.list();
+        // filter by execution interval 
+        let now = Date.now();
+        console.log(now);
+        let offset = new Date().getTimezoneOffset();
+        offset = offset * 1000; // in sec
+        let nowUTC = new Date(now+offset); 
+
+        log.debug(`offset : ${offset}`); 
+
+
+        const jobs = allJobs.filter(j => {
+            // for first time executions 
+          
+            // lastExecution isnt set yet. 
+            if(!date.isValid(j.lastExecution?.toDate())){
+                log.debug(`Invalid date in last execution ${j.id}`); 
+                log.debug(j.lastExecution?.toDate())
+                return true; 
+            }
+  
+            let nextRuntime = date.add(j.lastExecution?.toDate(), {minutes: j.executionInterval});
+            log.info(`Job: ${j.id} next execution : ${nextRuntime}`);
+            log.debug(`System time : ${nowUTC}`);
+            return date.isBefore(nextRuntime, nowUTC); 
+        });
+        const jobCount = jobs.length; 
+        log.debug('List of jobs to execute');
+        log.info(`Got ${jobCount} jobs to execute`); 
+        log.debug(jobs); 
+        if(jobCount ==0){
+            log.info('Sleeping till next execution cycle'); 
+            return 
+        }
+        
 
         // const topic = await this.init();
 
@@ -140,22 +179,29 @@ class JobRunner {
         log.info('Executing jobs on all available agents');
         let jobResultIter = this.runJobs(jobs);
         let jobResult = jobResultIter.next();
-        
+
         // collect all actions that need to be performed
         // on the target systems.
-        let targetActions:Array<RuleResult[]> = []
+        let targetActions: Array<RuleResult[]> = []
+        let executionTimes:Array<ExecutionTime> = []; 
 
-        while(!(await jobResult).done){
+        while (!(await jobResult).done) {
             // pass this to rules engine. 
-            const currentResult:AgentResult = (await jobResult).value;
+            const currentResult: AgentResult = (await jobResult).value;
 
-            log.info('Publishing results to the rule engine'); 
-            // log.debug(JSON.stringify(currentResult)); 
-            const results:Array<RuleResult> = await rulesEngine.processMessage(currentResult); 
-            targetActions.push(results);
+            log.info('Publishing results to the rule engine');
+            log.info(`Completed job: ${currentResult.jobId}`); 
+            log.debug(currentResult); 
+            const execTime:ExecutionTime = {'jobId': currentResult.jobId, 'lastExecution': currentResult.timestamp}; 
+            executionTimes.push(execTime); 
+
+            const results: Array<RuleResult> = await rulesEngine.processMessage(currentResult);
+            // targetActions.push(results);
             jobResult = jobResultIter.next();
         }
-
+        log.info('Updating Last execution time of jobs')
+        // update execution times in the jobs collection. 
+        await this.updateJobExecutionTimes(executionTimes); 
         // call target-agents to execute individual actions 
 
 
@@ -174,4 +220,4 @@ class JobRunner {
     }
 }
 
-export default new JobRunner(pubSubClient);
+export default new JobRunner(pubSubClient, repo);

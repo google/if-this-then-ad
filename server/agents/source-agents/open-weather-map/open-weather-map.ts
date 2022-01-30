@@ -69,20 +69,24 @@ class OpenWeatherMap implements IAgent {
     }
 
     private getOptions(job: Job) {
-        const options = Object.create(config);
-        options.targetLocation = job.query?.value
-        options.jobId = job.jobId;
+        let options = {...config}; 
+        options.apiKey = process.env.WEATHER_API_KEY || '', 
+        options.jobId = job.id;
+        options.targetLocation = job.query ? job.query[0].value : ''; 
+        log.debug('Agent options used for this job'); 
+        log.debug(options);
         return options;
     }
 
     public async execute(job: Job): Promise<AgentResult> {
-
+        log.debug('Agent: Job to execute')
+        log.debug(job)
         const jobOptions = this.getOptions(job);
         const res = await this.run(jobOptions);
         res.data.agentId = jobOptions.id;
         res.data.agentName = jobOptions.name;
         res.data.targetLocation = jobOptions.targetLocation;
-        res.jobId = jobOptions.jobId;
+        res.jobId = jobOptions.jobId as string;
         const weatherResult = this.transform(res);
         return weatherResult;
     }

@@ -64,7 +64,7 @@ export enum AgentType {
 
 
 export interface Job {
-    jobId: string,
+    id: string,
     agentId: string,
     query?: {
         dataPoint: string,

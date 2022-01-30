@@ -1,8 +1,8 @@
 import JobRunner from './job-runner'; 
 
-
-JobRunner.runAll(); 
-
-
-
-export default JobRunner;
+/**
+ * Starts execution of all available jobs
+ */
+export const execute = async () => {
+    await JobRunner.runAll(); 
+}

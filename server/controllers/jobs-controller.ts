@@ -1,3 +1,5 @@
+
+import {Request, Response} from 'express';
 import { Rule } from "../models/rule";
 import Repository from '../services/repository-service';
 import Collections from '../services/collection-factory';
@@ -5,6 +7,8 @@ import { Collection } from "../models/fire-store-entity";
 import { Job } from '../models/job';
 import { isDeepStrictEqual } from 'util';
 import log from '../util/logger'; 
+import * as JobRunner from '../job-runner'; 
+
 
 const jobsCollection = Collections.get(Collection.JOBS);
 const repo = new Repository<Job>(jobsCollection);
@@ -53,4 +57,10 @@ export const addJob = async (rule: Rule): Promise<string> => {
     }
 
     return "";
+}
+
+export const executeJobs = async(req:Request, res:Response) => {
+    log.info('Executing all available jobs');
+    JobRunner.execute();
+    res.json({'status': 'started'});
 }

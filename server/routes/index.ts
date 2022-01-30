@@ -20,6 +20,7 @@ import * as RulesController from '../controllers/rules-controller';
 import someController from '../controllers/some';
 import pass from '../config/passport-setup';
 import passport from 'passport';
+import * as JobController from '../controllers/jobs-controller'; 
 
 // eslint-disable-next-line new-cap
 const router = Router();
@@ -59,6 +60,10 @@ router.delete('/api/accounts/:id', AccountController.remove);
 // Rules endpoints 
 router.post('/api/rules', RulesController.create); 
 router.get('/api/rules', RulesController.list)
+
+
+// Job runner trigger endpoint
+router.get('/api/jobs/execute', JobController.executeJobs); 
 
 
 // expose available metadata to the UI. 
