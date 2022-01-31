@@ -1,5 +1,5 @@
 {
-  "name": "job-runner",
+  "name": "@iftta/job-runner",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",

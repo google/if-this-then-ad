@@ -40,7 +40,7 @@
         "express": "^4.17.1",
         "express-session": "^1.17.2",
         "googleapis": "^91.0.0",
-        "open-weather-map-agent": "file:./dist/agents/source-agents/open-weather-map",
+        "module-alias": "^2.2.2",
         "passport": "^0.5.2",
         "passport-google-oauth20": "^2.0.0",
         "passport-google-oidc": "^0.1.0",
@@ -66,5 +66,10 @@
         "nodemon": "^2.0.15",
         "prettier": "^2.5.0",
         "typescript": "^4.5.4"
+    }, 
+    "_moduleAliases":{
+        "@iftta/job-runner": "./dist/job-runner", 
+        "@iftta/rules-engine": "./dist/packages/rule-engine",
+        "@iftta/open-weather-map-agent": "./dist/agents/source-agents/open-weather-map"
     }
 }

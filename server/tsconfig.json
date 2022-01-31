@@ -17,6 +17,12 @@
         "noImplicitAny": false,
         "strictNullChecks": true, 
         "rootDir": "./", 
-        "composite": true
+        "composite": true,
+        "baseUrl": ".",
+        "paths": {
+            "@iftta/open-weather-map-agent" : ["./agents/source-agents/open-weather-map"], 
+            "@iftta/job-runner": ["./job-runner"], 
+            "@iftta/rules-engine": ["./packages/rule-engine"]
+        }
     }
 }

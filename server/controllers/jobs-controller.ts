@@ -7,7 +7,7 @@ import { Collection } from "../models/fire-store-entity";
 import { Job } from '../models/job';
 import { isDeepStrictEqual } from 'util';
 import log from '../util/logger'; 
-import * as JobRunner from '../job-runner'; 
+import * as JobRunner from '@iftta/job-runner'; 
 
 
 const jobsCollection = Collections.get(Collection.JOBS);

@@ -10,14 +10,7 @@
     See the License for the specific language governing permissions and
     limitations under the License.
  */
-require('@google-cloud/debug-agent').start({
-    projectId: 'gnd-kimambo',
-    serviceContext: {
-        service: 'iftta',
-        version: '1.0.0',
-        enableCanary: false
-    }
-});
+require('module-alias/register');
 
 import app from './app';
 import logger from './util/logger';
