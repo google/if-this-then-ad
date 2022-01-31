@@ -132,6 +132,40 @@ class JobRunner {
             }
         }
     }
+
+    private getNowInUTC(){
+        let now = Date.now();
+        let offset = new Date().getTimezoneOffset();
+        offset = offset * 1000; // in sec
+        let nowUTC = new Date(now + offset);
+        log.debug(`TZ offset : ${offset} `);
+        log.info(`System time used for calculating Execution interval ${nowUTC}`); 
+        return nowUTC; 
+    }
+    private async getEligibleJobs():Promise<Array<Job>>{
+        // get a list of jobs to execute 
+        log.info('Fetching job list to execute');
+        const allJobs: Job[] = await this.jobsRepo.list();
+        // filter by execution interval 
+        const nowUTC = this.getNowInUTC(); 
+        log.info(`Filtering jobs that have reached execution interval`); 
+        const jobs = allJobs.filter(j => {
+            // for first time executions 
+
+            // lastExecution isnt set yet. 
+            if (!date.isValid(j.lastExecution?.toDate())) {
+                log.debug(`Invalid date in last execution ${j.id}`);
+                log.debug(j.lastExecution?.toDate())
+                return true;
+            }
+
+            let nextRuntime = date.add(j.lastExecution?.toDate(), { minutes: j.executionInterval });
+            log.info(`Job: ${j.id} next execution : ${nextRuntime}`);
+            return date.isBefore(nextRuntime, nowUTC);
+        });
+        return jobs;
+    }
+
     public async runAll() {
 
         // get a list of jobs to execute 
@@ -147,21 +181,7 @@ class JobRunner {
         log.debug(`offset : ${offset}`); 
 
 
-        const jobs = allJobs.filter(j => {
-            // for first time executions 
-          
-            // lastExecution isnt set yet. 
-            if(!date.isValid(j.lastExecution?.toDate())){
-                log.debug(`Invalid date in last execution ${j.id}`); 
-                log.debug(j.lastExecution?.toDate())
-                return true; 
-            }
-  
-            let nextRuntime = date.add(j.lastExecution?.toDate(), {minutes: j.executionInterval});
-            log.info(`Job: ${j.id} next execution : ${nextRuntime}`);
-            log.debug(`System time : ${nowUTC}`);
-            return date.isBefore(nextRuntime, nowUTC); 
-        });
+        const jobs = await this.getEligibleJobs();
         const jobCount = jobs.length; 
         log.debug('List of jobs to execute');
         log.info(`Got ${jobCount} jobs to execute`); 
@@ -171,7 +191,6 @@ class JobRunner {
             return 
         }
         
-
         // const topic = await this.init();
 
         // execute each job agent 
@@ -188,7 +207,6 @@ class JobRunner {
         while (!(await jobResult).done) {
             // pass this to rules engine. 
             const currentResult: AgentResult = (await jobResult).value;
-
             log.info('Publishing results to the rule engine');
             log.info(`Completed job: ${currentResult.jobId}`); 
             log.debug(currentResult); 
@@ -202,6 +220,7 @@ class JobRunner {
         log.info('Updating Last execution time of jobs')
         // update execution times in the jobs collection. 
         await this.updateJobExecutionTimes(executionTimes); 
+        
         // call target-agents to execute individual actions 
 
 
