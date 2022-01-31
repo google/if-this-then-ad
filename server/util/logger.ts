@@ -14,7 +14,6 @@
 import winston from 'winston';
 // Imports the Google Cloud client library for Winston
 import { LoggingWinston } from '@google-cloud/logging-winston';
-import { REQUEST_LOG_SUFFIX } from '@google-cloud/logging-winston/build/src/middleware/express';
 const { format, transports } = winston;
 
 const logFormat = format.printf(info => `${info.timestamp} ${info.level} ${info.message} `);
