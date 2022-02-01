@@ -9,7 +9,7 @@
         "compile": "npx tsc",
         "reset": "rm -Rf dist && rm -Rf node_modules",
         "build": "npm install && npx tsc",
-        "post-build": "npm run fix-paths && cd dist/ && npm install",
+        "post-build": "cd dist/ && npm install",
         "fix-paths": "cd dist/ && sed -i 's+./dist+.+g' package.json",
         "lint": "npx tsc --noEmit && eslint \"**/*.{js,ts}\" --quiet --fix",
         "copy-static": "cp -R public dist/ && cp -R packages* dist/ && cp *.json dist/",
@@ -69,9 +69,9 @@
         "typescript": "^4.5.4"
     }, 
     "_moduleAliases":{
-        "@iftta/job-runner": "./dist/job-runner", 
-        "@iftta/rules-engine": "./dist/packages/rule-engine",
-        "@iftta/open-weather-map-agent": "./dist/agents/source-agents/open-weather-map", 
-        "@iftta/util": "./dist/util"
+        "@iftta/job-runner": "./job-runner", 
+        "@iftta/rules-engine": "./packages/rule-engine",
+        "@iftta/open-weather-map-agent": "./agents/source-agents/open-weather-map", 
+        "@iftta/util": "./util"
     }
 }
