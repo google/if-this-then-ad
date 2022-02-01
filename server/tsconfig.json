@@ -23,7 +23,8 @@
         "paths": {
             "@iftta/open-weather-map-agent" : ["./agents/source-agents/open-weather-map"], 
             "@iftta/job-runner": ["./job-runner"], 
-            "@iftta/rules-engine": ["./packages/rule-engine"]
+            "@iftta/rules-engine": ["./packages/rule-engine"], 
+            "@iftta/util": ["./util"]
         }
     }
 }

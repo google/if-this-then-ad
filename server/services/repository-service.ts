@@ -11,7 +11,7 @@
     limitations under the License.
  */
 
-import log from '../util/logger';
+import {log} from '@iftta/util'
 import { FirestoreCollection } from '../models/fire-store-entity';
 
 class RepositoryService<T> {

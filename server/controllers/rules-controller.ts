@@ -3,7 +3,7 @@ import Repository from '../services/repository-service';
 import Collections from '../services/collection-factory';
 import { Rule } from '../models/rule'
 import { Collection } from '../models/fire-store-entity';
-import log from '../util/logger';
+import {log} from '@iftta/util'
 import * as JobController from '../controllers/jobs-controller'; 
 
 const rulesCollection = Collections.get(Collection.RULES);

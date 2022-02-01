@@ -71,6 +71,7 @@
     "_moduleAliases":{
         "@iftta/job-runner": "./dist/job-runner", 
         "@iftta/rules-engine": "./dist/packages/rule-engine",
-        "@iftta/open-weather-map-agent": "./dist/agents/source-agents/open-weather-map"
+        "@iftta/open-weather-map-agent": "./dist/agents/source-agents/open-weather-map", 
+        "@iffta/util": "./dist/util"
     }
 }

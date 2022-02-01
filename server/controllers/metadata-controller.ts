@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import log from '../util/logger';
+import {log} from '@iftta/util'
 import OpenWeatherMap from '@iftta/open-weather-map-agent'
 
 export const getAgentMetadata = async (req: Request, res: Response) => {

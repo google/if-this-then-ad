@@ -50,7 +50,7 @@ const getTransportsForEnv = () => {
         )];
 }
 
-const logger = winston.createLogger({
+export const logger = winston.createLogger({
     level: process.env.NODE_ENV === 'production' ? 'info' : 'debug',
     format: format.combine(
         format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
@@ -60,4 +60,3 @@ const logger = winston.createLogger({
     exitOnError: false
 });
 
-export default logger;

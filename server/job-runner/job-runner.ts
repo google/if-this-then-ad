@@ -1,5 +1,5 @@
 const { PubSub } = require('@google-cloud/pubsub');
-import log from '../util/logger';
+import {log} from '@iftta/util'
 import OpenWeatherMap from '../agents/source-agents/open-weather-map';
 import { AgentResult } from '../agents/source-agents/open-weather-map/interfaces';
 import { Job , ExecutionTime, _Timestamp} from './interfaces'

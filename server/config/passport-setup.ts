@@ -14,7 +14,7 @@
 import { Application, Request, Response, NextFunction } from 'express';
 import GoogleStrategy from '../auth/google-strategy';
 import passport from 'passport';
-import log from '../util/logger';
+import {log} from '@iftta/util'
 
 /**
  * Passport Setup

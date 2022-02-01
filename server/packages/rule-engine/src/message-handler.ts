@@ -1,5 +1,5 @@
 import {Request, Response} from 'express'
-import log from '../../../util/logger'; 
+import { log } from '@iftta/util';
 import {AgentResult, RuleResult} from './interfaces'; 
 import {RulesProcessor} from './rules-processor'
 // export const messageHandler = (req:Request, res:Response) => {
@@ -20,8 +20,8 @@ import {RulesProcessor} from './rules-processor'
 // }
 
 export const processMessage = async (message: AgentResult ) : Promise<Array<RuleResult>> => {
-    console.log('Received incoming message');
-    console.log(message);
+    log.debug('Message-Handler: Received incoming message');
+    log.debug(message);
     const rp = new RulesProcessor();
     return await rp.processAgentResult(message);
     // push ruleEvalResults into pubsub queue

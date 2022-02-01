@@ -1,7 +1,7 @@
 import axios, { AxiosInstance } from 'axios'
 import { IAgent, AgentResponse, Configuration, AgentResult, WeatherCodes, AgentMetadata, AgentType, Job } from './interfaces';
 import { config } from './config'
-import log from '../../../util/logger';
+import { log } from '@iftta/util';
 
 class OpenWeatherMap implements IAgent {
 

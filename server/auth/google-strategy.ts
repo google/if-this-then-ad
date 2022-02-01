@@ -12,7 +12,7 @@
  */
 
 import { Strategy } from 'passport-google-oauth20';
-import log from '../util/logger';
+import {log} from '@iftta/util'
 import { PassportStatic } from 'passport';
 import { Request } from 'express';
 import Repository from '../services/repository-service';

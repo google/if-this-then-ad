@@ -1,5 +1,5 @@
 import { AgentResult, Rule, CONDITIONS, RuleResult } from '../src/interfaces'
-import log from '../../../util/logger';
+import { log } from '@iftta/util';
 
 export class RulesProcessor {
 
@@ -39,6 +39,7 @@ export class RulesProcessor {
             return rule.agentId == jobResult.agentId;
         })
 
+        log.info(`Got ${rulesForJob.length} rules for job ${jobResult.jobId}`)
         return rulesForJob;
     }
 
