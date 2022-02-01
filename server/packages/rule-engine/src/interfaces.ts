@@ -48,6 +48,5 @@ interface TargetActions {
 
 export interface TargetAgent {
     agentId: string,
-    ruleResult: RuleResult,
     actions: Array<TargetActions>
 }
