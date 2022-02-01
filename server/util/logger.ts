@@ -50,8 +50,19 @@ const getTransportsForEnv = () => {
         )];
 }
 
+const getLogLevel = (): string => {
+    // when Log level is set override environment settings
+    if (typeof process.env.LOG_LEVEL != 'undefined') {
+        let level = process.env.LOG_LEVEL.toLowerCase();
+        return level;
+    }
+    if (process.env.NODE_ENV == 'production') {
+        return 'info'
+    }
+    return 'debug'
+}
 export const logger = winston.createLogger({
-    level: process.env.NODE_ENV === 'production' ? 'info' : 'debug',
+    level: getLogLevel(),
     format: format.combine(
         format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
         format.metadata({ fillExcept: ['message', 'level', 'timestamp'] })
