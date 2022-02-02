@@ -10,8 +10,8 @@ export interface IAgent {
 }
 
 export enum DV360EntityType {
-    'LI' = 'Line Item',
-    'IO' = 'Insertion Order'
+    LI = 'Line Item',
+    IO = 'Insertion Order'
 }
 
 export interface Configuration {

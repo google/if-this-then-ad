@@ -7,6 +7,7 @@ import {
     AgentMetadata, 
     AgentType,
     TargetAction,
+    DV360EntityType,
 } from './interfaces';
 import { config } from './config'
 import log from '../../../util/logger';
@@ -114,15 +115,15 @@ export default class DV360Activation implements IAgent {
         return options;
     }
 
-    public async execute(actions: TargetAction): Promise<AgentResult> {
+    public async execute(action: TargetAction): Promise<AgentResult> {
         log.debug('DV360 Agent: Actions to execute');
-        log.debug(actions);
+        log.debug(action);
 
-        const jobOptions: Configuration = this.getOptions(actions);
-        const res = await this.run(jobOptions);
-        res.data.agentId = jobOptions.id;
-        res.data.agentName = jobOptions.name;
-        res.jobId = jobOptions.jobId as string;
+        const actionOptions = this.getOptions(action);
+        const res = await this.run(actionOptions);
+        res.data.agentId = actionOptions.id;
+        res.data.agentName = actionOptions.name;
+        res.jobId = actionOptions.jobId as string;
 
         const dv360Result = this.transform(res);
         console.debug('DV360 AgentResult', dv360Result);
@@ -131,57 +132,37 @@ export default class DV360Activation implements IAgent {
     }
 
     public async  getAgentMetadata(): Promise<AgentMetadata> {
-        //TODO decide if we should store this metadata as json 
-        // and simply serve that to the caller. 
-
         const meta: AgentMetadata = {
             agentId: this.agentId,
             agentName: this.name,
-            agentType: AgentType.SOURCE,
-            queryable: ["targetLocation"],
+            agentType: AgentType.TARGET,
+            queryable: [
+                "entityAdvertiserId",
+                "entityId",
+            ],
             dataPoints: [{
-                name: "targetLocation",
-                displayName: "Location",
+                name: "authToken",
+                displayName: "Google Auth Token",
                 dataType: typeof String(),
             }, {
-                name: "temperature",
-                displayName: "Temperature",
+                name: "entityAdvertiserId",
+                displayName: "DV360 Advertiser ID",
                 dataType: typeof Number(),
             }, {
-                name: "windSpeed",
-                displayName: "Wind speed",
+                name: "entityType",
+                displayName: "DV360 Entity type (OI/LI)",
+                dataType: typeof DV360EntityType,
+            }, {
+                name: "entityId",
+                displayName: "DV360 Entity ID (IO/LI ID)",
                 dataType: typeof Number(),
             }, {
-                name: "clouds",
-                displayName: "Clouds",
-                dataType: typeof Boolean(),
-            }, {
-                name: "rain",
-                displayName: "Rain",
-                dataType: typeof Boolean(),
-            }, {
-                name: "snow",
-                displayName: "Snow",
-                dataType: typeof Boolean(),
-            }, {
-                name: "thunderstorm",
-                displayName: "Thunderstorm",
-                dataType: typeof Boolean(),
-            },
-            {
-                name: "clearSky",
-                displayName: "Clear Sky",
-                dataType: typeof Boolean(),
-            },
-            {
-                name: "timestamp",
-                displayName: "Last execution",
-                dataType: typeof Date(),
-            }
-
-            ]
-
+                name: "action",
+                displayName: "Activation action (activate/pause)",
+                dataType: typeof String(),
+            },]
         }
+        
         return Promise.resolve(meta);
     }
 }
