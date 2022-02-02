@@ -1,29 +1,31 @@
 import DV360 from './index';
-import { Job } from './interfaces';
+import { TargetAction } from './interfaces';
 
-const job: Job = {
-    id: 'DV360-Test',
-    agentId: 'dv360-agent',
-    update: [
+const action: TargetAction = {
+    action: 'Activate DV360',
+    params: [
         {
             key: 'authToken',
             value: '',
         },
         {
-            // Key value should be simple string|number|boolean
-            key: 'targetEntity',
-            value: {
-                id: 50389587,
-                advertiserID: 4304640,
-                type: 'LI',
-            },
-        },
-        {
             key: 'action',
             value: 'activate',
+        },
+        {
+            key: 'entityId',
+            value: 50389587,
+        },
+        {
+            key: 'entityAdvertiserId',
+            value: 4304640,
+        },
+        {
+            key: 'entityType',
+            value: 'LI',
         },
     ],
 };
 
 const dv360 = new DV360();
-console.log(dv360.execute(job));
+dv360.execute(action).then(x => console.log(x));

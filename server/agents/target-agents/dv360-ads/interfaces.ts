@@ -6,18 +6,12 @@ export interface AgentResponse {
 export interface IAgent {
     agentId: string,
     name: string,
-    execute(job:Job):Promise<AgentResult>
+    execute(actions: TargetAction):Promise<AgentResult>
 }
 
 export enum DV360EntityType {
     'LI' = 'Line Item',
     'IO' = 'Insertion Order'
-}
-
-export interface DV360Entity {
-    id: number,
-    advertiserId: number,
-    type: DV360EntityType,
 }
 
 export interface Configuration {
@@ -27,8 +21,10 @@ export interface Configuration {
     apiVersion: string,
     jobId?:string,
 	authToken?: string,
-    targetEntity?: DV360Entity,
     action?: any,
+    entityId?: number,
+    entityAdvertiserId?: number,
+    entityType?: DV360EntityType,
 }
 
 export interface AgentResult  {
@@ -58,15 +54,12 @@ export enum AgentType {
     TARGET = "target-agent"
 }
 
-export interface Job {
-    id: string,
-    agentId: string,
-    query?: {
-        dataPoint: string,
-        value: string | number | boolean
-    },
-    update?: {
-        key: string,
-        value: any
-    }[],
+export interface actionParam {
+    key: string,
+    value: string | number | boolean
+}
+
+export interface TargetAction {
+    action: string,
+    params: Array<actionParam>
 }

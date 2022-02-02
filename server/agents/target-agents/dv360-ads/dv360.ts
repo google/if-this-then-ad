@@ -1,12 +1,12 @@
-import axios, { AxiosInstance } from 'axios';
+import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import { 
     IAgent, 
     AgentResponse, 
     Configuration, 
     AgentResult, 
     AgentMetadata, 
-    AgentType, 
-    Job 
+    AgentType,
+    TargetAction,
 } from './interfaces';
 import { config } from './config'
 import log from '../../../util/logger';
@@ -25,55 +25,61 @@ export default class DV360Activation implements IAgent {
         'pause': 'ENTITY_STATUS_PAUSED'
     };
 
-    private createApiClient(options: Configuration): AxiosInstance {
-        if (!options.authToken || !options.targetEntity || !options.action) {
-            const err = '"authToken & targetEntities & action" cannot be empty.';
+    private async getApiResponse(
+        options: Configuration
+    ): Promise<AxiosResponse<any, any>> {
+        if (
+            !options.authToken || !options.action
+            || !options.entityAdvertiserId
+            || !options.entityId
+            || !options.entityType
+        ) {
+            const err = '"authToken & entity* & action" cannot be empty.';
             log.error(err);
             throw new Error(err);
         }
 
-        const endpoint = `${options.baseUrl}/${options.apiVersion}/advertisers`
-            + `/${options.targetEntity.advertiserId}`
-            + `/${this.apiPartBasedOnEntityType[options.targetEntity.type]}`
-            + `/${options.targetEntity.id}`;
+        let url = `${options.baseUrl}/${options.apiVersion}/advertisers`
+            + `/${options.entityAdvertiserId}`
+            + `/${this.apiPartBasedOnEntityType[options.entityType]}`
+            + `/${options.entityId}`
+            + '?';
 
-        let params = {};
+        const params = {};
+        const data = {};
+
         if (options.action in this.activationActions) {
-            params = { 
-                'entityStatus': this.activationActions[options.action]
-            };
+            url += `&updateMask=entityStatus`
+            data['entityStatus'] = this.activationActions[options.action];
         }
 
         const headers = {
             'Authorization': `Bearer ${options.authToken}`,
-            'Accept': '*/*',
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
         };
-        
-        const client = axios.create({
-            baseURL: endpoint,
-            method: 'PATCH',
-            responseType: 'json',
-            params,
-            headers,
-        });
 
         log.debug('HTTP Client created, with options');
-        log.debug(JSON.stringify({ endpoint, params, headers }));
+        log.debug(JSON.stringify({ url, params, headers, data }));
         
         this.agentId = options.id;
         this.name = options.name;
 
-        return client;
+        return axios({
+            method: 'PATCH',
+            responseType: 'json',
+            url, params, headers, data,
+        });
     }
 
     private async run(options: Configuration): Promise<AgentResponse> {
         try {
-            let client = this.createApiClient(options);
-            const response = await client.get('/');
+            const response = await this.getApiResponse(options);
             const agentResponse: AgentResponse = {
                 jobId: options.jobId as string,
                 data: response.data
             }
+            
             return Promise.resolve(agentResponse);
         } catch (err) {
             // TODO If HTTP code != 200, should we return this back to queue?
@@ -96,40 +102,30 @@ export default class DV360Activation implements IAgent {
         };
     }
 
-    private getOptions(job: Job) {
+    private getOptions(actions: TargetAction) {
         const options = {...config};
-        console.log('Job:', job);
-        console.log('config:', config);
         
-        options.jobId = job.id;
+        actions.params.forEach(conf => {
+            options[conf.key] = conf.value;
+        });
         
-        if (
-            job.hasOwnProperty('update')
-            && 'undefined' != typeof job.update
-        ) {
-            job.update.forEach(conf => {
-                options[conf.key] = conf.value;
-            });
-        }
-
-        log.debug('Agent options used for this job'); 
-        log.debug(options);
+        log.debug('Agent options used for this job', options);
         
         return options;
     }
 
-    public async execute(job: Job): Promise<AgentResult> {
-        log.debug('Agent: Job to execute');
-        log.debug(job);
+    public async execute(actions: TargetAction): Promise<AgentResult> {
+        log.debug('DV360 Agent: Actions to execute');
+        log.debug(actions);
 
-        const jobOptions = this.getOptions(job);
+        const jobOptions: Configuration = this.getOptions(actions);
         const res = await this.run(jobOptions);
         res.data.agentId = jobOptions.id;
         res.data.agentName = jobOptions.name;
         res.jobId = jobOptions.jobId as string;
 
         const dv360Result = this.transform(res);
-        console.log(dv360Result);
+        console.debug('DV360 AgentResult', dv360Result);
 
         return dv360Result;
     }
