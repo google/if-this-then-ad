@@ -1,57 +1,8 @@
-export interface AgentResponse {
-    jobId: string,
-    data: any
-}
 
-export interface IAgent {
-    agentId: string,
-    name: string,
-    execute(actions: TargetAction):Promise<AgentResult>
-}
-
-export enum DV360EntityType {
-    LI = 'Line Item',
-    IO = 'Insertion Order'
-}
-
-export interface Configuration {
-    id: string,
-    name: string,
-    baseUrl: string,
-    apiVersion: string,
-    jobId?:string,
-	authToken?: string,
-    action?: any,
-    entityId?: number,
-    entityAdvertiserId?: number,
-    entityType?: DV360EntityType,
-}
-
-export interface AgentResult  {
-    agentId: string,
-    jobId: string,
-    agentName: string,
-    timestamp: Date,
-    success: boolean,
-}
-
-export interface AgentMetadata {
-    agentId: string, 
-    agentName: string,
-    agentType: AgentType,
-    queryable: Array<string>, 
-    dataPoints: Array<DataPoint>
-}
-
-export interface DataPoint {
-    name: string, 
-    displayName: string, 
-    dataType: string|number|boolean|Date
-}
-
-export enum AgentType {
-    SOURCE = "source-agent", 
-    TARGET = "target-agent"
+export interface RuleResult {
+    ruleId: string,
+    result: boolean | number, 
+    actions: Array<TargetAction>
 }
 
 export interface actionParam {
@@ -62,4 +13,44 @@ export interface actionParam {
 export interface TargetAction {
     action: string,
     params: Array<actionParam>
+}
+
+export interface AgentOptions {
+    key: string,
+    value: string|number|boolean,
+}
+
+export interface TargetAgent {
+    id: string,
+    actions: Array<TargetAction>
+}
+
+export interface Tokens {
+    refresh?: string,
+    auth: string,
+}
+
+export interface AgentTask {
+    tokens: Tokens,
+    ruleResult: RuleResult,
+}
+
+export enum EntityType {
+    LI = 'lineItems',
+    IO = 'insertionOrders'
+}
+
+export enum EntityStatus {
+    ACTIVATE = 'ENTITY_STATUS_ACTIVE',
+    DEACTIVATE = 'ENTITY_STATUS_PAUSED'
+}
+
+export  interface ActionResult {
+    ruleId: string,
+    action: string,
+    displayName: string,
+    entityStatus: string,
+    timestamp: Date,
+    success: boolean,
+    error: string,
 }
