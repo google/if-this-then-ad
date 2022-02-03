@@ -1,12 +1,10 @@
-import {Request, Response} from 'express'
+import { Request, Response } from 'express'
 import { log } from '@iftta/util';
-import {AgentResult, RuleResult} from './interfaces'; 
-import {RulesProcessor} from './rules-processor'
+import { AgentResult, RuleResult } from './interfaces'; 
+import { RulesProcessor } from './rules-processor'
 // export const messageHandler = (req:Request, res:Response) => {
-
-
-//         if(req.body){
-//             if(!req.body.message){
+//         if (req.body) {
+//             if (!req.body.message) {
 //                 log.error('Invalid message format received'); 
 //                 res.status(400).send(`Bad request : invalid message format`);
 //                 return;
@@ -23,6 +21,7 @@ export const processMessage = async (message: AgentResult ) : Promise<Array<Rule
     log.debug('Message-Handler: Received incoming message');
     log.debug(message);
     const rp = new RulesProcessor();
+
     return await rp.processAgentResult(message);
     // push ruleEvalResults into pubsub queue
     // for now we just pass it to the job-runner 
