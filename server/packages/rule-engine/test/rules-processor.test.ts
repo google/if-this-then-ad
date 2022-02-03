@@ -35,16 +35,16 @@ describe("test add ", () => {
         },
     }
 
-    let warmWeatherRule = Object.create(testRule);
+    const warmWeatherRule = Object.create(testRule);
     warmWeatherRule.ruleDatapoint = 'temperature';
     warmWeatherRule.ruleCondition = CONDITIONS.greater;
     warmWeatherRule.ruleTargetValue = 20.0;
 
-    let coldWeatherRule = Object.create(warmWeatherRule);
+    const coldWeatherRule = Object.create(warmWeatherRule);
     coldWeatherRule.ruleCondition = CONDITIONS.less;
     coldWeatherRule.ruleTargetValue = 10;
 
-    let nonExistingDataPointRule = Object.create(coldWeatherRule);
+    const nonExistingDataPointRule = Object.create(coldWeatherRule);
     nonExistingDataPointRule.ruleDatapoint = 'Nonexisting';
 
     it("Should evaluate to True given data point equals the target value", () => {
@@ -66,16 +66,15 @@ describe("test add ", () => {
         expect(rp.evaluate(nonExistingDataPointRule, agentResult)).toBe(false);
     });
 
-    it('Should return valid rules for the AgentResult', () => {
-        
-        const rulesForAgent = rp.getValidRulesForAgent(agentResult);
+    it('Should return valid rules for the AgentResult', async () => {
+        const rulesForAgent = await rp.getValidRulesForAgent(agentResult);
         expect(rulesForAgent.length).toBe(2);
     });
 
-    it('Should return no rules given invalid AgentResult', () => {
+    it('Should return no rules given invalid AgentResult', async () => {
         let invalidAgentResult = Object.create(agentResult); 
         invalidAgentResult.agentId = 'non-existing-agent';
-        const rulesForAgent = rp.getValidRulesForAgent(invalidAgentResult);
+        const rulesForAgent = await rp.getValidRulesForAgent(invalidAgentResult);
         expect(rulesForAgent.length).toBe(0);
     });
 
