@@ -1,4 +1,3 @@
-
 export interface Job {
     id?: string,
     agentId: string,

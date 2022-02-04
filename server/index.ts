@@ -10,25 +10,18 @@
     See the License for the specific language governing permissions and
     limitations under the License.
  */
-require('@google-cloud/debug-agent').start({
-    projectId: 'gnd-kimambo',
-    serviceContext: {
-        service: 'iftta',
-        version: '1.0.0',
-        enableCanary: false
-    }
-});
+require('module-alias/register');
 
 import app from './app';
-import logger from './util/logger';
+import { log } from '@iftta/util';
 
 /**
  * Start Express
  */
 const port = app.get('PORT');
 const server = app.listen(port, () => {
-    logger.info(`Server listening on port ${port}`);
-    logger.info('ctrl + C to kill it');
+    log.info(`Server listening on port ${port}`);
+    log.info('ctrl + C to kill it');
 });
 
 export default server;

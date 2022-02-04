@@ -1,5 +1,5 @@
 import {Request, Response} from 'express'; 
-import ruleengine from '../packages/rule-engine'
+import ruleengine from '@iftta/rules-engine'
 
 /**
  * Handler for the incoming messages to the rules engine

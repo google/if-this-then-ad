@@ -1,10 +1,9 @@
 import axios, { AxiosInstance } from 'axios'
 import { IAgent, AgentResponse, Configuration, AgentResult, WeatherCodes, AgentMetadata, AgentType, Job } from './interfaces';
 import { config } from './config'
-import log from '../../../util/logger';
+import { log } from '@iftta/util';
 
 class OpenWeatherMap implements IAgent {
-
     public agentId: string = "open-weather-map";
     public name: string = "Weather";
 
@@ -14,12 +13,15 @@ class OpenWeatherMap implements IAgent {
             log.error(errorMessage)
             throw new Error(errorMessage);
         }
+        //TODO: remove targetLocation from configuration 
+        // object, it should be part of jobDefinition
         const client = axios.create({
             baseURL: options.baseUrl,
             method: 'GET',
             params: { q: options.targetLocation, appid: options.apiKey, units: options.units },
             responseType: 'json'
         });
+
         log.debug('HTTP Client created, with options');
         log.debug(JSON.stringify({ q: options.targetLocation, appid: options.apiKey, units: options.units }))
         this.agentId = options.id;
@@ -27,9 +29,13 @@ class OpenWeatherMap implements IAgent {
 
         return client;
     }
+
     private async run(options: Configuration): Promise<AgentResponse> {
         try {
-            let client = this.createApiClient(options);
+            log.debug('run options');
+            log.debug(options);
+
+            const client = this.createApiClient(options);
             const response = await client.get('/');
             const agentResponse: AgentResponse = {
                 jobId: options.jobId as string,
@@ -39,14 +45,14 @@ class OpenWeatherMap implements IAgent {
         } catch (err) {
             log.error(JSON.stringify(err));
         }
+
         return {
             jobId: options.jobId as string,
             data: ''
-        }
+        };
     }
 
     private transform(weatherData: AgentResponse): AgentResult {
-
         const data = weatherData.data
         const code = data.weather[0]?.id;
 
@@ -69,12 +75,13 @@ class OpenWeatherMap implements IAgent {
     }
 
     private getOptions(job: Job) {
-        let options = {...config}; 
+        const options = {...config}; 
         options.apiKey = process.env.WEATHER_API_KEY || '', 
         options.jobId = job.id;
         options.targetLocation = job.query ? job.query[0].value : ''; 
         log.debug('Agent options used for this job'); 
         log.debug(options);
+
         return options;
     }
 
@@ -82,67 +89,69 @@ class OpenWeatherMap implements IAgent {
         log.debug('Agent: Job to execute')
         log.debug(job)
         const jobOptions = this.getOptions(job);
+        jobOptions.targetLocation = 'berlin,de';
+
         const res = await this.run(jobOptions);
+        log.debug(res);
         res.data.agentId = jobOptions.id;
         res.data.agentName = jobOptions.name;
         res.data.targetLocation = jobOptions.targetLocation;
         res.jobId = jobOptions.jobId as string;
         const weatherResult = this.transform(res);
+
         return weatherResult;
     }
 
-    public async  getAgentMetadata(): Promise<AgentMetadata> {
-        //TODO decide if we should store this metadata as json 
+    public async getAgentMetadata(): Promise<AgentMetadata> {
+        // TODO decide if we should store this metadata as json 
         // and simply serve that to the caller. 
 
         const meta: AgentMetadata = {
-            agentId: this.agentId,
-            agentName: this.name,
-            agentType: AgentType.SOURCE,
-            queryable: ["targetLocation"],
+            id: this.agentId,
+            displayName: this.name,
+            type: AgentType.SOURCE,
+            arguments: ["targetLocation"],
             dataPoints: [{
-                name: "targetLocation",
+                id: "targetLocation",
                 displayName: "Location",
                 dataType: typeof String(),
             }, {
-                name: "temperature",
+                id: "temperature",
                 displayName: "Temperature",
                 dataType: typeof Number(),
             }, {
-                name: "windSpeed",
+                id: "windSpeed",
                 displayName: "Wind speed",
                 dataType: typeof Number(),
             }, {
-                name: "clouds",
+                id: "clouds",
                 displayName: "Clouds",
                 dataType: typeof Boolean(),
             }, {
-                name: "rain",
+                id: "rain",
                 displayName: "Rain",
                 dataType: typeof Boolean(),
             }, {
-                name: "snow",
+                id: "snow",
                 displayName: "Snow",
                 dataType: typeof Boolean(),
             }, {
-                name: "thunderstorm",
+                id: "thunderstorm",
                 displayName: "Thunderstorm",
                 dataType: typeof Boolean(),
             },
             {
-                name: "clearSky",
+                id: "clearSky",
                 displayName: "Clear Sky",
                 dataType: typeof Boolean(),
             },
             {
-                name: "timestamp",
+                id: "timestamp",
                 displayName: "Last execution",
                 dataType: typeof Date(),
-            }
+            }],
+        };
 
-            ]
-
-        }
         return Promise.resolve(meta);
     }
 }
