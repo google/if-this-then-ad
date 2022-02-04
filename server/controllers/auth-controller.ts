@@ -13,7 +13,7 @@
 
 import { Request, Response } from 'express';
 import passport from 'passport';
-import log from '../util/logger';
+import { log } from '@iftta/util';
 
 export const showLogin = (req: Request, res: Response) => {
     res.send(

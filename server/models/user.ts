@@ -11,7 +11,7 @@
     limitations under the License.
  */
 
-interface User {
+export interface User {
     id?: string;
     profileId: number;
     displayName?: string;

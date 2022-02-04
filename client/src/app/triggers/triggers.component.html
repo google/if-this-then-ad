@@ -11,39 +11,34 @@
     limitations under the License.
  -->
 
-<div style="width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center;">
+<div class="wrapper">
     <h1>IFTTA</h1>
     <form>
         <!-- Data source -->
         <mat-form-field class="form-element">
             <mat-label>Data Source</mat-label>
-            <mat-select required>
-                <mat-option *ngFor="let source of sources" name="trigger-source" [value]="source.value">
-                    {{ source.uiValue }}
+            <mat-select name="trigger-source" [(ngModel)]="currentTrigger.agent.id" (selectionChange)="onSourceChange($event.value)">
+                <mat-option *ngFor="let agent of agents" name="trigger-source" [value]="agent.id">
+                    {{ agent.displayName }}
                 </mat-option>
             </mat-select>
         </mat-form-field>
-
-        <!-- Location -->
-        <mat-form-field class="form-element">
-            <mat-label>Location</mat-label>
-            <input matInput name="trigger-value" required>
-        </mat-form-field>
     </form>
 
-    <form #trigger="ngForm" (ngSubmit)="addTrigger(trigger)">
+    <!-- Trigger -->
+    <form *ngIf="currentTrigger.agent.id" #trigger="ngForm" (ngSubmit)="addTrigger(trigger)">
         <!-- Name -->
         <mat-form-field class="form-element">
             <mat-label>Name</mat-label>
-            <input ngModel="my-name" matInput name="trigger-name" required>
+            <input [(ngModel)]="currentTrigger.rule.name" matInput name="trigger-name" required>
         </mat-form-field>
 
-        <!-- Type -->
+        <!-- Data Point -->
         <mat-form-field class="form-element">
             <mat-label>Type</mat-label>
-            <mat-select ngModel="temp" name="trigger-type" required>
-                <mat-option *ngFor="let type of types" [value]="type.value">
-                    {{ type.uiValue }}
+            <mat-select *ngIf="agentDataPoints" name="trigger-datapoint" required (selectionChange)="onDataPointChange($event.value)">
+                <mat-option *ngFor="let dataPoint of agentDataPoints" [value]="dataPoint">
+                    {{ dataPoint.displayName }}
                 </mat-option>
             </mat-select>
         </mat-form-field>
@@ -51,44 +46,67 @@
         <!-- Condition -->
         <mat-form-field class="form-element">
             <mat-label>Condition</mat-label>
-            <mat-select ngModel="gt" name="trigger-condition">
-                <mat-option value="gt">&gt;</mat-option>
-                <mat-option value="lt">&lt;</mat-option>
-            </mat-select>
+            <ng-container [ngSwitch]="currentTrigger.rule.dataType">
+                <input *ngSwitchCase="'string'" matInput required name="trigger-condition" [(ngModel)]="currentTrigger.rule.condition">
+                <mat-select *ngSwitchCase="'boolean'" name="trigger-condition" [(ngModel)]="currentTrigger.rule.condition" required>
+                    <mat-option value="yes">Yes</mat-option>
+                    <mat-option value="no">No</mat-option>
+                </mat-select>
+                <mat-select *ngSwitchDefault name="trigger-condition" [(ngModel)]="currentTrigger.rule.condition" required>
+                    <mat-option value="gt">&gt;</mat-option>
+                    <mat-option value="lt">&lt;</mat-option>
+                </mat-select>
+            </ng-container>
         </mat-form-field>
 
         <!-- Value -->
-        <mat-form-field class="form-element">
+        <mat-form-field class="form-element" *ngIf="currentTrigger.rule.dataType === 'number'">
             <mat-label>Value</mat-label>
-            <input ngModel="25" matInput name="trigger-value" required>
+            <input [(ngModel)]="currentTrigger.rule.value" matInput name="trigger-value" required type="number" step=0.5>
+        </mat-form-field>
+
+        <!-- Interval -->
+        <mat-form-field class="form-element">
+            <mat-label>Interval (minutes)</mat-label>
+            <input [(ngModel)]="currentTrigger.rule.interval" matInput name="trigger-interval" required type="number" step=1>
         </mat-form-field>
 
         <!-- Add -->
         <button class="form-element" mat-raised-button color="accent">Add</button><br>
     </form>
 
-    <h2>All Rules</h2>
-
+    <!-- All Rules -->
     <div *ngIf="triggers && triggers.length">
+        <h2>All Rules</h2>
         <table mat-table [dataSource]="dataSource">
             <ng-container matColumnDef="name">
                 <th mat-header-cell *matHeaderCellDef> Name </th>
-                <td mat-cell *matCellDef="let trigger"> {{ trigger.name }} </td>
+                <td mat-cell *matCellDef="let trigger"> {{ trigger.rule.name }} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="source">
+                <th mat-header-cell *matHeaderCellDef> Source </th>
+                <td mat-cell *matCellDef="let trigger"> {{ agentIdToDisplayName(trigger.agent.id) }} </td>
             </ng-container>
 
             <ng-container matColumnDef="type">
                 <th mat-header-cell *matHeaderCellDef> Type </th>
-                <td mat-cell *matCellDef="let trigger"> {{ trigger.type }} </td>
+                <td mat-cell *matCellDef="let trigger"> {{ getDataPointTypeUi(trigger.agent.id, trigger.rule.dataPoint) }} </td>
             </ng-container>
 
             <ng-container matColumnDef="condition">
                 <th mat-header-cell *matHeaderCellDef> Condition </th>
-                <td mat-cell *matCellDef="let trigger"> {{ trigger.condition }} </td>
+                <td mat-cell *matCellDef="let trigger"> {{ getConditionUi(trigger.rule.condition) }} </td>
             </ng-container>
 
             <ng-container matColumnDef="value">
                 <th mat-header-cell *matHeaderCellDef> Value </th>
-                <td mat-cell *matCellDef="let trigger"> {{ trigger.value }} </td>
+                <td mat-cell *matCellDef="let trigger"> {{ trigger.rule.value }} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="interval">
+                <th mat-header-cell *matHeaderCellDef> Interval </th>
+                <td mat-cell *matCellDef="let trigger"> {{ trigger.rule.interval }} </td>
             </ng-container>
 
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>

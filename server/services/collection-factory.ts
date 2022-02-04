@@ -10,21 +10,28 @@
     See the License for the specific language governing permissions and
     limitations under the License.
  */
-
+import { FirestoreCollection, Collection } from '../models/fire-store-entity'
 const Firestore = require('@google-cloud/firestore');
 
 class CollectionFactory {
     db: any;
 
     constructor() {
+        const projectId = process.env.PROJECT_ID;
+
+        if (projectId === 'undefined') {
+            throw new Error('Undefined env variable PROJECT_ID');
+        }
+
         this.db = new Firestore({
-            projectId: 'if-this-then-ad',
+            projectId: projectId,
         });
-        this.db.settings({ignoreUndefinedProperties: true});
+
+        this.db.settings({ ignoreUndefinedProperties: true });
     }
-    //TODO: Discuss if we want to have a method for each collection type
-    // to reduce possibility of typos creeping in.
-    public get(collectionName: string) {
+
+    public get(collectionName: Collection) {
+
         const collection: FirestoreCollection = {
             name: collectionName,
             db: this.db,

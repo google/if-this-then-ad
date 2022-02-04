@@ -11,14 +11,16 @@
     limitations under the License.
  */
 
-import {Strategy} from 'passport-google-oauth20';
-import log from '../util/logger';
-import {PassportStatic} from 'passport';
-import {Request} from 'express';
+import { Strategy } from 'passport-google-oauth20';
+import {log} from '@iftta/util'
+import { PassportStatic } from 'passport';
+import { Request } from 'express';
 import Repository from '../services/repository-service';
 import Collections from '../services/collection-factory';
+import { User } from '../models/user'
+import { Collection } from '../models/fire-store-entity';
 
-const usersCollection = Collections.get('users');
+const usersCollection = Collections.get(Collection.USERS);
 const userRepo = new Repository<User>(usersCollection);
 /**
  * Configuring Google Strategy
@@ -30,29 +32,20 @@ class GoogleStrategy {
      * @param {PassportStatic} _passport Passport to Initialise
      */
     public static initialise(_passport: PassportStatic): any {
-        let CALLBACK_URL: string = '';
-
-        if (
-            'undefined' != (typeof process.env.WEB_HOST as unknown) ||
-            (process.env.WEB_HOST as string) != ''
-        ) {
-            CALLBACK_URL =
-                'https://' +
-                process.env.PORT +
-                '-' +
-                process.env.WEB_HOST +
-                process.env.CALLBACK_ENDPOINT;
-            log.warn(
-                `Set oauth callback URL to ${CALLBACK_URL}, adjust Authorized URLs in GCP client settings accordingly`
-            );
+       
+        if (typeof process.env.OAUTH_CALLBACK_URL == 'undefined'){
+            throw new Error('OAUTH_CALLBACK_URL undefined, it must be defined as environment variable')
         }
-
+        log.warn(
+            `Set oauth callback URL to ${ process.env.OAUTH_CALLBACK_URL}, adjust Authorized URLs in GCP client settings accordingly`
+        );
+        
         _passport.use(
             new Strategy(
                 {
                     clientID: process.env.GOOGLE_CLIENT_ID,
                     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-                    callbackURL: CALLBACK_URL || process.env.OAUTH_CALLBACK_URL,
+                    callbackURL:  process.env.OAUTH_CALLBACK_URL ,
                     passReqToCallback: true,
                 },
                 async (

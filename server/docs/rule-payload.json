@@ -1,0 +1,31 @@
+
+{
+    "agentId": "open-weather-map-agent",
+    "agentName": "Weather",
+    "agentQueryable": [
+        {
+            "dataPoint": "targetLocation",
+            "value": "berlin,de"
+        }
+    ],
+    "ruleName": "Berlin-weather-rule1-trigger-ads",
+    "ruleDatapoint": "rain",
+    "ruleCondition": "eq",
+    "ruleTargetValue": true,
+    "ruleInterval": 60,
+    "targets": [
+        {
+            "agentId": "google-ads",
+            "actions": [
+                {
+                    "action": "activate",
+                    "actionParams": [
+                        {
+                            "adGroupId": "acme-weather-campaign"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

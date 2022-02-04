@@ -12,10 +12,12 @@
  */
 import { Request, Response } from 'express';
 import Repository from '../services/repository-service';
-import log from '../util/logger';
+import {log} from '@iftta/util';
 import Collections from '../services/collection-factory';
+import {User} from '../models/user'; 
+import { Collection } from '../models/fire-store-entity';
 
-const usersCollection = Collections.get('users');
+const usersCollection = Collections.get(Collection.USERS);
 const userRepo = new Repository<User>(usersCollection);
 
 //TODO: add exception handling
