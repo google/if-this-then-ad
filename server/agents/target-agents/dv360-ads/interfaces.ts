@@ -1,3 +1,16 @@
+export interface AgentResult  {
+    agentId: string,
+    jobId: string,
+    agentName: string,
+    timestamp: Date,
+    success: boolean,
+}
+
+export interface IAgent {
+    agentId: string,
+    name: string,
+    execute(task: AgentTask): Promise<Array<ActionResult>>
+}
 
 export interface RuleResult {
     ruleId: string,
@@ -35,17 +48,30 @@ export interface AgentTask {
     ruleResult: RuleResult,
 }
 
+export enum EntityActions {
+    ACTIVATE = 'activate',
+    PAUSE = 'pause',
+}
+
+// Whatever we get from the client
 export enum EntityType {
-    LI = 'lineItems',
-    IO = 'insertionOrders'
+    LI = 'LI',
+    IO = 'IO'
 }
 
 export enum EntityStatus {
     ACTIVATE = 'ENTITY_STATUS_ACTIVE',
-    DEACTIVATE = 'ENTITY_STATUS_PAUSED'
+    PAUSE = 'ENTITY_STATUS_PAUSED'
 }
 
-export  interface ActionResult {
+export interface InstanceOptions {
+    entityType: string,
+    advertiserId?: number,
+    entityId?: number,
+    action?: string,
+}
+
+export interface ActionResult {
     ruleId: string,
     action: string,
     displayName: string,
@@ -53,4 +79,19 @@ export  interface ActionResult {
     timestamp: Date,
     success: boolean,
     error: string,
+}
+
+export interface DV360ApiClientOptions {
+    authToken: string,
+    baseUrl: string,
+}
+
+export enum httpMethods {
+    PATCH = 'PATCH',
+}
+
+export interface DV360ApiCallOptions {
+    httpMethod: httpMethods,
+    url: string,
+    data: Object,
 }

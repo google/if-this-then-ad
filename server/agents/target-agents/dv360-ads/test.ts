@@ -1,5 +1,5 @@
 
-import dv360 from './index'
+import dv360agent from './index'
 import {AgentTask} from './interfaces';
 
 const task: AgentTask = {
@@ -14,7 +14,7 @@ const task: AgentTask = {
             params: [
                 {
                     key: 'action',
-                    value: 'deactivate',
+                    value: 'pause',
                 },
                 {
                     key: 'entityId',
@@ -54,7 +54,7 @@ const task: AgentTask = {
             params: [
                 {
                     key: 'action',
-                    value: 'deactivate',
+                    value: 'activate',
                 },
                 {
                     key: 'entityId',
@@ -73,5 +73,5 @@ const task: AgentTask = {
     },
 };
 
-dv360.execute(task)
+dv360agent.execute(task)
     .then(x => console.log(x));

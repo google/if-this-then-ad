@@ -1,4 +1,5 @@
-import DV360 from './dv360';
+import DV360Agent from './dv360-agent';
+import DV360 from './dv360-agent';
 
-const dv360 = new DV360();
-export default dv360;
+const dv360agent = new DV360Agent();
+export default dv360agent;
