@@ -57,7 +57,7 @@
         "@types/jest": "^27.0.3",
         "@types/node": "^16.11.10",
         "@types/passport": "^1.0.7",
-        "@types/passport-google-oauth2": "^0.1.4",
+        "@types/passport-google-oauth20": "^2.0.11",
         "@typescript-eslint/eslint-plugin": "^5.4.0",
         "@typescript-eslint/parser": "^5.4.0",
         "concurrently": "^6.4.0",
@@ -67,11 +67,11 @@
         "nodemon": "^2.0.15",
         "prettier": "^2.5.0",
         "typescript": "^4.5.4"
-    }, 
-    "_moduleAliases":{
-        "@iftta/job-runner": "./job-runner", 
+    },
+    "_moduleAliases": {
+        "@iftta/job-runner": "./job-runner",
         "@iftta/rules-engine": "./packages/rule-engine",
-        "@iftta/open-weather-map-agent": "./agents/source-agents/open-weather-map", 
+        "@iftta/open-weather-map-agent": "./agents/source-agents/open-weather-map",
         "@iftta/util": "./util"
     }
 }
