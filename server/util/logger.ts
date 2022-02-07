@@ -14,7 +14,6 @@
 import winston from 'winston';
 // Imports the Google Cloud client library for Winston
 import { LoggingWinston } from '@google-cloud/logging-winston';
-import { REQUEST_LOG_SUFFIX } from '@google-cloud/logging-winston/build/src/middleware/express';
 const { format, transports } = winston;
 
 const logFormat = format.printf(info => `${info.timestamp} ${info.level} ${info.message} `);
@@ -51,8 +50,19 @@ const getTransportsForEnv = () => {
         )];
 }
 
-const logger = winston.createLogger({
-    level: process.env.NODE_ENV === 'production' ? 'info' : 'debug',
+const getLogLevel = (): string => {
+    // when Log level is set override environment settings
+    if (typeof process.env.LOG_LEVEL != 'undefined') {
+        let level = process.env.LOG_LEVEL.toLowerCase();
+        return level;
+    }
+    if (process.env.NODE_ENV == 'production') {
+        return 'info'
+    }
+    return 'debug'
+}
+export const logger = winston.createLogger({
+    level: getLogLevel(),
     format: format.combine(
         format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
         format.metadata({ fillExcept: ['message', 'level', 'timestamp'] })
@@ -61,4 +71,3 @@ const logger = winston.createLogger({
     exitOnError: false
 });
 
-export default logger;

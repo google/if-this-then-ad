@@ -19,7 +19,7 @@ export interface Configuration {
     jobId?:string
 }
 
-export interface AgentResult  {
+export interface AgentResult {
     agentId: string,
     jobId: string,
     agentName: string,
@@ -35,15 +35,15 @@ export interface AgentResult  {
 }
 
 export interface AgentMetadata {
-    agentId: string, 
-    agentName: string,
-    agentType: AgentType,
-    queryable: Array<string>, 
+    id: string, 
+    displayName: string,
+    type: AgentType,
+    arguments: Array<string>, 
     dataPoints: Array<DataPoint>
 }
 
 export interface DataPoint {
-    name: string, 
+    id: string, 
     displayName: string, 
     dataType: string |number|boolean |Date
 }
@@ -61,7 +61,6 @@ export enum AgentType {
     SOURCE = "source-agent", 
     TARGET = "target-agent"
 }
-
 
 export interface Job {
     id: string,

@@ -16,18 +16,25 @@ export interface AgentResult {
 export enum CONDITIONS {
     equals = 'eq',
     greater = 'gt',
-    less = 'lt'
+    less = 'lt',
+    yes = 'yes',
+    no = 'no',
 }
 
 export interface Rule {
-    ruleId: string,
+    id: string,
+    agent: {
+        id: string,
+        name: string,
+    },
+    rule: {
+        name: string,
+        dataPoint: string,
+        condition: CONDITIONS.equals | CONDITIONS.greater | CONDITIONS.less | CONDITIONS.yes | CONDITIONS.no,
+        value: string | number | boolean,
+        interval: number,
+    }
     jobId: string,
-    agentId: string,
-    agentName: string,
-    ruleName: string,
-    ruleDatapoint: string,
-    ruleCondition: CONDITIONS.equals | CONDITIONS.greater | CONDITIONS.less,
-    ruleTargetValue: string | number | boolean,
     targets?: Array<TargetAgent>
 }
 
@@ -48,6 +55,5 @@ interface TargetActions {
 
 export interface TargetAgent {
     agentId: string,
-    ruleResult: RuleResult,
     actions: Array<TargetActions>
 }

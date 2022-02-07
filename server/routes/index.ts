@@ -45,9 +45,8 @@ router.get(
 router.get('/api/auth/done', AuthController.authDone);
 router.post('/api/auth/logout', AuthController.logout);
 
-// protected route
+// Protected route
 router.get('/api/account', pass.isAuthenticated, someController.hello);
-router.get('/api/test', someController.hello);
 
 // Account routes
 router.get('/api/accounts', AccountController.listAccounts);
@@ -56,20 +55,16 @@ router.post('/api/accounts', AccountController.create);
 router.post('/api/accounts/:id', AccountController.update);
 router.delete('/api/accounts/:id', AccountController.remove);
 
-
 // Rules endpoints 
 router.post('/api/rules', RulesController.create); 
 router.get('/api/rules', RulesController.list)
 
-
 // Job runner trigger endpoint
 router.get('/api/jobs/execute', JobController.executeJobs); 
 
-
-// expose available metadata to the UI. 
+// Expose available metadata to the UI
 router.get('/api/agents/metadata', MetadataController.getAgentMetadata); 
 // router.post('/api/agent-results', PubSubController.messageHandler); 
-
 
 // Default '/' route
 router.get('/', (req: Request, res: Response) => {

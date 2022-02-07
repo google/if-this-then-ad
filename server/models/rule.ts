@@ -18,23 +18,28 @@ export enum CONDITIONS {
     less = 'lt'
 }
 
-export interface Rule {
+export interface RuleDefinition {
     id?: string,
     jobId?: string,
-    agentId: string,
-    agentName: string,
-    agentQueryable: {
+    agent:Agent,
+    rule:Rule,
+    targets?: Array<TargetAgent>
+}
+export interface Rule {
+    name: string,
+    interval: number,
+    datapoint: string,
+    condition: CONDITIONS.equals | CONDITIONS.greater | CONDITIONS.less,
+    targetValue: string | number | boolean,
+}
+
+export interface Agent{
+    id: string,
+    params: {
         dataPoint: string,
         value: string | number | boolean
     },
-    ruleName: string,
-    ruleInterval: number,
-    ruleDatapoint: string,
-    ruleCondition: CONDITIONS.equals | CONDITIONS.greater | CONDITIONS.less,
-    ruleTargetValue: string | number | boolean,
-    targets?: Array<TargetAgent>
 }
-
 export interface RuleResult {
     ruleId: string,
     result: boolean | number,

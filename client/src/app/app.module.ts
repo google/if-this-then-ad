@@ -25,19 +25,12 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { TriggersComponent } from './triggers/triggers.component';
-import { TriggerComponent } from './trigger/trigger.component';
-import { SourceSelectorComponent } from './source-selector/source-selector.component';
-import { BoxComponent } from './box/box.component';
-import { TriggerSelectorComponent } from './trigger-selector/trigger-selector.component';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
     AppComponent,
-    SourceSelectorComponent,
-    BoxComponent,
-    TriggerSelectorComponent,
     TriggersComponent,
-    TriggerComponent,
   ],
   imports: [
     BrowserModule,
@@ -50,6 +43,7 @@ import { TriggerSelectorComponent } from './trigger-selector/trigger-selector.co
     MatSelectModule,
     MatTableModule,
     MatPaginatorModule,
+    HttpClientModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

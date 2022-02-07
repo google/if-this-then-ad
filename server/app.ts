@@ -20,7 +20,7 @@ import router from './routes';
 import bodyParser from 'body-parser';
 import env from 'dotenv';
 import PassportSetup from './config/passport-setup';
-import log from './util/logger';
+import { log } from '@iftta/util';
 const { Firestore } = require('@google-cloud/firestore');
 const { FirestoreStore } = require('@google-cloud/connect-firestore');
 
@@ -31,7 +31,6 @@ if (envConfig.error || envConfig.parsed == null) {
 }
 
 let app = express();
-const config = envConfig.parsed;
 
 log.info(`LOG LEVEL SETTING : ${process.env.LOG_LEVEL}`);
 log.debug({...process.env});
