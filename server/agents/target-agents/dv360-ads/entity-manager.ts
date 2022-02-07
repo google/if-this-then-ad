@@ -31,25 +31,19 @@ export default class EntityManager<T extends DV360Entity> {
     }
 
     // Class definition
-    private advertserId: number = 0;
-    private entityId: number = 0;
-    private token: string = '';
     private object: T;
 
     constructor(
-        private objectType: new () => T, 
-        advertiserId: number, 
-        entityId: number, 
-        token: string
+        private objectType: new () => T,
+        private advertiserId: number,
+        private entityId: number,
+        private token: string
     ) {
         if (! advertiserId || ! entityId || ! token) {
             throw new Error('"advertiserId & entityId & token" cannot be empty');
         }
 
         this.object = new objectType();
-        this.advertserId = advertiserId;
-        this.entityId = entityId;
-        this.token = token;
     }
 
     private async apiCall(options: AxiosRequestConfig, httpMethod: Method = 'GET') {
@@ -69,7 +63,7 @@ export default class EntityManager<T extends DV360Entity> {
 
     // Status change methods
     private getStatusChangeUrl(): string {
-        return `${config.baseUrl}/${this.advertserId}`
+        return `${config.baseUrl}/${this.advertiserId}`
             + `/${this.object.apiUrlPart}/${this.entityId}`
             + '?updateMask=entityStatus';
     }
