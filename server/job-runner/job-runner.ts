@@ -5,19 +5,9 @@ import { Job , ExecutionTime, _Timestamp} from './interfaces'
 import Repository from '../services/repository-service';
 import Collections from '../services/collection-factory';
 import { Collection } from "../models/fire-store-entity";
-import { log } from '@iftta/util'
+import { log, date } from '@iftta/util'
 
 //TODO: deal with leaking firestore _Timestamp object
-
-// setting up useful date manipulation functions
-// wrapping them into date object to make it easier
-// to remember what we are dealing with. 
-const date = {
-    add: require('date-fns/add'), 
-    isAfter: require('date-fns/isAfter'), 
-    isBefore:require('date-fns/isBefore'),
-    isValid: require('date-fns/isValid')
-}
 
 //TODO: replace this with sending messages over pubsub. 
 //Temp coupling between packages/ 
@@ -166,7 +156,7 @@ class JobRunner {
                 return true;
             }
 
-            const nextRuntime = date.add(j.lastExecution?.toDate(), { minutes: j.executionInterval });
+            const nextRuntime = date.add(j.lastExecution?.toDate()as Date, { minutes: j.executionInterval });
             log.info(`Job: ${j.id} next execution : ${nextRuntime}`);
 
             return date.isBefore(nextRuntime, nowUTC);
