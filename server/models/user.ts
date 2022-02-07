@@ -22,7 +22,12 @@ export interface User {
     verified?: boolean;
     profilePhoto?: string;
     locale?: string;
-    authToken?: string;
-    refreshToken?: string;
-    tokenProvider: string;
+    token: Token
+}
+
+interface Token {
+    auth: string, 
+    expiry: Date,
+    refresh?: string, 
+    provider: string,
 }

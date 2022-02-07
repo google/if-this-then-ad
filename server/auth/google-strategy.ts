@@ -12,7 +12,7 @@
  */
 
 import { Strategy } from 'passport-google-oauth20';
-import { log } from '@iftta/util'
+import { log, date } from '@iftta/util'
 import { PassportStatic } from 'passport';
 import { Request } from 'express';
 import Repository from '../services/repository-service';
@@ -77,13 +77,16 @@ class GoogleStrategy {
                         verified: jsonProfile.email_verified,
                         gender: profile.gender,
                         profilePhoto: jsonProfile.picture,
-                        authToken: accessToken,
-                        refreshToken: refreshToken,
                         locale: jsonProfile.locale,
-                        tokenProvider: profile.provider,
+                        token: {
+                            auth: accessToken,
+                            expiry: date.add(Date.now(),{minutes:5}), // expire access Tokens after 5 min.
+                            refresh: refreshToken,
+                            provider: profile.provider
+                        }
                     };
 
-                    log.debug(`User : ${JSON.stringify(userData, null, 4)}`);
+                    log.debug(`User : ${JSON.stringify(userData, null, 2)}`);
 
                     // check if the user exists in db
                     const userResults = await userRepo.getBy(
