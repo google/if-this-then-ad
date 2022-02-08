@@ -63,8 +63,8 @@ export enum EntityType {
 }
 
 export enum EntityStatus {
-    ACTIVATE = 'ENTITY_STATUS_ACTIVE',
-    PAUSE = 'ENTITY_STATUS_PAUSED'
+    ACTIVE = 'ENTITY_STATUS_ACTIVE',
+    PAUSED = 'ENTITY_STATUS_PAUSED'
 }
 
 export interface InstanceOptions {

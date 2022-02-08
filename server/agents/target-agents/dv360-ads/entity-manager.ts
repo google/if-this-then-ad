@@ -119,7 +119,7 @@ export default class EntityManager<T extends DV360Entity> {
 
     // Status change methods
     private async changeStatus(es: EntityStatus) {
-        const apiCallParams = this.getApiCallParams(this.object.path);
+        const apiCallParams = this.getApiCallParams(this.object.apiConfig);
 
         apiCallParams.url += `/${this.entityId}`;
         apiCallParams['data'] = {entityStatus: es};
@@ -133,25 +133,35 @@ export default class EntityManager<T extends DV360Entity> {
     }
 
     public async activate() {
-        return await this.changeStatus(EntityStatus.ACTIVATE);
+        return await this.changeStatus(EntityStatus.ACTIVE);
     }
 
     public async pause() {
-        return await this.changeStatus(EntityStatus.PAUSE);
+        return await this.changeStatus(EntityStatus.PAUSED);
     }
 
     // List method
-    public async list(getOnlyActive: boolean = true) {
-        // TODO mplement pagination
-        const apiCallParams = this.getApiCallParams(this.object.path);
-        if (! apiCallParams['params'] ) {
-            apiCallParams['params'] = {};
-        }
+    public async list(getOnlyActive = true, onlyFirstPage = false) {
+        let result: Object[] = [];
+        let nextPageToken = '';
 
-        if (getOnlyActive) {
-            apiCallParams['params']['filter'] = 'entityStatus=ENTITY_STATUS_ACTIVE';
-        }
+        do {
+            const apiCallParams = this.getApiCallParams(this.object.apiConfig);
+            if (! apiCallParams['params'] ) {
+                apiCallParams['params'] = {};
+            }
 
-        return await this.apiCall(apiCallParams, 'GET');
+            if (getOnlyActive) {
+                apiCallParams['params']['filter'] = 'entityStatus=ENTITY_STATUS_ACTIVE';
+            }
+
+            apiCallParams['params']['pageToken'] = nextPageToken;
+
+            const tmpResult = await this.apiCall(apiCallParams);
+            result = [ ...result, ...tmpResult[this.object.listName] ];
+            nextPageToken = tmpResult['nextPageToken'];
+        } while (nextPageToken && ! onlyFirstPage);
+
+        return result;
     }
 }
