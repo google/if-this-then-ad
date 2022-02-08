@@ -55,8 +55,11 @@ export enum EntityActions {
 
 // Whatever we get from the client
 export enum EntityType {
-    LI = 'LI',
-    IO = 'IO'
+    LineItem = 'LI',
+    InsertionOrder = 'IO',
+    Campaign = 'Campaign',
+    Advertiser = 'Advertiser',
+    Partner = 'Partner',
 }
 
 export enum EntityStatus {
@@ -66,7 +69,7 @@ export enum EntityStatus {
 
 export interface InstanceOptions {
     entityType: string,
-    advertiserId?: number,
+    parentId?: number,
     entityId?: number,
     action?: string,
 }
@@ -94,4 +97,9 @@ export interface DV360ApiCallOptions {
     httpMethod: httpMethods,
     url: string,
     data: Object,
+}
+
+export interface ApiCallParams {
+    url: string,
+    params?: Object,
 }
