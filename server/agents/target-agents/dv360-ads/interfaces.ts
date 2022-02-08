@@ -102,4 +102,5 @@ export interface DV360ApiCallOptions {
 export interface ApiCallParams {
     url: string,
     params?: Object,
+    data?: Object,
 }

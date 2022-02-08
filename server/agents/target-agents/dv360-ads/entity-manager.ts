@@ -117,26 +117,19 @@ export default class EntityManager<T extends DV360Entity> {
         return await this.apiCall(options, httpMethods.PATCH);
     }
 
-    private getBaseUrl() {
-        return `${config.baseUrl}/` + (
-            this.object.overrideBaseUrlExtension
-                ? this.object.overrideBaseUrlExtension
-                : config.baseUrlExtension
-            );
-    }
-
     // Status change methods
-    private getStatusChangeUrl(): string {
-        return `${this.getBaseUrl()}/${this.parentId}`
-            + `/${this.object.apiUrlPart}/${this.entityId}`
-            + '?updateMask=entityStatus';
-    }
-
     private async changeStatus(es: EntityStatus) {
-        const url = this.getStatusChangeUrl();
-        const data = {entityStatus: es};
+        const apiCallParams = this.getApiCallParams(this.object.path);
 
-        return await this.patch({url, data});
+        apiCallParams.url += `/${this.entityId}`;
+        apiCallParams['data'] = {entityStatus: es};
+        if (apiCallParams.params) {
+            apiCallParams.params['updateMask'] = 'entityStatus';
+        } else {
+            apiCallParams.params = {updateMask: 'entityStatus'};
+        }
+
+        return await this.patch(apiCallParams);
     }
 
     public async activate() {
@@ -150,7 +143,7 @@ export default class EntityManager<T extends DV360Entity> {
     // List method
     public async list(getOnlyActive: boolean = true) {
         // TODO mplement pagination
-        const apiCallParams = this.getApiCallParams(this.object.listPath);
+        const apiCallParams = this.getApiCallParams(this.object.path);
         if (! apiCallParams['params'] ) {
             apiCallParams['params'] = {};
         }
