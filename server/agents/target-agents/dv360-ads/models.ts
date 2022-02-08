@@ -15,34 +15,25 @@ export class Advertiser implements DV360Entity {
     listPath = {
         url: '/advertisers',
         params: {
-            partnerId: 'parentId',
+            partnerId: '{partnerId}',
         }
     };
 }
 
 export class Campaign implements DV360Entity {
     listPath = {
-        url: '/advertisers',
-        params: {
-            partnerId: 'parentId',
-        }
+        url: '/advertisers/{advertiserId}/campaigns',
     };
 }
 
 export class InsertionOrder implements DV360Entity {
     listPath = {
-        url: '/advertisers',
-        params: {
-            partnerId: 'parentId',
-        }
+        url: '/advertisers/{advertiserId}/insertionOrders',
     };
 }
 
 export class LineItem implements DV360Entity {
     listPath = {
-        url: '/advertisers',
-        params: {
-            partnerId: 'parentId',
-        }
+        url: '/advertisers/{advertiserId}/lineItems',
     };
 }

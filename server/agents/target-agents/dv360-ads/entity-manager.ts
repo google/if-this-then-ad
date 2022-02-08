@@ -91,8 +91,10 @@ export default class EntityManager<T extends DV360Entity> {
 
     private parseTemplateString(s: string): string {
         return s
-            .replace('parentId', this.parentId.toString())
-            .replace('entityId', this.entityId.toString());
+            .replace('{parentId}', this.parentId.toString())
+            .replace('{partnerId}', this.parentId.toString())
+            .replace('{advertiserId}', this.parentId.toString())
+            .replace('{entityId}', this.entityId.toString());
     }
 
     private parseTemplateObject(o: Object|undefined): Object {
@@ -132,7 +134,7 @@ export default class EntityManager<T extends DV360Entity> {
 
     private async changeStatus(es: EntityStatus) {
         const url = this.getStatusChangeUrl();
-        const data = {entityStatus: es };
+        const data = {entityStatus: es};
 
         return await this.patch({url, data});
     }
