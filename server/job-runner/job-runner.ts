@@ -6,7 +6,7 @@ import Repository from '../services/repository-service';
 import Collections from '../services/collection-factory';
 import { Collection } from "../models/fire-store-entity";
 import { log, date } from '@iftta/util'
-
+import BackgroundAuth from './refresh-tokens'; 
 //TODO: deal with leaking firestore _Timestamp object
 
 //TODO: replace this with sending messages over pubsub. 
@@ -165,18 +165,11 @@ class JobRunner {
         return jobs;
     }
 
+
     public async runAll() {
+
         // Get a list of jobs to execute 
         log.info('Fetching job list to execute'); 
-        const allJobs: Job[] = await this.jobsRepo.list();
-
-        // Filter by execution interval 
-        const now = Date.now();
-        const offsetSec = new Date().getTimezoneOffset() * 1000;
-        const nowUTC = new Date(now + offsetSec);
-
-        log.debug(`offset : ${offsetSec}`); 
-
         const jobs = await this.getEligibleJobs();
         const jobCount = jobs.length; 
         log.debug('List of jobs to execute');
@@ -200,6 +193,7 @@ class JobRunner {
         // on the target systems.
         const targetActions: Array<RuleResult[]> = []
         const executionTimes:Array<ExecutionTime> = []; 
+        const allResults:Array<Array<RuleResult>> = [[]];
 
         while (!(await jobResult).done) {
             log.debug('my jobResult');
@@ -213,17 +207,24 @@ class JobRunner {
             executionTimes.push(execTime); 
 
             const results: Array<RuleResult> = await rulesEngine.processMessage(currentResult);
+            allResults.push(results); 
             log.debug('evaluation result');
             log.debug(results);
             // targetActions.push(results);
             jobResult = jobResultIter.next();
         }
 
+        
         log.info('Updating Last execution time of jobs')
 
         // Update execution times in the jobs collection
         await this.updateJobExecutionTimes(executionTimes); 
         
+        // TODO: obtain user ID from the Rule object
+        // obtain freshTokens before running the jobs
+        const userId = 'YkHryPCUuAbwgBG3Zdle';
+        const token = await BackgroundAuth.refreshTokensForUser(userId); 
+
         // call target-agents to execute individual actions 
 
         // publish results to pubsub. 
@@ -236,6 +237,10 @@ class JobRunner {
         //     log.debug('Published results to PubSub')
         //     jobResult = jobResultIter.next();
         // }
+    }
+
+    public async processTargets(results: Array<RuleResult>){
+
     }
 }
 

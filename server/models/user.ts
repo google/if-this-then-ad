@@ -25,9 +25,11 @@ export interface User {
     token: Token
 }
 
-interface Token {
-    auth: string, 
+export interface Token {
+    access: string, 
     expiry: Date,
     refresh?: string, 
-    provider: string,
+    provider?: string,
+    scope?: Array<string>
+    type?:string
 }
