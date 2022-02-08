@@ -11,7 +11,7 @@ export default class EntityManager<T extends DV360Entity> {
     // Static method for instantiation
     public static getInstance(config: InstanceOptions, token: string) {
         switch (config.entityType) {
-            case EntityType.InsertionOrder:
+            case EntityType.insertionOrder:
                 return new EntityManager<InsertionOrder>(
                     InsertionOrder,
                     config?.parentId as number,
@@ -20,7 +20,7 @@ export default class EntityManager<T extends DV360Entity> {
                 );
                 break;
 
-            case EntityType.LineItem:
+            case EntityType.lineItem:
                 return new EntityManager<LineItem>(
                     LineItem,
                     config?.parentId as number,
@@ -29,7 +29,7 @@ export default class EntityManager<T extends DV360Entity> {
                 );
                 break;
 
-            case EntityType.Campaign:
+            case EntityType.campaign:
                 return new EntityManager<Campaign>(
                     Campaign,
                     config?.parentId as number,
@@ -38,7 +38,7 @@ export default class EntityManager<T extends DV360Entity> {
                 );
                 break;
             
-            case EntityType.Advertiser:
+            case EntityType.advertiser:
                 return new EntityManager<Advertiser>(
                     Advertiser,
                     config?.parentId as number,
@@ -47,7 +47,7 @@ export default class EntityManager<T extends DV360Entity> {
                 );
                 break;
 
-            case EntityType.Partner:
+            case EntityType.partner:
                     return new EntityManager<Partner>(
                         Partner,
                         config?.parentId as number,

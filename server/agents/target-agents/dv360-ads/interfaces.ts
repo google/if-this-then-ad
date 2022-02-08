@@ -55,11 +55,11 @@ export enum EntityActions {
 
 // Whatever we get from the client
 export enum EntityType {
-    LineItem = 'LineItem',
-    InsertionOrder = 'InsertionOrder',
-    Campaign = 'Campaign',
-    Advertiser = 'Advertiser',
-    Partner = 'Partner',
+    lineItem = 'lineItem',
+    insertionOrder = 'insertionOrder',
+    campaign = 'campaign',
+    advertiser = 'advertiser',
+    partner = 'partner',
 }
 
 export enum EntityStatus {
