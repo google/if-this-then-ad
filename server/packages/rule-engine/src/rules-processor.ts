@@ -67,7 +67,7 @@ export class RulesProcessor {
      * @returns {boolean}
      */
     public evaluate(rule: Rule, jobResult: AgentResult): boolean {
-        const dpResult = jobResult[rule.condition.dataPoint];
+        const dpResult = jobResult.data[rule.condition.dataPoint];
 
         if (typeof dpResult == 'undefined') {
             const msg = `Datapoint ${rule.condition.dataPoint} is not a valid property of AgentResult`;
