@@ -12,39 +12,44 @@
  */
 
 import { Request, Response, Router } from 'express';
+import { AuthenticateOptionsGoogle} from "passport-google-oauth20"
 import * as AuthController from '../controllers/auth-controller';
 import * as AccountController from '../controllers/account-controller';
 import * as MetadataController from '../controllers/metadata-controller'; 
 import * as RulesController from '../controllers/rules-controller'; 
+import * as JobController from '../controllers/jobs-controller'; 
 
 import someController from '../controllers/some';
 import pass from '../config/passport-setup';
 import passport from 'passport';
-import * as JobController from '../controllers/jobs-controller'; 
 
 // eslint-disable-next-line new-cap
 const router = Router();
 
-// Auth routes
+/**
+ *  Auth options
+ *  Important: accessType: Offline or you will not get a refresh token
+ *  which we need to perform background work. 
+ */
+const options: AuthenticateOptionsGoogle = {
+    accessType: 'offline',
+    prompt: 'consent'
+}
+
 router.get('/api/auth/login', AuthController.showLogin);
 router.get(
     '/api/auth/google',
-    passport.authenticate('google', {
-        scope: ['email', 'profile'],
-        failureRedirect: '/api/auth/login',
-    })
+    passport.authenticate('google', options )
 );
-router.get(
-    '/api/auth/oauthcallback',
-    passport.authenticate('google', {
+router.get('/api/auth/oauthcallback', passport.authenticate('google', {
         failureRedirect: '/api/auth/login',
         successRedirect: '/api/auth/done',
-    })
-);
+    }));
+  
 
 router.get('/api/auth/done', AuthController.authDone);
+router.get('/api/auth/logout', AuthController.logout);
 router.post('/api/auth/logout', AuthController.logout);
-
 // Protected route
 router.get('/api/account', pass.isAuthenticated, someController.hello);
 
