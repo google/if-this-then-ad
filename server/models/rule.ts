@@ -23,7 +23,7 @@ export interface RuleDefinition {
     jobId?: string,
     name: string,
     source: Agent,
-    rule: Rule,
+    condition: Rule,
     targets?: Array<TargetAgent>
 }
 export interface Rule {
