@@ -54,8 +54,8 @@ class BackgroundAuth {
                 return token;
             }
         } catch (err) {
-            log.error(err.toJSON())
-            return Promise.reject(err.toJSON())
+            log.error(err)
+            return Promise.reject(err)
         }
         return Promise.reject('Couldnt obtain token, check logs for errors');
     }
