@@ -1,5 +1,9 @@
-import { InstanceOptions, EntityType, httpMethods, EntityStatus } from './interfaces';
-import { DV360Entity, InsertionOrder, LineItem } from './models';
+import { 
+    InstanceOptions, EntityType, httpMethods, EntityStatus, ApiCallParams,
+} from './interfaces';
+import { 
+    DV360Entity, InsertionOrder, LineItem, Campaign, Advertiser, Partner
+} from './models';
 import axios, { AxiosRequestConfig, Method } from 'axios';
 import { config } from './config'
 
@@ -7,24 +11,52 @@ export default class EntityManager<T extends DV360Entity> {
     // Static method for instantiation
     public static getInstance(config: InstanceOptions, token: string) {
         switch (config.entityType) {
-            case EntityType.IO:
+            case EntityType.insertionOrder:
                 return new EntityManager<InsertionOrder>(
                     InsertionOrder,
-                    config?.advertiserId as number,
+                    config?.parentId as number,
                     config?.entityId as number,
                     token
                 );
                 break;
 
-            case EntityType.LI:
+            case EntityType.lineItem:
                 return new EntityManager<LineItem>(
                     LineItem,
-                    config?.advertiserId as number,
+                    config?.parentId as number,
+                    config?.entityId as number,
+                    token
+                );
+                break;
+
+            case EntityType.campaign:
+                return new EntityManager<Campaign>(
+                    Campaign,
+                    config?.parentId as number,
                     config?.entityId as number,
                     token
                 );
                 break;
             
+            case EntityType.advertiser:
+                return new EntityManager<Advertiser>(
+                    Advertiser,
+                    config?.parentId as number,
+                    config?.entityId as number,
+                    token
+                );
+                break;
+
+            case EntityType.partner:
+                    return new EntityManager<Partner>(
+                        Partner,
+                        config?.parentId as number,
+                        config?.entityId as number,
+                        token
+                    );
+                    break;
+
+
             default:
                 throw new Error(`Entity type ${config.entityType} is not supported`);
         }
@@ -35,12 +67,12 @@ export default class EntityManager<T extends DV360Entity> {
 
     constructor(
         private objectType: new () => T,
-        private advertiserId: number,
+        private parentId: number,
         private entityId: number,
         private token: string
     ) {
-        if (! advertiserId || ! entityId || ! token) {
-            throw new Error('"advertiserId & entityId & token" cannot be empty');
+        if (! parentId || ! token) {
+            throw new Error('"parentId & token" cannot be empty');
         }
 
         this.object = new objectType();
@@ -57,29 +89,83 @@ export default class EntityManager<T extends DV360Entity> {
         return res.data;
     }
 
+    private parseTemplateString(s: string): string {
+        return s
+            .replace('{parentId}', this.parentId.toString())
+            .replace('{partnerId}', this.parentId.toString())
+            .replace('{advertiserId}', this.parentId.toString())
+            .replace('{entityId}', this.entityId?.toString());
+    }
+
+    private parseTemplateObject(o: Object|undefined): Object {
+        const result = {};
+        for (const key in o) {
+            result[key] = this.parseTemplateString(o[key]);
+        }
+
+        return result;
+    }
+
+    private getApiCallParams(p: ApiCallParams): ApiCallParams {
+        return {
+            url: config.baseUrl + this.parseTemplateString(p.url),
+            params: this.parseTemplateObject(p?.params),
+        };
+    }
+
     private async patch(options: AxiosRequestConfig) {
         return await this.apiCall(options, httpMethods.PATCH);
     }
 
     // Status change methods
-    private getStatusChangeUrl(): string {
-        return `${config.baseUrl}/${this.advertiserId}`
-            + `/${this.object.apiUrlPart}/${this.entityId}`
-            + '?updateMask=entityStatus';
-    }
-
     private async changeStatus(es: EntityStatus) {
-        const url = this.getStatusChangeUrl();
-        const data = {entityStatus: es };
+        if (! this.entityId) {
+            throw new Error('entityId must be set');
+        }
 
-        return await this.patch({url, data});
+        const apiCallParams = this.getApiCallParams(this.object.apiConfig);
+
+        apiCallParams.url += `/${this.entityId}`;
+        apiCallParams['data'] = {entityStatus: es};
+        if (apiCallParams.params) {
+            apiCallParams.params['updateMask'] = 'entityStatus';
+        } else {
+            apiCallParams.params = {updateMask: 'entityStatus'};
+        }
+
+        return await this.patch(apiCallParams);
     }
 
     public async activate() {
-        return await this.changeStatus(EntityStatus.ACTIVATE);
+        return await this.changeStatus(EntityStatus.ACTIVE);
     }
 
     public async pause() {
-        return await this.changeStatus(EntityStatus.PAUSE);
+        return await this.changeStatus(EntityStatus.PAUSED);
+    }
+
+    // List method
+    public async list(getOnlyActive = true, onlyFirstPage = false) {
+        let result: Object[] = [];
+        let nextPageToken = '';
+
+        do {
+            const apiCallParams = this.getApiCallParams(this.object.apiConfig);
+            if (! apiCallParams['params'] ) {
+                apiCallParams['params'] = {};
+            }
+
+            if (getOnlyActive) {
+                apiCallParams['params']['filter'] = 'entityStatus=ENTITY_STATUS_ACTIVE';
+            }
+
+            apiCallParams['params']['pageToken'] = nextPageToken;
+
+            const tmpResult = await this.apiCall(apiCallParams);
+            result = [ ...result, ...tmpResult[this.object.listName] ];
+            nextPageToken = tmpResult['nextPageToken'];
+        } while (nextPageToken && ! onlyFirstPage);
+
+        return result;
     }
 }
