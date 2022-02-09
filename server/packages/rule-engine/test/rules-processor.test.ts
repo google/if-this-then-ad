@@ -2,20 +2,23 @@ import { RulesProcessor } from '../src/rules-processor';
 import { AgentResult, Rule, CONDITIONS } from '../src/interfaces';
 
 describe("test add ", () => {
+    
     const rp = new RulesProcessor();
 
     const agentResult: AgentResult = {
         agentId: 'open-weather-map-agent',
         jobId: '2',
         agentName: 'Weather',
-        targetLocation: 'Hamburg',
-        temperature: 5.78,
-        windSpeed: 5.66,
-        thunderstorm: false,
-        snow: false,
-        rain: false,
-        clouds: false,
-        clearSky: true,
+        data: {
+            targetLocation: 'Hamburg',
+            temperature: 5.78,
+            windSpeed: 5.66,
+            thunderstorm: false,
+            snow: false,
+            rain: false,
+            clouds: false,
+            clearSky: true
+        },
         timestamp: new Date(Date.parse('2022-01-28T15:05:26.715Z'))
     }
 

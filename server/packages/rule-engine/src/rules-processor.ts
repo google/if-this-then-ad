@@ -1,7 +1,6 @@
 import { AgentResult, Rule, CONDITIONS, RuleResult } from '../src/interfaces';
 import Repository from '../../../services/repository-service';
 import Collections from '../../../services/collection-factory';
-//import { RuleDefinition } from '../../../models/rule'
 import { Collection } from '../../../models/fire-store-entity';
 import { log } from '@iftta/util';
 
