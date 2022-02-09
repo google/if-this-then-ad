@@ -52,7 +52,7 @@ export class RulesProcessor {
             const ruleResult: RuleResult = {
                 ruleId: rule.id,
                 result: evalResult,
-                target: rule.targets || [] // Ensure that targets are configured
+                targets: rule.targets || [] // Ensure that targets are configured
             }
             ruleResults.push(ruleResult)
         });

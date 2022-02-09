@@ -42,7 +42,7 @@ export interface Rule {
 export interface RuleResult {
     ruleId: string,
     result: boolean | number, 
-    target: Array<TargetAgent>
+    targets: Array<TargetAgent>
 }
 
 interface actionParam {
