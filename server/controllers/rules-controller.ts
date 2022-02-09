@@ -20,7 +20,8 @@ export const create = async (req: Request, res: Response) => {
 
     // Parse incoming rule data. 
     const ruleDefinition: RuleDefinition = {
-        agent : req.body.agent, 
+        name: req.body.name,
+        source : req.body.source, 
         rule: req.body.rule, 
         targets: req.body.targets
      }

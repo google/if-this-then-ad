@@ -21,19 +21,19 @@ export enum CONDITIONS {
 export interface RuleDefinition {
     id?: string,
     jobId?: string,
-    agent:Agent,
-    rule:Rule,
+    name: string,
+    source: Agent,
+    rule: Rule,
     targets?: Array<TargetAgent>
 }
 export interface Rule {
-    name: string,
     interval: number,
     datapoint: string,
     condition: CONDITIONS.equals | CONDITIONS.greater | CONDITIONS.less,
     targetValue: string | number | boolean,
 }
 
-export interface Agent{
+export interface Agent {
     id: string,
     params: {
         dataPoint: string,
