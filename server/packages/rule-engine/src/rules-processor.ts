@@ -27,7 +27,7 @@ export class RulesProcessor {
         const rules: Rule[] = await repo.list();
 
         const rulesForJob = rules.filter((rule) => {
-            return rule.agent.id == jobResult.agentId;
+            return rule.source.id == jobResult.agentId;
         })
 
         log.info(`Got ${rulesForJob.length} rules for job ${jobResult.jobId}`);
@@ -68,31 +68,31 @@ export class RulesProcessor {
      * @returns {boolean}
      */
     public evaluate(rule: Rule, jobResult: AgentResult): boolean {
-        const dpResult = jobResult[rule.rule.dataPoint];
+        const dpResult = jobResult[rule.condition.dataPoint];
 
         if (typeof dpResult == 'undefined') {
-            const msg = `Datapoint ${rule.rule.dataPoint} is not a valid property of AgentResult`;
+            const msg = `Datapoint ${rule.condition.dataPoint} is not a valid property of AgentResult`;
             log.debug(msg);
             return false;
         }
 
-        if (rule.rule.condition == CONDITIONS.equals) {
-            return dpResult == rule.rule.value;
+        if (rule.condition.condition == CONDITIONS.equals) {
+            return dpResult == rule.condition.value;
         }
 
-        if (rule.rule.condition == CONDITIONS.greater) {
-            return dpResult > rule.rule.value;
+        if (rule.condition.condition == CONDITIONS.greater) {
+            return dpResult > rule.condition.value;
         }
 
-        if (rule.rule.condition == CONDITIONS.less) {
-            return dpResult < rule.rule.value;
+        if (rule.condition.condition == CONDITIONS.less) {
+            return dpResult < rule.condition.value;
         }
 
-        if (rule.rule.condition == CONDITIONS.yes) {
+        if (rule.condition.condition == CONDITIONS.yes) {
             return !!dpResult;
         }
 
-        if (rule.rule.condition == CONDITIONS.no) {
+        if (rule.condition.condition == CONDITIONS.no) {
             return !dpResult;
         }
 

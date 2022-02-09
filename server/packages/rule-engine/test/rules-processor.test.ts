@@ -22,17 +22,17 @@ describe("test add ", () => {
     const testRule: Rule = {
         id: '1',
         jobId: '2',
-        agent: {
+        source: {
             id: 'open-weather-map',
             name: 'open-weather-map'
         },
-        rule: {
+        condition: {
             name: 'clear-skies Hamburg',
             dataPoint: 'clearSky',
             condition: CONDITIONS.equals,
             value: true,
-            interval: 60,
         },
+        executionInterval: 60
     }
 
     const warmWeatherRule = Object.create(testRule);

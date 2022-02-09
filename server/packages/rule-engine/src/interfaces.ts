@@ -23,17 +23,18 @@ export enum CONDITIONS {
 
 export interface Rule {
     id: string,
-    agent: {
+    source: {
         id: string,
         name: string,
     },
-    rule: {
+    condition: {
         name: string,
         dataPoint: string,
         condition: CONDITIONS.equals | CONDITIONS.greater | CONDITIONS.less | CONDITIONS.yes | CONDITIONS.no,
         value: string | number | boolean,
-        interval: number,
-    }
+     
+    },
+    executionInterval: number,
     jobId: string,
     targets?: Array<TargetAgent>
 }
