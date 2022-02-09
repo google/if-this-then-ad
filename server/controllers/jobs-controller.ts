@@ -22,15 +22,16 @@ export const addJob = async (ruleDefinition: RuleDefinition): Promise<string> =>
     log.debug('jobs-controller:addJob');
     log.debug(JSON.stringify(ruleDefinition, null, 2));
     log.info('Checking for existing similar jobs'); 
-    const agentJobs = await repo.getBy("agentId", ruleDefinition.agent.id);
+    const agentJobs = await repo.getBy("agent", ruleDefinition.source.id);
 
        // get all jobs for agent. 
     const job: Job = {
-        agentId: ruleDefinition.agent.id,
+        agentId: ruleDefinition.source.id,
         executionInterval: ruleDefinition.rule.interval,
-        query: ruleDefinition.agent.params
+        query: ruleDefinition.source.params
     }
-
+    log.debug('Jobs-controller:addJob');
+    log.debug(job); 
     const existingJobs = agentJobs.filter((j) => {
         // remove ID to avoid deepequal being always false. 
         const id = j.id; 
