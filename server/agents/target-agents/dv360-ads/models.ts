@@ -1,4 +1,3 @@
-
 import { StringMappingType } from 'typescript';
 import { ApiCallParams } from './interfaces';
 
@@ -19,7 +18,7 @@ export class Advertiser implements DV360Entity {
         url: '/advertisers',
         params: {
             partnerId: '{partnerId}',
-        }
+        },
     };
     listName = 'advertisers';
 }

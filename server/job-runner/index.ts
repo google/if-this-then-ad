@@ -1,8 +1,8 @@
-import JobRunner from './job-runner'; 
+import JobRunner from './job-runner';
 
 /**
  * Starts execution of all available jobs
  */
 export const execute = async () => {
-    await JobRunner.runAll(); 
-}
+    await JobRunner.runAll();
+};

@@ -12,12 +12,12 @@
  */
 
 import { Request, Response, Router } from 'express';
-import { AuthenticateOptionsGoogle} from "passport-google-oauth20"
+import { AuthenticateOptionsGoogle } from 'passport-google-oauth20';
 import * as AuthController from '../controllers/auth-controller';
 import * as AccountController from '../controllers/account-controller';
-import * as AgentsController from '../controllers/agents-controller'; 
-import * as RulesController from '../controllers/rules-controller'; 
-import * as JobController from '../controllers/jobs-controller'; 
+import * as AgentsController from '../controllers/agents-controller';
+import * as RulesController from '../controllers/rules-controller';
+import * as JobController from '../controllers/jobs-controller';
 
 import someController from '../controllers/some';
 import pass from '../config/passport-setup';
@@ -29,23 +29,22 @@ const router = Router();
 /**
  *  Auth options
  *  Important: accessType: Offline or you will not get a refresh token
- *  which we need to perform background work. 
+ *  which we need to perform background work.
  */
 const options: AuthenticateOptionsGoogle = {
     accessType: 'offline',
-    prompt: 'consent'
-}
+    prompt: 'consent',
+};
 
 router.get('/api/auth/login', AuthController.showLogin);
+router.get('/api/auth/google', passport.authenticate('google', options));
 router.get(
-    '/api/auth/google',
-    passport.authenticate('google', options )
-);
-router.get('/api/auth/oauthcallback', passport.authenticate('google', {
+    '/api/auth/oauthcallback',
+    passport.authenticate('google', {
         failureRedirect: '/api/auth/login',
         successRedirect: '/api/auth/done',
-    }));
-  
+    }),
+);
 
 router.get('/api/auth/done', AuthController.authDone);
 router.get('/api/auth/logout', AuthController.logout);
@@ -60,24 +59,25 @@ router.post('/api/accounts', AccountController.create);
 router.post('/api/accounts/:id', AccountController.update);
 router.delete('/api/accounts/:id', AccountController.remove);
 
-// Rules endpoints 
-router.post('/api/rules', RulesController.create); 
-router.get('/api/rules', RulesController.list)
+// Rules endpoints
+router.post('/api/rules', RulesController.create);
+router.get('/api/rules', RulesController.list);
 
 // Job runner trigger endpoint
-router.get('/api/jobs/execute', JobController.executeJobs); 
+router.get('/api/jobs/execute', JobController.executeJobs);
 
 // possible urls:
 //  - /api/agents/dv360-ads/metadata
 //  - /api/agents/dv360-ads/list/lineItem/<advertiserId>
 //  - /api/agents/dv360-ads/list/advertiser/<partnerId>
 //  - /api/agents/dv360-ads/account-tree
-router.get('/api/agents/:agent/:method/:entity?/:parentId?',
+router.get(
+    '/api/agents/:agent/:method/:entity?/:parentId?',
     //pass.isAuthenticated,
-    AgentsController.getAgentMethodResult
+    AgentsController.getAgentMethodResult,
 );
 
-// router.post('/api/agent-results', PubSubController.messageHandler); 
+// router.post('/api/agent-results', PubSubController.messageHandler);
 
 // Default '/' route
 router.get('/', (req: Request, res: Response) => {

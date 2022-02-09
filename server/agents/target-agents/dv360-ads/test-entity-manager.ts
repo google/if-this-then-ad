@@ -1,8 +1,7 @@
-
 import EntityManager from './entity-manager';
 import { InstanceOptions, EntityType } from './interfaces';
 
-const options: InstanceOptions  = {
+const options: InstanceOptions = {
     entityType: 'LineItem',
     parentId: 4304640,
     entityId: 50389587,
@@ -10,7 +9,6 @@ const options: InstanceOptions  = {
 };
 const token = '';
 
-EntityManager
-    .getInstance(options, token)
+EntityManager.getInstance(options, token)
     .activate()
-    .then(x => console.log(x));
+    .then((x) => console.log(x));
