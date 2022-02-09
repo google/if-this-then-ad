@@ -1,7 +1,7 @@
 import EntityManager from './entity-manager'
 import { 
     AgentTask, TargetAction, actionParam, ActionResult,
-    EntityActions, InstanceOptions, IAgent
+    EntityActions, InstanceOptions, IAgent, AgentType, AgentMetadata,
 } from './interfaces';
 import { config } from './config';
 
@@ -66,8 +66,87 @@ export default class DV360Agent implements IAgent {
         return result;
     }
 
-    // TODO
-    public async getAgentMetadata() {}
+    // Metadata for UI
+    public async getAgentMetadata(): Promise<AgentMetadata> {
+        // TODO decide if we should store this metadata as json 
+        // and simply serve that to the caller. 
 
-    // TODO: Method to query DV360 entities for the UI
+        const meta: AgentMetadata = {
+            id: config.id,
+            displayName: this.name,
+            type: AgentType.TARGET,
+            arguments: ["targetLocation"],
+            dataPoints: [{
+                id: "targetLocation",
+                displayName: "Location",
+                dataType: typeof String(),
+            }, {
+                id: "temperature",
+                displayName: "Temperature",
+                dataType: typeof Number(),
+            }, {
+                id: "windSpeed",
+                displayName: "Wind speed",
+                dataType: typeof Number(),
+            }, {
+                id: "clouds",
+                displayName: "Clouds",
+                dataType: typeof Boolean(),
+            }, {
+                id: "rain",
+                displayName: "Rain",
+                dataType: typeof Boolean(),
+            }, {
+                id: "snow",
+                displayName: "Snow",
+                dataType: typeof Boolean(),
+            }, {
+                id: "thunderstorm",
+                displayName: "Thunderstorm",
+                dataType: typeof Boolean(),
+            },
+            {
+                id: "clearSky",
+                displayName: "Clear Sky",
+                dataType: typeof Boolean(),
+            },
+            {
+                id: "timestamp",
+                displayName: "Last execution",
+                dataType: typeof Date(),
+            }],
+        };
+
+        return Promise.resolve(meta);
+    }
+
+    // Query DV360 entities for the UI
+    public async getEntityList(token: string, params: Object) {
+        if (
+            ! ('entity' in params) || ! ('parentId' in params)
+            || ! params['entity'] || ! params['parentId']
+        ) {
+            throw new Error('Please specify both "entity" and "parentId"');
+        }
+
+        const instanceOptions: InstanceOptions = {
+            entityType: params['entity'],
+            parentId: params['parentId'],
+        };
+
+        const instance = EntityManager.getInstance(instanceOptions, token);
+        const result: any[] = [];
+        (await instance.list()).forEach((o: any) => {
+            result.push({
+                name: o?.displayName,
+                partnerId: o?.partnerId,
+                advertiserId: o?.advertiserId,
+                insertionOrderId: o?.insertionOrderId,
+                lineItemId: o?.lineItemId,
+                entityStatus: o?.entityStatus,
+            });
+        });
+
+        return result;
+    }
 }

@@ -67,11 +67,12 @@
         "nodemon": "^2.0.15",
         "prettier": "^2.5.0",
         "typescript": "^4.5.4"
-    }, 
-    "_moduleAliases":{
-        "@iftta/job-runner": "./job-runner", 
+    },
+    "_moduleAliases": {
+        "@iftta/job-runner": "./job-runner",
         "@iftta/rules-engine": "./packages/rule-engine",
-        "@iftta/open-weather-map-agent": "./agents/source-agents/open-weather-map", 
+        "@iftta/open-weather-map-agent": "./agents/source-agents/open-weather-map",
+        "@iftta/dv360-ads": "./agents/target-agents/dv360-ads",
         "@iftta/util": "./util"
     }
 }

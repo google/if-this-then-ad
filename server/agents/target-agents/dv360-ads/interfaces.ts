@@ -104,3 +104,22 @@ export interface ApiCallParams {
     params?: Object,
     data?: Object,
 }
+
+export enum AgentType {
+    SOURCE = "source-agent", 
+    TARGET = "target-agent"
+}
+
+export interface AgentMetadata {
+    id: string, 
+    displayName: string,
+    type: AgentType,
+    arguments: Array<string>, 
+    dataPoints: Array<DataPoint>
+}
+
+export interface DataPoint {
+    id: string, 
+    displayName: string, 
+    dataType: string |number|boolean |Date
+}

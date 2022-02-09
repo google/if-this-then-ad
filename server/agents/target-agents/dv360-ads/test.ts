@@ -21,12 +21,12 @@ const task: AgentTask = {
                     value: 50389587,
                 },
                 {
-                    key: 'advertiserId',
+                    key: 'parentId',
                     value: 4304640,
                 },
                 {
                     key: 'entityType',
-                    value: 'LI',
+                    value: 'LineItem',
                 },
             ],
         }, { 
@@ -41,12 +41,12 @@ const task: AgentTask = {
                     value: 1231250389587,// non-existing id
                 },
                 {
-                    key: 'advertiserId',
+                    key: 'parentId',
                     value: 4304640,
                 },
                 {
                     key: 'entityType',
-                    value: 'LI',
+                    value: 'LineItem',
                 },
             ],
         }, { 
@@ -61,12 +61,12 @@ const task: AgentTask = {
                     value: 19345182,
                 },
                 {
-                    key: 'advertiserId',
+                    key: 'parentId',
                     value: 4304640,
                 },
                 {
                     key: 'entityType',
-                    value: 'IO',
+                    value: 'InsertionOrder',
                 },
             ],
         }]

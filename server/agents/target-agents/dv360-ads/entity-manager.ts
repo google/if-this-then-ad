@@ -71,8 +71,8 @@ export default class EntityManager<T extends DV360Entity> {
         private entityId: number,
         private token: string
     ) {
-        if (! parentId || ! entityId || ! token) {
-            throw new Error('"parentId & entityId & token" cannot be empty');
+        if (! parentId || ! token) {
+            throw new Error('"parentId & token" cannot be empty');
         }
 
         this.object = new objectType();
@@ -94,7 +94,7 @@ export default class EntityManager<T extends DV360Entity> {
             .replace('{parentId}', this.parentId.toString())
             .replace('{partnerId}', this.parentId.toString())
             .replace('{advertiserId}', this.parentId.toString())
-            .replace('{entityId}', this.entityId.toString());
+            .replace('{entityId}', this.entityId?.toString());
     }
 
     private parseTemplateObject(o: Object|undefined): Object {
@@ -119,6 +119,10 @@ export default class EntityManager<T extends DV360Entity> {
 
     // Status change methods
     private async changeStatus(es: EntityStatus) {
+        if (! this.entityId) {
+            throw new Error('entityId must be set');
+        }
+
         const apiCallParams = this.getApiCallParams(this.object.apiConfig);
 
         apiCallParams.url += `/${this.entityId}`;
