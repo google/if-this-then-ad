@@ -55,18 +55,21 @@ export enum EntityActions {
 
 // Whatever we get from the client
 export enum EntityType {
-    LI = 'LI',
-    IO = 'IO'
+    lineItem = 'lineItem',
+    insertionOrder = 'insertionOrder',
+    campaign = 'campaign',
+    advertiser = 'advertiser',
+    partner = 'partner',
 }
 
 export enum EntityStatus {
-    ACTIVATE = 'ENTITY_STATUS_ACTIVE',
-    PAUSE = 'ENTITY_STATUS_PAUSED'
+    ACTIVE = 'ENTITY_STATUS_ACTIVE',
+    PAUSED = 'ENTITY_STATUS_PAUSED'
 }
 
 export interface InstanceOptions {
     entityType: string,
-    advertiserId?: number,
+    parentId?: number,
     entityId?: number,
     action?: string,
 }
@@ -94,4 +97,29 @@ export interface DV360ApiCallOptions {
     httpMethod: httpMethods,
     url: string,
     data: Object,
+}
+
+export interface ApiCallParams {
+    url: string,
+    params?: Object,
+    data?: Object,
+}
+
+export enum AgentType {
+    SOURCE = "source-agent", 
+    TARGET = "target-agent"
+}
+
+export interface AgentMetadata {
+    id: string, 
+    displayName: string,
+    type: AgentType,
+    arguments: Array<string>, 
+    dataPoints: Array<DataPoint>
+}
+
+export interface DataPoint {
+    id: string, 
+    displayName: string, 
+    dataType: string |number|boolean |Date
 }

@@ -1,10 +1,10 @@
-import { config } from 'winston';
+
 import EntityManager from './entity-manager';
 import { InstanceOptions, EntityType } from './interfaces';
 
 const options: InstanceOptions  = {
-    entityType: 'LI',
-    advertiserId: 4304640,
+    entityType: 'LineItem',
+    parentId: 4304640,
     entityId: 50389587,
     action: 'activate',
 };

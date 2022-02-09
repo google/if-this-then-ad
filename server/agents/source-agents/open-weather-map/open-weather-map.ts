@@ -102,12 +102,12 @@ class OpenWeatherMap implements IAgent {
         return weatherResult;
     }
 
-    public async getAgentMetadata(): Promise<AgentMetadata> {
+    public static async getAgentMetadata(): Promise<AgentMetadata> {
         // TODO decide if we should store this metadata as json 
         // and simply serve that to the caller. 
 
         const meta: AgentMetadata = {
-            id: this.agentId,
+            id: config.id,
             displayName: this.name,
             type: AgentType.SOURCE,
             arguments: ["targetLocation"],

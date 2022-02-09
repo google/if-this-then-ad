@@ -15,7 +15,7 @@ import { Request, Response, Router } from 'express';
 import { AuthenticateOptionsGoogle} from "passport-google-oauth20"
 import * as AuthController from '../controllers/auth-controller';
 import * as AccountController from '../controllers/account-controller';
-import * as MetadataController from '../controllers/metadata-controller'; 
+import * as AgentsController from '../controllers/agents-controller'; 
 import * as RulesController from '../controllers/rules-controller'; 
 import * as JobController from '../controllers/jobs-controller'; 
 
@@ -67,8 +67,16 @@ router.get('/api/rules', RulesController.list)
 // Job runner trigger endpoint
 router.get('/api/jobs/execute', JobController.executeJobs); 
 
-// Expose available metadata to the UI
-router.get('/api/agents/metadata', MetadataController.getAgentMetadata); 
+// possible urls:
+//  - /api/agents/dv360-ads/metadata
+//  - /api/agents/dv360-ads/list/lineItem/<advertiserId>
+//  - /api/agents/dv360-ads/list/advertiser/<partnerId>
+//  - /api/agents/dv360-ads/account-tree
+router.get('/api/agents/:agent/:method/:entity?/:parentId?',
+    //pass.isAuthenticated,
+    AgentsController.getAgentMethodResult
+);
+
 // router.post('/api/agent-results', PubSubController.messageHandler); 
 
 // Default '/' route
