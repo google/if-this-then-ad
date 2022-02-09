@@ -22,7 +22,8 @@ export const create = async (req: Request, res: Response) => {
     const rule: Rule = {
         name: req.body.name,
         source : req.body.source, 
-        condition: req.body.rule, 
+        condition: req.body.condition,
+        executionInterval: req.body.executionInterval, 
         targets: req.body.targets
      }
 

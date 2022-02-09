@@ -27,7 +27,7 @@ export const addJob = async (rule: Rule): Promise<string> => {
        // get all jobs for agent. 
     const job: Job = {
         agentId: rule.source.id,
-        executionInterval: rule.condition.interval,
+        executionInterval: rule.executionInterval,
         query: rule.source.params
     }
     log.debug('Jobs-controller:addJob');

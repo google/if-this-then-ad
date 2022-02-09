@@ -24,10 +24,10 @@ export interface Rule {
     name: string,
     source: Agent,
     condition: Condition,
+    executionInterval: number,
     targets?: Array<TargetAgent>
 }
 export interface Condition {
-    interval: number,
     datapoint: string,
     condition: CONDITIONS.equals | CONDITIONS.greater | CONDITIONS.less,
     targetValue: string | number | boolean,
