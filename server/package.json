@@ -57,7 +57,7 @@
         "@types/jest": "^27.0.3",
         "@types/node": "^16.11.10",
         "@types/passport": "^1.0.7",
-        "@types/passport-google-oauth2": "^0.1.4",
+        "@types/passport-google-oauth20": "^2.0.11",
         "@typescript-eslint/eslint-plugin": "^5.4.0",
         "@typescript-eslint/parser": "^5.4.0",
         "concurrently": "^6.4.0",

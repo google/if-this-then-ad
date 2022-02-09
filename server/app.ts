@@ -12,7 +12,7 @@
  */
 
 import express from 'express';
-import {Request, Response, NextFunction} from 'express'
+import { Request, Response, NextFunction } from 'express'
 import session from 'express-session';
 import cors from 'cors';
 import path from 'path';
@@ -33,7 +33,7 @@ if (envConfig.error || envConfig.parsed == null) {
 let app = express();
 
 log.info(`LOG LEVEL SETTING : ${process.env.LOG_LEVEL}`);
-log.debug({...process.env});
+log.debug({ ...process.env });
 log.debug('-------------------------------END CONFIGURATION----------------');
 const PORT = process.env.PORT || 8080;
 app.set('PORT', PORT);
@@ -74,11 +74,11 @@ app.use(
     })
 );
 
-export const requestLogger = (req:Request, res:Response, next:NextFunction) => {
-    const message = ` url:${req.url} 
-                      method: ${req.method} 
-                      params: ${JSON.stringify(req.params, null, 2)} 
-                      body: ${JSON.stringify(req.body, null, 2)}`
+export const requestLogger = (req: Request, res: Response, next: NextFunction) => {
+    const message = ` Url:${req.url} 
+                      Method: ${req.method}
+                      Params: ${JSON.stringify(req.params, null, 2)} 
+                      Body: ${JSON.stringify(req.body, null, 2)}`
     log.debug(message);
     next();
 }
