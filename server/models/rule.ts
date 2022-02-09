@@ -23,10 +23,10 @@ export interface RuleDefinition {
     jobId?: string,
     name: string,
     source: Agent,
-    condition: Rule,
+    condition: Condition,
     targets?: Array<TargetAgent>
 }
-export interface Rule {
+export interface Condition {
     interval: number,
     datapoint: string,
     condition: CONDITIONS.equals | CONDITIONS.greater | CONDITIONS.less,
