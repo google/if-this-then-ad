@@ -18,7 +18,7 @@ export enum CONDITIONS {
     less = 'lt'
 }
 
-export interface RuleDefinition {
+export interface Rule {
     id?: string,
     jobId?: string,
     name: string,

@@ -1,6 +1,6 @@
 
 import {Request, Response} from 'express';
-import { RuleDefinition } from "../models/rule";
+import { Rule } from "../models/rule";
 import Repository from '../services/repository-service';
 import Collections from '../services/collection-factory';
 import { Collection } from "../models/fire-store-entity";
@@ -16,19 +16,19 @@ const repo = new Repository<Job>(jobsCollection);
  * Creates a new job based on the rule Data. 
  * if a similar job already exists, no new job 
  * will be created. 
- * @param {RuleDefinition} ruleDefinition 
+ * @param {Rule} rule 
  */
-export const addJob = async (ruleDefinition: RuleDefinition): Promise<string> => {
+export const addJob = async (rule: Rule): Promise<string> => {
     log.debug('jobs-controller:addJob');
-    log.debug(JSON.stringify(ruleDefinition, null, 2));
+    log.debug(JSON.stringify(rule, null, 2));
     log.info('Checking for existing similar jobs'); 
-    const agentJobs = await repo.getBy("agent", ruleDefinition.source.id);
+    const agentJobs = await repo.getBy("agent", rule.source.id);
 
        // get all jobs for agent. 
     const job: Job = {
-        agentId: ruleDefinition.source.id,
-        executionInterval: ruleDefinition.condition.interval,
-        query: ruleDefinition.source.params
+        agentId: rule.source.id,
+        executionInterval: rule.condition.interval,
+        query: rule.source.params
     }
     log.debug('Jobs-controller:addJob');
     log.debug(job); 
