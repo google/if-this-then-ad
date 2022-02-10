@@ -177,16 +177,7 @@ class JobRunner {
     public async runAll() {
 
         // Get a list of jobs to execute 
-        log.info('Fetching job list to execute');
-        const allJobs: Job[] = await this.jobsRepo.list();
-
-        // Filter by execution interval 
-        const now = Date.now();
-        const offsetSec = new Date().getTimezoneOffset() * 1000;
-        const nowUTC = new Date(now + offsetSec);
-
-        log.debug(`offset : ${offsetSec}`);
-
+        log.info('Fetching job list to execute'); 
         const jobs = await this.getEligibleJobs();
         const jobCount = jobs.length;
         log.debug('List of jobs to execute');
@@ -195,7 +186,7 @@ class JobRunner {
 
         if (jobCount == 0) {
             log.info('Sleeping till next execution cycle');
-            return
+            return;
         }
 
         // const topic = await this.init();
@@ -209,8 +200,8 @@ class JobRunner {
         // Collect all actions that need to be performed
         // on the target systems.
         const targetActions: Array<RuleResult[]> = []
-        const executionTimes: Array<ExecutionTime> = [];
-        let allResults:Array<Array<RuleResult>> = [[]]; 
+        const executionTimes:Array<ExecutionTime> = []; 
+        const allResults:Array<Array<RuleResult>> = [[]];
 
         while (!(await jobResult).done) {
             log.debug('my jobResult');
