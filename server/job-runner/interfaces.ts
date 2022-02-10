@@ -1,11 +1,11 @@
 import * as firestore from '@google-cloud/firestore'
-import Timestamp = firestore.Timestamp; 
+
 
 export interface Job {
     id?: string,
     agentId: string,
     executionInterval: number,
-    lastExecution?: Timestamp,
+    lastExecution?: Date,
     query?: {
         dataPoint: string,
         value: string | number | boolean
@@ -16,4 +16,4 @@ export interface ExecutionTime {
     lastExecution: Date,
 }
 
-export const _Timestamp = firestore.Timestamp
+

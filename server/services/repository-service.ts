@@ -11,8 +11,10 @@
     limitations under the License.
  */
 
-import {log} from '@iftta/util'
+import { log } from '@iftta/util'
 import { FirestoreCollection } from '../models/fire-store-entity';
+import { QueryDocumentSnapshot } from '@google-cloud/firestore';
+import { isObject } from 'util';
 
 class RepositoryService<T> {
     db: any;
@@ -26,11 +28,43 @@ class RepositoryService<T> {
         this.db = collection.db;
     }
 
+    private dateConverter() {
+
+        const fromFirestore = function (snapshot: QueryDocumentSnapshot) {
+
+            let document = {};
+
+            const deepInspect = (data) => {
+                for (let field of Object.keys(data)) {
+                    // detect the timestamp object
+                    if (isObject(data[field])) {
+                        if (Object.keys(data[field]).includes('_seconds')) {
+                            log.debug(`Converting field : ${field}  ${typeof data[field]}`)
+                            document[field] = data[field].toDate();
+                            log.debug('Converted Timestamp to date');
+                            log.debug(document[field]);
+                        } else {
+                            // go down a level recursively. 
+                            deepInspect(data[field]);
+                        }
+
+                    } else {
+                        document[field] = data[field];
+                    }
+                }
+            }
+            const data = snapshot.data();
+            deepInspect(data);
+            return document;
+        }
+
+        return { fromFirestore: fromFirestore }
+    }
+
     async save<T>(obj: T): Promise<string> {
         log.debug('Saving data to firestore');
         log.debug(JSON.stringify(obj, null, 2));
         try {
-
             const collectionRef = this.db.collection(this.fireStoreCollection.name);
             const result = await collectionRef.add(obj);
             log.debug('Saved entity with id :' + result.id);
@@ -47,6 +81,7 @@ class RepositoryService<T> {
         try {
             const collection = await this.db
                 .collection(this.fireStoreCollection.name)
+                .withConverter(this.dateConverter())
                 .get();
 
             collection.forEach(entry => {
@@ -68,7 +103,9 @@ class RepositoryService<T> {
 
             const docRef = this.db
                 .collection(this.fireStoreCollection.name)
+                .withConverter(this.dateConverter())
                 .doc(id);
+
             const doc = await docRef.get();
 
             if (!doc.exists) {
@@ -90,7 +127,9 @@ class RepositoryService<T> {
         let data: Array<T> = [];
         try {
 
-            const colRef = this.db.collection(this.fireStoreCollection.name);
+            const colRef = this.db
+                .collection(this.fireStoreCollection.name)
+                .withConverter(this.dateConverter());
             const snapshot = await colRef.where(fieldName, '==', fieldValue).get();
 
             if (snapshot.empty) {
