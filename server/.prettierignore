@@ -3,3 +3,6 @@ build
 dist
 res
 coverage
+docs
+package.json
+package-lock.json

@@ -16,7 +16,7 @@ import winston from 'winston';
 import { LoggingWinston } from '@google-cloud/logging-winston';
 const { format, transports } = winston;
 
-const logFormat = format.printf(info => `${info.timestamp} ${info.level} ${info.message} `);
+const logFormat = format.printf((info) => `${info.timestamp} ${info.level} ${info.message} `);
 
 const getTransportsForEnv = () => {
     const env = process.env.NODE_ENV;
@@ -27,14 +27,13 @@ const getTransportsForEnv = () => {
             new transports.Console({
                 format: format.combine(
                     format.timestamp({
-                        format: 'YYYY-MM-DD HH:mm:ss'
+                        format: 'YYYY-MM-DD HH:mm:ss',
                     }),
-                    format.json()
-                )
-
+                    format.json(),
+                ),
             }),
             loggingWinston,
-        ]
+        ];
     }
     // for all other envs
     return [
@@ -42,13 +41,13 @@ const getTransportsForEnv = () => {
             format: format.combine(
                 format.colorize({ message: true, level: true }),
                 format.timestamp({
-                    format: 'YYYY-MM-DD HH:mm:ss'
+                    format: 'YYYY-MM-DD HH:mm:ss',
                 }),
-                logFormat
-            )
-        }
-        )];
-}
+                logFormat,
+            ),
+        }),
+    ];
+};
 
 const getLogLevel = (): string => {
     // when Log level is set override environment settings
@@ -57,17 +56,16 @@ const getLogLevel = (): string => {
         return level;
     }
     if (process.env.NODE_ENV == 'production') {
-        return 'info'
+        return 'info';
     }
-    return 'debug'
-}
+    return 'debug';
+};
 export const logger = winston.createLogger({
     level: getLogLevel(),
     format: format.combine(
         format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
-        format.metadata({ fillExcept: ['message', 'level', 'timestamp'] })
+        format.metadata({ fillExcept: ['message', 'level', 'timestamp'] }),
     ),
     transports: getTransportsForEnv(),
-    exitOnError: false
+    exitOnError: false,
 });
-

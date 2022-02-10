@@ -7,13 +7,12 @@ export interface Job {
     executionInterval: number,
     lastExecution?: Date,
     query?: {
-        dataPoint: string,
-        value: string | number | boolean
-    }
+        dataPoint: string;
+        value: string | number | boolean;
+    };
 }
 export interface ExecutionTime {
-    jobId: string,
-    lastExecution: Date,
+    jobId: string;
+    lastExecution: Date;
 }
-
 

@@ -15,7 +15,7 @@ export interface FirestoreCollection {
     db: any;
 }
 /**
- * Allowed collection types for use with the 
+ * Allowed collection types for use with the
  * repository
  */
 export enum Collection {

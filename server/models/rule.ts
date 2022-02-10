@@ -11,52 +11,54 @@
     limitations under the License.
  */
 
-
 export enum CONDITIONS {
     equals = 'eq',
     greater = 'gt',
-    less = 'lt'
+    less = 'lt',
 }
 
-export interface RuleDefinition {
-    id?: string,
-    jobId?: string,
-    agent:Agent,
-    rule:Rule,
-    targets?: Array<TargetAgent>
-}
 export interface Rule {
-    name: string,
-    interval: number,
-    datapoint: string,
-    condition: CONDITIONS.equals | CONDITIONS.greater | CONDITIONS.less,
-    targetValue: string | number | boolean,
+    id?: string;
+    jobId?: string;
+    name: string;
+    source: Agent;
+    condition: Condition;
+    executionInterval: number;
+    targets?: Array<TargetAgent>;
 }
 
-export interface Agent{
-    id: string,
-    params: {
-        dataPoint: string,
-        value: string | number | boolean
-    },
+export interface Condition {
+    datapoint: string;
+    condition: CONDITIONS.equals | CONDITIONS.greater | CONDITIONS.less;
+    targetValue: string | number | boolean;
 }
+
+export interface Agent {
+    id: string;
+    params: {
+        dataPoint: string;
+        value: string | number | boolean;
+    };
+}
+
 export interface RuleResult {
-    ruleId: string,
-    result: boolean | number,
-    target: Array<TargetAgent>
+    ruleId: string;
+    result: boolean | number;
+    target: Array<TargetAgent>;
 }
 
 interface actionParam {
-    param: string,
-    value: string | number | boolean
+    param: string;
+    value: string | number | boolean;
 }
+
 interface TargetActions {
-    action: string,
-    actionParams: Array<actionParam>
+    action: string;
+    actionParams: Array<actionParam>;
 }
 
 export interface TargetAgent {
-    agentId: string,
-    ruleResult?: RuleResult,
-    actions: Array<TargetActions>
+    agentId: string;
+    ruleResult?: RuleResult;
+    actions: Array<TargetActions>;
 }
