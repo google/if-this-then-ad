@@ -20,8 +20,8 @@
         "w-node": "nodemon dist/index.js",
         "dev": "concurrently -k -p \"[{name}]\" -n \"TypeScript,Node\" -c \"yellow.bold,green.bold\" \"npm run w-typescript\" \"npm run w-node\"",
         "test": "jest --passWithNoTests",
-        "prettier": "npx prettier --write .",
-        "pre-commit": "npm install && npm run prettier && npm run build && npm test"
+        "format": "npx prettier --config .prettierrc.js --write .",
+        "pre-commit": "npm install && npm run format && npm run build && npm test"
     },
     "engines": {
         "node": ">= 12.0.0"
@@ -45,7 +45,6 @@
         "passport": "^0.5.2",
         "passport-google-oauth20": "^2.0.0",
         "passport-google-oidc": "^0.1.0",
-        "ts-node": "^10.4.0",
         "typescript": "^4.5.4",
         "winston": "^3.3.3"
     },
@@ -57,7 +56,7 @@
         "@types/jest": "^27.0.3",
         "@types/node": "^16.11.10",
         "@types/passport": "^1.0.7",
-        "@types/passport-google-oauth2": "^0.1.4",
+        "@types/passport-google-oauth20": "^2.0.11",
         "@typescript-eslint/eslint-plugin": "^5.4.0",
         "@typescript-eslint/parser": "^5.4.0",
         "concurrently": "^6.4.0",
@@ -66,12 +65,14 @@
         "jest": "^27.3.1",
         "nodemon": "^2.0.15",
         "prettier": "^2.5.0",
+        "ts-node": "^10.4.0",
         "typescript": "^4.5.4"
-    }, 
-    "_moduleAliases":{
-        "@iftta/job-runner": "./job-runner", 
+    },
+    "_moduleAliases": {
+        "@iftta/job-runner": "./job-runner",
         "@iftta/rules-engine": "./packages/rule-engine",
-        "@iftta/open-weather-map-agent": "./agents/source-agents/open-weather-map", 
+        "@iftta/open-weather-map-agent": "./agents/source-agents/open-weather-map",
+        "@iftta/dv360-ads": "./agents/target-agents/dv360-ads",
         "@iftta/util": "./util"
     }
 }

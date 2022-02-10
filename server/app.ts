@@ -12,7 +12,7 @@
  */
 
 import express from 'express';
-import {Request, Response, NextFunction} from 'express'
+import { Request, Response, NextFunction } from 'express';
 import session from 'express-session';
 import cors from 'cors';
 import path from 'path';
@@ -33,7 +33,7 @@ if (envConfig.error || envConfig.parsed == null) {
 let app = express();
 
 log.info(`LOG LEVEL SETTING : ${process.env.LOG_LEVEL}`);
-log.debug({...process.env});
+log.debug({ ...process.env });
 log.debug('-------------------------------END CONFIGURATION----------------');
 const PORT = process.env.PORT || 8080;
 app.set('PORT', PORT);
@@ -49,14 +49,11 @@ app.use(express.json());
 app.use(bodyParser.json({ type: '*/*' }));
 app.use(express.urlencoded({ extended: true }));
 
-
-
-
-// Cookie settings 
+// Cookie settings
 let now = new Date().getTime();
 const interval = 3600 * 24 * 1000;
 const cookieExpiresOn = new Date(now + interval);
-log.debug(`Cookie expires on : ${cookieExpiresOn}`)
+log.debug(`Cookie expires on : ${cookieExpiresOn}`);
 
 app.use(
     session({
@@ -67,21 +64,21 @@ app.use(
         secret: process.env.SESSION_SECRET || 's9hp0VtUkd$FJM$T91lB',
         cookie: {
             secure: false,
-            expires: cookieExpiresOn
+            expires: cookieExpiresOn,
         },
         resave: false,
         saveUninitialized: true,
-    })
+    }),
 );
 
-export const requestLogger = (req:Request, res:Response, next:NextFunction) => {
-    const message = ` url:${req.url} 
-                      method: ${req.method} 
-                      params: ${JSON.stringify(req.params, null, 2)} 
-                      body: ${JSON.stringify(req.body, null, 2)}`
+export const requestLogger = (req: Request, res: Response, next: NextFunction) => {
+    const message = ` Url:${req.url} 
+                      Method: ${req.method}
+                      Params: ${JSON.stringify(req.params, null, 2)} 
+                      Body: ${JSON.stringify(req.body, null, 2)}`;
     log.debug(message);
     next();
-}
+};
 
 app.use(requestLogger);
 
