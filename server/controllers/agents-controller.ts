@@ -15,6 +15,15 @@ const allowedAgentMethods = {
     }
 };
 
+export const getAgentsMetadata = async (req: Request, res: Response) => {
+    const result: Object[] = [];
+    for (const agent in allowedAgentMethods) {
+        result.push(await allowedAgentMethods[agent].metadata());
+    }
+
+    return res.json(result);
+}
+
 export const getAgentMethodResult = async (req: Request, res: Response) => {
     log.debug(`getAgentMethodResult: ${JSON.stringify(req.params)}`);
 

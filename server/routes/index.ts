@@ -68,11 +68,20 @@ router.get('/api/rules', RulesController.list)
 router.get('/api/jobs/execute', JobController.executeJobs); 
 
 // possible urls:
-//  - /api/agents/dv360-ads/metadata
-//  - /api/agents/dv360-ads/list/lineItem/<advertiserId>
-//  - /api/agents/dv360-ads/list/advertiser/<partnerId>
-//  - /api/agents/dv360-ads/account-tree
-router.get('/api/agents/:agent/:method/:entity?/:parentId?',
+// DV360 Hierarchy: Partener > Advertiser > Campagne > Insertion Order > Line Item
+//  - All agents list with agent name and metadata 
+//      [{ name: 'agent name', type: ..., urls: {} }] (getAgentMetadata):
+//      /api/agents/metadata
+//  - Agent metadata: /api/agents/dv360-ads/metadata
+//  - /api/agents/dv360-ads/list/partners
+//  - /api/agents/dv360-ads/list/insertionOrder?advertiserId=<advertiserId>&partnerId=<partnerId>
+//  - /api/agents/dv360-ads/list/lineItem?advertiserId=<advertiserId>&insertionOrder=<insertionOrderId>&partnerId=<partnerId>
+//  - /api/agents/dv360-ads/list/advertiser?partnerId=<partnerId>
+router.get('/api/agents/metadata',
+    //pass.isAuthenticated,
+    AgentsController.getAgentsMetadata
+);
+router.get('/api/agents/:agent/:method',
     //pass.isAuthenticated,
     AgentsController.getAgentMethodResult
 );

@@ -1,7 +1,7 @@
 import EntityManager from './entity-manager'
 import { 
     AgentTask, TargetAction, actionParam, ActionResult,
-    EntityActions, InstanceOptions, IAgent, AgentType, AgentMetadata,
+    EntityActions, InstanceOptions, IAgent, AgentType, AgentMetadata, EntityType, httpMethods
 } from './interfaces';
 import { config } from './config';
 
@@ -75,46 +75,62 @@ export default class DV360Agent implements IAgent {
             id: config.id,
             displayName: this.name,
             type: AgentType.TARGET,
-            arguments: ["targetLocation"],
+            arguments: ["advertiserId", "entityId", "entityType"],
+            api: [
+                {
+                    dataPoint: "partnerId",
+                    list: {
+                        url: `/api/agents/${config.id}/list/patner`,
+                        method: httpMethods.GET,
+                    }
+                },
+                {
+                    dataPoint: "advertiserId",
+                    list: {
+                        url: `/api/agents/${config.id}/list/advertiser`,
+                        method: httpMethods.GET,
+                        params: {
+                            'partnerId': typeof Number(),
+                        }
+                    }
+                },
+                {
+                    dataPoint: "insertionOrderId",
+                    list: {
+                        url: `/api/agents/${config.id}/list/insertionOrder`,
+                        method: httpMethods.GET,
+                        params: {
+                            'partnerId': typeof Number(),
+                            'advertiserId': typeof Number(),
+                        }
+                    }
+                },
+                {
+                    dataPoint: "lineItemId",
+                    list: {
+                        url: `/api/agents/${config.id}/list/lineItem`,
+                        method: httpMethods.GET,
+                        params: {
+                            'partnerId': typeof Number(),
+                            'advertiserId': typeof Number(),
+                            'insertionOrderId': typeof Number(),
+                        }
+                    }
+                },
+            ],
             dataPoints: [{
-                id: "targetLocation",
-                displayName: "Location",
-                dataType: typeof String(),
-            }, {
-                id: "temperature",
-                displayName: "Temperature",
+                id: "advertiserId",
+                displayName: "Advertiser",
                 dataType: typeof Number(),
             }, {
-                id: "windSpeed",
-                displayName: "Wind speed",
+                id: "entityId",
+                displayName: "Entity",
                 dataType: typeof Number(),
             }, {
-                id: "clouds",
-                displayName: "Clouds",
-                dataType: typeof Boolean(),
-            }, {
-                id: "rain",
-                displayName: "Rain",
-                dataType: typeof Boolean(),
-            }, {
-                id: "snow",
-                displayName: "Snow",
-                dataType: typeof Boolean(),
-            }, {
-                id: "thunderstorm",
-                displayName: "Thunderstorm",
-                dataType: typeof Boolean(),
-            },
-            {
-                id: "clearSky",
-                displayName: "Clear Sky",
-                dataType: typeof Boolean(),
-            },
-            {
-                id: "timestamp",
-                displayName: "Last execution",
-                dataType: typeof Date(),
-            }],
+                id: "entityType",
+                displayName: "Entity Type",
+                dataType: `${EntityType.insertionOrder}|${EntityType.lineItem}`,
+            },],
         };
 
         return Promise.resolve(meta);
