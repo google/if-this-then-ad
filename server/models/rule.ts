@@ -17,16 +17,17 @@ export enum CONDITIONS {
     less = 'lt',
 }
 
-export interface RuleDefinition {
+export interface Rule {
     id?: string;
     jobId?: string;
-    agent: Agent;
-    rule: Rule;
+    name: string;
+    source: Agent;
+    condition: Condition;
+    executionInterval: number;
     targets?: Array<TargetAgent>;
 }
-export interface Rule {
-    name: string;
-    interval: number;
+
+export interface Condition {
     datapoint: string;
     condition: CONDITIONS.equals | CONDITIONS.greater | CONDITIONS.less;
     targetValue: string | number | boolean;
@@ -39,6 +40,7 @@ export interface Agent {
         value: string | number | boolean;
     };
 }
+
 export interface RuleResult {
     ruleId: string;
     result: boolean | number;
@@ -49,6 +51,7 @@ interface actionParam {
     param: string;
     value: string | number | boolean;
 }
+
 interface TargetActions {
     action: string;
     actionParams: Array<actionParam>;

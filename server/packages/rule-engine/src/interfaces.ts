@@ -2,14 +2,7 @@ export interface AgentResult {
     agentId: string;
     jobId: string;
     agentName: string;
-    targetLocation: string;
-    temperature: number;
-    windSpeed: number;
-    clouds: boolean;
-    rain: boolean;
-    snow: boolean;
-    thunderstorm: boolean;
-    clearSky: boolean;
+    data: any;
     timestamp: Date;
 }
 
@@ -23,11 +16,11 @@ export enum CONDITIONS {
 
 export interface Rule {
     id: string;
-    agent: {
+    source: {
         id: string;
         name: string;
     };
-    rule: {
+    condition: {
         name: string;
         dataPoint: string;
         condition:
@@ -37,8 +30,8 @@ export interface Rule {
             | CONDITIONS.yes
             | CONDITIONS.no;
         value: string | number | boolean;
-        interval: number;
     };
+    executionInterval: number;
     jobId: string;
     targets?: Array<TargetAgent>;
 }
@@ -46,7 +39,7 @@ export interface Rule {
 export interface RuleResult {
     ruleId: string;
     result: boolean | number;
-    target: Array<TargetAgent>;
+    targets: Array<TargetAgent>;
 }
 
 interface actionParam {

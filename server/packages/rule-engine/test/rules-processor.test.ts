@@ -8,31 +8,33 @@ describe('test add ', () => {
         agentId: 'open-weather-map-agent',
         jobId: '2',
         agentName: 'Weather',
-        targetLocation: 'Hamburg',
-        temperature: 5.78,
-        windSpeed: 5.66,
-        thunderstorm: false,
-        snow: false,
-        rain: false,
-        clouds: false,
-        clearSky: true,
+        data: {
+            targetLocation: 'Hamburg',
+            temperature: 5.78,
+            windSpeed: 5.66,
+            thunderstorm: false,
+            snow: false,
+            rain: false,
+            clouds: false,
+            clearSky: true,
+        },
         timestamp: new Date(Date.parse('2022-01-28T15:05:26.715Z')),
     };
 
     const testRule: Rule = {
         id: '1',
         jobId: '2',
-        agent: {
+        source: {
             id: 'open-weather-map',
             name: 'open-weather-map',
         },
-        rule: {
+        condition: {
             name: 'clear-skies Hamburg',
             dataPoint: 'clearSky',
             condition: CONDITIONS.equals,
             value: true,
-            interval: 60,
         },
+        executionInterval: 60,
     };
 
     const warmWeatherRule = Object.create(testRule);

@@ -1,18 +1,25 @@
 
 {
-    "agentId": "open-weather-map-agent",
-    "agentName": "Weather",
-    "agentQueryable": [
-        {
-            "dataPoint": "targetLocation",
-            "value": "berlin,de"
-        }
-    ],
-    "ruleName": "Berlin-weather-rule1-trigger-ads",
-    "ruleDatapoint": "rain",
-    "ruleCondition": "eq",
-    "ruleTargetValue": true,
-    "ruleInterval": 60,
+    "id": "abc123",
+    "name": "Munich-weather-rule1-trigger-ads",
+    "source": {
+        "id": "open-weather-map",
+        "name": "Weather",
+        "params": [
+            {
+                "dataPoint": "targetLocation",
+                "value": "munich,de"
+            }
+        ]
+    },
+    "condition": {
+        "name": "Temperature",
+        "dataPoint": "temperature",
+        "dataType": "number",
+        "comparator": "gt",
+        "value": 25
+    },
+    "executionInterval": 30,
     "targets": [
         {
             "agentId": "google-ads",

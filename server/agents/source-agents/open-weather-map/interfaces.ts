@@ -23,14 +23,7 @@ export interface AgentResult {
     agentId: string;
     jobId: string;
     agentName: string;
-    targetLocation: string;
-    temperature: number;
-    windSpeed: number;
-    clouds: boolean;
-    rain: boolean;
-    snow: boolean;
-    thunderstorm: boolean;
-    clearSky: boolean;
+    data: any;
     timestamp: Date;
 }
 
