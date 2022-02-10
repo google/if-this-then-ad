@@ -10,7 +10,7 @@
     See the License for the specific language governing permissions and
     limitations under the License.
  */
-import { FirestoreCollection, Collection } from '../models/fire-store-entity'
+import { FirestoreCollection, Collection } from '../models/fire-store-entity';
 const Firestore = require('@google-cloud/firestore');
 
 class CollectionFactory {
@@ -31,7 +31,6 @@ class CollectionFactory {
     }
 
     public get(collectionName: Collection) {
-
         const collection: FirestoreCollection = {
             name: collectionName,
             db: this.db,

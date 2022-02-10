@@ -12,9 +12,9 @@
  */
 import { Request, Response } from 'express';
 import Repository from '../services/repository-service';
-import {log} from '@iftta/util';
+import { log } from '@iftta/util';
 import Collections from '../services/collection-factory';
-import {User} from '../models/user'; 
+import { User } from '../models/user';
 import { Collection } from '../models/fire-store-entity';
 
 const usersCollection = Collections.get(Collection.USERS);

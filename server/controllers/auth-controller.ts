@@ -17,17 +17,14 @@ import passport from 'passport';
 import { log } from '@iftta/util';
 
 export const showLogin = (req: Request, res: Response) => {
-    res.send(
-        '<a href="/api/auth/google" class="button">Sign in with Google</a>'
-    );
+    res.send('<a href="/api/auth/google" class="button">Sign in with Google</a>');
 };
 
 export const authDone = (req: Request, res: Response) => {
-
     res.send('Login successful');
 };
 
 export const logout = (req: Request, res: Response) => {
     req.logOut();
-    res.redirect('/')
-}
+    res.redirect('/');
+};
