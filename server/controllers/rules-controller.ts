@@ -1,10 +1,10 @@
-import { Request, Response } from 'express'
+import { Request, Response } from 'express';
 import Repository from '../services/repository-service';
 import Collections from '../services/collection-factory';
-import { RuleDefinition } from '../models/rule'
+import { RuleDefinition } from '../models/rule';
 import { Collection } from '../models/fire-store-entity';
-import {log} from '@iftta/util'
-import * as JobController from '../controllers/jobs-controller'; 
+import { log } from '@iftta/util';
+import * as JobController from '../controllers/jobs-controller';
 
 const rulesCollection = Collections.get(Collection.RULES);
 const repo = new Repository<RuleDefinition>(rulesCollection);
@@ -18,22 +18,22 @@ const repo = new Repository<RuleDefinition>(rulesCollection);
 export const create = async (req: Request, res: Response) => {
     // TODO: add express-validator
 
-    // Parse incoming rule data. 
+    // Parse incoming rule data.
     const ruleDefinition: RuleDefinition = {
-        agent : req.body.agent, 
-        rule: req.body.rule, 
-        targets: req.body.targets
-     }
+        agent: req.body.agent,
+        rule: req.body.rule,
+        targets: req.body.targets,
+    };
 
     try {
         log.debug(ruleDefinition);
         log.info('Creating rule');
 
         // Create job based on rule
-        const jobId = await JobController.addJob(ruleDefinition); 
+        const jobId = await JobController.addJob(ruleDefinition);
 
         // Add job ID to rule
-        ruleDefinition.jobId = jobId; 
+        ruleDefinition.jobId = jobId;
 
         // Save rule
         const ruleId = await repo.save(ruleDefinition);
@@ -49,8 +49,8 @@ export const create = async (req: Request, res: Response) => {
 /**
  * List all available rules.
  *
- * @param {Request} req 
- * @param {Response} res 
+ * @param {Request} req
+ * @param {Response} res
  */
 export const list = async (req: Request, res: Response) => {
     const rules = await repo.list();

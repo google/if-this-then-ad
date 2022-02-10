@@ -1,11 +1,13 @@
-import { 
-    InstanceOptions, EntityType, httpMethods, EntityStatus, ApiCallParams,
+import {
+    InstanceOptions,
+    EntityType,
+    httpMethods,
+    EntityStatus,
+    ApiCallParams,
 } from './interfaces';
-import { 
-    DV360Entity, InsertionOrder, LineItem, Campaign, Advertiser, Partner
-} from './models';
+import { DV360Entity, InsertionOrder, LineItem, Campaign, Advertiser, Partner } from './models';
 import axios, { AxiosRequestConfig, Method } from 'axios';
-import { config } from './config'
+import { config } from './config';
 
 export default class EntityManager<T extends DV360Entity> {
     // Static method for instantiation
@@ -16,7 +18,7 @@ export default class EntityManager<T extends DV360Entity> {
                     InsertionOrder,
                     config?.parentId as number,
                     config?.entityId as number,
-                    token
+                    token,
                 );
                 break;
 
@@ -25,7 +27,7 @@ export default class EntityManager<T extends DV360Entity> {
                     LineItem,
                     config?.parentId as number,
                     config?.entityId as number,
-                    token
+                    token,
                 );
                 break;
 
@@ -34,28 +36,27 @@ export default class EntityManager<T extends DV360Entity> {
                     Campaign,
                     config?.parentId as number,
                     config?.entityId as number,
-                    token
+                    token,
                 );
                 break;
-            
+
             case EntityType.advertiser:
                 return new EntityManager<Advertiser>(
                     Advertiser,
                     config?.parentId as number,
                     config?.entityId as number,
-                    token
+                    token,
                 );
                 break;
 
             case EntityType.partner:
-                    return new EntityManager<Partner>(
-                        Partner,
-                        config?.parentId as number,
-                        config?.entityId as number,
-                        token
-                    );
-                    break;
-
+                return new EntityManager<Partner>(
+                    Partner,
+                    config?.parentId as number,
+                    config?.entityId as number,
+                    token,
+                );
+                break;
 
             default:
                 throw new Error(`Entity type ${config.entityType} is not supported`);
@@ -69,9 +70,9 @@ export default class EntityManager<T extends DV360Entity> {
         private objectType: new () => T,
         private parentId: number,
         private entityId: number,
-        private token: string
+        private token: string,
     ) {
-        if (! parentId || ! token) {
+        if (!parentId || !token) {
             throw new Error('"parentId & token" cannot be empty');
         }
 
@@ -80,7 +81,7 @@ export default class EntityManager<T extends DV360Entity> {
 
     private async apiCall(options: AxiosRequestConfig, httpMethod: Method = 'GET') {
         options.headers = {
-            'Authorization': `Bearer ${this.token}`,
+            Authorization: `Bearer ${this.token}`,
             'Content-Type': 'application/json',
         };
         options.method = httpMethod;
@@ -97,7 +98,7 @@ export default class EntityManager<T extends DV360Entity> {
             .replace('{entityId}', this.entityId?.toString());
     }
 
-    private parseTemplateObject(o: Object|undefined): Object {
+    private parseTemplateObject(o: Object | undefined): Object {
         const result = {};
         for (const key in o) {
             result[key] = this.parseTemplateString(o[key]);
@@ -119,18 +120,18 @@ export default class EntityManager<T extends DV360Entity> {
 
     // Status change methods
     private async changeStatus(es: EntityStatus) {
-        if (! this.entityId) {
+        if (!this.entityId) {
             throw new Error('entityId must be set');
         }
 
         const apiCallParams = this.getApiCallParams(this.object.apiConfig);
 
         apiCallParams.url += `/${this.entityId}`;
-        apiCallParams['data'] = {entityStatus: es};
+        apiCallParams['data'] = { entityStatus: es };
         if (apiCallParams.params) {
             apiCallParams.params['updateMask'] = 'entityStatus';
         } else {
-            apiCallParams.params = {updateMask: 'entityStatus'};
+            apiCallParams.params = { updateMask: 'entityStatus' };
         }
 
         return await this.patch(apiCallParams);
@@ -151,7 +152,7 @@ export default class EntityManager<T extends DV360Entity> {
 
         do {
             const apiCallParams = this.getApiCallParams(this.object.apiConfig);
-            if (! apiCallParams['params'] ) {
+            if (!apiCallParams['params']) {
                 apiCallParams['params'] = {};
             }
 
@@ -162,9 +163,9 @@ export default class EntityManager<T extends DV360Entity> {
             apiCallParams['params']['pageToken'] = nextPageToken;
 
             const tmpResult = await this.apiCall(apiCallParams);
-            result = [ ...result, ...tmpResult[this.object.listName] ];
+            result = [...result, ...tmpResult[this.object.listName]];
             nextPageToken = tmpResult['nextPageToken'];
-        } while (nextPageToken && ! onlyFirstPage);
+        } while (nextPageToken && !onlyFirstPage);
 
         return result;
     }
