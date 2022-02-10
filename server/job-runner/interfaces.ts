@@ -5,7 +5,7 @@ export interface Job {
     id?: string,
     agentId: string,
     executionInterval: number,
-    lastExecution?: Date,
+    lastExecution?: Date | number,
     query?: {
         dataPoint: string;
         value: string | number | boolean;

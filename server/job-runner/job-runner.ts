@@ -1,5 +1,5 @@
 const { PubSub } = require('@google-cloud/pubsub');
-import { log } from '@iftta/util';
+import { log, date } from '@iftta/util';
 import OpenWeatherMap from '../agents/source-agents/open-weather-map';
 import { AgentResult } from '../agents/source-agents/open-weather-map/interfaces';
 import { Collection } from "../models/fire-store-entity";
@@ -11,17 +11,6 @@ import Collections from '../services/collection-factory';
 import Repository from '../services/repository-service';
 import { ExecutionTime, Job } from './interfaces';
 import BackgroundAuth from './refresh-tokens';
-
-// setting up useful date manipulation functions
-// wrapping them into date object to make it easier
-// to remember what we are dealing with. 
-const date = {
-    add: require('date-fns/add'),
-    isAfter: require('date-fns/isAfter'),
-    isBefore: require('date-fns/isBefore'),
-    isValid: require('date-fns/isValid')
-}
-
 
 const pubSubClient = new PubSub();
 const jobsCollection = Collections.get(Collection.JOBS);
@@ -160,11 +149,11 @@ class JobRunner {
             if (!date.isValid(j.lastExecution)) {
                 log.debug(`Invalid date in last execution ${j.id}`);
                 log.debug(j.lastExecution);
-
+                j.lastExecution = 0; 
                 return true;
             }
 
-            const nextRuntime = date.add(j.lastExecution, { minutes: j.executionInterval });
+            const nextRuntime = date.add(j.lastExecution!, { minutes: j.executionInterval });
             log.info(`Job: ${j.id} next execution : ${nextRuntime}`);
 
             return date.isBefore(nextRuntime, nowUTC);
