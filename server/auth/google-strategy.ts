@@ -12,12 +12,12 @@
  */
 
 import { Strategy } from 'passport-google-oauth20';
-import { log } from '@iftta/util'
+import { log } from '@iftta/util';
 import { PassportStatic } from 'passport';
 import { Request } from 'express';
 import Repository from '../services/repository-service';
 import Collections from '../services/collection-factory';
-import { User } from '../models/user'
+import { User } from '../models/user';
 import { Collection } from '../models/fire-store-entity';
 
 const usersCollection = Collections.get(Collection.USERS);
@@ -32,17 +32,18 @@ class GoogleStrategy {
      * @param {PassportStatic} _passport Passport to Initialise
      */
     public static initialise(_passport: PassportStatic): any {
-
         if (typeof process.env.OAUTH_CALLBACK_URL == 'undefined') {
-            throw new Error('OAUTH_CALLBACK_URL undefined, it must be defined as environment variable')
+            throw new Error(
+                'OAUTH_CALLBACK_URL undefined, it must be defined as environment variable',
+            );
         }
         log.warn(
-            `Set oauth callback URL to ${process.env.OAUTH_CALLBACK_URL}, adjust Authorized URLs in GCP client settings accordingly`
+            `Set oauth callback URL to ${process.env.OAUTH_CALLBACK_URL}, adjust Authorized URLs in GCP client settings accordingly`,
         );
 
-        //TODO: we ask for all scopes here, 
+        //TODO: we ask for all scopes here,
         // we should perhaps add scopes when user decide to use a specific agent requiring
-        // extra scopes to be added. 
+        // extra scopes to be added.
         _passport.use(
             new Strategy(
                 {
@@ -50,21 +51,23 @@ class GoogleStrategy {
                     clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
                     callbackURL: process.env.OAUTH_CALLBACK_URL,
                     passReqToCallback: true,
-                    scope: ['https://www.googleapis.com/auth/userinfo.email',
+                    scope: [
+                        'https://www.googleapis.com/auth/userinfo.email',
                         'https://www.googleapis.com/auth/userinfo.profile',
                         'https://www.googleapis.com/auth/display-video',
-                        'https://www.googleapis.com/auth/adwords'],
+                        'https://www.googleapis.com/auth/adwords',
+                    ],
                 },
                 async (
                     req: Request,
                     accessToken: string,
                     refreshToken: string,
                     profile: any,
-                    done: any
+                    done: any,
                 ) => {
                     // this is the callback method called after
                     // successful authentication
-                    log.debug(`Profile : ${JSON.stringify(profile, null, 2)}`)
+                    log.debug(`Profile : ${JSON.stringify(profile, null, 2)}`);
 
                     const jsonProfile = JSON.parse(profile._raw);
 
@@ -86,18 +89,15 @@ class GoogleStrategy {
                     log.debug(`User : ${JSON.stringify(userData, null, 4)}`);
 
                     // check if the user exists in db
-                    const userResults = await userRepo.getBy(
-                        'profileId',
-                        profile.id
-                    );
+                    const userResults = await userRepo.getBy('profileId', profile.id);
 
                     if (userResults.length == 0) {
                         await userRepo.save(userData);
                     }
 
                     return done(null, userData, true);
-                }
-            )
+                },
+            ),
         );
     }
 }

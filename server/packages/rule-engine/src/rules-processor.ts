@@ -14,7 +14,7 @@ export class RulesProcessor {
         return await this.evaluateRulesAgainstResult(rules, result);
     }
 
-    // get rules matching the agentId from firestore 
+    // get rules matching the agentId from firestore
 
     /**
      * Fetch all rules for an agent.
@@ -27,7 +27,7 @@ export class RulesProcessor {
 
         const rulesForJob = rules.filter((rule) => {
             return rule.source.id == jobResult.agentId;
-        })
+        });
 
         log.info(`Got ${rulesForJob.length} rules for job ${jobResult.jobId}`);
 
@@ -35,7 +35,7 @@ export class RulesProcessor {
     }
 
     /**
-     * Evaluates each rule against the results coming in from the 
+     * Evaluates each rule against the results coming in from the
      * source agent, and returns a RuleEvaluation Object.
      *
      * @param {Array<Rule>} rules
@@ -43,17 +43,17 @@ export class RulesProcessor {
      * @returns {Array<RuleResult>}
      */
     public evaluateRulesAgainstResult(rules: Array<Rule>, result: AgentResult): Array<RuleResult> {
-        // Outcome here should be ruleResult[] so that we can action on 
-        // the evalations of the result in the next step. 
+        // Outcome here should be ruleResult[] so that we can action on
+        // the evalations of the result in the next step.
         const ruleResults: Array<RuleResult> = [];
-        rules.map(rule => {
+        rules.map((rule) => {
             const evalResult = this.evaluate(rule, result);
             const ruleResult: RuleResult = {
                 ruleId: rule.id,
                 result: evalResult,
-                targets: rule.targets || [] // Ensure that targets are configured
-            }
-            ruleResults.push(ruleResult)
+                targets: rule.targets || [], // Ensure that targets are configured
+            };
+            ruleResults.push(ruleResult);
         });
 
         return ruleResults;

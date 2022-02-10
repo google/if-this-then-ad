@@ -11,7 +11,7 @@
     limitations under the License.
  */
 
-import {Request, Response} from 'express';
+import { Request, Response } from 'express';
 
 class SomeController {
     /**

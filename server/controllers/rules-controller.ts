@@ -1,10 +1,10 @@
-import { Request, Response } from 'express'
+import { Request, Response } from 'express';
 import Repository from '../services/repository-service';
 import Collections from '../services/collection-factory';
 import { Rule } from '../models/rule'
 import { Collection } from '../models/fire-store-entity';
-import {log} from '@iftta/util'
-import * as JobController from '../controllers/jobs-controller'; 
+import { log } from '@iftta/util';
+import * as JobController from '../controllers/jobs-controller';
 
 const rulesCollection = Collections.get(Collection.RULES);
 const repo = new Repository<Rule>(rulesCollection);
@@ -24,8 +24,8 @@ export const create = async (req: Request, res: Response) => {
         source : req.body.source, 
         condition: req.body.condition,
         executionInterval: req.body.executionInterval, 
-        targets: req.body.targets
-     }
+        targets: req.body.targets,
+     };
 
     try {
         log.debug(rule);
@@ -51,8 +51,8 @@ export const create = async (req: Request, res: Response) => {
 /**
  * List all available rules.
  *
- * @param {Request} req 
- * @param {Response} res 
+ * @param {Request} req
+ * @param {Response} res
  */
 export const list = async (req: Request, res: Response) => {
     const rules = await repo.list();
