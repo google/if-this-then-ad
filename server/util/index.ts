@@ -1,3 +1,5 @@
-import { logger } from './logger';
+import {logger } from './logger'; 
 
-export const log = logger;
+
+export { date } from './dateUtil'
+export const log = logger; 
