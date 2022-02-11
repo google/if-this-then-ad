@@ -18,18 +18,19 @@ const allowedAgentMethods = {
 export const getAgentsMetadata = async (req: Request, res: Response) => {
     const result: Object[] = [];
     for (const agent in allowedAgentMethods) {
-        result.push(await allowedAgentMethods[agent].metadata());
+        result.push(await allowedAgentMethods[agent]?.metadata());
     }
 
     return res.json(result);
 }
 
-export const getAgentMethodResult = async (req: Request, res: Response) => {
-    log.debug(`getAgentMethodResult: ${JSON.stringify(req.params)}`);
+export const getAgentEntityList = async (req: Request, res: Response) => {
+    log.debug(`getAgentEntityList: ${JSON.stringify(req.params)}`);
 
     const token = '<TOKEN FOR TESTING>';
     const agent = req.params.agent;
-    const method = req.params.method;
+    const entityType = req.params.entityType;
+    const method = 'list';
 
     if (
             ! (agent in allowedAgentMethods) 
@@ -41,7 +42,9 @@ export const getAgentMethodResult = async (req: Request, res: Response) => {
     }
 
     try {
-        return res.json(await allowedAgentMethods[agent][method](token, req.params));
+        return res.json(
+            await allowedAgentMethods[agent][method](token, entityType, req.query)
+        );
     } catch (e) {
         log.error(e);
         return res.status(400).json({'message': (e as Error).message});

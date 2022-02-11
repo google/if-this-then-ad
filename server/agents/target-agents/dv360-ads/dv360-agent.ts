@@ -137,27 +137,22 @@ export default class DV360Agent implements IAgent {
     }
 
     // Query DV360 entities for the UI
-    public async getEntityList(token: string, params: Object) {
+    public async getEntityList(token: string, entityType: EntityType, params: Object) {
         if (
-            ! ('entity' in params) || ! ('parentId' in params)
-            || ! params['entity'] || ! params['parentId']
+            ! entityType 
+            || ! Object.values(EntityType).includes(entityType)
         ) {
-            throw new Error('Please specify both "entity" and "parentId"');
+            throw new Error('Please specify a correct "entityType"');
         }
 
-        const instanceOptions: InstanceOptions = {
-            entityType: params['entity'],
-            parentId: params['parentId'],
-        };
-
-        const instance = EntityManager.getInstance(instanceOptions, token);
+        const instance = EntityManager.getInstance({entityType}, token, params);
         const result: any[] = [];
-        (await instance.list()).forEach((o: any) => {
+        (await instance.list(params)).forEach((o: any) => {
             result.push({
                 name: o?.displayName,
-                partnerId: o?.partnerId,
-                advertiserId: o?.advertiserId,
-                insertionOrderId: o?.insertionOrderId,
+                partnerId: o?.partnerId || params['partnerId'],
+                advertiserId: o?.advertiserId || params['advertiserId'],
+                insertionOrderId: o?.insertionOrderId || params['insertionOrderId'],
                 lineItemId: o?.lineItemId,
                 entityStatus: o?.entityStatus,
             });

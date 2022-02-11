@@ -81,9 +81,9 @@ router.get('/api/agents/metadata',
     //pass.isAuthenticated,
     AgentsController.getAgentsMetadata
 );
-router.get('/api/agents/:agent/:method',
+router.get('/api/agents/:agent/list/:entityType',
     //pass.isAuthenticated,
-    AgentsController.getAgentMethodResult
+    AgentsController.getAgentEntityList
 );
 
 // router.post('/api/agent-results', PubSubController.messageHandler); 
