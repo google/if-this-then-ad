@@ -1,4 +1,4 @@
-import EntityManager from './entity-manager'
+import EntityManager from './entity-manager';
 import {
     AgentTask,
     TargetAction,
@@ -9,7 +9,7 @@ import {
     IAgent,
     AgentType,
     AgentMetadata,
-    EntityType, 
+    EntityType,
     httpMethods,
 } from './interfaces';
 import { config } from './config';
@@ -86,62 +86,66 @@ export default class DV360Agent implements IAgent {
             id: config.id,
             displayName: this.name,
             type: AgentType.TARGET,
-            arguments: ["advertiserId", "entityId", "entityType"],
+            arguments: ['advertiserId', 'entityId', 'entityType'],
             api: [
                 {
-                    dataPoint: "partnerId",
+                    dataPoint: 'partnerId',
                     list: {
                         url: `/api/agents/${config.id}/list/patner`,
                         method: httpMethods.GET,
-                    }
+                    },
                 },
                 {
-                    dataPoint: "advertiserId",
+                    dataPoint: 'advertiserId',
                     list: {
                         url: `/api/agents/${config.id}/list/advertiser`,
                         method: httpMethods.GET,
                         params: {
-                            'partnerId': typeof Number(),
-                        }
-                    }
+                            partnerId: typeof Number(),
+                        },
+                    },
                 },
                 {
-                    dataPoint: "insertionOrderId",
+                    dataPoint: 'insertionOrderId',
                     list: {
                         url: `/api/agents/${config.id}/list/insertionOrder`,
                         method: httpMethods.GET,
                         params: {
-                            'partnerId': typeof Number(),
-                            'advertiserId': typeof Number(),
-                        }
-                    }
+                            partnerId: typeof Number(),
+                            advertiserId: typeof Number(),
+                        },
+                    },
                 },
                 {
-                    dataPoint: "lineItemId",
+                    dataPoint: 'lineItemId',
                     list: {
                         url: `/api/agents/${config.id}/list/lineItem`,
                         method: httpMethods.GET,
                         params: {
-                            'partnerId': typeof Number(),
-                            'advertiserId': typeof Number(),
-                            'insertionOrderId': typeof Number(),
-                        }
-                    }
+                            partnerId: typeof Number(),
+                            advertiserId: typeof Number(),
+                            insertionOrderId: typeof Number(),
+                        },
+                    },
                 },
             ],
-            dataPoints: [{
-                id: "advertiserId",
-                displayName: "Advertiser",
-                dataType: typeof Number(),
-            }, {
-                id: "entityId",
-                displayName: "Entity",
-                dataType: typeof Number(),
-            }, {
-                id: "entityType",
-                displayName: "Entity Type",
-                dataType: `${EntityType.insertionOrder}|${EntityType.lineItem}`,
-            },],
+            dataPoints: [
+                {
+                    id: 'advertiserId',
+                    displayName: 'Advertiser',
+                    dataType: typeof Number(),
+                },
+                {
+                    id: 'entityId',
+                    displayName: 'Entity',
+                    dataType: typeof Number(),
+                },
+                {
+                    id: 'entityType',
+                    displayName: 'Entity Type',
+                    dataType: `${EntityType.insertionOrder}|${EntityType.lineItem}`,
+                },
+            ],
         };
 
         return Promise.resolve(meta);
@@ -149,14 +153,11 @@ export default class DV360Agent implements IAgent {
 
     // Query DV360 entities for the UI
     public async getEntityList(token: string, entityType: EntityType, params: Object) {
-        if (
-            ! entityType 
-            || ! Object.values(EntityType).includes(entityType)
-        ) {
+        if (!entityType || !Object.values(EntityType).includes(entityType)) {
             throw new Error('Please specify a correct "entityType"');
         }
 
-        const instance = EntityManager.getInstance({entityType}, token, params);
+        const instance = EntityManager.getInstance({ entityType }, token, params);
         const result: any[] = [];
         (await instance.list(params)).forEach((o: any) => {
             result.push({

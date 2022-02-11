@@ -7,10 +7,10 @@ export interface AgentResult {
 }
 
 export interface IAgent {
-    agentId: string,
-    name: string,
-    execute(task: AgentTask): Promise<Array<ActionResult>>,
-    getAgentMetadata(): Promise<AgentMetadata>,
+    agentId: string;
+    name: string;
+    execute(task: AgentTask): Promise<Array<ActionResult>>;
+    getAgentMetadata(): Promise<AgentMetadata>;
 }
 
 export interface RuleResult {
@@ -102,10 +102,10 @@ export interface DV360ApiCallOptions {
 }
 
 export interface ApiCallParams {
-    url: string,
-    params?: Object,
-    data?: Object,
-    method?: httpMethods,
+    url: string;
+    params?: Object;
+    data?: Object;
+    method?: httpMethods;
 }
 
 export enum AgentType {
@@ -114,17 +114,17 @@ export enum AgentType {
 }
 
 export interface ApiMethodInfo {
-    dataPoint: string,
-    list: ApiCallParams,
+    dataPoint: string;
+    list: ApiCallParams;
 }
 
 export interface AgentMetadata {
-    id: string, 
-    displayName: string,
-    type: AgentType,
-    arguments: Array<string>,
-    api?: Array<ApiMethodInfo>,
-    dataPoints: Array<DataPoint>
+    id: string;
+    displayName: string;
+    type: AgentType;
+    arguments: Array<string>;
+    api?: Array<ApiMethodInfo>;
+    dataPoints: Array<DataPoint>;
 }
 
 export interface DataPoint {

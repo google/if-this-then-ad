@@ -12,9 +12,9 @@ import { config } from './config';
 export default class EntityManager<T extends DV360Entity> {
     // Static method for instantiation
     public static getInstance(config: InstanceOptions, token: string, params = {}) {
-        if (params['advertiserId'] && ! config.parentId) {
+        if (params['advertiserId'] && !config.parentId) {
             config.parentId = parseInt(params['advertiserId']);
-        } else if (params['partnerId'] && ! config.parentId) {
+        } else if (params['partnerId'] && !config.parentId) {
             config.parentId = parseInt(params['partnerId']);
         }
 
@@ -56,13 +56,13 @@ export default class EntityManager<T extends DV360Entity> {
                 break;
 
             case EntityType.partner:
-                    return new EntityManager<Partner>(
-                        Partner,
-                        config?.parentId as number,
-                        config?.entityId as number,
-                        token
-                    );
-                    break;
+                return new EntityManager<Partner>(
+                    Partner,
+                    config?.parentId as number,
+                    config?.entityId as number,
+                    token,
+                );
+                break;
 
             default:
                 throw new Error(`Entity type ${config.entityType} is not supported`);
@@ -155,22 +155,21 @@ export default class EntityManager<T extends DV360Entity> {
     public async list(params: Object, getOnlyActive = true, onlyFirstPage = false) {
         // TODO: Debug
         onlyFirstPage = true;
-        
+
         const apiCallParams = this.getApiCallParams(this.object.apiConfig);
-        if (! apiCallParams['params'] ) {
+        if (!apiCallParams['params']) {
             apiCallParams['params'] = {};
         }
-        
+
         const filters = {};
         if (params['insertionOrderId']) {
             filters['insertionOrderId'] = parseInt(params['insertionOrderId']);
         }
 
         if (getOnlyActive || params['entityStatus']) {
-            filters['entityStatus'] = params['entityStatus'] 
-                || 'ENTITY_STATUS_ACTIVE';
+            filters['entityStatus'] = params['entityStatus'] || 'ENTITY_STATUS_ACTIVE';
         }
-        
+
         apiCallParams['params']['filter'] = new URLSearchParams(filters).toString();
 
         let result: Object[] = [];
@@ -178,7 +177,7 @@ export default class EntityManager<T extends DV360Entity> {
         do {
             apiCallParams['params']['pageToken'] = nextPageToken;
             const tmpResult = await this.apiCall(apiCallParams);
-            
+
             result = [...result, ...tmpResult[this.object.listName]];
             nextPageToken = tmpResult['nextPageToken'];
         } while (nextPageToken && !onlyFirstPage);

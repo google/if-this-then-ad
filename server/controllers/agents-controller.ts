@@ -22,12 +22,12 @@ export const getAgentsMetadata = async (req: Request, res: Response) => {
     }
 
     return res.json(result);
-}
+};
 
 export const getAgentEntityList = async (req: Request, res: Response) => {
     log.debug(`getAgentEntityList: ${JSON.stringify(req.params)}`);
 
-    const token = 'ya29.A0ARrdaM_OaXCD42MRqfvdMtjnOdktcgzHexYdVGI_RLjdRZtR6cYmAmQIq9TJrkPZ2GuAQ83b_BbUab8AqKFBbqltHOpddkL6Qx0IUla86ebvI0zD6jagX9pLQFNesxIBmhC1sDvtXBOMp1AWjCBkVRpW1K4OLAb8TK8';
+    const token = '';
     const agent = req.params.agent;
     const entityType = req.params.entityType;
     const method = 'list';
@@ -39,9 +39,7 @@ export const getAgentEntityList = async (req: Request, res: Response) => {
     }
 
     try {
-        return res.json(
-            await allowedAgentMethods[agent][method](token, entityType, req.query)
-        );
+        return res.json(await allowedAgentMethods[agent][method](token, entityType, req.query));
     } catch (e) {
         log.error(e);
         return res.status(400).json({ message: (e as Error).message });
