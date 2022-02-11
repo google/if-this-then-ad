@@ -20,8 +20,8 @@
         "w-node": "nodemon dist/index.js",
         "dev": "concurrently -k -p \"[{name}]\" -n \"TypeScript,Node\" -c \"yellow.bold,green.bold\" \"npm run w-typescript\" \"npm run w-node\"",
         "test": "jest --passWithNoTests",
-        "prettier": "npx prettier --write .",
-        "pre-commit": "npm install && npm run prettier && npm run build && npm test"
+        "format": "npx prettier --config .prettierrc.js --write .",
+        "pre-commit": "npm install && npm run format && npm run build && npm test"
     },
     "engines": {
         "node": ">= 12.0.0"
@@ -45,7 +45,6 @@
         "passport": "^0.5.2",
         "passport-google-oauth20": "^2.0.0",
         "passport-google-oidc": "^0.1.0",
-        "ts-node": "^10.4.0",
         "typescript": "^4.5.4",
         "winston": "^3.3.3"
     },
@@ -66,6 +65,7 @@
         "jest": "^27.3.1",
         "nodemon": "^2.0.15",
         "prettier": "^2.5.0",
+        "ts-node": "^10.4.0",
         "typescript": "^4.5.4"
     },
     "_moduleAliases": {

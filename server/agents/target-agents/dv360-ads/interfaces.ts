@@ -1,9 +1,9 @@
-export interface AgentResult  {
-    agentId: string,
-    jobId: string,
-    agentName: string,
-    timestamp: Date,
-    success: boolean,
+export interface AgentResult {
+    agentId: string;
+    jobId: string;
+    agentName: string;
+    timestamp: Date;
+    success: boolean;
 }
 
 export interface IAgent {
@@ -14,39 +14,39 @@ export interface IAgent {
 }
 
 export interface RuleResult {
-    ruleId: string,
-    result: boolean | number, 
-    actions: Array<TargetAction>
+    ruleId: string;
+    result: boolean | number;
+    actions: Array<TargetAction>;
 }
 
 export interface actionParam {
-    key: string,
-    value: string | number | boolean
+    key: string;
+    value: string | number | boolean;
 }
 
 export interface TargetAction {
-    action: string,
-    params: Array<actionParam>
+    action: string;
+    params: Array<actionParam>;
 }
 
 export interface AgentOptions {
-    key: string,
-    value: string|number|boolean,
+    key: string;
+    value: string | number | boolean;
 }
 
 export interface TargetAgent {
-    id: string,
-    actions: Array<TargetAction>
+    id: string;
+    actions: Array<TargetAction>;
 }
 
 export interface Tokens {
-    refresh?: string,
-    auth: string,
+    refresh?: string;
+    auth: string;
 }
 
 export interface AgentTask {
-    tokens: Tokens,
-    ruleResult: RuleResult,
+    tokens: Tokens;
+    ruleResult: RuleResult;
 }
 
 export enum EntityActions {
@@ -65,29 +65,29 @@ export enum EntityType {
 
 export enum EntityStatus {
     ACTIVE = 'ENTITY_STATUS_ACTIVE',
-    PAUSED = 'ENTITY_STATUS_PAUSED'
+    PAUSED = 'ENTITY_STATUS_PAUSED',
 }
 
 export interface InstanceOptions {
-    entityType: string,
-    parentId?: number,
-    entityId?: number,
-    action?: string,
+    entityType: string;
+    parentId?: number;
+    entityId?: number;
+    action?: string;
 }
 
 export interface ActionResult {
-    ruleId: string,
-    action: string,
-    displayName: string,
-    entityStatus: string,
-    timestamp: Date,
-    success: boolean,
-    error: string,
+    ruleId: string;
+    action: string;
+    displayName: string;
+    entityStatus: string;
+    timestamp: Date;
+    success: boolean;
+    error: string;
 }
 
 export interface DV360ApiClientOptions {
-    authToken: string,
-    baseUrl: string,
+    authToken: string;
+    baseUrl: string;
 }
 
 export enum httpMethods {
@@ -96,9 +96,9 @@ export enum httpMethods {
 }
 
 export interface DV360ApiCallOptions {
-    httpMethod: httpMethods,
-    url: string,
-    data: Object,
+    httpMethod: httpMethods;
+    url: string;
+    data: Object;
 }
 
 export interface ApiCallParams {
@@ -109,8 +109,8 @@ export interface ApiCallParams {
 }
 
 export enum AgentType {
-    SOURCE = "source-agent", 
-    TARGET = "target-agent"
+    SOURCE = 'source-agent',
+    TARGET = 'target-agent',
 }
 
 export interface ApiMethodInfo {
@@ -128,7 +128,7 @@ export interface AgentMetadata {
 }
 
 export interface DataPoint {
-    id: string, 
-    displayName: string, 
-    dataType: string |number|boolean |Date
+    id: string;
+    displayName: string;
+    dataType: string | number | boolean | Date;
 }

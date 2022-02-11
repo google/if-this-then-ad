@@ -1,39 +1,41 @@
 import { RulesProcessor } from '../src/rules-processor';
 import { AgentResult, Rule, CONDITIONS } from '../src/interfaces';
 
-describe("test add ", () => {
+describe('test add ', () => {
     const rp = new RulesProcessor();
 
     const agentResult: AgentResult = {
         agentId: 'open-weather-map-agent',
         jobId: '2',
         agentName: 'Weather',
-        targetLocation: 'Hamburg',
-        temperature: 5.78,
-        windSpeed: 5.66,
-        thunderstorm: false,
-        snow: false,
-        rain: false,
-        clouds: false,
-        clearSky: true,
-        timestamp: new Date(Date.parse('2022-01-28T15:05:26.715Z'))
-    }
+        data: {
+            targetLocation: 'Hamburg',
+            temperature: 5.78,
+            windSpeed: 5.66,
+            thunderstorm: false,
+            snow: false,
+            rain: false,
+            clouds: false,
+            clearSky: true,
+        },
+        timestamp: new Date(Date.parse('2022-01-28T15:05:26.715Z')),
+    };
 
     const testRule: Rule = {
         id: '1',
         jobId: '2',
-        agent: {
+        source: {
             id: 'open-weather-map',
-            name: 'open-weather-map'
+            name: 'open-weather-map',
         },
-        rule: {
+        condition: {
             name: 'clear-skies Hamburg',
             dataPoint: 'clearSky',
             condition: CONDITIONS.equals,
             value: true,
-            interval: 60,
         },
-    }
+        executionInterval: 60,
+    };
 
     const warmWeatherRule = Object.create(testRule);
     warmWeatherRule.ruleDatapoint = 'temperature';
@@ -47,22 +49,22 @@ describe("test add ", () => {
     const nonExistingDataPointRule = Object.create(coldWeatherRule);
     nonExistingDataPointRule.ruleDatapoint = 'Nonexisting';
 
-    it("Should evaluate to True given data point equals the target value", () => {
+    it('Should evaluate to True given data point equals the target value', () => {
         const ruleResult = rp.evaluate(testRule, agentResult);
         expect(ruleResult).toBe(true);
     });
 
-    it("Should evaluate to False if temp is not above the threshold", () => {
+    it('Should evaluate to False if temp is not above the threshold', () => {
         const ruleResult = rp.evaluate(warmWeatherRule, agentResult);
         expect(ruleResult).toBe(false);
     });
 
-    it("Should evaluate to True if temp is below threshold", () => {
+    it('Should evaluate to True if temp is below threshold', () => {
         const ruleResult = rp.evaluate(coldWeatherRule, agentResult);
         expect(ruleResult).toBe(true);
     });
 
-    it("Should evaluate to False when passed invalid data point", () => {
+    it('Should evaluate to False when passed invalid data point', () => {
         expect(rp.evaluate(nonExistingDataPointRule, agentResult)).toBe(false);
     });
 
@@ -72,10 +74,9 @@ describe("test add ", () => {
     });
 
     it('Should return no rules given invalid AgentResult', async () => {
-        let invalidAgentResult = Object.create(agentResult); 
+        let invalidAgentResult = Object.create(agentResult);
         invalidAgentResult.agentId = 'non-existing-agent';
         const rulesForAgent = await rp.getValidRulesForAgent(invalidAgentResult);
         expect(rulesForAgent.length).toBe(0);
     });
-
-}); 
+});

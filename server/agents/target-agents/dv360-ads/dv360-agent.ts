@@ -1,7 +1,16 @@
 import EntityManager from './entity-manager'
-import { 
-    AgentTask, TargetAction, actionParam, ActionResult,
-    EntityActions, InstanceOptions, IAgent, AgentType, AgentMetadata, EntityType, httpMethods
+import {
+    AgentTask,
+    TargetAction,
+    actionParam,
+    ActionResult,
+    EntityActions,
+    InstanceOptions,
+    IAgent,
+    AgentType,
+    AgentMetadata,
+    EntityType, 
+    httpMethods,
 } from './interfaces';
 import { config } from './config';
 
@@ -13,7 +22,7 @@ export default class DV360Agent implements IAgent {
         task: AgentTask,
         action: TargetAction,
         data: any,
-        error: any = null
+        error: any = null,
     ): ActionResult {
         return {
             ruleId: task.ruleResult.ruleId,
@@ -28,8 +37,10 @@ export default class DV360Agent implements IAgent {
 
     private toInstanceOptions(a: Array<actionParam>): InstanceOptions {
         const o: Object = {};
-        a.forEach(p => { o[p.key] = p.value });
-        if (! o['entityType']) {
+        a.forEach((p) => {
+            o[p.key] = p.value;
+        });
+        if (!o['entityType']) {
             throw Error('entityType cannot be empty');
         }
 
@@ -68,8 +79,8 @@ export default class DV360Agent implements IAgent {
 
     // Metadata for UI
     public async getAgentMetadata(): Promise<AgentMetadata> {
-        // TODO decide if we should store this metadata as json 
-        // and simply serve that to the caller. 
+        // TODO decide if we should store this metadata as json
+        // and simply serve that to the caller.
 
         const meta: AgentMetadata = {
             id: config.id,

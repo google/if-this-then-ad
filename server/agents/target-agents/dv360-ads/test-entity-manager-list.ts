@@ -1,21 +1,19 @@
-
 import EntityManager from './entity-manager';
 import { InstanceOptions, EntityType } from './interfaces';
 
 const token = '';
 
 // List partners:
-const options: InstanceOptions  = {
+const options: InstanceOptions = {
     entityType: 'Partner',
     parentId: -1,
     entityId: -1,
     action: '',
 };
 
-EntityManager
-    .getInstance(options, token)
+EntityManager.getInstance(options, token)
     .list(true, true)
-    .then(x => console.log(x));
+    .then((x) => console.log(x));
 /*
 // List advertisers:
 const options: InstanceOptions  = {
