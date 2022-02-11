@@ -4,6 +4,8 @@ import { Request, Response } from 'express';
 import { log } from '@iftta/util';
 import OpenWeatherMap from '@iftta/open-weather-map-agent';
 import DV360Agent from '@iftta/dv360-ads';
+import BackgroundAuth from '../job-runner/refresh-tokens';
+import { Token } from 'models/user';
 
 const allowedAgentMethods = {
     'dv360-ads': {
@@ -27,7 +29,17 @@ export const getAgentsMetadata = async (req: Request, res: Response) => {
 export const getAgentEntityList = async (req: Request, res: Response) => {
     log.debug(`getAgentEntityList: ${JSON.stringify(req.params)}`);
 
-    const token = '';
+    // TODO: obtain user ID from the Rule object
+    // obtain freshTokens before running the jobs
+    const userId = 'YkHryPCUuAbwgBG3Zdle';
+    let token: Token;
+    try {
+        token = await BackgroundAuth.refreshTokensForUser(userId);
+    } catch (e) {
+        console.log('Cannot get token', e);
+        throw new Error('Cannot get token');
+    }
+
     const agent = req.params.agent;
     const entityType = req.params.entityType;
     const method = 'list';
@@ -39,7 +51,7 @@ export const getAgentEntityList = async (req: Request, res: Response) => {
     }
 
     try {
-        return res.json(await allowedAgentMethods[agent][method](token, entityType, req.query));
+        return res.json(await allowedAgentMethods[agent][method](token.access, entityType, req.query));
     } catch (e) {
         log.error(e);
         return res.status(400).json({ message: (e as Error).message });
