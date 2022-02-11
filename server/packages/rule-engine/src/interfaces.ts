@@ -6,16 +6,17 @@ export interface AgentResult {
     timestamp: Date;
 }
 
-export enum CONDITIONS {
+export enum COMPARATORS {
     equals = 'eq',
     greater = 'gt',
     less = 'lt',
     yes = 'yes',
     no = 'no',
-}
+};
 
 export interface Rule {
     id: string;
+    name: string,
     source: {
         id: string;
         name: string;
@@ -23,12 +24,12 @@ export interface Rule {
     condition: {
         name: string;
         dataPoint: string;
-        condition:
-            | CONDITIONS.equals
-            | CONDITIONS.greater
-            | CONDITIONS.less
-            | CONDITIONS.yes
-            | CONDITIONS.no;
+        comparator:
+            | COMPARATORS.equals
+            | COMPARATORS.greater
+            | COMPARATORS.less
+            | COMPARATORS.yes
+            | COMPARATORS.no;
         value: string | number | boolean;
     };
     executionInterval: number;

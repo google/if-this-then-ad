@@ -1,0 +1,28 @@
+<form [formGroup]="myForm">
+  <label for="name">Name: </label>
+  <input id="name" type="text" formControlName="firstName">
+  <label for="name">Last Name: </label>
+  <input id="lastName" type="text" formControlName="lastName" required>
+</form>
+
+<!--<p>Value: {{ firstName.value }}</p>-->
+<p>Form Status: {{ myForm.status }}</p>
+
+<form [formGroup]="myForm2">
+  <label for="name">Name: </label>
+  <input id="name" type="text" formControlName="firstName">
+  <label for="name">Last Name: </label>
+  <input id="lastName" type="text" formControlName="lastName" required>
+</form>
+
+<!--<p>Value: {{ firstName.value }}</p>-->
+<p>Form Status: {{ myForm2.status }}</p>
+
+<button [disabled]="!saveEnabled">Save</button>
+
+<form #mine="ngForm">
+  <label for="name">Name 3: </label>
+  <input id="name" type="text" name="test" [(ngModel)]="test">
+  <label for="name">Last Name 3: </label>
+  <input id="lastName" type="text" required>
+</form>

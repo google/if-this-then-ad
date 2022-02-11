@@ -66,6 +66,9 @@ router.get('/api/rules', RulesController.list);
 // Job runner trigger endpoint
 router.get('/api/jobs/execute', JobController.executeJobs);
 
+// TODO: Debug Endpoint
+router.get('/api/agents/dv360/fetch', someController.fetch);
+
 // possible urls:
 //  - /api/agents/dv360-ads/metadata
 //  - /api/agents/dv360-ads/list/lineItem/<advertiserId>
@@ -76,6 +79,8 @@ router.get(
     //pass.isAuthenticated,
     AgentsController.getAgentMethodResult,
 );
+
+// /agents/open-weather-map/metadata
 
 // router.post('/api/agent-results', PubSubController.messageHandler);
 
