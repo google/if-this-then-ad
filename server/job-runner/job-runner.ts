@@ -2,9 +2,9 @@ const { PubSub } = require('@google-cloud/pubsub');
 import { log, date } from '@iftta/util';
 import OpenWeatherMap from '../agents/source-agents/open-weather-map';
 import { AgentResult } from '../agents/source-agents/open-weather-map/interfaces';
-import { Collection } from "../models/fire-store-entity";
-//TODO: replace this with sending messages over pubsub. 
-//Temp coupling between packages/ 
+import { Collection } from '../models/fire-store-entity';
+//TODO: replace this with sending messages over pubsub.
+//Temp coupling between packages/
 import rulesEngine from '../packages/rule-engine';
 import { RuleResult } from '../packages/rule-engine/src/interfaces';
 import Collections from '../services/collection-factory';
@@ -110,12 +110,11 @@ class JobRunner {
             if (job) {
                 job.lastExecution = new Date();
                 await this.jobsRepo.update(j.jobId, job);
-                log.info(`Set lastExecution time: ${j.lastExecution} on job : ${j.jobId}`)
+                log.info(`Set lastExecution time: ${j.lastExecution} on job : ${j.jobId}`);
             }
         }
     }
 
-    
     /**
      * Get all jobs that are up for execution.
      *
@@ -126,7 +125,7 @@ class JobRunner {
         log.info('Fetching job list to execute');
         const allJobs: Job[] = await this.jobsRepo.list();
 
-        // Filter by execution interval 
+        // Filter by execution interval
         const nowUTC = new Date();
         log.info(`System time used for calculating Execution interval ${nowUTC}`);
         log.info(`Filtering jobs that have reached execution interval`);
@@ -136,24 +135,22 @@ class JobRunner {
             if (!date.isValid(j.lastExecution)) {
                 log.debug(`Invalid date in last execution ${j.id}`);
                 log.debug(j.lastExecution);
-                j.lastExecution = 0; 
+                j.lastExecution = 0;
                 return true;
             }
             log.debug(`job-runner:getEligibleJobs: jobTime: ${j.id} : ${j.lastExecution}`);
             const nextRuntime = date.add(j.lastExecution!, { minutes: j.executionInterval });
             log.info(`Job: ${j.id} next execution : ${nextRuntime}`);
- 
+
             return date.isPast(nextRuntime);
         });
 
         return jobs;
     }
 
-
     public async runAll() {
-
-        // Get a list of jobs to execute 
-        log.info('job-runner:runAll: Fetching job list to execute'); 
+        // Get a list of jobs to execute
+        log.info('job-runner:runAll: Fetching job list to execute');
         const jobs = await this.getEligibleJobs();
         const jobCount = jobs.length;
         log.debug('job-runner:runAll: List of jobs to execute');
@@ -175,9 +172,9 @@ class JobRunner {
 
         // Collect all actions that need to be performed
         // on the target systems.
-        const targetActions: Array<RuleResult[]> = []
-        const executionTimes:Array<ExecutionTime> = []; 
-        const allResults:Array<Array<RuleResult>> = [[]];
+        const targetActions: Array<RuleResult[]> = [];
+        const executionTimes: Array<ExecutionTime> = [];
+        const allResults: Array<Array<RuleResult>> = [[]];
 
         while (!(await jobResult).done) {
             log.debug('my jobResult');
@@ -194,25 +191,24 @@ class JobRunner {
             executionTimes.push(execTime);
 
             const results: Array<RuleResult> = await rulesEngine.processMessage(currentResult);
-            allResults.push(results); 
+            allResults.push(results);
             log.debug('evaluation result');
             log.debug(results);
             // targetActions.push(results);
             jobResult = jobResultIter.next();
         }
 
-        
-        log.info('Updating Last execution time of jobs')
+        log.info('Updating Last execution time of jobs');
 
         // Update execution times in the jobs collection
-        await this.updateJobExecutionTimes(executionTimes); 
-        
+        await this.updateJobExecutionTimes(executionTimes);
+
         // TODO: obtain user ID from the Rule object
         // obtain freshTokens before running the jobs
         const userId = 'YrqYQc15jFYutbMdZNss';
-        const token = await BackgroundAuth.refreshTokensForUser(userId); 
+        const token = await BackgroundAuth.refreshTokensForUser(userId);
 
-        // call target-agents to execute individual actions 
+        // call target-agents to execute individual actions
 
         // publish results to pubsub.
         // while (!(await jobResult).done) {
@@ -226,9 +222,7 @@ class JobRunner {
         // }
     }
 
-    public async processTargets(results: Array<RuleResult>){
-
-    }
+    public async processTargets(results: Array<RuleResult>) {}
 }
 
 export default new JobRunner(pubSubClient, repo);

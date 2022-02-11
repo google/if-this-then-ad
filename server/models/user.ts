@@ -22,14 +22,14 @@ export interface User {
     verified?: boolean;
     profilePhoto?: string;
     locale?: string;
-    token: Token
+    token: Token;
 }
 
 export interface Token {
-    access: string, 
-    expiry: Date,
-    refresh?: string, 
-    provider?: string,
-    scope?: Array<string>
-    type?:string
+    access: string;
+    expiry: Date;
+    refresh?: string;
+    provider?: string;
+    scope?: Array<string>;
+    type?: string;
 }

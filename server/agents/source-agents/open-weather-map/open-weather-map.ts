@@ -75,7 +75,7 @@ class OpenWeatherMap implements IAgent {
             agentId: this.agentId,
             jobId: weatherData.jobId,
             agentName: this.name,
-            data:{
+            data: {
                 targetLocation: data.name,
                 temperature: data.main.temp,
                 windSpeed: data.wind.speed,

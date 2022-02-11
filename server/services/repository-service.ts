@@ -11,7 +11,7 @@
     limitations under the License.
  */
 
-import { log } from '@iftta/util'
+import { log } from '@iftta/util';
 import { FirestoreCollection } from '../models/fire-store-entity';
 import { QueryDocumentSnapshot } from '@google-cloud/firestore';
 import { isObject } from 'util';
@@ -29,13 +29,10 @@ class RepositoryService<T> {
     }
 
     private dateConverter() {
-
         const fromFirestore = function (snapshot: QueryDocumentSnapshot) {
-
             let document = {};
 
             const deepInspect = (data) => {
-
                 for (let field of Object.keys(data)) {
                     // detect the timestamp object
                     if (isObject(data[field])) {
@@ -44,23 +41,21 @@ class RepositoryService<T> {
                             // convert to JS Date so that we dont have to deal wtih Timestamp object
                             data[field] = data[field].toDate();
                         }
-                        // go down a level recursively. 
+                        // go down a level recursively.
                         deepInspect(data[field]);
                     }
-
                 }
-            }
-
+            };
 
             const data = snapshot.data();
 
-            // log.debug(Object.entries(data)); 
+            // log.debug(Object.entries(data));
             deepInspect(data);
-            log.debug(data)
+            log.debug(data);
             return data;
-        }
+        };
 
-        return { fromFirestore: fromFirestore }
+        return { fromFirestore: fromFirestore };
     }
 
     async save<T>(obj: T): Promise<string> {
@@ -101,7 +96,6 @@ class RepositoryService<T> {
     async get(id: string): Promise<T | undefined> {
         log.debug('Repository:get');
         try {
-
             const docRef = this.db
                 .collection(this.fireStoreCollection.name)
                 .withConverter(this.dateConverter())
@@ -125,7 +119,6 @@ class RepositoryService<T> {
         log.debug('Repository:getBy');
         let data: Array<T> = [];
         try {
-
             const colRef = this.db
                 .collection(this.fireStoreCollection.name)
                 .withConverter(this.dateConverter());
