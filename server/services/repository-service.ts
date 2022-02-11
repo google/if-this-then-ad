@@ -35,27 +35,29 @@ class RepositoryService<T> {
             let document = {};
 
             const deepInspect = (data) => {
+
                 for (let field of Object.keys(data)) {
                     // detect the timestamp object
                     if (isObject(data[field])) {
                         if (Object.keys(data[field]).includes('_seconds')) {
-                            log.debug(`Converting field : ${field}  ${typeof data[field]}`)
-                            document[field] = data[field].toDate();
-                            log.debug('Converted Timestamp to date');
-                            log.debug(document[field]);
-                        } else {
-                            // go down a level recursively. 
-                            deepInspect(data[field]);
+                            log.debug(`Converting field : ${field}  ${typeof data[field]}`);
+                            // convert to JS Date so that we dont have to deal wtih Timestamp object
+                            data[field] = data[field].toDate();
                         }
-
-                    } else {
-                        document[field] = data[field];
+                        // go down a level recursively. 
+                        deepInspect(data[field]);
                     }
+
                 }
             }
+
+
             const data = snapshot.data();
+
+            // log.debug(Object.entries(data)); 
             deepInspect(data);
-            return document;
+            log.debug(data)
+            return data;
         }
 
         return { fromFirestore: fromFirestore }
@@ -87,7 +89,7 @@ class RepositoryService<T> {
             collection.forEach((entry) => {
                 data.push({ id: entry.id, ...entry.data() });
             });
-
+            log.debug('Repository:list');
             log.debug(data);
             return data;
         } catch (err) {
