@@ -65,7 +65,7 @@ class BackgroundAuth {
         try {
             const user: User = await this.repo.get(userId) as User;
 
-            if (date.isFuture(user.token.expiry)) {
+            if ((user != null  || user != 'undefined') && date.isFuture(user.token.expiry)) {
                 log.info(`Access token for user ${userId} is still valid`);
                 return user.token;
             }

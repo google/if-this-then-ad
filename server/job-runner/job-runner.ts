@@ -115,21 +115,7 @@ class JobRunner {
         }
     }
 
-    /**
-     * Get current time in UTC.
-     *
-     * @returns {Date}
-     */
-    private getNowInUTC(): Date {
-        const now = Date.now();
-        const offsetSec = new Date().getTimezoneOffset() * 1000;
-        const nowUTC = new Date(now + offsetSec);
-        log.debug(`TZ offset : ${offsetSec} `);
-        log.info(`System time used for calculating Execution interval ${nowUTC}`);
-
-        return nowUTC;
-    }
-
+    
     /**
      * Get all jobs that are up for execution.
      *
@@ -141,7 +127,8 @@ class JobRunner {
         const allJobs: Job[] = await this.jobsRepo.list();
 
         // Filter by execution interval 
-        const nowUTC = this.getNowInUTC();
+        const nowUTC = new Date();
+        log.info(`System time used for calculating Execution interval ${nowUTC}`);
         log.info(`Filtering jobs that have reached execution interval`);
 
         const jobs = allJobs.filter((j) => {
@@ -152,11 +139,11 @@ class JobRunner {
                 j.lastExecution = 0; 
                 return true;
             }
-
+            log.debug(`job-runner:getEligibleJobs: jobTime: ${j.id} : ${j.lastExecution}`);
             const nextRuntime = date.add(j.lastExecution!, { minutes: j.executionInterval });
             log.info(`Job: ${j.id} next execution : ${nextRuntime}`);
-
-            return date.isBefore(nextRuntime, nowUTC);
+ 
+            return date.isPast(nextRuntime);
         });
 
         return jobs;
@@ -166,15 +153,15 @@ class JobRunner {
     public async runAll() {
 
         // Get a list of jobs to execute 
-        log.info('Fetching job list to execute'); 
+        log.info('job-runner:runAll: Fetching job list to execute'); 
         const jobs = await this.getEligibleJobs();
         const jobCount = jobs.length;
-        log.debug('List of jobs to execute');
-        log.info(`Got ${jobCount} jobs to execute`);
+        log.debug('job-runner:runAll: List of jobs to execute');
+        log.info(`job-runner:runAll: Got ${jobCount} jobs to execute`);
         log.debug(jobs);
 
         if (jobCount == 0) {
-            log.info('Sleeping till next execution cycle');
+            log.info('job-runner:runAll: Sleeping till next execution cycle');
             return;
         }
 
@@ -182,7 +169,7 @@ class JobRunner {
 
         // execute each job agent
         // await for yielded results
-        log.info('Executing jobs on all available agents');
+        log.info('job-runner:runAll: Executing jobs on all available agents');
         const jobResultIter = this.runJobs(jobs);
         let jobResult = jobResultIter.next();
 
@@ -222,7 +209,7 @@ class JobRunner {
         
         // TODO: obtain user ID from the Rule object
         // obtain freshTokens before running the jobs
-        const userId = 'YkHryPCUuAbwgBG3Zdle';
+        const userId = 'YrqYQc15jFYutbMdZNss';
         const token = await BackgroundAuth.refreshTokensForUser(userId); 
 
         // call target-agents to execute individual actions 
