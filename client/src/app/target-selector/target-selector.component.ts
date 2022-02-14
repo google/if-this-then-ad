@@ -17,15 +17,31 @@ import { store } from '../store';
 export class TargetSelectorComponent {
   treeControl: FlatTreeControl<EntityNode>;
   dataSource: DynamicDataSource;
+  allowSelectionBubbling: boolean = true;
 
   // The selection for checklist
   checklistSelection = new SelectionModel<EntityNode>(true /* multiple */);
+
+  mySelection = new SelectionModel<number>(true);
 
   constructor(private database: DynamicDatabase) {
     this.treeControl = new FlatTreeControl<EntityNode>(this.getLevel, this.isExpandable);
     this.dataSource = new DynamicDataSource(this.treeControl, database);
 
     this.dataSource.data = database.initialData();
+
+    this.mySelection.changed.subscribe(val => {
+      console.log('mySelection changed', val);
+    });
+
+    this.checklistSelection.changed.subscribe(val => {
+      console.log('checklistSelection changed', val);
+      console.log('all selected', this.checklistSelection.selected);
+    });
+
+    console.log(this.mySelection.selected);
+    this.mySelection.select(2);
+    console.log(this.mySelection.selected);
   }
 
   /**
@@ -67,11 +83,18 @@ export class TargetSelectorComponent {
    */
   descendantsAllSelected(node: EntityNode): boolean {
     const descendants = this.treeControl.getDescendants(node);
+
     const descAllSelected =
       descendants.length > 0 &&
       descendants.every(child => {
         return this.checklistSelection.isSelected(child);
       });
+
+    if (node.id === '2015636') {
+      console.log('descendants', node, descendants);
+      console.log('all selected', descAllSelected);
+    }
+
     return descAllSelected;
   }
 
@@ -82,12 +105,14 @@ export class TargetSelectorComponent {
    * @returns {boolean}
    */
   descendantsPartiallySelected(node: EntityNode): boolean {
-    // TODO: debug
-    return false;
+    if (this.allowSelectionBubbling) {
+      const descendants = this.treeControl.getDescendants(node);
+      const result = descendants.some(child => this.checklistSelection.isSelected(child));
 
-    const descendants = this.treeControl.getDescendants(node);
-    const result = descendants.some(child => this.checklistSelection.isSelected(child));
-    return result && !this.descendantsAllSelected(node);
+      return result && !this.descendantsAllSelected(node);
+    }
+
+    return false;
   }
 
   /**
@@ -99,20 +124,35 @@ export class TargetSelectorComponent {
   entitySelectionToggle(node: EntityNode): void {
     this.checklistSelection.toggle(node);
     
-    /*const descendants = this.treeControl.getDescendants(node);
-    this.checklistSelection.isSelected(node)
-      ? this.checklistSelection.select(...descendants)
-      : this.checklistSelection.deselect(...descendants);
+    if (this.allowSelectionBubbling) {
+      const descendants = this.treeControl.getDescendants(node);
 
-    // Force update for the parent
-    descendants.forEach(child => this.checklistSelection.isSelected(child));
-    //this.checkAllParentsSelection(node);*/
+      console.log('is selected', this.checklistSelection.isSelected(node));
+      console.log('descendants', descendants);
 
+      console.log('selected', this.checklistSelection.selected);
+
+      this.checklistSelection.isSelected(node)
+        ? this.checklistSelection.select(...descendants)
+        : this.checklistSelection.deselect(...descendants);
+
+      // Force update for the parent
+      descendants.forEach(child => this.checklistSelection.isSelected(child));
+      this.checkAllParentsSelection(node);
+    }
+
+    // Update targets in store
     store.targets.next(this.entityToTargetAgent(this.checklistSelection.selected));
     
     // Update save requirements
     const valid = this.checkAllParentsSelection.length > 0;
     store.saveRequirements.next({...store.saveRequirements.value, ...{ target: valid }});
+  }
+
+  isSelected(node: EntityNode): boolean {
+    const selected = this.checklistSelection.isSelected(node);
+    console.log(node, selected);
+    return selected;
   }
 
   /**
@@ -144,7 +184,10 @@ export class TargetSelectorComponent {
    */
   entityLeafItemSelectionToggle(node: EntityNode): void {
     this.checklistSelection.toggle(node);
-    //this.checkAllParentsSelection(node);
+
+    if (this.allowSelectionBubbling) {
+      this.checkAllParentsSelection(node);
+    }
   }
 
   /**
@@ -154,6 +197,7 @@ export class TargetSelectorComponent {
    */
   checkAllParentsSelection(node: EntityNode): void {
     let parent: EntityNode | null = this.getParentNode(node);
+
     while (parent) {
       this.checkRootNodeSelection(parent);
       parent = this.getParentNode(parent);
@@ -166,6 +210,10 @@ export class TargetSelectorComponent {
    * @param {EntityNode} node
    */
   checkRootNodeSelection(node: EntityNode): void {
+    if (!node.selectable) {
+      return;
+    }
+
     const nodeSelected = this.checklistSelection.isSelected(node);
     const descendants = this.treeControl.getDescendants(node);
     const descAllSelected =

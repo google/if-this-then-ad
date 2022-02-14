@@ -4,13 +4,13 @@
     <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle matTreeNodePadding>
       <button mat-icon-button disabled></button>
 
-      <!-- Checkbox (non-root only) -->
-      <mat-checkbox *ngIf="node.level > 0" class="checklist-leaf-node"
+      <!-- Checkbox -->
+      <mat-checkbox *ngIf="node.selectable" class="checklist-leaf-node"
                     [checked]="checklistSelection.isSelected(node)"
                     (change)="entityLeafItemSelectionToggle(node)">{{node.name}}</mat-checkbox>
 
-      <!-- Root node has no checkbox -->
-      <span *ngIf="node.level == 0">{{node.name}}</span>
+      <!-- Non-selectable nodes have no checkbox -->
+      <span *ngIf="!node.selectable">{{node.name}}</span>
 
       <!-- Progress bar -->
       <mat-progress-bar *ngIf="node.isLoading"
@@ -26,13 +26,13 @@
         </mat-icon>
       </button>
 
-      <!-- Checkbox (non-root only) -->
-      <mat-checkbox *ngIf="node.level > 0" [checked]="descendantsAllSelected(node)"
+      <!-- Checkbox -->
+      <mat-checkbox *ngIf="node.selectable" [checked]="checklistSelection.isSelected(node)"
                     [indeterminate]="descendantsPartiallySelected(node)"
-                    (change)="entitySelectionToggle(node)">{{node.name}}</mat-checkbox>
+                    (change)="entitySelectionToggle(node)">{{node.name}} here-1</mat-checkbox>
 
-      <!-- Root node has no checkbox -->
-      <span *ngIf="node.level == 0">{{node.name}}</span>
+      <!-- Non-selectable nodes have no checkbox -->
+      <span *ngIf="!node.selectable">{{node.name}} here-2</span>
 
       <!-- Progress bar -->
       <mat-progress-bar *ngIf="node.isLoading"

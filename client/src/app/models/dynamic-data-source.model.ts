@@ -12,6 +12,7 @@ export class EntityNode {
     public name: string,
     public level: number = 1,
     public expandable: boolean = true,
+    public selectable: boolean = true,
     public isLoading: boolean = false,
     public advertiserId = '123',
     public type = 'line-item',
@@ -29,7 +30,7 @@ export class DynamicDatabase {
 
   /** Initial data from database */
   initialData(): EntityNode[] {
-    return [new EntityNode('root', 'DV360', 0, true)];
+    return [new EntityNode('root', 'DV360', 0, true, false)];
   }
 
   getChildren(node: EntityNode): Promise<EntityNode[] | undefined> {
@@ -37,12 +38,9 @@ export class DynamicDatabase {
       this.http.get<Array<EntityNode>>(`${environment.apiUrl}/agents/dv360/fetch`, {params: {level: node.level}})
       .pipe(map(data => {
         return data.map(entity => {
-          const e = new EntityNode(entity.id, entity.name, node.level + 1, true);
-          console.log(e);
-          return e;
+          return new EntityNode(entity.id, entity.name, node.level + 1, true);
         })
       })).subscribe(result => {
-        console.log('resolving', result);
         resolve(result);
       });
     })

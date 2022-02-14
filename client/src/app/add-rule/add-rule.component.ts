@@ -118,8 +118,6 @@ export class AddRuleComponent implements OnInit {
     .pipe(map((res: SourceAgent) => res))
     .subscribe(result => {
       this.sources = [result];
-
-      console.log('source agents', this.sources);
     });
   }
 
@@ -156,12 +154,8 @@ export class AddRuleComponent implements OnInit {
    * Save rule.
    */
   saveRule() {
-    console.log('Saving rule...', this.currentRule);
-
     this.http.post(`${environment.apiUrl}/rules`, this.currentRule)
     .subscribe(result => {
-      console.log('addRule', result);
-
       // Inform the rules component about the new rule
       store.ruleAdded.next(true);
     });

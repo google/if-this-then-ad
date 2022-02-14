@@ -36,7 +36,6 @@ import { HttpClientModule } from '@angular/common/http';
 import { RulesComponent } from './rules/rules.component';
 import { TargetSelectorComponent } from './target-selector/target-selector.component';
 import { HeaderComponent } from './header/header.component';
-import { DebugComponent } from './debug/debug.component';
 
 @NgModule({
   declarations: [
@@ -45,7 +44,6 @@ import { DebugComponent } from './debug/debug.component';
     RulesComponent,
     TargetSelectorComponent,
     HeaderComponent,
-    DebugComponent,
   ],
   imports: [
     BrowserModule,
