@@ -66,15 +66,15 @@ router.get('/api/rules', RulesController.list);
 // Job runner trigger endpoint
 router.get('/api/jobs/execute', JobController.executeJobs);
 
-// possible urls:
-//  - /api/agents/dv360-ads/metadata
-//  - /api/agents/dv360-ads/list/lineItem/<advertiserId>
-//  - /api/agents/dv360-ads/list/advertiser/<partnerId>
-//  - /api/agents/dv360-ads/account-tree
 router.get(
-    '/api/agents/:agent/:method/:entity?/:parentId?',
+    '/api/agents/metadata',
     //pass.isAuthenticated,
-    AgentsController.getAgentMethodResult,
+    AgentsController.getAgentsMetadata,
+);
+router.get(
+    '/api/agents/:agent/list/:entityType',
+    //pass.isAuthenticated,
+    AgentsController.getAgentEntityList,
 );
 
 // router.post('/api/agent-results', PubSubController.messageHandler);

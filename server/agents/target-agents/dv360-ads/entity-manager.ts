@@ -11,7 +11,13 @@ import { config } from './config';
 
 export default class EntityManager<T extends DV360Entity> {
     // Static method for instantiation
-    public static getInstance(config: InstanceOptions, token: string) {
+    public static getInstance(config: InstanceOptions, token: string, params = {}) {
+        if (params['advertiserId'] && !config.parentId) {
+            config.parentId = parseInt(params['advertiserId']);
+        } else if (params['partnerId'] && !config.parentId) {
+            config.parentId = parseInt(params['partnerId']);
+        }
+
         switch (config.entityType) {
             case EntityType.insertionOrder:
                 return new EntityManager<InsertionOrder>(
@@ -72,8 +78,8 @@ export default class EntityManager<T extends DV360Entity> {
         private entityId: number,
         private token: string,
     ) {
-        if (!parentId || !token) {
-            throw new Error('"parentId & token" cannot be empty');
+        if (!token) {
+            throw new Error('"token" cannot be empty');
         }
 
         this.object = new objectType();
@@ -92,9 +98,9 @@ export default class EntityManager<T extends DV360Entity> {
 
     private parseTemplateString(s: string): string {
         return s
-            .replace('{parentId}', this.parentId.toString())
-            .replace('{partnerId}', this.parentId.toString())
-            .replace('{advertiserId}', this.parentId.toString())
+            .replace('{parentId}', this.parentId?.toString())
+            .replace('{partnerId}', this.parentId?.toString())
+            .replace('{advertiserId}', this.parentId?.toString())
             .replace('{entityId}', this.entityId?.toString());
     }
 
@@ -146,23 +152,32 @@ export default class EntityManager<T extends DV360Entity> {
     }
 
     // List method
-    public async list(getOnlyActive = true, onlyFirstPage = false) {
+    public async list(params: Object, getOnlyActive = true, onlyFirstPage = false) {
+        // TODO: Debug
+        onlyFirstPage = true;
+
+        const apiCallParams = this.getApiCallParams(this.object.apiConfig);
+        if (!apiCallParams['params']) {
+            apiCallParams['params'] = {};
+        }
+
+        const filters = {};
+        if (params['insertionOrderId']) {
+            filters['insertionOrderId'] = parseInt(params['insertionOrderId']);
+        }
+
+        if (getOnlyActive || params['entityStatus']) {
+            filters['entityStatus'] = params['entityStatus'] || 'ENTITY_STATUS_ACTIVE';
+        }
+
+        apiCallParams['params']['filter'] = new URLSearchParams(filters).toString();
+
         let result: Object[] = [];
         let nextPageToken = '';
-
         do {
-            const apiCallParams = this.getApiCallParams(this.object.apiConfig);
-            if (!apiCallParams['params']) {
-                apiCallParams['params'] = {};
-            }
-
-            if (getOnlyActive) {
-                apiCallParams['params']['filter'] = 'entityStatus=ENTITY_STATUS_ACTIVE';
-            }
-
             apiCallParams['params']['pageToken'] = nextPageToken;
-
             const tmpResult = await this.apiCall(apiCallParams);
+
             result = [...result, ...tmpResult[this.object.listName]];
             nextPageToken = tmpResult['nextPageToken'];
         } while (nextPageToken && !onlyFirstPage);
