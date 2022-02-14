@@ -14,3 +14,23 @@ export interface ExecutionTime {
     jobId: string;
     lastExecution: Date;
 }
+
+export interface AgentTask {
+    token: {
+        auth: string;
+    };
+    ruleResult: {
+        ruleId: string;
+        result: boolean;
+        actions: Array<Action>;
+    };
+}
+
+interface Action {
+    type: string;
+    params: Array<Parameter>;
+}
+interface Parameter {
+    key: string;
+    value: string;
+}

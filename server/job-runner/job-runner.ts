@@ -167,20 +167,19 @@ class JobRunner {
         // execute each job agent
         // await for yielded results
         log.info('job-runner:runAll: Executing jobs on all available agents');
-        const jobResultIter = this.runJobs(jobs);
-        let jobResult = jobResultIter.next();
+        const agentResultIter = this.runJobs(jobs);
+        let agentResult = agentResultIter.next();
 
         // Collect all actions that need to be performed
         // on the target systems.
-        const targetActions: Array<RuleResult[]> = [];
         const executionTimes: Array<ExecutionTime> = [];
         const allResults: Array<Array<RuleResult>> = [[]];
 
-        while (!(await jobResult).done) {
-            log.debug('my jobResult');
-            log.debug(await jobResult);
+        while (!(await agentResult).done) {
+            log.debug('job-runner:runAll: jobResult');
+            log.debug(await agentResult);
             // pass this to rules engine.
-            const currentResult: AgentResult = (await jobResult).value;
+            const currentResult: AgentResult = (await agentResult).value;
             log.info('Publishing results to the rule engine');
             log.info(`Completed job: ${currentResult.jobId}`);
             log.debug(currentResult);
@@ -195,7 +194,7 @@ class JobRunner {
             log.debug('evaluation result');
             log.debug(results);
             // targetActions.push(results);
-            jobResult = jobResultIter.next();
+            agentResult = agentResultIter.next();
         }
 
         log.info('Updating Last execution time of jobs');
