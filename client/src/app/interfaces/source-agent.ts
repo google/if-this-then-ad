@@ -1,10 +1,10 @@
 import { DataPoint } from 'src/app/interfaces/datapoint'
-import { SourceAgentArgument } from './source-agent-argument';
+import { SourceAgentParameter } from './source-agent-parameter';
 
 export interface SourceAgent {
   id: string;
-  displayName: string;
+  name: string;
   type: "source-agent";
-  arguments: SourceAgentArgument[];
+  params: SourceAgentParameter[];
   dataPoints: DataPoint[];
-}
+};

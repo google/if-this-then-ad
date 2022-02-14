@@ -85,14 +85,14 @@ class JobRunner {
         return topic;
     }
 
-    private listAgents() {
+    private listSourceAgents() {
         return {
             'open-weather-map': new OpenWeatherMap(),
         };
     }
 
     private async *runJobs(jobs: Job[]) {
-        const agents = this.listAgents();
+        const agents = this.listSourceAgents();
 
         log.debug('runJobs jobs');
         log.debug(jobs);
@@ -177,9 +177,7 @@ class JobRunner {
         const allResults: Array<Array<RuleResult>> = [[]];
 
         while (!(await jobResult).done) {
-            log.debug('my jobResult');
-            log.debug(await jobResult);
-            // pass this to rules engine.
+            // Pass this to rules engine
             const currentResult: AgentResult = (await jobResult).value;
             log.info('Publishing results to the rule engine');
             log.info(`Completed job: ${currentResult.jobId}`);

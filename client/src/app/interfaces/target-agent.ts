@@ -1,6 +1,6 @@
-import { TargetAgentActions  } from "./target-agent-actions";
+import { TargetAgentAction  } from "./target-agent-action";
 
 export interface TargetAgent {
-  id?: string,
-  actions?: TargetAgentActions[],
-}
+  agentId: string,
+  actions: TargetAgentAction[],
+};

@@ -1,4 +1,4 @@
-import { AgentResult, Rule, CONDITIONS, RuleResult } from '../src/interfaces';
+import { AgentResult, Rule, COMPARATORS, RuleResult } from '../src/interfaces';
 import Repository from '../../../services/repository-service';
 import Collections from '../../../services/collection-factory';
 import { Collection } from '../../../models/fire-store-entity';
@@ -75,23 +75,23 @@ export class RulesProcessor {
             return false;
         }
 
-        if (rule.condition.condition == CONDITIONS.equals) {
+        if (rule.condition.comparator == COMPARATORS.equals) {
             return dpResult == rule.condition.value;
         }
 
-        if (rule.condition.condition == CONDITIONS.greater) {
+        if (rule.condition.comparator == COMPARATORS.greater) {
             return dpResult > rule.condition.value;
         }
 
-        if (rule.condition.condition == CONDITIONS.less) {
+        if (rule.condition.comparator == COMPARATORS.less) {
             return dpResult < rule.condition.value;
         }
 
-        if (rule.condition.condition == CONDITIONS.yes) {
+        if (rule.condition.comparator == COMPARATORS.yes) {
             return !!dpResult;
         }
 
-        if (rule.condition.condition == CONDITIONS.no) {
+        if (rule.condition.comparator == COMPARATORS.no) {
             return !dpResult;
         }
 

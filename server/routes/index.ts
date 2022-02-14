@@ -66,6 +66,9 @@ router.get('/api/rules', RulesController.list);
 // Job runner trigger endpoint
 router.get('/api/jobs/execute', JobController.executeJobs);
 
+// TODO: Debug Endpoint
+router.get('/api/agents/dv360/fetch', someController.fetch);
+
 router.get(
     '/api/agents/metadata',
     //pass.isAuthenticated,

@@ -1,5 +1,5 @@
 export interface DataPoint {
-  id: string;
-  displayName: string;
+  dataPoint: string;
+  name: string;
   dataType: string;
-}
+};

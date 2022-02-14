@@ -13,12 +13,12 @@
 
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { TriggersComponent } from './triggers/triggers.component';
+import { AddRuleComponent } from './add-rule/add-rule.component';
 
 const routes: Routes = [
   {
     path: '',
-    component: TriggersComponent,
+    component: AddRuleComponent,
   },
 ];
 

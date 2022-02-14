@@ -22,7 +22,7 @@ class OpenWeatherMap implements IAgent {
             log.error(errorMessage);
             throw new Error(errorMessage);
         }
-        //TODO: remove targetLocation from configuration
+        // TODO: remove targetLocation from configuration 
         // object, it should be part of jobDefinition
         const client = axios.create({
             baseURL: options.baseUrl,
@@ -56,6 +56,7 @@ class OpenWeatherMap implements IAgent {
                 jobId: options.jobId as string,
                 data: response.data,
             };
+
             return Promise.resolve(agentResponse);
         } catch (err) {
             log.error(JSON.stringify(err));
@@ -113,9 +114,8 @@ class OpenWeatherMap implements IAgent {
         res.data.agentName = jobOptions.name;
         res.data.targetLocation = jobOptions.targetLocation;
         res.jobId = jobOptions.jobId as string;
-        const weatherResult = this.transform(res);
-
-        return weatherResult;
+        
+        return this.transform(res);
     }
 
     public static async getAgentMetadata(): Promise<AgentMetadata> {
@@ -124,53 +124,54 @@ class OpenWeatherMap implements IAgent {
 
         const meta: AgentMetadata = {
             id: config.id,
-            displayName: this.name,
+            name: 'Weather', // this.name, <- won't work because static
             type: AgentType.SOURCE,
-            arguments: ['targetLocation'],
+            params: [
+                {
+                    dataPoint: 'targetLocation',
+                    name: 'Target Location',
+                    type: 'string',
+                },
+            ],
             dataPoints: [
                 {
-                    id: 'targetLocation',
-                    displayName: 'Location',
-                    dataType: typeof String(),
-                },
-                {
-                    id: 'temperature',
-                    displayName: 'Temperature',
+                    dataPoint: 'temperature',
+                    name: 'Temperature',
                     dataType: typeof Number(),
                 },
                 {
-                    id: 'windSpeed',
-                    displayName: 'Wind speed',
+                    dataPoint: 'windSpeed',
+                    name: 'Wind speed',
                     dataType: typeof Number(),
                 },
                 {
-                    id: 'clouds',
-                    displayName: 'Clouds',
+                    dataPoint: 'clouds',
+                    name: 'Clouds',
                     dataType: typeof Boolean(),
                 },
                 {
-                    id: 'rain',
-                    displayName: 'Rain',
+                    dataPoint: 'rain',
+                    name: 'Rain',
                     dataType: typeof Boolean(),
                 },
                 {
-                    id: 'snow',
-                    displayName: 'Snow',
+                    dataPoint: 'snow',
+                    name: 'Snow',
                     dataType: typeof Boolean(),
                 },
                 {
-                    id: 'thunderstorm',
-                    displayName: 'Thunderstorm',
+                    dataPoint: 'thunderstorm',
+                    name: 'Thunderstorm',
                     dataType: typeof Boolean(),
                 },
                 {
-                    id: 'clearSky',
-                    displayName: 'Clear Sky',
+                    dataPoint: 'clearSky',
+                    name: 'Clear Sky',
                     dataType: typeof Boolean(),
                 },
                 {
-                    id: 'timestamp',
-                    displayName: 'Last execution',
+                    dataPoint: 'timestamp',
+                    name: 'Last execution',
                     dataType: typeof Date(),
                 },
             ],

@@ -14,6 +14,7 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule }   from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -24,25 +25,43 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
-import { TriggersComponent } from './triggers/triggers.component';
+import { MatTreeModule } from '@angular/material/tree';
+import { MatIconModule } from '@angular/material/icon';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatMenuModule } from '@angular/material/menu';
+
+import { AddRuleComponent } from './add-rule/add-rule.component';
 import { HttpClientModule } from '@angular/common/http';
+import { RulesComponent } from './rules/rules.component';
+import { TargetSelectorComponent } from './target-selector/target-selector.component';
+import { HeaderComponent } from './header/header.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    TriggersComponent,
+    AddRuleComponent,
+    RulesComponent,
+    TargetSelectorComponent,
+    HeaderComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
     FormsModule,
+    ReactiveFormsModule,
     MatButtonModule,
     MatCheckboxModule,
     MatInputModule,
     MatSelectModule,
     MatTableModule,
     MatPaginatorModule,
+    MatTreeModule,
+    MatIconModule,
+    MatProgressBarModule,
+    MatToolbarModule,
+    MatMenuModule,
     HttpClientModule,
   ],
   providers: [],
