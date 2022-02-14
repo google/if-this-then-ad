@@ -1,3 +1,8 @@
+/**
+ * NOTE: Some interfaces have been duplicated for now
+ * TODO: Clean up later.
+ */
+
 import * as firestore from '@google-cloud/firestore';
 
 export interface Job {
@@ -19,18 +24,38 @@ export interface AgentTask {
     token: {
         auth: string;
     };
-    ruleResult: {
+    target: {
         ruleId: string;
-        result: boolean;
+        agentId: string;
+        result: boolean |number;
         actions: Array<Action>;
     };
 }
+export interface AgentResult {
+    agentId: string;
+    jobId: string;
+    jobOwner: string;
+    agentName: string;
+    data: any;
+    timestamp: Date;
+}
+export interface RuleResult {
+    ruleId: string;
+    result: boolean | number;
+    targets: Array<TargetAgent>;
+}
+
+export interface TargetAgent {
+    agentId: string;
+    actions: Array<Action>;
+}
 
 interface Action {
+    id?:string;
     type: string;
     params: Array<Parameter>;
 }
 interface Parameter {
     key: string;
-    value: string;
+    value: string | number | boolean;
 }

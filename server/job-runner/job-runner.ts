@@ -1,16 +1,16 @@
 const { PubSub } = require('@google-cloud/pubsub');
 import { log, date } from '@iftta/util';
 import OpenWeatherMap from '../agents/source-agents/open-weather-map';
-import { AgentResult } from '../agents/source-agents/open-weather-map/interfaces';
+import { AgentResult, RuleResult, AgentTask } from './interfaces';
 import { Collection } from '../models/fire-store-entity';
 //TODO: replace this with sending messages over pubsub.
 //Temp coupling between packages/
 import rulesEngine from '../packages/rule-engine';
-import { RuleResult } from '../packages/rule-engine/src/interfaces';
 import Collections from '../services/collection-factory';
 import Repository from '../services/repository-service';
 import { ExecutionTime, Job } from './interfaces';
-import BackgroundAuth from './refresh-tokens';
+import TaskCollector from './task-collector';
+
 
 const pubSubClient = new PubSub();
 const jobsCollection = Collections.get(Collection.JOBS);
@@ -90,7 +90,12 @@ class JobRunner {
             'open-weather-map': new OpenWeatherMap(),
         };
     }
-
+    /**
+     * 
+     * @param {Job[]}jobs Runs all jobs
+     * @returns {AgentResult} AgentResult generator use .next() to get values out of it.
+     *  
+     */
     private async *runJobs(jobs: Job[]) {
         const agents = this.listAgents();
 
@@ -149,6 +154,14 @@ class JobRunner {
     }
 
     public async runAll() {
+        const executionTimes: Array<ExecutionTime> = [];
+        const collectExecutionTimes = (currentResult) => {
+            const execTime: ExecutionTime = {
+                jobId: currentResult.jobId,
+                lastExecution: currentResult.timestamp,
+            };
+            executionTimes.push(execTime);
+        }
         // Get a list of jobs to execute
         log.info('job-runner:runAll: Fetching job list to execute');
         const jobs = await this.getEligibleJobs();
@@ -172,7 +185,7 @@ class JobRunner {
 
         // Collect all actions that need to be performed
         // on the target systems.
-        const executionTimes: Array<ExecutionTime> = [];
+
         const allResults: Array<Array<RuleResult>> = [[]];
 
         while (!(await agentResult).done) {
@@ -180,16 +193,14 @@ class JobRunner {
             log.debug(await agentResult);
             // pass this to rules engine.
             const currentResult: AgentResult = (await agentResult).value;
+            collectExecutionTimes(currentResult);
             log.info('Publishing results to the rule engine');
             log.info(`Completed job: ${currentResult.jobId}`);
             log.debug(currentResult);
-            const execTime: ExecutionTime = {
-                jobId: currentResult.jobId,
-                lastExecution: currentResult.timestamp,
-            };
-            executionTimes.push(execTime);
-
             const results: Array<RuleResult> = await rulesEngine.processMessage(currentResult);
+
+            TaskCollector.put(currentResult, results);
+
             allResults.push(results);
             log.debug('evaluation result');
             log.debug(results);
@@ -202,26 +213,17 @@ class JobRunner {
         // Update execution times in the jobs collection
         await this.updateJobExecutionTimes(executionTimes);
 
-        // TODO: obtain user ID from the Rule object
-        // obtain freshTokens before running the jobs
-        const userId = 'YrqYQc15jFYutbMdZNss';
-        const token = await BackgroundAuth.refreshTokensForUser(userId);
-
-        // call target-agents to execute individual actions
-
-        // publish results to pubsub.
-        // while (!(await jobResult).done) {
-        //     const currentResult = (await jobResult).value
-        //     log.debug('Got result ')
-        //     log.debug(JSON.stringify(currentResult));
-        //     // publish to the topic created.
-        //     await topic.publish(Buffer.from(JSON.stringify(currentResult)));
-        //     log.debug('Published results to PubSub')
-        //     jobResult = jobResultIter.next();
-        // }
+        const tasks = TaskCollector.get();
+        await this.processTasks(tasks);
     }
 
-    public async processTargets(results: Array<RuleResult>) {}
+    private async processTasks(tasks: Array<AgentTask>) {
+        const agents = this.listAgents();
+        tasks.map(async (task) => {
+            const targetAgent = agents[task.target.agentId];
+            await targetAgent.execute(task);
+        });
+    }
 }
 
 export default new JobRunner(pubSubClient, repo);

@@ -42,16 +42,18 @@ export interface RuleResult {
     targets: Array<TargetAgent>;
 }
 
-interface actionParam {
-    param: string;
+interface Parameter {
+    key: string;
     value: string | number | boolean;
 }
-interface TargetActions {
-    action: string;
-    actionParams: Array<actionParam>;
+
+interface Action {
+    id?: string;
+    type: string;
+    params: Array<Parameter>;
 }
 
 export interface TargetAgent {
     agentId: string;
-    actions: Array<TargetActions>;
+    actions: Array<Action>;
 }
