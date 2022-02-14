@@ -12,7 +12,7 @@
  */
 
 import { Strategy } from 'passport-google-oauth20';
-import { log, date } from '@iftta/util'
+import { log, date } from '@iftta/util';
 import { PassportStatic } from 'passport';
 import { Request } from 'express';
 import Repository from '../services/repository-service';
@@ -41,26 +41,29 @@ class GoogleStrategy {
             `Set oauth callback URL to ${process.env.OAUTH_CALLBACK_URL}, adjust Authorized URLs in GCP client settings accordingly`,
         );
 
-        const googleStrategy = new Strategy({
+        const googleStrategy = new Strategy(
+            {
                 clientID: process.env.GOOGLE_CLIENT_ID as string,
                 clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
                 callbackURL: process.env.OAUTH_CALLBACK_URL,
                 passReqToCallback: true,
-                scope: ['https://www.googleapis.com/auth/userinfo.email',
+                scope: [
+                    'https://www.googleapis.com/auth/userinfo.email',
                     'https://www.googleapis.com/auth/userinfo.profile',
                     'https://www.googleapis.com/auth/display-video',
-                    'https://www.googleapis.com/auth/adwords'],
+                    'https://www.googleapis.com/auth/adwords',
+                ],
             },
             async (
                 req: Request,
                 accessToken: string,
                 refreshToken: string,
                 profile: any,
-                done: any
+                done: any,
             ) => {
                 // this is the callback method called after
                 // successful authentication
-                log.debug(`Profile : ${JSON.stringify(profile, null, 2)}`)
+                log.debug(`Profile : ${JSON.stringify(profile, null, 2)}`);
 
                 const jsonProfile = JSON.parse(profile._raw);
 
@@ -79,28 +82,25 @@ class GoogleStrategy {
                         expiry: date.add(Date.now(), { seconds: 3599 }), // expire access Tokens after 3599 sec.
                         refresh: refreshToken,
                         provider: profile.provider,
-                        type: 'Bearer'
-                    }
+                        type: 'Bearer',
+                    },
                 };
 
                 log.debug(`User : ${JSON.stringify(userData, null, 2)}`);
 
                 // check if the user exists in db
-                const userResults = await userRepo.getBy(
-                    'profileId',
-                    profile.id
-                );
+                const userResults = await userRepo.getBy('profileId', profile.id);
 
                 if (userResults.length == 0) {
                     await userRepo.save(userData);
                 }
 
                 return done(null, userData, true);
-            }
-        )
-        //TODO: we ask for all scopes here, 
+            },
+        );
+        //TODO: we ask for all scopes here,
         // we should perhaps add scopes when user decide to use a specific agent requiring
-        // extra scopes to be added. 
+        // extra scopes to be added.
 
         _passport.use(googleStrategy);
     }

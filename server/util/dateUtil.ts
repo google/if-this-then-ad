@@ -1,12 +1,12 @@
-import {add, isAfter, isBefore, isValid, isFuture, isPast, parse, parseISO} from 'date-fns'
+import { add, isAfter, isBefore, isValid, isFuture, isPast, parse, parseISO } from 'date-fns';
 
 export const date = {
     add,
-    isAfter, 
-    isBefore, 
+    isAfter,
+    isBefore,
     isValid,
     isFuture,
-    isPast, 
-    parse, 
-    parseISO
-}
+    isPast,
+    parse,
+    parseISO,
+};
