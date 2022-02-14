@@ -113,11 +113,10 @@ export class AddRuleComponent implements OnInit {
    * Fetch all source agents from API.
    */
    loadSourceAgents() {
-    this.http.get<SourceAgent>(`${environment.apiUrl}/agents/open-weather-map/metadata`)
-    //.pipe(map((res: Array<SourceAgent>) => res))
-    .pipe(map((res: SourceAgent) => res))
+    this.http.get<Array<SourceAgent>>(`${environment.apiUrl}/agents/metadata`)
+    .pipe(map((res: Array<SourceAgent>) => res))
     .subscribe(result => {
-      this.sources = [result];
+      this.sources = result.filter(agent => agent.type === 'source-agent');
     });
   }
 
