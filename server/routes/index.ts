@@ -72,7 +72,11 @@ router.get('/api/agents/dv360/fetch', someController.fetch);
 router.get(
     '/api/agents/:agent/:method/:entity?/:parentId?',
     //pass.isAuthenticated,
-    AgentsController.getAgentMethodResult,
+    AgentsController.getAgentsMetadata
+);
+router.get('/api/agents/:agent/list/:entityType',
+    //pass.isAuthenticated,
+    AgentsController.getAgentEntityList
 );
 
 // /agents/open-weather-map/metadata
