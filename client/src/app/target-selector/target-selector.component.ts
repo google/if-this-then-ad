@@ -22,26 +22,11 @@ export class TargetSelectorComponent {
   // The selection for checklist
   checklistSelection = new SelectionModel<EntityNode>(true /* multiple */);
 
-  mySelection = new SelectionModel<number>(true);
-
   constructor(private database: DynamicDatabase) {
     this.treeControl = new FlatTreeControl<EntityNode>(this.getLevel, this.isExpandable);
     this.dataSource = new DynamicDataSource(this.treeControl, database);
 
     this.dataSource.data = database.initialData();
-
-    this.mySelection.changed.subscribe(val => {
-      console.log('mySelection changed', val);
-    });
-
-    this.checklistSelection.changed.subscribe(val => {
-      console.log('checklistSelection changed', val);
-      console.log('all selected', this.checklistSelection.selected);
-    });
-
-    console.log(this.mySelection.selected);
-    this.mySelection.select(2);
-    console.log(this.mySelection.selected);
   }
 
   /**
@@ -90,11 +75,6 @@ export class TargetSelectorComponent {
         return this.checklistSelection.isSelected(child);
       });
 
-    if (node.id === '2015636') {
-      console.log('descendants', node, descendants);
-      console.log('all selected', descAllSelected);
-    }
-
     return descAllSelected;
   }
 
@@ -127,11 +107,6 @@ export class TargetSelectorComponent {
     if (this.allowSelectionBubbling) {
       const descendants = this.treeControl.getDescendants(node);
 
-      console.log('is selected', this.checklistSelection.isSelected(node));
-      console.log('descendants', descendants);
-
-      console.log('selected', this.checklistSelection.selected);
-
       this.checklistSelection.isSelected(node)
         ? this.checklistSelection.select(...descendants)
         : this.checklistSelection.deselect(...descendants);
@@ -151,7 +126,6 @@ export class TargetSelectorComponent {
 
   isSelected(node: EntityNode): boolean {
     const selected = this.checklistSelection.isSelected(node);
-    console.log(node, selected);
     return selected;
   }
 

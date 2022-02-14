@@ -29,10 +29,10 @@
       <!-- Checkbox -->
       <mat-checkbox *ngIf="node.selectable" [checked]="checklistSelection.isSelected(node)"
                     [indeterminate]="descendantsPartiallySelected(node)"
-                    (change)="entitySelectionToggle(node)">{{node.name}} here-1</mat-checkbox>
+                    (change)="entitySelectionToggle(node)">{{node.name}}</mat-checkbox>
 
       <!-- Non-selectable nodes have no checkbox -->
-      <span *ngIf="!node.selectable">{{node.name}} here-2</span>
+      <span *ngIf="!node.selectable">{{node.name}}</span>
 
       <!-- Progress bar -->
       <mat-progress-bar *ngIf="node.isLoading"
