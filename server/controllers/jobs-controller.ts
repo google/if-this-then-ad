@@ -29,6 +29,7 @@ export const addJob = async (rule: Rule): Promise<string> => {
         agentId: rule.source.id,
         executionInterval: rule.executionInterval,
         query: rule.source.params,
+        owner:rule.owner,
     };
     log.debug('Jobs-controller:addJob');
     log.debug(job);
@@ -52,7 +53,7 @@ export const addJob = async (rule: Rule): Promise<string> => {
 
     if (!existingJobs || existingJobs.length == 0) {
         try {
-            log.info(`Creating a new job for agent ${job.agentId}`);
+            log.info(`job-controller:addJob: Creating a new job for agent ${job.agentId}`);
             const jobId = await repo.save(job);
             log.info(`Job created :  ${jobId}`);
             return jobId;
@@ -70,7 +71,7 @@ export const addJob = async (rule: Rule): Promise<string> => {
 };
 
 export const executeJobs = async (req: Request, res: Response) => {
-    log.info('Executing all available jobs');
+    log.info('job-controller:executeJobs: Executing all available jobs');
     JobRunner.execute();
     res.json({ status: 'started' });
 };

@@ -6,4 +6,5 @@ export const config: Configuration = {
     baseUrl: 'https://api.openweathermap.org/data/2.5/weather',
     units: 'metric',
     apiKey: '',
+    jobOwner: ''
 };
