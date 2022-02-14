@@ -53,7 +53,7 @@ class OpenWeatherMap implements IAgent {
             const client = this.createApiClient(options);
             const response = await client.get('/');
             const agentResponse: AgentResponse = {
-                jobOwner:options.jobOwner,
+                jobOwner: options.jobOwner,
                 jobId: options.jobId!,
                 data: response.data,
             };
@@ -98,7 +98,7 @@ class OpenWeatherMap implements IAgent {
         let options = { ...config };
         (options.apiKey = process.env.WEATHER_API_KEY || ''), (options.jobId = job.id);
         options.targetLocation = job.query ? job.query[0].value : '';
-        options.jobOwner = job.owner; 
+        options.jobOwner = job.owner;
         log.debug('Agent options used for this job');
         log.debug(options);
 

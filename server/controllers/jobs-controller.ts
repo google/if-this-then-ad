@@ -29,7 +29,7 @@ export const addJob = async (rule: Rule): Promise<string> => {
         agentId: rule.source.id,
         executionInterval: rule.executionInterval,
         query: rule.source.params,
-        owner:rule.owner,
+        owner: rule.owner,
     };
     log.debug('Jobs-controller:addJob');
     log.debug(job);

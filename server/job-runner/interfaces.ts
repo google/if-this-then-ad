@@ -27,7 +27,7 @@ export interface AgentTask {
     target: {
         ruleId: string;
         agentId: string;
-        result: boolean |number;
+        result: boolean | number;
         actions: Array<Action>;
     };
 }
@@ -51,7 +51,7 @@ export interface TargetAgent {
 }
 
 interface Action {
-    id?:string;
+    id?: string;
     type: string;
     params: Array<Parameter>;
 }

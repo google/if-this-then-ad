@@ -1,6 +1,6 @@
 export interface AgentResponse {
     jobId: string;
-    jobOwner:string;
+    jobOwner: string;
     data: any;
 }
 
@@ -24,7 +24,7 @@ export interface Configuration {
 export interface AgentResult {
     agentId: string;
     jobId: string;
-    jobOwner:string;
+    jobOwner: string;
     agentName: string;
     data: any;
     timestamp: Date;
@@ -61,7 +61,7 @@ export enum AgentType {
 export interface Job {
     id: string;
     agentId: string;
-    owner:string;
+    owner: string;
     query?: {
         dataPoint: string;
         value: string | number | boolean;

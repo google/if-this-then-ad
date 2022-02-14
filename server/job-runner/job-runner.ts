@@ -11,7 +11,6 @@ import Repository from '../services/repository-service';
 import { ExecutionTime, Job } from './interfaces';
 import TaskCollector from './task-collector';
 
-
 const pubSubClient = new PubSub();
 const jobsCollection = Collections.get(Collection.JOBS);
 const repo = new Repository<Job>(jobsCollection);
@@ -91,10 +90,10 @@ class JobRunner {
         };
     }
     /**
-     * 
+     *
      * @param {Job[]}jobs Runs all jobs
      * @returns {AgentResult} AgentResult generator use .next() to get values out of it.
-     *  
+     *
      */
     private async *runJobs(jobs: Job[]) {
         const agents = this.listAgents();
@@ -161,7 +160,7 @@ class JobRunner {
                 lastExecution: currentResult.timestamp,
             };
             executionTimes.push(execTime);
-        }
+        };
         // Get a list of jobs to execute
         log.info('job-runner:runAll: Fetching job list to execute');
         const jobs = await this.getEligibleJobs();
