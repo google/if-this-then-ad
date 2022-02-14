@@ -1,6 +1,7 @@
 const { PubSub } = require('@google-cloud/pubsub');
 import { log, date } from '@iftta/util';
 import OpenWeatherMap from '../agents/source-agents/open-weather-map';
+import DV360Ads from '../agents/target-agents/dv360-ads';
 import { AgentResult, RuleResult, AgentTask } from './interfaces';
 import { Collection } from '../models/fire-store-entity';
 //TODO: replace this with sending messages over pubsub.
@@ -87,6 +88,7 @@ class JobRunner {
     private listAgents() {
         return {
             'open-weather-map': new OpenWeatherMap(),
+            'dv360-agent': DV360Ads,
         };
     }
     /**
@@ -185,8 +187,6 @@ class JobRunner {
         // Collect all actions that need to be performed
         // on the target systems.
 
-        const allResults: Array<Array<RuleResult>> = [[]];
-
         while (!(await agentResult).done) {
             log.debug('job-runner:runAll: jobResult');
             log.debug(await agentResult);
@@ -199,10 +199,6 @@ class JobRunner {
             const results: Array<RuleResult> = await rulesEngine.processMessage(currentResult);
 
             TaskCollector.put(currentResult, results);
-
-            allResults.push(results);
-            log.debug('evaluation result');
-            log.debug(results);
             // targetActions.push(results);
             agentResult = agentResultIter.next();
         }
@@ -219,8 +215,10 @@ class JobRunner {
     private async processTasks(tasks: Array<AgentTask>) {
         const agents = this.listAgents();
         tasks.map(async (task) => {
-            const targetAgent = agents[task.target.agentId];
-            await targetAgent.execute(task);
+            // const targetAgent = agents[task.target.agentId];
+            log.debug(`job-runner:processTasks: Executing task on agent ${task.target.agentId}`);
+            log.debug(task);
+            // await targetAgent.execute(task);
         });
     }
 }

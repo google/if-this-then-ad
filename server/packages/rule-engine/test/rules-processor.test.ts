@@ -24,6 +24,7 @@ describe('test add ', () => {
     const testRule: Rule = {
         id: '1',
         jobId: '2',
+        owner: 'YrqYQc15jFYutbMdZNss',
         source: {
             id: 'open-weather-map',
             name: 'open-weather-map',

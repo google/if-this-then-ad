@@ -1,6 +1,5 @@
 import { AgentTask, AgentResult, RuleResult } from './interfaces';
 import BackgroundAuth from './refresh-tokens';
-import { TargetAgent } from 'agents/target-agents/dv360-ads/interfaces';
 
 class TaskCollector {
     private tasks: Array<AgentTask> = [];

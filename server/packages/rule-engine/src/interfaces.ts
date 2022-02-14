@@ -16,6 +16,7 @@ export enum CONDITIONS {
 
 export interface Rule {
     id: string;
+    owner: string;
     source: {
         id: string;
         name: string;
