@@ -95,6 +95,8 @@ class GoogleStrategy {
                     await userRepo.save(userData);
                 }
 
+                // delete tokens otherwise they will be put into user session 
+                delete userData.token.refresh; 
                 return done(null, userData, true);
             },
         );
