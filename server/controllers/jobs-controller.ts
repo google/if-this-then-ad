@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { Rule } from "../models/rule";
+import { Rule } from '../models/rule';
 import Repository from '../services/repository-service';
 import Collections from '../services/collection-factory';
 import { Collection } from '../models/fire-store-entity';
@@ -22,7 +22,7 @@ const repo = new Repository<Job>(jobsCollection);
 export const addJob = async (rule: Rule): Promise<string> => {
     log.debug('jobs-controller:addJob');
     log.debug(JSON.stringify(rule, null, 2));
-    log.info('Checking for existing similar jobs'); 
+    log.info('Checking for existing similar jobs');
     const agentJobs = await repo.getBy('agentId', rule.source.id);
 
     // get all jobs for agent.
@@ -32,7 +32,7 @@ export const addJob = async (rule: Rule): Promise<string> => {
         query: rule.source.params,
     };
     log.debug('Jobs-controller:addJob');
-    log.debug(job); 
+    log.debug(job);
 
     const existingJobs = agentJobs.filter((j) => {
         // remove ID to avoid deepequal being always false.
