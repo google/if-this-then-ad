@@ -69,11 +69,6 @@ router.get('/api/jobs/execute', JobController.executeJobs);
 // TODO: Debug Endpoint
 router.get('/api/agents/dv360/fetch', someController.fetch);
 
-// possible urls:
-//  - /api/agents/dv360-ads/metadata
-//  - /api/agents/dv360-ads/list/lineItem/<advertiserId>
-//  - /api/agents/dv360-ads/list/advertiser/<partnerId>
-//  - /api/agents/dv360-ads/account-tree
 router.get(
     '/api/agents/:agent/:method/:entity?/:parentId?',
     //pass.isAuthenticated,

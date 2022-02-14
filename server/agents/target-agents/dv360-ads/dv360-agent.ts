@@ -9,6 +9,8 @@ import {
     IAgent,
     AgentType,
     AgentMetadata,
+    EntityType,
+    httpMethods,
 } from './interfaces';
 import { config } from './config';
 
@@ -84,52 +86,64 @@ export default class DV360Agent implements IAgent {
             id: config.id,
             displayName: this.name,
             type: AgentType.TARGET,
-            arguments: ['targetLocation'],
+            arguments: ['advertiserId', 'entityId', 'entityType'],
+            api: [
+                {
+                    dataPoint: 'partnerId',
+                    list: {
+                        url: `/api/agents/${config.id}/list/patner`,
+                        method: httpMethods.GET,
+                    },
+                },
+                {
+                    dataPoint: 'advertiserId',
+                    list: {
+                        url: `/api/agents/${config.id}/list/advertiser`,
+                        method: httpMethods.GET,
+                        params: {
+                            partnerId: typeof Number(),
+                        },
+                    },
+                },
+                {
+                    dataPoint: 'insertionOrderId',
+                    list: {
+                        url: `/api/agents/${config.id}/list/insertionOrder`,
+                        method: httpMethods.GET,
+                        params: {
+                            partnerId: typeof Number(),
+                            advertiserId: typeof Number(),
+                        },
+                    },
+                },
+                {
+                    dataPoint: 'lineItemId',
+                    list: {
+                        url: `/api/agents/${config.id}/list/lineItem`,
+                        method: httpMethods.GET,
+                        params: {
+                            partnerId: typeof Number(),
+                            advertiserId: typeof Number(),
+                            insertionOrderId: typeof Number(),
+                        },
+                    },
+                },
+            ],
             dataPoints: [
                 {
-                    id: 'targetLocation',
-                    displayName: 'Location',
-                    dataType: typeof String(),
-                },
-                {
-                    id: 'temperature',
-                    displayName: 'Temperature',
+                    id: 'advertiserId',
+                    displayName: 'Advertiser',
                     dataType: typeof Number(),
                 },
                 {
-                    id: 'windSpeed',
-                    displayName: 'Wind speed',
+                    id: 'entityId',
+                    displayName: 'Entity',
                     dataType: typeof Number(),
                 },
                 {
-                    id: 'clouds',
-                    displayName: 'Clouds',
-                    dataType: typeof Boolean(),
-                },
-                {
-                    id: 'rain',
-                    displayName: 'Rain',
-                    dataType: typeof Boolean(),
-                },
-                {
-                    id: 'snow',
-                    displayName: 'Snow',
-                    dataType: typeof Boolean(),
-                },
-                {
-                    id: 'thunderstorm',
-                    displayName: 'Thunderstorm',
-                    dataType: typeof Boolean(),
-                },
-                {
-                    id: 'clearSky',
-                    displayName: 'Clear Sky',
-                    dataType: typeof Boolean(),
-                },
-                {
-                    id: 'timestamp',
-                    displayName: 'Last execution',
-                    dataType: typeof Date(),
+                    id: 'entityType',
+                    displayName: 'Entity Type',
+                    dataType: `${EntityType.insertionOrder}|${EntityType.lineItem}`,
                 },
             ],
         };
@@ -138,29 +152,19 @@ export default class DV360Agent implements IAgent {
     }
 
     // Query DV360 entities for the UI
-    public async getEntityList(token: string, params: Object) {
-        if (
-            !('entity' in params) ||
-            !('parentId' in params) ||
-            !params['entity'] ||
-            !params['parentId']
-        ) {
-            throw new Error('Please specify both "entity" and "parentId"');
+    public async getEntityList(token: string, entityType: EntityType, params: Object) {
+        if (!entityType || !Object.values(EntityType).includes(entityType)) {
+            throw new Error('Please specify a correct "entityType"');
         }
 
-        const instanceOptions: InstanceOptions = {
-            entityType: params['entity'],
-            parentId: params['parentId'],
-        };
-
-        const instance = EntityManager.getInstance(instanceOptions, token);
+        const instance = EntityManager.getInstance({ entityType }, token, params);
         const result: any[] = [];
-        (await instance.list()).forEach((o: any) => {
+        (await instance.list(params)).forEach((o: any) => {
             result.push({
                 name: o?.displayName,
-                partnerId: o?.partnerId,
-                advertiserId: o?.advertiserId,
-                insertionOrderId: o?.insertionOrderId,
+                partnerId: o?.partnerId || params['partnerId'],
+                advertiserId: o?.advertiserId || params['advertiserId'],
+                insertionOrderId: o?.insertionOrderId || params['insertionOrderId'],
                 lineItemId: o?.lineItemId,
                 entityStatus: o?.entityStatus,
             });
