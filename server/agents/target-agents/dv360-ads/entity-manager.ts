@@ -1,7 +1,7 @@
 import {
+    httpMethods,
     InstanceOptions,
     EntityType,
-    httpMethods,
     EntityStatus,
     ApiCallParams,
 } from './interfaces';
