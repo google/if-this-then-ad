@@ -51,7 +51,9 @@ export const getAgentEntityList = async (req: Request, res: Response) => {
     }
 
     try {
-        return res.json(await allowedAgentMethods[agent][method](token.access, entityType, req.query));
+        return res.json(
+            await allowedAgentMethods[agent][method](token.access, entityType, req.query),
+        );
     } catch (e) {
         log.error(e);
         return res.status(400).json({ message: (e as Error).message });

@@ -199,7 +199,7 @@ class JobRunner {
             const results: Array<RuleResult> = await rulesEngine.processMessage(currentResult);
 
             TaskCollector.put(currentResult, results);
-            // targetActions.push(results);
+
             agentResult = agentResultIter.next();
         }
 
@@ -215,10 +215,10 @@ class JobRunner {
     private async processTasks(tasks: Array<AgentTask>) {
         const agents = this.listAgents();
         tasks.map(async (task) => {
-            // const targetAgent = agents[task.target.agentId];
+            const targetAgent = agents[task.target.agentId];
             log.debug(`job-runner:processTasks: Executing task on agent ${task.target.agentId}`);
             log.debug(task);
-            // await targetAgent.execute(task);
+            await targetAgent.execute(task);
         });
     }
 }
