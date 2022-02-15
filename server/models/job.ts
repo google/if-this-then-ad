@@ -8,4 +8,5 @@ export interface Job {
         dataPoint: string;
         value: string | number | boolean;
     };
+    rules: Array<string>;
 }

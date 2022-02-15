@@ -31,6 +31,7 @@ export const addJob = async (rule: Rule): Promise<string> => {
         executionInterval: rule.executionInterval,
         query: rule.source.params,
         owner: rule.owner,
+        rules: [],
     };
     log.debug('Jobs-controller:addJob');
     log.debug(job);
@@ -75,4 +76,11 @@ export const executeJobs = async (req: Request, res: Response) => {
     log.info('job-controller:executeJobs: Executing all available jobs');
     JobRunner.execute();
     res.json({ status: 'started' });
+};
+
+export const assignRuleToJob = async (ruleId: string, jobId: string) => {
+    const job: Job = (await repo.get(jobId)) as Job;
+    job.rules.push(ruleId);
+    await repo.save(job);
+    log.debug(`Associated rule ${ruleId} with job ${jobId}`);
 };
