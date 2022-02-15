@@ -22,7 +22,7 @@ class OpenWeatherMap implements IAgent {
             log.error(errorMessage);
             throw new Error(errorMessage);
         }
-        // TODO: remove targetLocation from configuration 
+        // TODO: remove targetLocation from configuration
         // object, it should be part of jobDefinition
         const client = axios.create({
             baseURL: options.baseUrl,
@@ -118,7 +118,7 @@ class OpenWeatherMap implements IAgent {
         res.data.agentName = jobOptions.name;
         res.data.targetLocation = jobOptions.targetLocation;
         res.jobId = jobOptions.jobId as string;
-        
+
         return this.transform(res);
     }
 

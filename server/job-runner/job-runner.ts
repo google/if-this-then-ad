@@ -91,10 +91,10 @@ class JobRunner {
         };
     }
 
-    private listTargetAgents(){
+    private listTargetAgents() {
         return {
             'dv360-agent': DV360Ads,
-        }
+        };
     }
     /**
      *
@@ -181,8 +181,6 @@ class JobRunner {
             return;
         }
 
-        // const topic = await this.init();
-
         // execute each job agent
         // await for yielded results
         log.info('job-runner:runAll: Executing jobs on all available agents');
@@ -223,7 +221,9 @@ class JobRunner {
             const targetAgent = agents[task.target.agentId];
             log.debug(`job-runner:processTasks: Executing task on agent ${task.target.agentId}`);
             log.debug(task);
-            await targetAgent.execute(task);
+            const taskResult = await targetAgent.execute(task);
+            log.debug(`job-runner:processTasks: Execution result`);
+            log.debug(taskResult);
         });
     }
 }

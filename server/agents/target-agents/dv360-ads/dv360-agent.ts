@@ -2,7 +2,6 @@ import EntityManager from './entity-manager';
 import {
     AgentTask,
     Action,
-    actionParam,
     ActionResult,
     EntityActions,
     InstanceOptions,

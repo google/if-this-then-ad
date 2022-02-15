@@ -12,11 +12,11 @@ export enum COMPARATORS {
     less = 'lt',
     yes = 'yes',
     no = 'no',
-};
+}
 
 export interface Rule {
     id: string;
-    name:string;
+    name: string;
     owner: string;
     source: {
         id: string;

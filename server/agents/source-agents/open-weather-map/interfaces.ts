@@ -31,9 +31,9 @@ export interface AgentResult {
 }
 
 export interface AgentParam {
-    dataPoint: string,
-    name: string,
-    type: string,
+    dataPoint: string;
+    name: string;
+    type: string;
 }
 
 export interface AgentMetadata {
