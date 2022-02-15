@@ -23,6 +23,43 @@ class SomeController {
     public async hello(req: Request, res: Response) {
         res.send('Some Controller');
     }
+
+    public async fetch(req: Request, res: Response) {
+        console.log(req.query.level);
+        if (req.query.level === '0') {
+            const entities = [{
+                id: '2015636',
+                name: '! AC2 Testing Partner',
+                level: 1,
+                expandable: true,
+                isLoading: false,
+                advertiserId: '123',
+                type: 'line-item',
+            }];
+
+            res.json(entities);
+        } else {
+            const entities = [{
+                id: 'adv-1',
+                name: 'My Advertiser 1',
+                level: 2,
+                expandable: true,
+                isLoading: false,
+                advertiserId: '123',
+                type: 'advertiser',
+            }, {
+                id: 'adv-2',
+                name: 'My Advertiser 2',
+                level: 2,
+                expandable: true,
+                isLoading: false,
+                advertiserId: '123',
+                type: 'advertiser',
+            }];
+            
+            res.json(entities);
+        }
+    }
 }
 
 export default new SomeController();

@@ -1,6 +1,6 @@
 # IFTTA Server  Documentation
 
-## Client-Server architecture
+## Server architecture
 ![Client-Server architecture](imgs/iftta-client-server-architecture.png)
 
 ## Agents

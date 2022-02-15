@@ -13,21 +13,21 @@
 
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { TriggersComponent } from './triggers.component';
+import { AddRuleComponent } from './add-rule.component';
 
-describe('TriggersComponent', () => {
-  let component: TriggersComponent;
-  let fixture: ComponentFixture<TriggersComponent>;
+describe('RulesComponent', () => {
+  let component: AddRuleComponent;
+  let fixture: ComponentFixture<AddRuleComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ TriggersComponent ]
+      declarations: [ AddRuleComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(TriggersComponent);
+    fixture = TestBed.createComponent(AddRuleComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
