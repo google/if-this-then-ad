@@ -20,11 +20,7 @@ export default class DV360Agent implements IAgent {
     public agentId = config.id;
     public name = config.name;
 
-    private transform(
-        task: AgentTask,
-        data: any,
-        error: any = null,
-    ): ActionResult {
+    private transform(task: AgentTask, data: any, error: any = null): ActionResult {
         return {
             ruleId: task.target.ruleId,
             agentId: config.id,
@@ -48,11 +44,7 @@ export default class DV360Agent implements IAgent {
         return o as InstanceOptions;
     }
 
-    private async executeAction(
-        action: Action, 
-        result: RuleResultValue, 
-        token: string
-    ) {
+    private async executeAction(action: Action, result: RuleResultValue, token: string) {
         const instanceOptions = this.toInstanceOptions(action.params);
         const entity = EntityManager.getInstance(instanceOptions, token);
 
@@ -74,11 +66,7 @@ export default class DV360Agent implements IAgent {
         const result: Array<ActionResult> = [];
         for (const action of task.target.actions) {
             try {
-                const data = await this.executeAction(
-                    action, 
-                    task.target.result, 
-                    task.token.auth
-                );
+                const data = await this.executeAction(action, task.target.result, task.token.auth);
                 result.push(this.transform(task, data));
             } catch (err) {
                 result.push(this.transform(task, {}, err));
