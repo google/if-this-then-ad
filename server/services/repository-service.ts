@@ -161,6 +161,26 @@ class RepositoryService<T> {
         }
         return undefined;
     }
+
+    /**
+     * Returns all documents containing search term in the field of type array
+     * @param {string} fieldName Field to search 
+     * @param {string} searchValue Value to look for
+     */
+    async arrayContains(fieldName: string, searchValue: string): Promise<T[]> {
+
+        try {
+            
+            log.debug('repository:arrayContainsAny')
+            const colRef = this.db.where(fieldName, 'array-contains', searchValue);
+            const data: Array<T> = await colRef.get();
+            return Promise.resolve(data);
+        } catch (e) {
+            log.error(e);
+            return Promise.reject(e);
+        }
+
+    }
 }
 
 export default RepositoryService;
