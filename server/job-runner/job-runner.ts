@@ -85,11 +85,16 @@ class JobRunner {
         return topic;
     }
 
-    private listAgents() {
+    private listSourceAgents() {
         return {
             'open-weather-map': new OpenWeatherMap(),
-            'dv360-agent': DV360Ads,
         };
+    }
+
+    private listTargetAgents(){
+        return {
+            'dv360-agent': DV360Ads,
+        }
     }
     /**
      *
@@ -98,7 +103,7 @@ class JobRunner {
      *
      */
     private async *runJobs(jobs: Job[]) {
-        const agents = this.listAgents();
+        const agents = this.listSourceAgents();
 
         log.debug('runJobs jobs');
         log.debug(jobs);
@@ -213,7 +218,7 @@ class JobRunner {
     }
 
     private async processTasks(tasks: Array<AgentTask>) {
-        const agents = this.listAgents();
+        const agents = this.listTargetAgents();
         tasks.map(async (task) => {
             const targetAgent = agents[task.target.agentId];
             log.debug(`job-runner:processTasks: Executing task on agent ${task.target.agentId}`);

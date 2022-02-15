@@ -1,5 +1,5 @@
 import { RulesProcessor } from '../src/rules-processor';
-import { AgentResult, Rule, CONDITIONS } from '../src/interfaces';
+import { AgentResult, Rule, COMPARATORS } from '../src/interfaces';
 
 describe('test add ', () => {
     const rp = new RulesProcessor();
@@ -23,6 +23,7 @@ describe('test add ', () => {
 
     const testRule: Rule = {
         id: '1',
+        name: 'clear-skies Hamburg',
         jobId: '2',
         owner: 'YrqYQc15jFYutbMdZNss',
         source: {
@@ -32,7 +33,7 @@ describe('test add ', () => {
         condition: {
             name: 'clear-skies Hamburg',
             dataPoint: 'clearSky',
-            condition: CONDITIONS.equals,
+            comparator: COMPARATORS.equals,
             value: true,
         },
         executionInterval: 60,
@@ -40,11 +41,11 @@ describe('test add ', () => {
 
     const warmWeatherRule = Object.create(testRule);
     warmWeatherRule.ruleDatapoint = 'temperature';
-    warmWeatherRule.ruleCondition = CONDITIONS.greater;
+    warmWeatherRule.ruleCondition = COMPARATORS.greater;
     warmWeatherRule.ruleTargetValue = 20.0;
 
     const coldWeatherRule = Object.create(warmWeatherRule);
-    coldWeatherRule.ruleCondition = CONDITIONS.less;
+    coldWeatherRule.ruleCondition = COMPARATORS.less;
     coldWeatherRule.ruleTargetValue = 10;
 
     const nonExistingDataPointRule = Object.create(coldWeatherRule);

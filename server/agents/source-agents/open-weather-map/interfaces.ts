@@ -30,17 +30,23 @@ export interface AgentResult {
     timestamp: Date;
 }
 
+export interface AgentParam {
+    dataPoint: string,
+    name: string,
+    type: string,
+}
+
 export interface AgentMetadata {
     id: string;
-    displayName: string;
+    name: string;
     type: AgentType;
-    arguments: Array<string>;
+    params: Array<AgentParam>;
     dataPoints: Array<DataPoint>;
 }
 
 export interface DataPoint {
-    id: string;
-    displayName: string;
+    dataPoint: string;
+    name: string;
     dataType: string | number | boolean | Date;
 }
 

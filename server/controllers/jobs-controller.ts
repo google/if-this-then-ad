@@ -12,11 +12,12 @@ const jobsCollection = Collections.get(Collection.JOBS);
 const repo = new Repository<Job>(jobsCollection);
 
 /**
- * Creates a new job based on the rule Data.
- * if a similar job already exists, no new job
+ * Creates a new job based on the rule Data. 
+ * If a similar job already exists, no new job 
  * will be created.
  *
  * @param {Rule} rule
+ * @returns {Promise<string>}
  */
 export const addJob = async (rule: Rule): Promise<string> => {
     log.debug('jobs-controller:addJob');
@@ -51,13 +52,13 @@ export const addJob = async (rule: Rule): Promise<string> => {
     log.info(`Found ${existingJobs.length} existing jobs`);
     log.debug(existingJobs);
 
-    if (!existingJobs || existingJobs.length == 0) {
+    if (!existingJobs || existingJobs.length ==0) {
         try {
             log.info(`job-controller:addJob: Creating a new job for agent ${job.agentId}`);
             const jobId = await repo.save(job);
             log.info(`Job created :  ${jobId}`);
             return jobId;
-        } catch (err) {
+        } catch(err) {
             log.error(err);
         }
     }

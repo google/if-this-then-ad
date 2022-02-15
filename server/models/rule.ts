@@ -11,10 +11,12 @@
     limitations under the License.
  */
 
-export enum CONDITIONS {
+export enum COMPARATORS {
     equals = 'eq',
     greater = 'gt',
     less = 'lt',
+    yes = 'yes',
+    no = 'no',
 }
 
 export interface Rule {
@@ -30,7 +32,12 @@ export interface Rule {
 
 export interface Condition {
     datapoint: string;
-    condition: CONDITIONS.equals | CONDITIONS.greater | CONDITIONS.less;
+    comparator:
+        | COMPARATORS.equals
+        | COMPARATORS.greater
+        | COMPARATORS.less
+        | COMPARATORS.yes
+        | COMPARATORS.no;
     targetValue: string | number | boolean;
 }
 

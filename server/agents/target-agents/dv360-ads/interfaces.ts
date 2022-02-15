@@ -39,16 +39,6 @@ export interface TargetAgent {
     actions: Array<TargetAction>;
 }
 
-export interface Tokens {
-    refresh?: string;
-    auth: string;
-}
-
-export interface AgentTask {
-    tokens: Tokens;
-    ruleResult: RuleResult;
-}
-
 export enum EntityActions {
     ACTIVATE = 'activate',
     PAUSE = 'pause',
@@ -77,7 +67,7 @@ export interface InstanceOptions {
 
 export interface ActionResult {
     ruleId: string;
-    action: string;
+    agentId: string;
     displayName: string;
     entityStatus: string;
     timestamp: Date;
@@ -131,4 +121,29 @@ export interface DataPoint {
     id: string;
     displayName: string;
     dataType: string | number | boolean | Date;
+}
+
+export type RuleResultValue = boolean | number;
+
+export interface AgentTask {
+    token: {
+        auth: string;
+    };
+    target: {
+        ruleId: string;
+        agentId: string;
+        result: RuleResultValue;
+        actions: Array<Action>;
+    };
+}
+
+export interface Action {
+    id?: string;
+    type: string;
+    params: Array<Parameter>;
+}
+
+export interface Parameter {
+    key: string;
+    value: string | number | boolean;
 }

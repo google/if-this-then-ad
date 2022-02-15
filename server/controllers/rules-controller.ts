@@ -16,6 +16,7 @@ const repo = new Repository<Rule>(rulesCollection);
  * @param {Response} res
  */
 export const create = async (req: Request, res: Response) => {
+    console.log('create rule', req.body);
     // TODO: add express-validator
 
     // Parse incoming rule data.
