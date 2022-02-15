@@ -20,4 +20,4 @@ To do all the checks before the commit automatically please add the [git/pre-com
 
 To run all checks manually you can execute the following code from the project root:
 - For server: `cd server; npm run pre-commit`.
-- For client: `cd cleint; npm run pre-commit`.
+- For client: `cd client; npm run pre-commit`.
