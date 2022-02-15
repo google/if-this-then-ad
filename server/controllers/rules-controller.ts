@@ -65,7 +65,27 @@ export const list = async (req: Request, res: Response) => {
     res.json(rules);
 };
 
+/**
+ * Deletes a rule and its associated jobs
+ * @param req
+ * @param res
+ */
 export const remove = async (req: Request, res: Response) => {
-    const userId = req.params.userId;
-    const ruleId = req.params.id;
+    try {
+        const userId = req.params.userId;
+        const ruleId = req.params.id;
+
+        const rule = await repo.get(ruleId);
+
+        if (rule?.owner == userId) {
+            await repo.delete(ruleId);
+            await JobController.removeRuleFromJob(ruleId);
+            return res.sendStatus(204);
+        }
+
+        return res.status(403).send('Forbidden');
+    } catch (e) {
+        log.error(e);
+        return res.sendStatus(500);
+    }
 };
