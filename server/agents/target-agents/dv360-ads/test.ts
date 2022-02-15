@@ -2,20 +2,17 @@ import dv360agent from './index';
 import { AgentTask } from './interfaces';
 
 const task: AgentTask = {
-    tokens: {
+    token: {
         auth: '',
     },
-    ruleResult: {
+    target: {
         ruleId: '123',
-        result: true,
+        agentId: 'DV360',
+        result: false,
         actions: [
             {
-                action: 'Some Action',
+                type: 'activate',
                 params: [
-                    {
-                        key: 'action',
-                        value: 'pause',
-                    },
                     {
                         key: 'entityId',
                         value: 50389587,
@@ -26,17 +23,13 @@ const task: AgentTask = {
                     },
                     {
                         key: 'entityType',
-                        value: 'LineItem',
+                        value: 'lineItem',
                     },
                 ],
             },
             {
-                action: '#2 Error Action',
+                type: 'pause',
                 params: [
-                    {
-                        key: 'action',
-                        value: 'activate',
-                    },
                     {
                         key: 'entityId',
                         value: 1231250389587, // non-existing id
@@ -47,17 +40,13 @@ const task: AgentTask = {
                     },
                     {
                         key: 'entityType',
-                        value: 'LineItem',
+                        value: 'lineItem',
                     },
                 ],
             },
             {
-                action: '#3 Action',
+                type: 'pause',
                 params: [
-                    {
-                        key: 'action',
-                        value: 'activate',
-                    },
                     {
                         key: 'entityId',
                         value: 19345182,
@@ -68,7 +57,7 @@ const task: AgentTask = {
                     },
                     {
                         key: 'entityType',
-                        value: 'InsertionOrder',
+                        value: 'insertionOrder',
                     },
                 ],
             },

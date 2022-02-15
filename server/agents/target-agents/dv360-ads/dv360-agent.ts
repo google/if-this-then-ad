@@ -1,7 +1,7 @@
 import EntityManager from './entity-manager';
 import {
     AgentTask,
-    TargetAction,
+    Action,
     actionParam,
     ActionResult,
     EntityActions,
@@ -11,6 +11,8 @@ import {
     AgentMetadata,
     EntityType,
     httpMethods,
+    RuleResultValue,
+    Parameter,
 } from './interfaces';
 import { config } from './config';
 
@@ -18,15 +20,10 @@ export default class DV360Agent implements IAgent {
     public agentId = config.id;
     public name = config.name;
 
-    private transform(
-        task: AgentTask,
-        action: TargetAction,
-        data: any,
-        error: any = null,
-    ): ActionResult {
+    private transform(task: AgentTask, data: any, error: any = null): ActionResult {
         return {
-            ruleId: task.ruleResult.ruleId,
-            action: action.action,
+            ruleId: task.target.ruleId,
+            agentId: config.id,
             displayName: data?.displayName,
             entityStatus: data?.entityStatus,
             timestamp: new Date(),
@@ -35,7 +32,7 @@ export default class DV360Agent implements IAgent {
         };
     }
 
-    private toInstanceOptions(a: Array<actionParam>): InstanceOptions {
+    private toInstanceOptions(a: Array<Parameter>): InstanceOptions {
         const o: Object = {};
         a.forEach((p) => {
             o[p.key] = p.value;
@@ -47,16 +44,18 @@ export default class DV360Agent implements IAgent {
         return o as InstanceOptions;
     }
 
-    private async executeAction(action: TargetAction, token: string) {
+    private async executeAction(action: Action, result: RuleResultValue, token: string) {
         const instanceOptions = this.toInstanceOptions(action.params);
         const entity = EntityManager.getInstance(instanceOptions, token);
 
-        switch (instanceOptions.action) {
+        switch (action.type) {
             case EntityActions.ACTIVATE:
-                return await entity.activate();
+                return await (result ? entity.activate() : entity.pause());
+                break;
 
             case EntityActions.PAUSE:
-                return await entity.pause();
+                return await (result ? entity.pause() : entity.activate());
+                break;
 
             default:
                 throw Error(`Not supported entity action method: ${instanceOptions.action}`);
@@ -65,12 +64,12 @@ export default class DV360Agent implements IAgent {
 
     public async execute(task: AgentTask) {
         const result: Array<ActionResult> = [];
-        for (const action of task.ruleResult.actions) {
+        for (const action of task.target.actions) {
             try {
-                const data = await this.executeAction(action, task.tokens.auth);
-                result.push(this.transform(task, action, data));
+                const data = await this.executeAction(action, task.target.result, task.token.auth);
+                result.push(this.transform(task, data));
             } catch (err) {
-                result.push(this.transform(task, action, {}, err));
+                result.push(this.transform(task, {}, err));
             }
         }
 
@@ -91,7 +90,7 @@ export default class DV360Agent implements IAgent {
                 {
                     dataPoint: 'partnerId',
                     list: {
-                        url: `/api/agents/${config.id}/list/patner`,
+                        url: `/api/agents/${config.id}/list/partner`,
                         method: httpMethods.GET,
                     },
                 },
