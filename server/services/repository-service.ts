@@ -37,7 +37,7 @@ class RepositoryService<T> {
                     // detect the timestamp object
                     if (isObject(data[field])) {
                         if (Object.keys(data[field]).includes('_seconds')) {
-                            log.debug(`Converting field : ${field}  ${typeof data[field]}`);
+                            log.debug(`Converting field : ${field}  to Date`);
                             // convert to JS Date so that we dont have to deal wtih Timestamp object
                             data[field] = data[field].toDate();
                         }
