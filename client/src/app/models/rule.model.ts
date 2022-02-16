@@ -2,7 +2,9 @@ import { SourceAgentParameter } from "../interfaces/source-agent-parameter";
 import { TargetAgent } from "../interfaces/target-agent";
 
 export class Rule {
+  id?: string;
   name?: string;
+  owner?: string;
   executionInterval?: number;
   source: {
     id?: string,

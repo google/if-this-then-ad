@@ -1,4 +1,9 @@
+export interface TargetAgentActionParam {
+  key: string,
+  value: string|number|boolean,
+}
+
 export interface TargetAgentAction {
-  action: string,
-  actionParams: Array<Object>,
-};
+  type: string,
+  params: TargetAgentActionParam[],
+}

@@ -153,6 +153,9 @@ export class AddRuleComponent implements OnInit {
    * Save rule.
    */
   saveRule() {
+    // TODO: remove this!
+    this.currentRule.owner = 'YrqYQc15jFYutbMdZNss';
+
     this.http.post(`${environment.apiUrl}/rules`, this.currentRule)
     .subscribe(result => {
       // Inform the rules component about the new rule

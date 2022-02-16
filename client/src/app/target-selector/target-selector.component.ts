@@ -136,13 +136,22 @@ export class TargetSelectorComponent {
    */
   entityToTargetAgent(nodes: EntityNode[]): TargetAgent[] {
     return [{
-      agentId: 'dv360-ads',
+      agentId: 'dv360-agent',
       actions: nodes.map(node => {
         return {
-          action: 'activate',
-          actionParams: [
+          type: 'activate',
+          params: [
             {
-              'lineItemId': node.id,
+              key: 'entityId',
+              value: node.id,
+            },
+            {
+              key: 'parentId',
+              value: '12345',
+            },
+            {
+              key: 'entityType',
+              value: 'lineItem',
             },
           ],
         };
