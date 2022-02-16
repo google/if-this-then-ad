@@ -23,6 +23,15 @@ export interface User {
     profilePhoto?: string;
     locale?: string;
     token: Token;
+    settings?: Array<setting>;
+}
+
+interface setting {
+    agentId: string; 
+    params: {
+        key: string; 
+        value: string | number | boolean;
+    };
 }
 
 export interface Token {
