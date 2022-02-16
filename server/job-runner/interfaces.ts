@@ -3,18 +3,29 @@
  * TODO: Clean up later.
  */
 
-import * as firestore from '@google-cloud/firestore';
-
 export interface Job {
     id?: string;
     agentId: string;
+    owner: string;
     executionInterval: number;
     lastExecution?: Date | number;
+    ownerSettings?: setting;
     query?: {
         dataPoint: string;
         value: string | number | boolean;
     };
+    rules: Array<string>;
 }
+
+export interface setting {
+    agentId: string;
+    params: Array<parameter>;
+}
+interface parameter {
+    key: string;
+    value: string | number | boolean;
+}
+
 export interface ExecutionTime {
     jobId: string;
     lastExecution: Date;

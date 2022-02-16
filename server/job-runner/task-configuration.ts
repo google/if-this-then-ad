@@ -4,11 +4,12 @@ import { Collection } from '../models/fire-store-entity';
 import { log, date } from '@iftta/util';
 import axios from 'axios';
 import { User, Token } from 'models/user';
+import { setting } from './interfaces';
 
 const usersCollection = Collections.get(Collection.USERS);
 const userRepository = new Repository<User>(usersCollection);
 
-class BackgroundAuth {
+class TaskConfiguration {
     private tokenUrl = '';
     private repo: Repository<User>;
 
@@ -76,6 +77,32 @@ class BackgroundAuth {
             return Promise.reject(err);
         }
     }
+    /**
+     * Gets settings e.g api keys for use with the agent.
+     * @param {string} userId
+     * @param {string} agentId
+     */
+    public async getUserSettingsForAgent(
+        userId: string,
+        agentId: string,
+    ): Promise<setting | undefined> {
+        try {
+            const user: User = (await this.repo.get(userId)) as User;
+
+            if (Array.isArray(user.settings)) {
+                const agentSettings = user.settings!.filter((s) => {
+                    return s.agentId == agentId;
+                });
+
+                if (agentSettings.length > 0) {
+                    return Promise.resolve(agentSettings[0]);
+                }
+            }
+            return undefined;
+        } catch (err) {
+            return Promise.reject(err);
+        }
+    }
 }
 
-export default new BackgroundAuth('https://oauth2.googleapis.com/token', userRepository);
+export default new TaskConfiguration('https://oauth2.googleapis.com/token', userRepository);

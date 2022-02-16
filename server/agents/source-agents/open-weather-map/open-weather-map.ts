@@ -57,7 +57,7 @@ class OpenWeatherMap implements IAgent {
                 jobId: options.jobId!,
                 data: response.data,
             };
-            log.debug(`${this.agentId} :run: client response`); 
+            log.debug(`${this.agentId} :run: client response`);
             log.debug(agentResponse);
             return Promise.resolve(agentResponse);
         } catch (err) {
