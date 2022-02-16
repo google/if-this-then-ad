@@ -27,13 +27,13 @@ export interface User {
 }
 
 interface setting {
-    agentId: string; 
-    params: {
-        key: string; 
-        value: string | number | boolean;
-    };
+    agentId: string;
+    params: Array<parameter>;
 }
-
+interface parameter {
+    key: string;
+    value: string | number | boolean;
+}
 export interface Token {
     access: string;
     expiry: Date;
