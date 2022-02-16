@@ -12,8 +12,8 @@ const jobsCollection = Collections.get(Collection.JOBS);
 const repo = new Repository<Job>(jobsCollection);
 
 /**
- * Creates a new job based on the rule Data. 
- * If a similar job already exists, no new job 
+ * Creates a new job based on the rule Data.
+ * If a similar job already exists, no new job
  * will be created.
  *
  * @param {Rule} rule
@@ -30,6 +30,7 @@ export const addJob = async (rule: Rule): Promise<string> => {
         agentId: rule.source.id,
         executionInterval: rule.executionInterval,
         query: rule.source.params,
+        owner: rule.owner,
     };
     log.debug('Jobs-controller:addJob');
     log.debug(job);
@@ -51,13 +52,13 @@ export const addJob = async (rule: Rule): Promise<string> => {
     log.info(`Found ${existingJobs.length} existing jobs`);
     log.debug(existingJobs);
 
-    if (!existingJobs || existingJobs.length ==0) {
+    if (!existingJobs || existingJobs.length == 0) {
         try {
-            log.info(`Creating a new job for agent ${job.agentId}`);
+            log.info(`job-controller:addJob: Creating a new job for agent ${job.agentId}`);
             const jobId = await repo.save(job);
             log.info(`Job created :  ${jobId}`);
             return jobId;
-        } catch(err) {
+        } catch (err) {
             log.error(err);
         }
     }
@@ -71,7 +72,7 @@ export const addJob = async (rule: Rule): Promise<string> => {
 };
 
 export const executeJobs = async (req: Request, res: Response) => {
-    log.info('Executing all available jobs');
+    log.info('job-controller:executeJobs: Executing all available jobs');
     JobRunner.execute();
     res.json({ status: 'started' });
 };

@@ -1,6 +1,7 @@
 export interface Job {
     id?: string;
     agentId: string;
+    owner: string;
     executionInterval: number;
     lastExecution?: Date;
     query?: {

@@ -12,11 +12,12 @@ export enum COMPARATORS {
     less = 'lt',
     yes = 'yes',
     no = 'no',
-};
+}
 
 export interface Rule {
     id: string;
-    name: string,
+    name: string;
+    owner: string;
     source: {
         id: string;
         name: string;
@@ -43,16 +44,18 @@ export interface RuleResult {
     targets: Array<TargetAgent>;
 }
 
-interface actionParam {
-    param: string;
+interface Parameter {
+    key: string;
     value: string | number | boolean;
 }
-interface TargetActions {
-    action: string;
-    actionParams: Array<actionParam>;
+
+interface Action {
+    id?: string;
+    type: string;
+    params: Array<Parameter>;
 }
 
 export interface TargetAgent {
     agentId: string;
-    actions: Array<TargetActions>;
+    actions: Array<Action>;
 }

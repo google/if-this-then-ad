@@ -23,6 +23,7 @@ export interface Rule {
     id?: string;
     jobId?: string;
     name: string;
+    owner: string;
     source: Agent;
     condition: Condition;
     executionInterval: number;

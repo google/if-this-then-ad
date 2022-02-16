@@ -25,6 +25,7 @@ describe('test add ', () => {
         id: '1',
         name: 'clear-skies Hamburg',
         jobId: '2',
+        owner: 'YrqYQc15jFYutbMdZNss',
         source: {
             id: 'open-weather-map',
             name: 'open-weather-map',

@@ -27,36 +27,41 @@ class SomeController {
     public async fetch(req: Request, res: Response) {
         console.log(req.query.level);
         if (req.query.level === '0') {
-            const entities = [{
-                id: '2015636',
-                name: '! AC2 Testing Partner',
-                level: 1,
-                expandable: true,
-                isLoading: false,
-                advertiserId: '123',
-                type: 'line-item',
-            }];
+            const entities = [
+                {
+                    id: '2015636',
+                    name: '! AC2 Testing Partner',
+                    level: 1,
+                    expandable: true,
+                    isLoading: false,
+                    advertiserId: '123',
+                    type: 'line-item',
+                },
+            ];
 
             res.json(entities);
         } else {
-            const entities = [{
-                id: 'adv-1',
-                name: 'My Advertiser 1',
-                level: 2,
-                expandable: true,
-                isLoading: false,
-                advertiserId: '123',
-                type: 'advertiser',
-            }, {
-                id: 'adv-2',
-                name: 'My Advertiser 2',
-                level: 2,
-                expandable: true,
-                isLoading: false,
-                advertiserId: '123',
-                type: 'advertiser',
-            }];
-            
+            const entities = [
+                {
+                    id: 'adv-1',
+                    name: 'My Advertiser 1',
+                    level: 2,
+                    expandable: true,
+                    isLoading: false,
+                    advertiserId: '123',
+                    type: 'advertiser',
+                },
+                {
+                    id: 'adv-2',
+                    name: 'My Advertiser 2',
+                    level: 2,
+                    expandable: true,
+                    isLoading: false,
+                    advertiserId: '123',
+                    type: 'advertiser',
+                },
+            ];
+
             res.json(entities);
         }
     }
