@@ -1,10 +1,10 @@
-import { Request, Response } from 'express';
 import Repository from '../services/repository-service';
 import Collections from '../services/collection-factory';
 import { Rule } from '../models/rule';
 import { Collection } from '../models/fire-store-entity';
 import { log } from '@iftta/util';
 import * as JobController from '../controllers/jobs-controller';
+import { Request, Response } from 'express';
 
 const rulesCollection = Collections.get(Collection.RULES);
 const repo = new Repository<Rule>(rulesCollection);
@@ -76,7 +76,6 @@ export const remove = async (req: Request, res: Response) => {
         const ruleId = req.params.id;
 
         const rule = await repo.get(ruleId);
-
         if (rule?.owner == userId) {
             await JobController.removeRuleFromJob(ruleId);
             await repo.delete(ruleId);
@@ -84,6 +83,38 @@ export const remove = async (req: Request, res: Response) => {
         }
 
         return res.status(403).send('Forbidden');
+    } catch (e) {
+        log.error(e);
+        return res.sendStatus(500);
+    }
+};
+
+/**
+ * Gets a single rule by Id
+ * @param {string} req :id
+ * @param res
+ */
+export const get = async (req: Request, res: Response) => {
+    try {
+        const ruleId = req.params.id;
+        const rule = await repo.get(ruleId);
+        return res.json(rule);
+    } catch (e) {
+        log.error(e);
+        return res.sendStatus(500);
+    }
+};
+
+/**
+ * Gets all rules for a user
+ * @param req :id
+ * @param res Rules[]
+ */
+export const getByUser = async (req: Request, res: Response) => {
+    try {
+        const userId = req.params.id;
+        const rules = await repo.getBy('owner', userId);
+        return res.json(rules);
     } catch (e) {
         log.error(e);
         return res.sendStatus(500);
