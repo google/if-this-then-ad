@@ -22,7 +22,7 @@ export const create = async (req: Request, res: Response) => {
     // Parse incoming rule data.
     const rule: Rule = {
         name: req.body.name,
-        owner: req.body.userId,
+        owner: req.body.owner,
         source: req.body.source,
         condition: req.body.condition,
         executionInterval: req.body.executionInterval,

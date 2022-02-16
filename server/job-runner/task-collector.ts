@@ -1,5 +1,5 @@
 import { AgentTask, AgentResult, RuleResult } from './interfaces';
-import BackgroundAuth from './refresh-tokens';
+import TaskConfiguration from './task-configuration';
 
 class TaskCollector {
     private tasks: Array<AgentTask> = [];
@@ -11,7 +11,7 @@ class TaskCollector {
      */
     public async put(agentResult: AgentResult, ruleResults: Array<RuleResult>) {
         // new token
-        const token = await BackgroundAuth.refreshTokensForUser(agentResult.jobOwner);
+        const token = await TaskConfiguration.refreshTokensForUser(agentResult.jobOwner);
 
         // target
         for (let rr of ruleResults) {

@@ -11,6 +11,7 @@ import Collections from '../services/collection-factory';
 import Repository from '../services/repository-service';
 import { ExecutionTime, Job } from './interfaces';
 import TaskCollector from './task-collector';
+import TaskConfiguration from './task-configuration';
 
 const pubSubClient = new PubSub();
 const jobsCollection = Collections.get(Collection.JOBS);
@@ -158,7 +159,19 @@ class JobRunner {
 
         return jobs;
     }
+    private async getUserSettingsForJobs(jobs: Job[]) {
+        let jobsWithSettings: Job[] = [];
 
+        for (let job of jobs) {
+            const userId = job.owner;
+            job.ownerSettings = await TaskConfiguration.getUserSettingsForAgent(
+                userId,
+                job.agentId,
+            );
+            jobsWithSettings.push(job);
+        }
+        return jobsWithSettings;
+    }
     public async runAll() {
         const executionTimes: Array<ExecutionTime> = [];
         const collectExecutionTimes = (currentResult) => {
@@ -170,21 +183,22 @@ class JobRunner {
         };
         // Get a list of jobs to execute
         log.info('job-runner:runAll: Fetching job list to execute');
-        const jobs = await this.getEligibleJobs();
-        const jobCount = jobs.length;
+        const eligibleJobs = await this.getEligibleJobs();
+        const jobCount = eligibleJobs.length;
         log.debug('job-runner:runAll: List of jobs to execute');
         log.info(`job-runner:runAll: Got ${jobCount} jobs to execute`);
-        log.debug(jobs);
+        log.debug(eligibleJobs);
 
         if (jobCount == 0) {
             log.info('job-runner:runAll: Sleeping till next execution cycle');
             return;
         }
 
+        const eligibleJobsWithSettings = await this.getUserSettingsForJobs(eligibleJobs);
         // execute each job agent
         // await for yielded results
         log.info('job-runner:runAll: Executing jobs on all available agents');
-        const agentResultIter = this.runJobs(jobs);
+        const agentResultIter = this.runJobs(eligibleJobsWithSettings);
         let agentResult = agentResultIter.next();
 
         // Collect all actions that need to be performed

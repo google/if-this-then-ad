@@ -31,7 +31,7 @@ class OpenWeatherMap implements IAgent {
             responseType: 'json',
         });
 
-        log.debug('HTTP Client created, with options');
+        log.debug(`${this.agentId} : HTTP Client created, with options`);
         log.debug(
             JSON.stringify({
                 q: options.targetLocation,
@@ -47,7 +47,7 @@ class OpenWeatherMap implements IAgent {
 
     private async run(options: Configuration): Promise<AgentResponse> {
         try {
-            log.debug('run options');
+            log.debug(`${this.agentId} :run: options`);
             log.debug(options);
 
             const client = this.createApiClient(options);
@@ -57,7 +57,8 @@ class OpenWeatherMap implements IAgent {
                 jobId: options.jobId!,
                 data: response.data,
             };
-
+            log.debug(`${this.agentId} :run: client response`);
+            log.debug(agentResponse);
             return Promise.resolve(agentResponse);
         } catch (err) {
             log.error(JSON.stringify(err));
@@ -97,23 +98,27 @@ class OpenWeatherMap implements IAgent {
 
     private getOptions(job: Job) {
         let options = { ...config };
-        (options.apiKey = process.env.WEATHER_API_KEY || ''), (options.jobId = job.id);
+        let userSettings = {};
+        job.ownerSettings!.params.map((p) => {
+            userSettings[p.key] = p.value;
+        });
+        options.apiKey = userSettings['apiKey'] || (process.env.WEATHER_API_KEY as string);
+        options.jobId = job.id;
         options.targetLocation = job.query ? job.query[0].value : '';
         options.jobOwner = job.owner;
-        log.debug('Agent options used for this job');
+        log.debug(`${this.agentId} : Agent options used for this job`);
         log.debug(options);
 
         return options;
     }
 
     public async execute(job: Job): Promise<AgentResult> {
-        log.debug('Agent: Job to execute');
+        log.debug(`${this.agentId} : execute : Job to execute`);
         log.debug(job);
         const jobOptions = this.getOptions(job);
-        jobOptions.targetLocation = 'berlin,de';
 
         const res = await this.run(jobOptions);
-        log.debug(res);
+
         res.data.agentId = jobOptions.id;
         res.data.agentName = jobOptions.name;
         res.data.targetLocation = jobOptions.targetLocation;
@@ -128,8 +133,18 @@ class OpenWeatherMap implements IAgent {
 
         const meta: AgentMetadata = {
             id: config.id,
-            name: 'Weather', // this.name, <- won't work because static
+            name: 'Weather',
             type: AgentType.SOURCE,
+            settings: {
+                agentId: config.id,
+                params: [
+                    {
+                        key: 'apiKey',
+                        name: 'API Key',
+                        type: 'string',
+                    },
+                ],
+            },
             params: [
                 {
                     dataPoint: 'targetLocation',

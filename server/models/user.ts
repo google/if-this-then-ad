@@ -23,8 +23,17 @@ export interface User {
     profilePhoto?: string;
     locale?: string;
     token: Token;
+    settings?: Array<setting>;
 }
 
+interface setting {
+    agentId: string;
+    params: Array<parameter>;
+}
+interface parameter {
+    key: string;
+    value: string | number | boolean;
+}
 export interface Token {
     access: string;
     expiry: Date;

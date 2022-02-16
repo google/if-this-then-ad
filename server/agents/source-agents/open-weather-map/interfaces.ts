@@ -40,6 +40,17 @@ export interface AgentMetadata {
     id: string;
     name: string;
     type: AgentType;
+    settings: {
+        agentId: string;
+        params: [
+            {
+                key: string;
+                name: string;
+                type: string;
+                value?: string | number | boolean;
+            },
+        ];
+    };
     params: Array<AgentParam>;
     dataPoints: Array<DataPoint>;
 }
@@ -65,11 +76,25 @@ export enum AgentType {
 }
 
 export interface Job {
-    id: string;
+    id?: string;
     agentId: string;
     owner: string;
+    executionInterval: number;
+    lastExecution?: Date | number;
+    ownerSettings?: Setting;
     query?: {
         dataPoint: string;
         value: string | number | boolean;
     };
+    rules: Array<string>;
+}
+
+export interface Setting {
+    agentId: string;
+    params: Array<Parameter>;
+}
+
+interface Parameter {
+    key: string;
+    value: string | number | boolean;
 }

@@ -4,7 +4,7 @@ import { Request, Response } from 'express';
 import { log } from '@iftta/util';
 import OpenWeatherMap from '@iftta/open-weather-map-agent';
 import DV360Agent from '@iftta/dv360-ads';
-import BackgroundAuth from '../job-runner/refresh-tokens';
+import TaskConfiguration from '../job-runner/task-configuration';
 import { Token } from 'models/user';
 
 const allowedAgentMethods = {
@@ -34,7 +34,7 @@ export const getAgentEntityList = async (req: Request, res: Response) => {
     const userId = 'YkHryPCUuAbwgBG3Zdle';
     let token: Token;
     try {
-        token = await BackgroundAuth.refreshTokensForUser(userId);
+        token = await TaskConfiguration.refreshTokensForUser(userId);
     } catch (e) {
         console.log('Cannot get token', e);
         throw new Error('Cannot get token');
