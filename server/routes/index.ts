@@ -62,6 +62,8 @@ router.delete('/api/accounts/:id', AccountController.remove);
 // Rules endpoints
 router.post('/api/rules', RulesController.create);
 router.get('/api/rules', RulesController.list);
+router.get('/api/rules/:id', RulesController.get);
+router.get('/api/rules/user/:id', RulesController.getByUser);
 router.delete('/api/rules/:userId/:id', RulesController.remove);
 
 // Job runner trigger endpoint
