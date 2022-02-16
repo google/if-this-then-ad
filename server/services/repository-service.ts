@@ -11,34 +11,65 @@
     limitations under the License.
  */
 
-import log from '../util/logger';
+import { log } from '@iftta/util';
 import { FirestoreCollection } from '../models/fire-store-entity';
+import { QueryDocumentSnapshot } from '@google-cloud/firestore';
+import { isObject } from 'util';
 
 class RepositoryService<T> {
     db: any;
     fireStoreCollection: FirestoreCollection;
 
     constructor(collection: FirestoreCollection) {
-        if (collection.name == '' || collection == null) {
+        if (collection == null) {
             throw new Error('Collection name must be specified');
         }
         this.fireStoreCollection = collection;
         this.db = collection.db;
     }
 
-    async save<T>(obj: T): Promise<string> {
-        log.debug('Attempting write to firestore');
-        log.debug(obj);
-        try {
+    private dateConverter() {
+        const fromFirestore = function (snapshot: QueryDocumentSnapshot) {
+            let document = {};
 
+            const deepInspect = (data) => {
+                for (let field of Object.keys(data)) {
+                    // detect the timestamp object
+                    if (isObject(data[field])) {
+                        if (Object.keys(data[field]).includes('_seconds')) {
+                            log.debug(`Converting field : ${field}  to Date`);
+                            // convert to JS Date so that we dont have to deal wtih Timestamp object
+                            data[field] = data[field].toDate();
+                        }
+                        // go down a level recursively.
+                        deepInspect(data[field]);
+                    }
+                }
+            };
+
+            const data = snapshot.data();
+
+            // log.debug(Object.entries(data));
+            deepInspect(data);
+            log.debug(data);
+            return data;
+        };
+
+        return { fromFirestore: fromFirestore };
+    }
+
+    async save<T>(obj: T): Promise<string> {
+        log.debug('Saving data to firestore');
+        log.debug(JSON.stringify(obj, null, 2));
+        try {
             const collectionRef = this.db.collection(this.fireStoreCollection.name);
             const result = await collectionRef.add(obj);
             log.debug('Saved entity with id :' + result.id);
             return result.id;
         } catch (err) {
-            log.error(err)
+            log.error(err);
         }
-        return ""
+        return '';
     }
 
     async list(): Promise<T[]> {
@@ -47,15 +78,15 @@ class RepositoryService<T> {
         try {
             const collection = await this.db
                 .collection(this.fireStoreCollection.name)
+                .withConverter(this.dateConverter())
                 .get();
 
-            collection.forEach(entry => {
+            collection.forEach((entry) => {
                 data.push({ id: entry.id, ...entry.data() });
             });
-
+            log.debug('Repository:list');
             log.debug(data);
             return data;
-
         } catch (err) {
             log.error(err);
         }
@@ -63,12 +94,13 @@ class RepositoryService<T> {
     }
 
     async get(id: string): Promise<T | undefined> {
-
+        log.debug('Repository:get');
         try {
-
             const docRef = this.db
                 .collection(this.fireStoreCollection.name)
+                .withConverter(this.dateConverter())
                 .doc(id);
+
             const doc = await docRef.get();
 
             if (!doc.exists) {
@@ -83,26 +115,22 @@ class RepositoryService<T> {
         return undefined;
     }
 
-    async getBy(fieldName: any,
-                fieldValue: string | number | boolean): Promise<T[]> {
-
+    async getBy(fieldName: any, fieldValue: string | number | boolean): Promise<T[]> {
+        log.debug('Repository:getBy');
         let data: Array<T> = [];
         try {
-
-            const colRef = this.db.collection(this.fireStoreCollection.name);
+            const colRef = this.db
+                .collection(this.fireStoreCollection.name)
+                .withConverter(this.dateConverter());
             const snapshot = await colRef.where(fieldName, '==', fieldValue).get();
 
             if (snapshot.empty) {
-                log.debug(
-                    `No matching documents found for ${fieldName} : ${fieldValue}`
-                );
+                log.debug(`No matching documents found for ${fieldName} : ${fieldValue}`);
             }
 
-            snapshot.forEach(doc => {
+            snapshot.forEach((doc) => {
                 data.push({ id: doc.id, ...doc.data() });
             });
-
-
         } catch (e) {
             log.error(e);
         }
@@ -111,15 +139,11 @@ class RepositoryService<T> {
     }
 
     async update(id: string, data: T): Promise<T | undefined> {
-
-
         // Refer to https://cloud.google.com/firestore/docs/manage-data/add-data
         // on updating nested objects and difference between set & update functions.
         // set replaces existing document with the new copy.
         try {
-            const docRef = this.db
-                .collection(this.fireStoreCollection.name)
-                .doc(id);
+            const docRef = this.db.collection(this.fireStoreCollection.name).doc(id);
             const result = await docRef.set(data);
             return result.id;
         } catch (err) {
@@ -128,16 +152,42 @@ class RepositoryService<T> {
         return undefined;
     }
 
-    async delete(id: string): Promise<T | undefined> {
+    async delete(id: string): Promise<void> {
         try {
-            const docRef = this.db
-                .collection(this.fireStoreCollection.name)
-                .doc(id);
+            const docRef = this.db.collection(this.fireStoreCollection.name).doc(id);
             return await docRef.delete();
         } catch (err) {
             log.error(err);
+            return Promise.reject(err);
         }
-        return undefined;
+    }
+
+    /**
+     * Returns all documents containing search term in the field of type array
+     * @param {string} fieldName Field to search
+     * @param {string} searchValue Value to look for
+     */
+    async arrayContains(fieldName: string, searchValue: string): Promise<T[]> {
+        try {
+            let data: Array<T> = [];
+            log.debug('repository:arrayContainsAny');
+            const snapshot = await this.db
+                .collection(this.fireStoreCollection.name)
+                .where(fieldName, 'array-contains', searchValue)
+                .get();
+
+            if (snapshot.empty) {
+                log.debug(`No matching documents found ${fieldName}[] containing ${searchValue}`);
+            }
+
+            snapshot.forEach((doc) => {
+                data.push({ id: doc.id, ...doc.data() });
+            });
+            return Promise.resolve(data);
+        } catch (e) {
+            log.error(e);
+            return Promise.reject(e);
+        }
     }
 }
 

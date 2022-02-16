@@ -1,0 +1,46 @@
+{
+    "name": "Hamburg-weather-rule1-trigger-ads",
+    "userId": "YrqYQc15jFYutbMdZNss",
+    "source": {
+        "id": "open-weather-map",
+        "name": "Weather",
+        "params": [
+            {
+                "dataPoint": "targetLocation",
+                "value": "Hamburg,de"
+            }
+        ]
+    },
+    "condition": {
+        "name": "Temperature",
+        "dataPoint": "temperature",
+        "dataType": "number",
+        "comparator": "gt",
+        "value": 20
+    },
+    "executionInterval": 60,
+    "targets": [
+        {
+            "agentId": "dv360-agent",
+            "actions": [
+                {
+                    "type": "pause",
+                    "params": [
+                        {
+                            "key": "entityId",
+                            "value": 19345182
+                        },
+                        {
+                            "key": "parentId",
+                            "value": 4304640
+                        },
+                        {
+                            "key": "entityType",
+                            "value": "insertionOrder"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

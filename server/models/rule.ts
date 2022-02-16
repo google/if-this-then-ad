@@ -11,12 +11,62 @@
     limitations under the License.
  */
 
+export enum COMPARATORS {
+    equals = 'eq',
+    greater = 'gt',
+    less = 'lt',
+    yes = 'yes',
+    no = 'no',
+}
+
 export interface Rule {
-    id: string;
-    groupId: string;
+    id?: string;
+    jobId?: string;
     name: string;
-    dataSourceId: string;
-    dataPoint: string;
-    dataPointCondition: string;
-    dataPointValue: string | number | boolean;
+    owner: string;
+    source: Agent;
+    condition: Condition;
+    executionInterval: number;
+    targets?: Array<TargetAgent>;
+}
+
+export interface Condition {
+    datapoint: string;
+    comparator:
+        | COMPARATORS.equals
+        | COMPARATORS.greater
+        | COMPARATORS.less
+        | COMPARATORS.yes
+        | COMPARATORS.no;
+    targetValue: string | number | boolean;
+}
+
+export interface Agent {
+    id: string;
+    params: {
+        dataPoint: string;
+        value: string | number | boolean;
+    };
+}
+
+export interface RuleResult {
+    ruleId: string;
+    result: boolean | number;
+    target: Array<TargetAgent>;
+}
+
+interface actionParam {
+    param: string;
+    value: string | number | boolean;
+}
+
+interface TargetActions {
+    action: string;
+    actionParams: Array<actionParam>;
+}
+
+export interface TargetAgent {
+    agentId: string;
+    ruleResult?: RuleResult;
+    actions: Array<TargetActions>;
 }

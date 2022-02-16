@@ -13,23 +13,17 @@
 
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { TriggersComponent } from './triggers/triggers.component';
-import { SourceSelectorComponent } from './source-selector/source-selector.component';
-import { TriggerSelectorComponent } from './trigger-selector/trigger-selector.component';
+import { AddRuleComponent } from './add-rule/add-rule.component';
 import { LoginComponent } from './login/login.component';
 
 const routes: Routes = [
   {
     path: '',
-    component: TriggersComponent,
+    component: AddRuleComponent,
   },
   {
     path: 'login',
     component: LoginComponent,
-  },
-  {
-    path: 'trigger',
-    component: TriggerSelectorComponent,
   },
 ];
 

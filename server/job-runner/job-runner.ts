@@ -1,23 +1,32 @@
 const { PubSub } = require('@google-cloud/pubsub');
-import log from '../util/logger';
-import { config } from '../agents/source-agents/open-weather-map/config';
+import { log, date } from '@iftta/util';
 import OpenWeatherMap from '../agents/source-agents/open-weather-map';
-import { AgentResult } from '../agents/source-agents/open-weather-map/interfaces';
-import {Job} from './interfaces'
+import DV360Ads from '../agents/target-agents/dv360-ads';
+import { AgentResult, RuleResult, AgentTask } from './interfaces';
+import { Collection } from '../models/fire-store-entity';
+//TODO: replace this with sending messages over pubsub.
+//Temp coupling between packages/
+import rulesEngine from '../packages/rule-engine';
+import Collections from '../services/collection-factory';
+import Repository from '../services/repository-service';
+import { ExecutionTime, Job } from './interfaces';
+import TaskCollector from './task-collector';
+import TaskConfiguration from './task-configuration';
 
 const pubSubClient = new PubSub();
-
+const jobsCollection = Collections.get(Collection.JOBS);
+const repo = new Repository<Job>(jobsCollection);
 
 class JobRunner {
-
     client: any;
+    jobsRepo: Repository<Job>;
 
-    constructor(client: any) {
+    constructor(client: any, repository: Repository<Job>) {
         this.client = client;
+        this.jobsRepo = repository;
     }
 
     private async getTopic(name: string) {
-
         const [topics] = await this.client.getTopics();
         const topicResult = topics.filter((topic) => {
             return topic.name == name;
@@ -29,25 +38,41 @@ class JobRunner {
         return null;
     }
 
-
-    // TODO: define schemas 
+    // TODO: define schemas
     // add to topic creation processd
     private async createTopicIfNotExists(name: string) {
         //projects/if-this-then-ad/topics/
-        let fullTopicName = `projects/${process.env.PROJECT_ID}/topics/${name}`;
+        const fullTopicName = `projects/${process.env.PROJECT_ID}/topics/${name}`;
         let topic = await this.getTopic(fullTopicName);
+        const subsId = process.env.AGENTS_TOPIC_ID + '_subs';
 
-        if (topic == null) {
-            await this.client.createTopic(name);
-            log.info(`New topic created : ${fullTopicName}`)
-            topic = await this.getTopic(fullTopicName);
-            const subsId = process.env.AGENTS_TOPIC_ID + '_subs';
-            // Creates a subscription on that new topic
-            const [subscription] = await topic.createSubscription(subsId);
-            log.info(`Subscription ${subsId} for topic ${topic.name} created`);
-            return topic;
+        try {
+            if (topic == null) {
+                await this.client.createTopic(name);
+                log.info(`New topic created : ${fullTopicName}`);
+                topic = await this.getTopic(fullTopicName);
+                // Creates a subscription on that new topic
+                const [subscription] = await topic.createSubscription(subsId);
+                log.info(`Subscription ${subsId} for topic ${topic.name} created`);
+                return topic;
+            }
+
+            const [subscriptions] = await topic.getSubscriptions();
+
+            const existingSubscription = subscriptions.filter((s) => {
+                return s.name == subsId;
+            });
+
+            if (!existingSubscription) {
+                log.info('Found existing topic, but missing a subscription');
+                await topic.createSubscription(subsId);
+                log.info(`Subscription ${subsId} created on existing topic. ${fullTopicName}`);
+            }
+            log.info(`Topic ${name} exists, skipping creation`);
+        } catch (err) {
+            log.error(JSON.stringify(err));
         }
-        log.info(`Topic ${name} exists, skipping creation`);
+
         return topic;
     }
 
@@ -58,85 +83,163 @@ class JobRunner {
         const topicName: string = process.env.AGENTS_TOPIC_ID || 'agent-results';
         const topic = await this.createTopicIfNotExists(topicName);
 
-        return topic
-    }
-    private listAgents(){
-        return {'open-weather-map-agent': new OpenWeatherMap()}
+        return topic;
     }
 
-    private async *runJobs(jobs:Job[]) {
+    private listSourceAgents() {
+        return {
+            'open-weather-map': new OpenWeatherMap(),
+        };
+    }
 
+    private listTargetAgents() {
+        return {
+            'dv360-agent': DV360Ads,
+        };
+    }
+    /**
+     *
+     * @param {Job[]}jobs Runs all jobs
+     * @returns {AgentResult} AgentResult generator use .next() to get values out of it.
+     *
+     */
+    private async *runJobs(jobs: Job[]) {
+        const agents = this.listSourceAgents();
 
-        const agents = this.listAgents(); 
-        
-        for(let job of jobs){
-            
+        log.debug('runJobs jobs');
+        log.debug(jobs);
+
+        for (const job of jobs) {
             const agent = agents[job.agentId];
-            log.info(`Executing job ${job.jobId} via agent ${job.agentId}`)
-            yield await agent.execute(job)
+            log.info(`Executing job ${job.id} via agent ${job.agentId}`);
+            yield await agent.execute(job);
         }
-
-
-        // const berlinConfig = config;
-        // let hamburgConfig = Object.create(config);
-
-        // hamburgConfig.queryLocation = 'Hamburg, de';
-
-        // const hamburgAgent = new OpenWeatherMap();
-        // const berlinAgent = new OpenWeatherMap();
-
-        // const hamburg = await hamburgAgent.execute(hamburgConfig);
-        // yield hamburg;
-        // const berlin = await berlinAgent.execute(berlinConfig)
-        // yield berlin;
-        // results need to be placed into respective PubSub Topic
     }
 
+    private async updateJobExecutionTimes(jobs: Array<ExecutionTime>) {
+        for (const j of jobs) {
+            const job = await this.jobsRepo.get(j.jobId);
+            if (job) {
+                job.lastExecution = new Date();
+                await this.jobsRepo.update(j.jobId, job);
+                log.info(`Set lastExecution time: ${j.lastExecution} on job : ${j.jobId}`);
+            }
+        }
+    }
+
+    /**
+     * Get all jobs that are up for execution.
+     *
+     * @returns {Promise<Array<Job>>}
+     */
+    private async getEligibleJobs(): Promise<Array<Job>> {
+        // Get a list of jobs to execute
+        log.info('Fetching job list to execute');
+        const allJobs: Job[] = await this.jobsRepo.list();
+
+        // Filter by execution interval
+        const nowUTC = new Date();
+        log.info(`System time used for calculating Execution interval ${nowUTC}`);
+        log.info(`Filtering jobs that have reached execution interval`);
+
+        const jobs = allJobs.filter((j) => {
+            // For first time executions lastExecution will not be set
+            if (!date.isValid(j.lastExecution)) {
+                log.debug(`Invalid date in last execution ${j.id}`);
+                log.debug(j.lastExecution);
+                j.lastExecution = 0;
+                return true;
+            }
+            log.debug(`job-runner:getEligibleJobs: jobTime: ${j.id} : ${j.lastExecution}`);
+            const nextRuntime = date.add(j.lastExecution!, { minutes: j.executionInterval });
+            log.info(`Job: ${j.id} next execution : ${nextRuntime}`);
+
+            return date.isPast(nextRuntime);
+        });
+
+        return jobs;
+    }
+    private async getUserSettingsForJobs(jobs: Job[]) {
+        let jobsWithSettings: Job[] = [];
+
+        for (let job of jobs) {
+            const userId = job.owner;
+            job.ownerSettings = await TaskConfiguration.getUserSettingsForAgent(
+                userId,
+                job.agentId,
+            );
+            jobsWithSettings.push(job);
+        }
+        return jobsWithSettings;
+    }
     public async runAll() {
-        const topic = await this.init();
+        const executionTimes: Array<ExecutionTime> = [];
+        const collectExecutionTimes = (currentResult) => {
+            const execTime: ExecutionTime = {
+                jobId: currentResult.jobId,
+                lastExecution: currentResult.timestamp,
+            };
+            executionTimes.push(execTime);
+        };
+        // Get a list of jobs to execute
+        log.info('job-runner:runAll: Fetching job list to execute');
+        const eligibleJobs = await this.getEligibleJobs();
+        const jobCount = eligibleJobs.length;
+        log.debug('job-runner:runAll: List of jobs to execute');
+        log.info(`job-runner:runAll: Got ${jobCount} jobs to execute`);
+        log.debug(eligibleJobs);
 
-        // get a list of jobs to execute 
-        // mocked for now. 
-        const jobs:Array<Job> = [{
-            jobId: '1',
-            agentId: 'open-weather-map-agent',
-            query: {
-                'dataPoint': 'targetLocation',
-                'value': 'Berlin, de'
-            }
-        }, {
-            jobId: '2',
-            agentId: 'open-weather-map-agent',
-            query: {
-                'dataPoint': 'targetLocation',
-                'value': 'Hamburg, de'
-            }
-        }, {
-            jobId: '3',
-            agentId: 'open-weather-map-agent',
-            query: {
-                'dataPoint': 'targetLocation',
-                'value': 'Munich, de'
-            }
-        }
-        ]
-        // execute each job agent 
-        // await for yielded results 
-        log.info('Executing jobs on all available agents');
-        let jobResultIter = this.runJobs(jobs);
-        let jobResult = jobResultIter.next();
-
-        while (!(await jobResult).done) {
-            const currentResult = (await jobResult).value
-            log.debug('Got result ')
-            log.debug(JSON.stringify(currentResult));
-            // publish to the topic created. 
-            await topic.publish(Buffer.from(JSON.stringify(currentResult)));
-            log.debug('Published results to PubSub')
-            jobResult = jobResultIter.next();
+        if (jobCount == 0) {
+            log.info('job-runner:runAll: Sleeping till next execution cycle');
+            return;
         }
 
+        const eligibleJobsWithSettings = await this.getUserSettingsForJobs(eligibleJobs);
+        // execute each job agent
+        // await for yielded results
+        log.info('job-runner:runAll: Executing jobs on all available agents');
+        const agentResultIter = this.runJobs(eligibleJobsWithSettings);
+        let agentResult = agentResultIter.next();
+
+        // Collect all actions that need to be performed
+        // on the target systems.
+
+        while (!(await agentResult).done) {
+            log.debug('job-runner:runAll: jobResult');
+            log.debug(await agentResult);
+            // pass this to rules engine.
+            const currentResult: AgentResult = (await agentResult).value;
+            collectExecutionTimes(currentResult);
+            log.info('Publishing results to the rule engine');
+            log.info(`Completed job: ${currentResult.jobId}`);
+            log.debug(currentResult);
+            const results: Array<RuleResult> = await rulesEngine.processMessage(currentResult);
+
+            TaskCollector.put(currentResult, results);
+
+            agentResult = agentResultIter.next();
+        }
+
+        log.info('Updating Last execution time of jobs');
+
+        // Update execution times in the jobs collection
+        await this.updateJobExecutionTimes(executionTimes);
+
+        const tasks = TaskCollector.get();
+        await this.processTasks(tasks);
+    }
+
+    private async processTasks(tasks: Array<AgentTask>) {
+        const agents = this.listTargetAgents();
+        tasks.map(async (task) => {
+            const targetAgent = agents[task.target.agentId];
+            log.debug(`job-runner:processTasks: Executing task on agent ${task.target.agentId}`);
+            log.debug(task);
+            const taskResult = await targetAgent.execute(task);
+            log.debug(`job-runner:processTasks: Execution result`);
+            log.debug(taskResult);
+        });
     }
 }
 
-export default new JobRunner(pubSubClient);
+export default new JobRunner(pubSubClient, repo);

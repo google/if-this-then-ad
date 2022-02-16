@@ -22,7 +22,23 @@ export interface User {
     verified?: boolean;
     profilePhoto?: string;
     locale?: string;
-    authToken?: string;
-    refreshToken?: string;
-    tokenProvider: string;
+    token: Token;
+    settings?: Array<setting>;
+}
+
+interface setting {
+    agentId: string;
+    params: Array<parameter>;
+}
+interface parameter {
+    key: string;
+    value: string | number | boolean;
+}
+export interface Token {
+    access: string;
+    expiry: Date;
+    refresh?: string;
+    provider?: string;
+    scope?: Array<string>;
+    type?: string;
 }

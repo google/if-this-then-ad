@@ -12,11 +12,12 @@
  */
 import { Request, Response } from 'express';
 import Repository from '../services/repository-service';
-import log from '../util/logger';
+import { log } from '@iftta/util';
 import Collections from '../services/collection-factory';
-import {User} from '../models/user'; 
+import { User } from '../models/user';
+import { Collection } from '../models/fire-store-entity';
 
-const usersCollection = Collections.get('users');
+const usersCollection = Collections.get(Collection.USERS);
 const userRepo = new Repository<User>(usersCollection);
 
 //TODO: add exception handling
@@ -64,11 +65,21 @@ export const get = async (req: Request, res: Response) => {
     return res.json(userData);
 };
 
+/**
+ * Updates user object.
+ * @param req :id
+ * @param res Updated user object
+ */
 export const update = async (req: Request, res: Response) => {
-    const user: User = { ...req.body };
-    const result = await userRepo.update(req.params.id, user);
-
-    return res.json(result);
+    try {
+        const userId = req.params.id;
+        const user: User = { ...req.body };
+        await userRepo.update(userId, user);
+        return res.sendStatus(200);
+    } catch (e) {
+        log.error(e);
+        return res.sendStatus(500);
+    }
 };
 
 export const remove = async (req: Request, res: Response) => {

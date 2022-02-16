@@ -1,0 +1,17 @@
+{
+  "name": "@iftta/util",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@google-cloud/logging-winston": "^4.1.1",
+    "date-fns": "^2.28.0",
+    "winston": "^3.5.1"
+  }
+}

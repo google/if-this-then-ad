@@ -8,18 +8,20 @@
         "start": "node dist/index.js",
         "compile": "npx tsc",
         "reset": "rm -Rf dist && rm -Rf node_modules",
-        "build": "npx tsc && npm run lint",
+        "build": "npm install && npx tsc",
         "post-build": "cd dist/ && npm install",
+        "fix-paths": "cd dist/ && sed -i 's+./dist+.+g' package.json",
         "lint": "npx tsc --noEmit && eslint \"**/*.{js,ts}\" --quiet --fix",
-        "copy-static": "cp -R public dist/ && cp package* dist/",
+        "copy-static": "cp -R public dist/ && cp -R packages* dist/ && cp *.json dist/",
         "build-local": "npm install --production=false && npm run build && npm run copy-static && npm run post-build",
         "build-dist": "npm i  && npm run compile && npm run copy-static && npm run post-build",
         "w-typescript": "npx tsc -w",
+        "debug": "nodemon --exec node --inspect=0.0.0.0:9229 --require ts-node/register index.ts",
         "w-node": "nodemon dist/index.js",
         "dev": "concurrently -k -p \"[{name}]\" -n \"TypeScript,Node\" -c \"yellow.bold,green.bold\" \"npm run w-typescript\" \"npm run w-node\"",
         "test": "jest --passWithNoTests",
-        "prettier": "npx prettier --write .",
-        "pre-commit": "npm install && npm run prettier && npm run build && npm test"
+        "format": "npx prettier --config .prettierrc.js --write .",
+        "pre-commit": "npm install && npm run format && npm run build && npm test"
     },
     "engines": {
         "node": ">= 12.0.0"
@@ -28,6 +30,7 @@
     "license": "Apache-2.0",
     "dependencies": {
         "@google-cloud/connect-firestore": "^2.0.2",
+        "@google-cloud/debug-agent": "^5.2.8",
         "@google-cloud/firestore": "^4.15.1",
         "@google-cloud/logging-winston": "^4.1.1",
         "@google-cloud/pubsub": "^2.18.4",
@@ -38,11 +41,10 @@
         "express": "^4.17.1",
         "express-session": "^1.17.2",
         "googleapis": "^91.0.0",
-        "open-weather-map-agent": "file:./dist/agents/source-agents/open-weather-map",
+        "module-alias": "^2.2.2",
         "passport": "^0.5.2",
         "passport-google-oauth20": "^2.0.0",
         "passport-google-oidc": "^0.1.0",
-        "ts-node": "^10.4.0",
         "typescript": "^4.5.4",
         "winston": "^3.3.3"
     },
@@ -54,7 +56,7 @@
         "@types/jest": "^27.0.3",
         "@types/node": "^16.11.10",
         "@types/passport": "^1.0.7",
-        "@types/passport-google-oauth2": "^0.1.4",
+        "@types/passport-google-oauth20": "^2.0.11",
         "@typescript-eslint/eslint-plugin": "^5.4.0",
         "@typescript-eslint/parser": "^5.4.0",
         "concurrently": "^6.4.0",
@@ -63,6 +65,14 @@
         "jest": "^27.3.1",
         "nodemon": "^2.0.15",
         "prettier": "^2.5.0",
+        "ts-node": "^10.4.0",
         "typescript": "^4.5.4"
+    },
+    "_moduleAliases": {
+        "@iftta/job-runner": "./job-runner",
+        "@iftta/rules-engine": "./packages/rule-engine",
+        "@iftta/open-weather-map-agent": "./agents/source-agents/open-weather-map",
+        "@iftta/dv360-ads": "./agents/target-agents/dv360-ads",
+        "@iftta/util": "./util"
     }
 }

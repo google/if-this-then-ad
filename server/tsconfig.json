@@ -15,8 +15,17 @@
         "noImplicitReturns": true,
         "noImplicitThis": true,
         "noImplicitAny": false,
-        "strictNullChecks": true, 
-        "rootDir": "./", 
-        "composite": true
+        "strictNullChecks": true,
+        "rootDir": "./",
+        "composite": true,
+        "resolveJsonModule": true,
+        "baseUrl": ".",
+        "paths": {
+            "@iftta/open-weather-map-agent": ["./agents/source-agents/open-weather-map"],
+            "@iftta/dv360-ads": ["./agents/target-agents/dv360-ads"],
+            "@iftta/job-runner": ["./job-runner"],
+            "@iftta/rules-engine": ["./packages/rule-engine"],
+            "@iftta/util": ["./util"]
+        }
     }
 }

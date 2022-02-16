@@ -15,13 +15,11 @@
 steps:
 # Build the image from source
 - name: gcr.io/cloud-builders/docker
-  id: Build iftta image 
-  args: ['build', '-f', 'Dockerfile', '.', '-t', '$_GCR_HOSTNAME/$PROJECT_ID/$_SERVICE_NAME/$_IMAGE_NAME:$SHORT_SHA',  '--cache-from', '$_GCR_HOSTNAME/$PROJECT_ID/$_SERVICE_NAME/$_IMAGE_NAME:latest']
-
-# Tag built image with latest 
-- name: gcr.io/cloud-builders/docker
-  id: Tag latest image
-  args: ['tag', '$_GCR_HOSTNAME/$PROJECT_ID/$_SERVICE_NAME/$_IMAGE_NAME:$SHORT_SHA', '$_GCR_HOSTNAME/$PROJECT_ID/$_SERVICE_NAME/$_IMAGE_NAME:latest']
+  id: Build IFTTA image 
+  args: ['build', '-f', 'Dockerfile', 
+          '-t', '$_GCR_HOSTNAME/$PROJECT_ID/$_SERVICE_NAME/$_IMAGE_NAME:$SHORT_SHA',
+          '-t', '$_GCR_HOSTNAME/$PROJECT_ID/$_SERVICE_NAME/$_IMAGE_NAME:latest',
+           '--cache-from', '$_GCR_HOSTNAME/$PROJECT_ID/$_SERVICE_NAME/$_IMAGE_NAME:latest', '.' ]
  
 # TODO: Tag container with semver 
 
@@ -33,6 +31,7 @@ steps:
 # Deploy to cloudrun 
 
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
+  id: Deploy to cloudrun
   args:
     - run
     - deploy
@@ -42,10 +41,10 @@ steps:
     - '--region=$_DEPLOY_REGION'
     - '--port=$_SERVICE_PORT'
     - '--quiet'
-  id: Deploy to cloudrun
   entrypoint: gcloud
 images:
   - '$_GCR_HOSTNAME/$PROJECT_ID/$_SERVICE_NAME/$_IMAGE_NAME:$SHORT_SHA'
+  - '$_GCR_HOSTNAME/$PROJECT_ID/$_SERVICE_NAME/$_IMAGE_NAME:latest'
 options:
   substitutionOption: ALLOW_LOOSE
   logging: CLOUD_LOGGING_ONLY

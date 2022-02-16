@@ -15,7 +15,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { AddRuleComponent } from './add-rule.component';
 
-describe('AddRuleComponent', () => {
+describe('RulesComponent', () => {
   let component: AddRuleComponent;
   let fixture: ComponentFixture<AddRuleComponent>;
 

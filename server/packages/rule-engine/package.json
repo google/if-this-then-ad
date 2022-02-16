@@ -1,0 +1,17 @@
+{
+  "name": "@iffta/rule-engine",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "keywords": [],
+  "author": "Max Kimambo",
+  "license": "Apache 2.0",
+  "devDependencies": {
+    "@types/jest": "^27.4.0",
+    "jest": "^27.4.7",
+    "ts-jest": "^27.1.3"
+  }
+}

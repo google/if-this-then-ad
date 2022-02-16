@@ -1,0 +1,50 @@
+<div *ngIf="rules && rules.length" class="wrapper">
+  <h2>All Rules</h2>
+  <table mat-table [dataSource]="dataSource" class="mat-elevation-z8 table">
+      <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef> Name </th>
+          <td mat-cell *matCellDef="let rule"> {{ rule.name }} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="source">
+          <th mat-header-cell *matHeaderCellDef> Source </th>
+          <td mat-cell *matCellDef="let rule"> {{ rule.source.name }} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="type">
+          <th mat-header-cell *matHeaderCellDef> Type </th>
+          <td mat-cell *matCellDef="let rule"> {{ rule.condition.name }} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="comparator">
+          <th mat-header-cell *matHeaderCellDef> Comparator </th>
+          <td mat-cell *matCellDef="let rule"> {{ getComparatorUi(rule.condition.comparator) }} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="value">
+          <th mat-header-cell *matHeaderCellDef> Value </th>
+          <td mat-cell *matCellDef="let rule"> {{ rule.condition.value }} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="interval">
+          <th mat-header-cell *matHeaderCellDef> Interval </th>
+          <td mat-cell *matCellDef="let rule"> {{ rule.executionInterval }} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef> Actions </th>
+          <td mat-cell *matCellDef="let rule">
+            <button mat-raised-button color="accent" (click)="removeRule(rule)">Remove</button>
+          </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+
+  <!-- Paginator -->
+  <mat-paginator class="paginator" [pageSizeOptions]="[5, 10, 20]"
+                  showFirstLastButtons 
+                  aria-label="Select page of rules">
+  </mat-paginator>
+</div>
