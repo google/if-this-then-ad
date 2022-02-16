@@ -86,11 +86,15 @@ export interface Job {
     };
     rules: Array<string>;
 }
+
 export interface setting {
     agentId: string;
     params: Array<parameter>;
 }
+
 interface parameter {
     key: string;
-    value: string | number | boolean;
+    name: string;
+    type: string | number | boolean;
+    value?: string;
 }

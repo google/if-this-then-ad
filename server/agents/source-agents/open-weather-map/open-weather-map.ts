@@ -140,7 +140,8 @@ class OpenWeatherMap implements IAgent {
                 params: [
                     {
                         key: 'apiKey',
-                        value: 'string',
+                        name: 'API Key',
+                        type: 'string',
                     },
                 ],
             },
