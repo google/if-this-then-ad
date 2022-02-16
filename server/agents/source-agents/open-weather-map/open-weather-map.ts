@@ -98,7 +98,12 @@ class OpenWeatherMap implements IAgent {
 
     private getOptions(job: Job) {
         let options = { ...config };
-        (options.apiKey = process.env.WEATHER_API_KEY || ''), (options.jobId = job.id);
+        let userSettings = {};
+        job.ownerSettings!.params.map((p) => {
+            userSettings[p.key] = p.value;
+        });
+        options.apiKey = userSettings['apiKey'] || (process.env.WEATHER_API_KEY as string);
+        options.jobId = job.id;
         options.targetLocation = job.query ? job.query[0].value : '';
         options.jobOwner = job.owner;
         log.debug(`${this.agentId} : Agent options used for this job`);
@@ -134,7 +139,7 @@ class OpenWeatherMap implements IAgent {
                 agentId: config.id,
                 params: [
                     {
-                        key: 'apikey',
+                        key: 'apiKey',
                         value: 'string',
                     },
                 ],

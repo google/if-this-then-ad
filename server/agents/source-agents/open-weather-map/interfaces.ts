@@ -74,11 +74,23 @@ export enum AgentType {
 }
 
 export interface Job {
-    id: string;
+    id?: string;
     agentId: string;
     owner: string;
+    executionInterval: number;
+    lastExecution?: Date | number;
+    ownerSettings?: setting;
     query?: {
         dataPoint: string;
         value: string | number | boolean;
     };
+    rules: Array<string>;
+}
+export interface setting {
+    agentId: string;
+    params: Array<parameter>;
+}
+interface parameter {
+    key: string;
+    value: string | number | boolean;
 }
