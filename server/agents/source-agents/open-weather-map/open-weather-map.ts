@@ -128,8 +128,17 @@ class OpenWeatherMap implements IAgent {
 
         const meta: AgentMetadata = {
             id: config.id,
-            name: 'Weather', // this.name, <- won't work because static
+            name: 'Weather',
             type: AgentType.SOURCE,
+            settings: {
+                agentId: config.id,
+                params: [
+                    {
+                        key: 'apikey',
+                        value: 'string',
+                    },
+                ],
+            },
             params: [
                 {
                     dataPoint: 'targetLocation',

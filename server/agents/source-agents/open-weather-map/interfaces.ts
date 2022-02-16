@@ -40,6 +40,15 @@ export interface AgentMetadata {
     id: string;
     name: string;
     type: AgentType;
+    settings: {
+        agentId: string;
+        params: [
+            {
+                key: string;
+                value: string | number | boolean;
+            },
+        ];
+    };
     params: Array<AgentParam>;
     dataPoints: Array<DataPoint>;
 }
