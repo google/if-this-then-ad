@@ -31,7 +31,7 @@ export const create = async (req: Request, res: Response) => {
 
     try {
         log.debug(rule);
-        log.info('Creating rule');
+        log.info('rules-controller:create: Creating rule');
 
         // Create job based on rule
         const jobId = await JobController.addJob(rule);
@@ -43,7 +43,10 @@ export const create = async (req: Request, res: Response) => {
         const ruleId = await repo.save(rule);
 
         rule.id = ruleId;
-        log.info(`Successfully created rule with id : ${ruleId}`);
+
+        await JobController.assignRuleToJob(ruleId, jobId);
+
+        log.info(`rules-controller:create: Successfully created rule with id : ${ruleId}`);
         res.json(rule);
     } catch (err) {
         console.log(err);
@@ -60,4 +63,29 @@ export const list = async (req: Request, res: Response) => {
     const rules = await repo.list();
 
     res.json(rules);
+};
+
+/**
+ * Deletes a rule and its associated jobs
+ * @param req
+ * @param res
+ */
+export const remove = async (req: Request, res: Response) => {
+    try {
+        const userId = req.params.userId;
+        const ruleId = req.params.id;
+
+        const rule = await repo.get(ruleId);
+
+        if (rule?.owner == userId) {
+            await JobController.removeRuleFromJob(ruleId);
+            await repo.delete(ruleId);
+            return res.sendStatus(204);
+        }
+
+        return res.status(403).send('Forbidden');
+    } catch (e) {
+        log.error(e);
+        return res.sendStatus(500);
+    }
 };
