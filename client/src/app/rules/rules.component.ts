@@ -15,7 +15,7 @@ import { store } from '../store';
 })
 export class RulesComponent implements OnInit {
   rules: Rule[] = [];
-  displayedColumns: string[] = ['name', 'source', 'type', 'comparator', 'value', 'interval'];
+  displayedColumns: string[] = ['name', 'source', 'type', 'comparator', 'value', 'interval', 'actions'];
   dataSource = new MatTableDataSource<any>(this.rules);
   comparatorMapping: {} = {
     gt: 'Greater Than',
@@ -24,6 +24,8 @@ export class RulesComponent implements OnInit {
     yes: 'Yes',
     no: 'No',
   };
+  // TODO: remove this!
+  user: string = 'YrqYQc15jFYutbMdZNss';
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
@@ -43,7 +45,7 @@ export class RulesComponent implements OnInit {
   }
 
   /**
-   * Fetch all rules from API.
+   * Fetch all rules.
    */
   loadRules() {
     this.http.get<Array<Rule>>(`${environment.apiUrl}/rules`)
@@ -65,5 +67,18 @@ export class RulesComponent implements OnInit {
   getComparatorUi(comparator: string): string {
     // @ts-ignore
     return this.comparatorMapping[comparator];
+  }
+
+  /**
+   * Delete rule.
+   * 
+   * @param {Rule} rule
+   */
+  removeRule(rule: Rule) {
+    this.http.delete(`${environment.apiUrl}/rules/${this.user}/${rule.id}`)
+    .subscribe(_ => {
+      // Reload rules
+      this.loadRules();
+    });
   }
 }
