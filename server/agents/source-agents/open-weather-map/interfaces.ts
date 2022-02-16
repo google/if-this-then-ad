@@ -45,7 +45,9 @@ export interface AgentMetadata {
         params: [
             {
                 key: string;
-                value: string | number | boolean;
+                name: string;
+                type: string;
+                value?: string | number | boolean;
             },
         ];
     };
@@ -79,7 +81,7 @@ export interface Job {
     owner: string;
     executionInterval: number;
     lastExecution?: Date | number;
-    ownerSettings?: setting;
+    ownerSettings?: Setting;
     query?: {
         dataPoint: string;
         value: string | number | boolean;
@@ -87,14 +89,12 @@ export interface Job {
     rules: Array<string>;
 }
 
-export interface setting {
+export interface Setting {
     agentId: string;
-    params: Array<parameter>;
+    params: Array<Parameter>;
 }
 
-interface parameter {
+interface Parameter {
     key: string;
-    name: string;
-    type: string | number | boolean;
-    value?: string;
+    value: string | number | boolean;
 }
