@@ -169,9 +169,20 @@ class RepositoryService<T> {
      */
     async arrayContains(fieldName: string, searchValue: string): Promise<T[]> {
         try {
+            let data: Array<T> = [];
             log.debug('repository:arrayContainsAny');
-            const colRef = this.db.where(fieldName, 'array-contains', searchValue);
-            const data: Array<T> = await colRef.get();
+            const snapshot = await this.db
+                .collection(this.fireStoreCollection.name)
+                .where(fieldName, 'array-contains', searchValue)
+                .get();
+
+            if (snapshot.empty) {
+                log.debug(`No matching documents found ${fieldName}[] containing ${searchValue}`);
+            }
+
+            snapshot.forEach((doc) => {
+                data.push({ id: doc.id, ...doc.data() });
+            });
             return Promise.resolve(data);
         } catch (e) {
             log.error(e);

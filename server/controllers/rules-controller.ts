@@ -78,8 +78,8 @@ export const remove = async (req: Request, res: Response) => {
         const rule = await repo.get(ruleId);
 
         if (rule?.owner == userId) {
-            await repo.delete(ruleId);
             await JobController.removeRuleFromJob(ruleId);
+            await repo.delete(ruleId);
             return res.sendStatus(204);
         }
 

@@ -84,10 +84,16 @@ export const executeJobs = async (req: Request, res: Response) => {
  * @param {string} jobId
  */
 export const assignRuleToJob = async (ruleId: string, jobId: string) => {
-    const job: Job = (await repo.get(jobId)) as Job;
-    job.rules.push(ruleId);
-    await repo.save(job);
-    log.debug(`Associated rule ${ruleId} with job ${jobId}`);
+    try {
+        let job: Job = (await repo.get(jobId)) as Job;
+        job.rules.push(ruleId);
+        await repo.update(jobId, job);
+        log.debug(`Associated rule ${ruleId} with job ${jobId}`);
+        return Promise.resolve();
+    } catch (e) {
+        log.error(e);
+        return Promise.reject(e);
+    }
 };
 
 /**
@@ -101,15 +107,18 @@ export const removeRuleFromJob = async (ruleId: string) => {
 
         if (jobs.length > 0) {
             let job = jobs[0];
-            const rules = job.rules.splice(0, 1, ruleId);
-            if (rules.length > 0) {
-                job.rules = rules;
-                await repo.update(job.id!, job);
-                log.info(`Removed rule ${ruleId} from job ${job.id}`);
-            } else {
+            const rules = job.rules.filter((r) => {
+                return r !== ruleId;
+            });
+            log.debug(rules);
+            if (rules.length == 0) {
                 // last rule associated to the job, remove the job.
                 await repo.delete(job.id!);
                 log.info(`jobs-controller:removeRuleFromJob: Removed job ${job.id}`);
+            } else {
+                job.rules = rules;
+                await repo.update(job.id!, job);
+                log.info(`Removed rule ${ruleId} from job ${job.id}`);
             }
         }
     } catch (e) {
