@@ -11,7 +11,7 @@
     limitations under the License.
  */
 
-import { Request, Response, Router } from 'express';
+import express, { Request, Response, Router } from 'express';
 import { AuthenticateOptionsGoogle } from 'passport-google-oauth20';
 import * as AuthController from '../controllers/auth-controller';
 import * as AccountController from '../controllers/account-controller';
@@ -22,6 +22,7 @@ import * as JobController from '../controllers/jobs-controller';
 import someController from '../controllers/some';
 import pass from '../config/passport-setup';
 import passport from 'passport';
+import path from 'path';
 
 // eslint-disable-next-line new-cap
 const router = Router();
@@ -85,10 +86,17 @@ router.get(
 
 // router.post('/api/agent-results', PubSubController.messageHandler);
 
+// Serve static angular build
+router.use('/', express.static('./public'));
+
+router.use('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../', 'public', 'index.html'));
+});
+
 // Default '/' route
-router.get('/', (req: Request, res: Response) => {
+/*router.get('/', (req: Request, res: Response) => {
     const name = process.env.NAME || 'World';
     res.send(`Hello ${name}! IFTTA`);
-});
+});*/
 
 export default router;
