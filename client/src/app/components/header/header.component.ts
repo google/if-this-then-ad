@@ -10,7 +10,10 @@ import { AuthService } from 'src/app/services/auth.service';
 export class HeaderComponent implements OnInit {
   avatarUrl: string = '';
 
-  constructor(public authService: AuthService) {}
+  constructor(public authService: AuthService) {
+    // Get user's profile picture
+    this.avatarUrl = this.authService.user?.profilePhoto || '';
+  }
 
   ngOnInit(): void {}
 }

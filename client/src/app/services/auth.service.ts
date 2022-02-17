@@ -1,7 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Router } from '@angular/router';
-import { map } from 'rxjs/operators';
+import { ActivatedRoute } from '@angular/router';
 
 import { environment } from 'src/environments/environment';
 
@@ -12,44 +10,57 @@ import { User } from 'src/app/models/user.model';
 })
 
 export class AuthService {
-  headers = new HttpHeaders().set('Content-Type', 'application/json');
   currentUser: User | null;
 
-  constructor(private http: HttpClient, public router: Router) {
-    this.currentUser = JSON.parse(localStorage.getItem('user') || '""');
-  }
-
-  // Login
-  login() {
-    const headers = {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      'Access-Control-Allow-Headers': '*',
-      'Access-Control-Allow-Origin': '*',
-    };
-
-    const options = {
-      headers: new HttpHeaders(headers),
+  constructor(private route: ActivatedRoute) {
+    // Get user from localStorage
+    if (localStorage.getItem('user')) {
+      this.currentUser = new User().deserialize(JSON.parse(localStorage.getItem('user')!));
     }
-
-    return this.http.get<any>(`${environment.apiUrl}/auth/google`, options)
-    .pipe(map(user => {
-      localStorage.setItem('user', JSON.stringify(user));
-      this.currentUser = user;
-    }));
   }
 
-  // Get current user
-  getCurrentUser(): User | null {
+  /**
+   * Login.
+   */
+  login() {
+    this.route.queryParamMap.subscribe((params) => {
+      const returnTo = params.get('returnTo') || '';
+
+      window.location.href = `${environment.apiUrl}/auth/login?returnTo=${returnTo}`;
+    });
+  }
+
+  /**
+   * Get logged in user.
+   * 
+   * @returns {User|null}
+   */
+  get user(): User | null {
     return this.currentUser;
   }
 
-  // Check if logged in
+  /**
+   * Check if logged in.
+   * 
+   * @returns {boolean}
+   */
   get isLoggedIn(): boolean {
     return localStorage.getItem('user') !== null;
   }
 
-  // Logout
+  /**
+   * Set user.
+   * 
+   * @param
+   */
+  set user(user: User | null) {
+    localStorage.setItem('user', JSON.stringify(user));
+    this.currentUser = user;
+  }
+
+  /**
+   * Logout.
+   */
   logout() {
     localStorage.removeItem('user');
     this.currentUser = null;

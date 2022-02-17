@@ -37,20 +37,20 @@ const options: AuthenticateOptionsGoogle = {
     prompt: 'consent',
 };
 
-router.get('/api/auth/login', AuthController.showLogin);
+router.get('/api/auth/login', AuthController.login);
 router.get('/api/auth/google', passport.authenticate('google', options));
 router.get(
     '/api/auth/oauthcallback',
     passport.authenticate('google', {
         failureRedirect: '/api/auth/login',
-        //successRedirect: '/api/auth/done',
-        successRedirect: process.env.NODE_ENV === 'development' ? 'https://localhost:4200/' : '/',
+        successRedirect: '/api/auth/done',
     }),
 );
 
 router.get('/api/auth/done', AuthController.authDone);
 router.get('/api/auth/logout', AuthController.logout);
 router.post('/api/auth/logout', AuthController.logout);
+
 // Protected route
 router.get('/api/account', pass.isAuthenticated, someController.hello);
 
@@ -79,6 +79,7 @@ router.get(
     //pass.isAuthenticated,
     AgentsController.getAgentsMetadata,
 );
+
 router.get(
     '/api/agents/:agent/list/:entityType',
     //pass.isAuthenticated,
@@ -87,17 +88,11 @@ router.get(
 
 // router.post('/api/agent-results', PubSubController.messageHandler);
 
-// Serve static angular build
+// Serve static Angular build
 router.use('/', express.static('./public'));
 
 router.use('*', (req, res) => {
     res.sendFile(path.join(__dirname, '../', 'public', 'index.html'));
 });
-
-// Default '/' route
-/*router.get('/', (req: Request, res: Response) => {
-    const name = process.env.NAME || 'World';
-    res.send(`Hello ${name}! IFTTA`);
-});*/
 
 export default router;

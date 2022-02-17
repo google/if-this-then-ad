@@ -9,11 +9,11 @@
   <span class="spacer"></span>
 
   <!-- Header buttons -->
-  <button class="avatar-wrapper" *ngIf="!authService.isLoggedIn" mat-icon-button mat-button [matMenuTriggerFor]="userMenu" aria-label="Example icon-button with share icon">
-    <!--<mat-icon>account_circle</mat-icon>-->
-
+  <button class="avatar-wrapper" *ngIf="authService.isLoggedIn" mat-icon-button mat-button [matMenuTriggerFor]="userMenu" aria-label="Example icon-button with share icon">
+    <!-- User profile picture -->
     <div *ngIf="avatarUrl; else defaultAvatar" class="avatar" [style.backgroundImage]="'url(' + avatarUrl + ')'"></div>
 
+    <!-- Default avatar icon -->
     <ng-template #defaultAvatar>
       <mat-icon>account_circle</mat-icon>
     </ng-template>
