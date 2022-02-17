@@ -14,7 +14,7 @@ export class HeaderComponent implements OnInit {
   constructor(public authService: AuthService, private router: Router) {
     // Get user's profile picture
     this.authService.userWatch.subscribe(user => {
-      this.avatarUrl = user.profilePhoto;
+      this.avatarUrl = user ? user.profilePhoto : '';
     })
   }
 

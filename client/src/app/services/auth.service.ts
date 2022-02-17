@@ -4,15 +4,15 @@ import { ActivatedRoute } from '@angular/router';
 import { environment } from 'src/environments/environment';
 
 import { User } from 'src/app/models/user.model';
-import { Subject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 
 export class AuthService {
-  currentUser: User | null;
-  userWatch: Subject<User> = new Subject<User>();
+  currentUser: User|null;
+  userWatch: BehaviorSubject<User|null> = new BehaviorSubject<User|null>(null);
 
   constructor(private route: ActivatedRoute) {
     // Get user from localStorage
