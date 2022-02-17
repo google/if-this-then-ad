@@ -3,7 +3,7 @@ import Collections from '../services/collection-factory';
 import { Collection } from '../models/fire-store-entity';
 import { log, date } from '@iftta/util';
 import axios from 'axios';
-import { User, Token } from 'models/user';
+import { User, Token } from './../models/user';
 import { setting } from './interfaces';
 
 const usersCollection = Collections.get(Collection.USERS);
@@ -54,7 +54,25 @@ class TaskConfiguration {
         }
         return Promise.reject('Couldnt obtain token, check logs for errors');
     }
-
+    /**
+     * Reissues a new token for the user, upon presentation of the old token
+     * @param userId
+     * @param accessToken
+     */
+    public async reissueAuthTokenForUser(userId: string, accessToken: string): Promise<Token> {
+        try {
+            const user: User = (await this.repo.get(userId)) as User;
+            if (user.token.access == accessToken) {
+                const token  = await this.refreshTokensForUser(userId);
+                delete token.refresh; 
+                return token; 
+            }
+            return Promise.reject('Refresh request denied');
+        } catch (e) {
+            log.error(e);
+            return Promise.reject(e);
+        }
+    }
     public async refreshTokensForUser(userId: string): Promise<Token> {
         try {
             const user: User = (await this.repo.get(userId)) as User;

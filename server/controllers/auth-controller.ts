@@ -12,9 +12,8 @@
  */
 
 import { Request, Response } from 'express';
-import passport from 'passport';
-
 import { log } from '@iftta/util';
+import { refreshToken } from '@iftta/job-runner';
 
 export const showLogin = (req: Request, res: Response) => {
     res.send('<a href="/api/auth/google" class="button">Sign in with Google</a>');
@@ -27,4 +26,20 @@ export const authDone = (req: Request, res: Response) => {
 export const logout = (req: Request, res: Response) => {
     req.logOut();
     res.redirect('/');
+};
+
+/**
+ * Reissues access token based on userId and old expired token.
+ * @param req
+ * @param res
+ */
+export const renewToken = async (req: Request, res: Response) => {
+    const userId = req.body.userId;
+    const oldToken = req.body.token;
+
+    if (userId && oldToken) {
+        const freshToken = await refreshToken(userId, oldToken);
+        return res.json(freshToken);
+    }
+    return res.status(400).send('Malformed request');
 };

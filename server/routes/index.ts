@@ -49,6 +49,7 @@ router.get(
 router.get('/api/auth/done', AuthController.authDone);
 router.get('/api/auth/logout', AuthController.logout);
 router.post('/api/auth/logout', AuthController.logout);
+router.post('/api/auth/refresh', AuthController.renewToken);
 // Protected route
 router.get('/api/account', pass.isAuthenticated, someController.hello);
 
