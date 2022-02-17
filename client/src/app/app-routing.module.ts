@@ -16,10 +16,13 @@ import { RouterModule, Routes } from '@angular/router';
 import { AddRuleComponent } from './add-rule/add-rule.component';
 import { LoginComponent } from './login/login.component';
 
+import { AuthGuard } from "./services/auth.guard";
+
 const routes: Routes = [
   {
     path: '',
     component: AddRuleComponent,
+    //canActivate: [AuthGuard],
   },
   {
     path: 'login',
