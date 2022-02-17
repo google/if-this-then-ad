@@ -19,4 +19,14 @@ export class LoginComponent implements OnInit {
       }
     )
   }
+
+  submit(form: any): void {
+    console.log(form);
+
+    this.authService.login().subscribe(
+      data => {
+        console.log('login response', data);
+      }
+    )
+  }
 }

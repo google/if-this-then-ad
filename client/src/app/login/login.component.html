@@ -1,4 +1,13 @@
 <div class="wrapper">
   <div class="brand">IFTTA</div>
-  <button class="login" (click)="login()"></button>
+  <button class="login" (click)="login()">
+
+  </button>
+  <a href="http://localhost:8080/api/auth/google">
+    <button class="login"></button>
+  </a>
+
+  <form #form="ngForm" (ngSubmit)="submit(form.value)">
+    <button class="login"></button>
+  </form>
 </div>

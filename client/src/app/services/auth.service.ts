@@ -21,7 +21,18 @@ export class AuthService {
 
   // Login
   login() {
-    return this.http.get<any>(`${environment.apiUrl}/auth/google`)
+    const headers = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'Access-Control-Allow-Headers': '*',
+      'Access-Control-Allow-Origin': '*',
+    };
+
+    const options = {
+      headers: new HttpHeaders(headers),
+    }
+
+    return this.http.get<any>(`${environment.apiUrl}/auth/google`, options)
     .pipe(map(user => {
       localStorage.setItem('user', JSON.stringify(user));
       this.currentUser = user;

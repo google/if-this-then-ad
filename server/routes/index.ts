@@ -43,7 +43,8 @@ router.get(
     '/api/auth/oauthcallback',
     passport.authenticate('google', {
         failureRedirect: '/api/auth/login',
-        successRedirect: '/api/auth/done',
+        //successRedirect: '/api/auth/done',
+        successRedirect: process.env.NODE_ENV === 'development' ? 'https://localhost:4200/' : '/',
     }),
 );
 
