@@ -4,6 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 import { environment } from 'src/environments/environment';
 
 import { User } from 'src/app/models/user.model';
+import { Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -11,11 +12,12 @@ import { User } from 'src/app/models/user.model';
 
 export class AuthService {
   currentUser: User | null;
+  userWatch: Subject<User> = new Subject<User>();
 
   constructor(private route: ActivatedRoute) {
     // Get user from localStorage
     if (localStorage.getItem('user')) {
-      this.currentUser = new User().deserialize(JSON.parse(localStorage.getItem('user')!));
+      this.user = new User().deserialize(JSON.parse(localStorage.getItem('user')!));
     }
   }
 
@@ -45,7 +47,7 @@ export class AuthService {
    * @returns {boolean}
    */
   get isLoggedIn(): boolean {
-    return localStorage.getItem('user') !== null;
+    return !!this.currentUser;
   }
 
   /**
@@ -56,6 +58,10 @@ export class AuthService {
   set user(user: User | null) {
     localStorage.setItem('user', JSON.stringify(user));
     this.currentUser = user;
+
+    if (user) {
+      this.userWatch.next(user);
+    }
   }
 
   /**

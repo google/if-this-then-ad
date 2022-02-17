@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 
 import { AuthService } from 'src/app/services/auth.service';
 
@@ -10,10 +11,19 @@ import { AuthService } from 'src/app/services/auth.service';
 export class HeaderComponent implements OnInit {
   avatarUrl: string = '';
 
-  constructor(public authService: AuthService) {
+  constructor(public authService: AuthService, private router: Router) {
     // Get user's profile picture
-    this.avatarUrl = this.authService.user?.profilePhoto || '';
+    this.authService.userWatch.subscribe(user => {
+      this.avatarUrl = user.profilePhoto;
+    })
   }
 
   ngOnInit(): void {}
+
+  /**
+   * Logout - Navigate to Login page.
+   */
+  logout() {
+    this.router.navigate(['/login']);
+  }
 }
