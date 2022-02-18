@@ -43,6 +43,7 @@ export class AddRuleComponent implements OnInit {
     no: 'No',
   };
 
+  @ViewChild('name', { static: true }) nameForm: NgForm;
   @ViewChild('source', { static: true }) sourceForm: NgForm;
   @ViewChild('condition', { static: true }) conditionForm: NgForm;
   @ViewChild('executionInterval', { static: true }) executionIntervalForm: NgForm;
@@ -144,9 +145,13 @@ export class AddRuleComponent implements OnInit {
    * @param {DataPoint} val
    */
   onDataPointChange(val: DataPoint) {
+    // Store data point
     this.currentRule.condition.dataPoint = val.dataPoint;
     this.currentRule.condition.name = val.name;
     this.currentRule.condition.dataType = val.dataType;
+
+    // Reset comparator
+    this.currentRule.condition.comparator = undefined;
   }
 
   /**
@@ -162,7 +167,13 @@ export class AddRuleComponent implements OnInit {
       store.ruleAdded.next(true);
     });
 
-    // Clear rule
+    // Reset rule
     this.currentRule = new Rule();
+
+    // Reset forms
+    this.conditionForm.resetForm();
+    this.sourceForm.resetForm();
+    this.executionIntervalForm.resetForm();
+    this.nameForm.resetForm();
   }
 }

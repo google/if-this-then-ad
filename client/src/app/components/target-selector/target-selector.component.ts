@@ -26,7 +26,19 @@ export class TargetSelectorComponent {
     this.treeControl = new FlatTreeControl<EntityNode>(this.getLevel, this.isExpandable);
     this.dataSource = new DynamicDataSource(this.treeControl, database);
 
-    this.dataSource.data = database.initialData();
+    // Initialize data source
+    this.init();
+
+    store.ruleAdded.subscribe(added => {
+      this.init();
+    })
+  }
+
+  /**
+   * Initialize data source.
+   */
+  init():void {
+    this.dataSource.data = this.database.initialData();
   }
 
   /**
