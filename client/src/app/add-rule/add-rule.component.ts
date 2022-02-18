@@ -23,6 +23,9 @@ import { store } from '../store';
 import { NgForm } from '@angular/forms';
 import { SourceAgentParameter } from '../interfaces/source-agent-parameter';
 
+import { get as getScript } from 'scriptjs';
+declare const google: any;
+
 @Component({
   selector: 'app-add-rule',
   templateUrl: './add-rule.component.html',
@@ -42,6 +45,8 @@ export class AddRuleComponent implements OnInit {
     yes: 'Yes',
     no: 'No',
   };
+
+  geoSearchHtmlClassName = 'geosearch';
 
   @ViewChild('source', { static: true }) sourceForm: NgForm;
   @ViewChild('condition', { static: true }) conditionForm: NgForm;
@@ -99,6 +104,9 @@ export class AddRuleComponent implements OnInit {
     });
   }
 
+  ngAfterViewInit(): void {
+  }
+
   /**
    * Get source agent by ID.
    *
@@ -136,6 +144,8 @@ export class AddRuleComponent implements OnInit {
 
       store.sourceSet.next(true);
     }
+
+    this.initGeoSearch();
   }
 
   /**
@@ -165,4 +175,57 @@ export class AddRuleComponent implements OnInit {
     // Clear rule
     this.currentRule = new Rule();
   }
+
+  private initGeoSearch() {
+    const url = environment.GOOGLE_MAPS_AUTOCOMPLETE_URL + environment.GOOGLE_MAPS_API_KEY;
+    getScript(url, () => {
+      this.setGeoListener(this.geoSearchHtmlClassName);
+    });
+  }
+
+  private setGeoListener(className: string) {
+    const inputs = document.getElementsByClassName(className);
+    if (inputs.length) {
+      const currentInput = inputs[0] as HTMLInputElement;
+      const autocomplete = new google.maps.places.Autocomplete(currentInput);
+
+      autocomplete.setFields([
+        "address_components",
+        "name"
+      ]);
+
+      autocomplete.addListener('place_changed', () => {
+        const place = autocomplete.getPlace();
+        const currentAddress = this.getFormatedAddress(place);
+
+        currentInput.value = currentAddress;
+        const currentParamName = currentInput.getAttribute('ng-reflect-name');
+        for (const j in this.currentRule.source.params) {
+          if (currentParamName == this.currentRule.source.params[j].dataPoint) {
+            this.currentRule.source.params[j].value = currentAddress;
+            break;
+          }
+        }
+      });
+    }
+  }
+
+  private getFormatedAddress(place: any): string {
+    let locality = '';
+    let country = '';
+    for (const component of place.address_components) {
+      switch (component.types[0]) {
+        case 'locality':
+          locality = component.long_name;
+          break;
+
+        case 'country':
+          country = component.long_name;
+          break;
+      }
+    }
+
+    return (locality ? `${locality}, `: '') + country;
+  }
+
 }

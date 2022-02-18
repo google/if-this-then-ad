@@ -41,7 +41,14 @@
         <h2>Set Source Parameters</h2>
         <mat-form-field class="form-element" *ngFor="let param of currentRule.source.params">
             <mat-label>{{ param.name }}</mat-label>
-            <input matInput name="{{ param.dataPoint }}" type="text" [(ngModel)]="param.value" required>
+            <input
+                matInput
+                name="{{ param.dataPoint }}"
+                type="text"
+                [(ngModel)]="param.value"
+                required
+                class="{{ param.geo ? geoSearchHtmlClassName : '' }}"
+            />
         </mat-form-field>
     </form>
 
