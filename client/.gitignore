@@ -1,7 +1,9 @@
 # See http://help.github.com/ignore-files/ for more about ignoring files.
 
-#local env variable declaration
-.env 
+#local env variable declaration and api keys
+.env
+src/environments/secrets.ts
+
 # compiled output
 /dist
 /tmp
