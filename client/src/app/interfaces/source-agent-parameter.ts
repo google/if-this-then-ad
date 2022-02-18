@@ -3,4 +3,5 @@ export interface SourceAgentParameter {
   name: string,
   type: string,
   value?: string|number,
+  geo?: boolean,
 };
