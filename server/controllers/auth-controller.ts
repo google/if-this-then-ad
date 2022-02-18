@@ -13,10 +13,12 @@
 
 import { Request, Response } from 'express';
 import { log } from '@iftta/util';
+import { refreshToken } from '@iftta/job-runner';
 
 export const login = (req: Request, res: Response) => {
     // Store origin URL
     req.session['returnTo'] = req.query.returnTo;
+    req.session['clientUrl'] = req.query.clientUrl;
 
     // Redirect to authentication
     res.redirect('/api/auth/google');
@@ -25,12 +27,28 @@ export const login = (req: Request, res: Response) => {
 export const authDone = (req: Request, res: Response) => {
     const returnTo = req.session['returnTo'] || '';
     const user = JSON.stringify(req.user) || '';
-    const redirectUrl = process.env.NODE_ENV === 'development' ? 'https://localhost:4200' : ''
+    const clientUrl = req.session['clientUrl'];
 
-    res.redirect(`${redirectUrl}/logged-in?returnTo=${returnTo}&user=${encodeURIComponent(user)}`);
+    res.redirect(`${clientUrl}/logged-in?returnTo=${returnTo}&user=${encodeURIComponent(user)}`);
 };
 
 export const logout = (req: Request, res: Response) => {
     req.logOut();
     res.redirect('/');
+};
+
+/**
+ * Reissues access token based on userId and old expired token.
+ * @param req
+ * @param res
+ */
+export const renewToken = async (req: Request, res: Response) => {
+    const userId = req.body.userId;
+    const oldToken = req.body.token;
+
+    if (userId && oldToken) {
+        const freshToken = await refreshToken(userId, oldToken);
+        return res.json(freshToken);
+    }
+    return res.status(400).send('Malformed request');
 };

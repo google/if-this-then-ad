@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { environment } from 'src/environments/environment';
 
@@ -14,7 +14,7 @@ export class AuthService {
   currentUser: User|null;
   userWatch: BehaviorSubject<User|null> = new BehaviorSubject<User|null>(null);
 
-  constructor(private route: ActivatedRoute) {
+  constructor(private route: ActivatedRoute, private router: Router) {
     // Get user from localStorage
     if (localStorage.getItem('user')) {
       this.user = new User().deserialize(JSON.parse(localStorage.getItem('user')!));
@@ -28,7 +28,7 @@ export class AuthService {
     this.route.queryParamMap.subscribe((params) => {
       const returnTo = params.get('returnTo') || '';
 
-      window.location.href = `${environment.apiUrl}/auth/login?returnTo=${returnTo}`;
+      window.location.href = `${environment.apiUrl}/auth/login?returnTo=${returnTo}&clientUrl=${this.router['location']._platformLocation.location.origin}`;
     });
   }
 
