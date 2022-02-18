@@ -25,7 +25,7 @@ export const login = (req: Request, res: Response) => {
 export const authDone = (req: Request, res: Response) => {
     const returnTo = req.session['returnTo'] || '';
     const user = JSON.stringify(req.user) || '';
-    const redirectUrl = process.env.NODE_ENV === 'development' ? 'https://localhost:4200' : ''
+    const redirectUrl = `https://${req.hostname}:4200`;
 
     res.redirect(`${redirectUrl}/logged-in?returnTo=${returnTo}&user=${encodeURIComponent(user)}`);
 };
