@@ -91,8 +91,13 @@ class GoogleStrategy {
                 // check if the user exists in db
                 const userResults = await userRepo.getBy('profileId', profile.id);
 
+                // ensure user has database ID before passing on
                 if (userResults.length == 0) {
-                    await userRepo.save(userData);
+                    userData.id = await userRepo.save(userData);
+                } else {
+                    const existingUser = userResults[0]; // there should only be one
+                    delete existingUser.token.refresh;
+                    return done(null, existingUser, true);
                 }
 
                 // delete tokens otherwise they will be put into user session
@@ -100,9 +105,6 @@ class GoogleStrategy {
                 return done(null, userData, true);
             },
         );
-        //TODO: we ask for all scopes here,
-        // we should perhaps add scopes when user decide to use a specific agent requiring
-        // extra scopes to be added.
 
         _passport.use(googleStrategy);
     }

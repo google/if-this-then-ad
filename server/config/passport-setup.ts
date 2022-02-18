@@ -58,7 +58,7 @@ class PassportSetup {
         if (req.isAuthenticated()) {
             return next();
         }
-        log.info('request not be authenticated, please login');
+        log.info('request not authenticated, please login');
         return res.redirect('/api/auth/login');
     }
 
