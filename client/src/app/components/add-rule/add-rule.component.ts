@@ -78,6 +78,13 @@ export class AddRuleComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // Watch name form changes
+    this.nameForm.form.valueChanges.subscribe(val => {
+      const valid = !!this.nameForm.valid;
+
+      store.saveRequirements.next({...store.saveRequirements.value, ...{ name: valid }});
+    });
+
     // Watch source form changes
     this.sourceForm.form.valueChanges.subscribe(val => {
       const valid = !!this.sourceForm.valid;

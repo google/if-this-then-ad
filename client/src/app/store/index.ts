@@ -2,6 +2,7 @@ import { BehaviorSubject, Subject } from 'rxjs';
 import { TargetAgent } from '../interfaces/target-agent';
 
 interface SaveRequirements {
+  name: boolean,
   source: boolean,
   params: true,
   condition: boolean,
@@ -10,6 +11,7 @@ interface SaveRequirements {
 }
 
 const saveRequirements: SaveRequirements = {
+  name: false,
   source: false,
   params: true,
   condition: false,
