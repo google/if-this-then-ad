@@ -1,10 +1,10 @@
 import { SelectionModel } from '@angular/cdk/collections';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { Component } from '@angular/core';
-import { TargetAgent } from '../interfaces/target-agent';
+import { TargetAgent } from 'src/app/interfaces/target-agent';
 
-import { DynamicDataSource, DynamicDatabase, EntityNode } from '../models/dynamic-data-source.model';
-import { store } from '../store';
+import { DynamicDataSource, DynamicDatabase, EntityNode } from 'src/app/models/dynamic-data-source.model';
+import { store } from 'src/app/store';
 
 /**
  * @title Tree with dynamic data

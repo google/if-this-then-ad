@@ -4,9 +4,9 @@ import { MatTableDataSource } from '@angular/material/table';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { map } from 'rxjs/operators';
-import { Rule } from '../models/rule.model';
+import { Rule } from 'src/app/models/rule.model';
 
-import { store } from '../store';
+import { store } from 'src/app/store';
 
 @Component({
   selector: 'app-rules',
