@@ -47,6 +47,7 @@ export class AddRuleComponent implements OnInit {
   };
 
   geoSearchHtmlClassName = 'geosearch';
+  googleMapsKey = '';
 
   @ViewChild('source', { static: true }) sourceForm: NgForm;
   @ViewChild('condition', { static: true }) conditionForm: NgForm;
@@ -176,8 +177,20 @@ export class AddRuleComponent implements OnInit {
     this.currentRule = new Rule();
   }
 
-  private initGeoSearch() {
-    const url = environment.GOOGLE_MAPS_AUTOCOMPLETE_URL + environment.GOOGLE_MAPS_API_KEY;
+  private async getApiKey() {
+    if (!this.googleMapsKey) { 
+      const url = environment.apiUrl + '/get-api-key/GOOGLE_MAPS_API_KEY';
+      const result = await this.http.get<{key: string}>(url).toPromise();
+      if (result) {
+        this.googleMapsKey = result.key;
+      }
+    }
+
+    return this.googleMapsKey;
+  }
+
+  private async initGeoSearch() {
+    const url = environment.GOOGLE_MAPS_AUTOCOMPLETE_URL + await this.getApiKey();
     getScript(url, () => {
       this.setGeoListener(this.geoSearchHtmlClassName);
     });
@@ -227,5 +240,4 @@ export class AddRuleComponent implements OnInit {
 
     return (locality ? `${locality}, `: '') + country;
   }
-
 }

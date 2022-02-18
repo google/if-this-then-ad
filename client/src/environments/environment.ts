@@ -14,10 +14,10 @@
 // This file can be replaced during build by using the `fileReplacements` array.
 // `ng build` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
-import {secrets} from './secrets';
+import {sharedSettings} from './shared-settings'
 
 export const environment = {
-  ...secrets,
+  ...sharedSettings,
   production: false,
   apiUrl: 'http://localhost:8080/api',
 };

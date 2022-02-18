@@ -18,6 +18,7 @@ import * as AccountController from '../controllers/account-controller';
 import * as AgentsController from '../controllers/agents-controller';
 import * as RulesController from '../controllers/rules-controller';
 import * as JobController from '../controllers/jobs-controller';
+import * as ApiKeysController from '../controllers/api-key-controller';
 
 import someController from '../controllers/some';
 import pass from '../config/passport-setup';
@@ -82,6 +83,13 @@ router.get(
     //pass.isAuthenticated,
     AgentsController.getAgentEntityList,
 );
+
+router.get(
+    '/api/get-api-key/:name',
+    //pass.isAuthenticated,
+    ApiKeysController.getKey,
+);
+
 
 // router.post('/api/agent-results', PubSubController.messageHandler);
 
