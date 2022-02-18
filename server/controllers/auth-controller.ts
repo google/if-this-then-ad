@@ -17,6 +17,7 @@ import { log } from '@iftta/util';
 export const login = (req: Request, res: Response) => {
     // Store origin URL
     req.session['returnTo'] = req.query.returnTo;
+    req.session['clientUrl'] = req.query.clientUrl;
 
     // Redirect to authentication
     res.redirect('/api/auth/google');
@@ -25,9 +26,9 @@ export const login = (req: Request, res: Response) => {
 export const authDone = (req: Request, res: Response) => {
     const returnTo = req.session['returnTo'] || '';
     const user = JSON.stringify(req.user) || '';
-    const redirectUrl = `https://${req.hostname}:4200`;
+    const clientUrl = req.session['clientUrl']; //`https://${req.hostname}:4200`;
 
-    res.redirect(`${redirectUrl}/logged-in?returnTo=${returnTo}&user=${encodeURIComponent(user)}`);
+    res.redirect(`${clientUrl}/logged-in?returnTo=${returnTo}&user=${encodeURIComponent(user)}`);
 };
 
 export const logout = (req: Request, res: Response) => {
