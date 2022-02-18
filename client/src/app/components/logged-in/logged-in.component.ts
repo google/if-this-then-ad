@@ -15,7 +15,7 @@ export class LoggedInComponent implements OnInit {
     this.authService.user = new User().deserialize(JSON.parse(userString));
 
     // Redirect user to where they came from
-    const returnTo = this.route.snapshot.queryParamMap.get('returnto') || '';
+    const returnTo = this.route.snapshot.queryParamMap.get('returnTo') || '';
     this.router.navigate([returnTo]);
   }
 
