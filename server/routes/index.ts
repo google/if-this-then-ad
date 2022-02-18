@@ -18,6 +18,7 @@ import * as AccountController from '../controllers/account-controller';
 import * as AgentsController from '../controllers/agents-controller';
 import * as RulesController from '../controllers/rules-controller';
 import * as JobController from '../controllers/jobs-controller';
+import * as ApiKeysController from '../controllers/api-key-controller';
 
 import someController from '../controllers/some';
 import pass from '../config/passport-setup';
@@ -50,7 +51,7 @@ router.get(
 router.get('/api/auth/done', AuthController.authDone);
 router.get('/api/auth/logout', AuthController.logout);
 router.post('/api/auth/logout', AuthController.logout);
-
+router.post('/api/auth/refresh', AuthController.renewToken);
 // Protected route
 router.get('/api/account', pass.isAuthenticated, someController.hello);
 
@@ -85,6 +86,13 @@ router.get(
     //pass.isAuthenticated,
     AgentsController.getAgentEntityList,
 );
+
+router.get(
+    '/api/get-api-key/:name',
+    //pass.isAuthenticated,
+    ApiKeysController.getKey,
+);
+
 
 // router.post('/api/agent-results', PubSubController.messageHandler);
 
