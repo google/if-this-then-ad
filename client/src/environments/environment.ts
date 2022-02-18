@@ -17,7 +17,7 @@
 
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:8080/api',
+  apiUrl: 'https://8080-cs-148658956520-default.cs-us-central1-brqy.cloudshell.dev/api',
 };
 
 /*

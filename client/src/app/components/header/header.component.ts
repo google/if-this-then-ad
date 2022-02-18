@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { AuthService } from 'src/app/services/auth.service';
+import { DataService } from 'src/app/services/data.service';
 
 @Component({
   selector: 'app-header',
@@ -11,11 +12,12 @@ import { AuthService } from 'src/app/services/auth.service';
 export class HeaderComponent implements OnInit {
   avatarUrl: string = '';
 
-  constructor(public authService: AuthService, private router: Router) {
+  constructor(public authService: AuthService, private router: Router, private dataService: DataService) {
     // Get user's profile picture
     this.authService.userWatch.subscribe(user => {
       this.avatarUrl = user ? user.profilePhoto : '';
-    })
+    }); 
+    this.dataService.getUsers(); 
   }
 
   ngOnInit(): void {}
