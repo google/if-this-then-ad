@@ -13,13 +13,31 @@
 
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { AddRuleComponent } from './add-rule/add-rule.component';
+import { AddRuleComponent } from 'src/app/components/add-rule/add-rule.component';
+import { LoginComponent } from 'src/app/components/login/login.component';
+import { LoggedInComponent } from 'src/app/components/logged-in/logged-in.component';
+
+import { AuthGuard } from "./services/auth.guard";
 
 const routes: Routes = [
   {
     path: '',
     component: AddRuleComponent,
+    canActivate: [AuthGuard],
   },
+  {
+    path: 'login',
+    component: LoginComponent,
+  },
+  {
+    path: 'logged-in',
+    component: LoggedInComponent,
+  },
+  {
+    path: 'test',
+    component: AddRuleComponent,
+    canActivate: [AuthGuard],
+  }
 ];
 
 @NgModule({

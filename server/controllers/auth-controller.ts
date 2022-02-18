@@ -12,16 +12,23 @@
  */
 
 import { Request, Response } from 'express';
-import passport from 'passport';
-
 import { log } from '@iftta/util';
 
-export const showLogin = (req: Request, res: Response) => {
-    res.send('<a href="/api/auth/google" class="button">Sign in with Google</a>');
+export const login = (req: Request, res: Response) => {
+    // Store origin URL
+    req.session['returnTo'] = req.query.returnTo;
+    req.session['clientUrl'] = req.query.clientUrl;
+
+    // Redirect to authentication
+    res.redirect('/api/auth/google');
 };
 
 export const authDone = (req: Request, res: Response) => {
-    res.send('Login successful');
+    const returnTo = req.session['returnTo'] || '';
+    const user = JSON.stringify(req.user) || '';
+    const clientUrl = req.session['clientUrl'];
+
+    res.redirect(`${clientUrl}/logged-in?returnTo=${returnTo}&user=${encodeURIComponent(user)}`);
 };
 
 export const logout = (req: Request, res: Response) => {

@@ -1,0 +1,26 @@
+<mat-toolbar class="header" color="primary">
+  <!-- Sidebar button -->
+  <button mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon">
+    <mat-icon>menu</mat-icon>
+  </button>
+  <span>If This Then Ad</span>
+
+  <!-- Middle Spacer -->
+  <span class="spacer"></span>
+
+  <!-- Header buttons -->
+  <button class="avatar-wrapper" *ngIf="authService.isLoggedIn" mat-icon-button mat-button [matMenuTriggerFor]="userMenu" aria-label="Example icon-button with share icon">
+    <!-- User profile picture -->
+    <div *ngIf="avatarUrl; else defaultAvatar" class="avatar" [style.backgroundImage]="'url(' + avatarUrl + ')'"></div>
+
+    <!-- Default avatar icon -->
+    <ng-template #defaultAvatar>
+      <mat-icon>account_circle</mat-icon>
+    </ng-template>
+  </button>
+
+  <!-- User menu -->
+  <mat-menu #userMenu="matMenu" xPosition="before">
+    <button mat-menu-item (click)="logout()">Logout</button>
+  </mat-menu>
+</mat-toolbar>
