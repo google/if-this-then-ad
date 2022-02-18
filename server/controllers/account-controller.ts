@@ -23,14 +23,13 @@ const userRepo = new Repository<User>(usersCollection);
 //TODO: add exception handling
 //      input data validation
 export const listAccounts = async (req: Request, res: Response) => {
-    log.debug(req.query);
-    if (req.query.fieldName != '' && req.query.fieldValue != '') {
-        return getBy(req, res);
+    try {
+        const userData = await userRepo.list();
+        return res.json(userData);
+    } catch (e) {
+        log.debug(e);
+        return res.status(500).send('Failed to fetch account list');
     }
-
-    const userData = await userRepo.list();
-
-    return res.json(userData);
 };
 
 export const create = async (req: Request, res: Response) => {

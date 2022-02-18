@@ -11,7 +11,7 @@
     limitations under the License.
  */
 
-import { Request, Response, Router } from 'express';
+import express, { Request, Response, Router } from 'express';
 import { AuthenticateOptionsGoogle } from 'passport-google-oauth20';
 import * as AuthController from '../controllers/auth-controller';
 import * as AccountController from '../controllers/account-controller';
@@ -23,6 +23,7 @@ import * as ApiKeysController from '../controllers/api-key-controller';
 import someController from '../controllers/some';
 import pass from '../config/passport-setup';
 import passport from 'passport';
+import path from 'path';
 
 // eslint-disable-next-line new-cap
 const router = Router();
@@ -37,7 +38,7 @@ const options: AuthenticateOptionsGoogle = {
     prompt: 'consent',
 };
 
-router.get('/api/auth/login', AuthController.showLogin);
+router.get('/api/auth/login', AuthController.login);
 router.get('/api/auth/google', passport.authenticate('google', options));
 router.get(
     '/api/auth/oauthcallback',
@@ -50,6 +51,7 @@ router.get(
 router.get('/api/auth/done', AuthController.authDone);
 router.get('/api/auth/logout', AuthController.logout);
 router.post('/api/auth/logout', AuthController.logout);
+router.post('/api/auth/refresh', AuthController.renewToken);
 // Protected route
 router.get('/api/account', pass.isAuthenticated, someController.hello);
 
@@ -78,6 +80,7 @@ router.get(
     //pass.isAuthenticated,
     AgentsController.getAgentsMetadata,
 );
+
 router.get(
     '/api/agents/:agent/list/:entityType',
     //pass.isAuthenticated,
@@ -93,10 +96,11 @@ router.get(
 
 // router.post('/api/agent-results', PubSubController.messageHandler);
 
-// Default '/' route
-router.get('/', (req: Request, res: Response) => {
-    const name = process.env.NAME || 'World';
-    res.send(`Hello ${name}! IFTTA`);
+// Serve static Angular build
+router.use('/', express.static('./public'));
+
+router.use('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../', 'public', 'index.html'));
 });
 
 export default router;

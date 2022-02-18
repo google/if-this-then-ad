@@ -3,3 +3,5 @@ node_modules/
 dist
 notes.txt
 .env
+public
+!public/.gitkeep

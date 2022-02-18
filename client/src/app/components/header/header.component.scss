@@ -19,3 +19,17 @@
 .spacer {
   flex: 1 1 auto;
 }
+
+.avatar-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.avatar {
+  height: 25px;
+  width: 25px;
+  border-radius: 25px;
+  background-size: 100%;
+  background-size: cover;
+}

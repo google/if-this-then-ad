@@ -17,11 +17,11 @@ import { environment } from 'src/environments/environment';
 import { map } from 'rxjs/operators';
 import { SourceAgent } from 'src/app/interfaces/source-agent';
 import { DataPoint } from 'src/app/interfaces/datapoint';
-import { Rule } from '../models/rule.model';
+import { Rule } from 'src/app/models/rule.model';
 
-import { store } from '../store';
+import { store } from 'src/app/store';
 import { NgForm } from '@angular/forms';
-import { SourceAgentParameter } from '../interfaces/source-agent-parameter';
+import { SourceAgentParameter } from 'src/app/interfaces/source-agent-parameter';
 
 import { get as getScript } from 'scriptjs';
 declare const google: any;
