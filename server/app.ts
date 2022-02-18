@@ -41,7 +41,7 @@ app.set('PORT', PORT);
  * Express configuration
  */
 
- // explicitely setting cors options
+// Explicitly setting CORS options
 app.use(
     cors({
         origin: true,
