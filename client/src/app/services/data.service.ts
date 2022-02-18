@@ -1,32 +1,63 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
+import { User } from '../models/user.model';
 
 @Injectable({
   providedIn: 'root'
 })
+
 export class DataService {
+  private httpOptions = {
+    headers: new HttpHeaders({
+      'Content-Type': 'application/json'
+    }),
+    observe: 'response' as const
+  }
 
   constructor(private http: HttpClient) {
 
   }
+  /**
+   * Refreshes accessToken on expiry
+   * @returns accessToken
+   */
+  async refreshToken() {
+
+    const rawUser = localStorage.getItem('user');
+    if (!rawUser) {
+      return;
+    }
+    const user = User.fromJSON(rawUser);
+    const accessToken = user.token.access;
+
+    const data = {
+      userId: user.profileId,
+      token: accessToken
+    }
+    this.http.post(ENDPOINT.REFRESH_TOKEN, data)
+        .subscribe(token => {
+          console.log(token); 
+        }); 
+  }
 
   async getUsers() {
 
-    const endpoint = `${environment.apiUrl}/test`;
-    const accessToken = 'Bearer ya29.A0ARrdaM9BzNHjouv78rOI3kHN0GTSVJUs0S-kRH1K_cnY3oWgEzotxUtPix33Ay_M-bs-6GizFpwpr4PfRAAG9MKlljEuOM-dtCP_s2Y8DR7jNhfH1fQOS9p4vMTNNdbB3q3Ls0VALVlcq5c6qndvaylWX3cBLxUhYzdW1HCSaFNaa4O3OhknTrN0xwqNJA0sgjRqUYOwtNtqi9s7KOExzKTBVq4xOrsD3Xdl';
+    this.http.get(ENDPOINT.USERS, this.httpOptions).subscribe(res => {
 
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Authorization': accessToken,
-        'Content-Type': 'application/json'
-      })
-    }
-
-    this.http.get(endpoint, httpOptions).subscribe(data => {
-      console.log('user data: ');
-      console.log(data);
-    }); 
+       // TODO: deal with 401
+    });
 
   }
 }
+
+const ENDPOINT = {
+  USERS: environment.apiUrl + '/accounts',
+  RULES: environment.apiUrl + '/rules',
+  JOBS: environment.apiUrl + '/jobs',
+  EXECUTE_JOBS: environment.apiUrl + '/jobs/execute',
+  REFRESH_TOKEN: environment.apiUrl + '/auth/refresh',
+  LOGOUT: environment.apiUrl + '/auth/logout',
+
+}
+
