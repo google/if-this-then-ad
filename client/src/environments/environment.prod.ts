@@ -10,8 +10,10 @@
     See the License for the specific language governing permissions and
     limitations under the License.
  */
+import {sharedSettings} from './shared-settings'
 
 export const environment = {
+  ...sharedSettings,
   production: true,
   apiUrl: 'https://iftta-rwinmjotea-ey.a.run.app/api',
 };
