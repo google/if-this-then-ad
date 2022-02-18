@@ -67,7 +67,7 @@
         <!-- Data Point -->
         <mat-form-field class="form-element">
             <mat-label>Type</mat-label>
-            <mat-select *ngIf="sourceDataPoints" name="rule-datapoint" required (selectionChange)="onDataPointChange($event.value)">
+            <mat-select *ngIf="sourceDataPoints" name="rule-datapoint" required [ngModel]="currentRule.condition" (selectionChange)="onDataPointChange($event.value)">
                 <mat-option *ngFor="let dataPoint of sourceDataPoints" [value]="dataPoint">
                     {{ dataPoint.name }}
                 </mat-option>
@@ -78,7 +78,7 @@
         <mat-form-field class="form-element">
             <mat-label>Comparator</mat-label>
             <ng-container [ngSwitch]="currentRule.condition.dataType">
-                <input *ngSwitchCase="'string'" matInput required name="rule-comparator" [(ngModel)]="currentRule.condition.comparator">
+                <input *ngSwitchCase="'string'" matInput name="rule-comparator" [(ngModel)]="currentRule.condition.comparator" required>
                 <mat-select *ngSwitchCase="'boolean'" name="rule-comparator" [(ngModel)]="currentRule.condition.comparator" required>
                     <mat-option value="yes">Yes</mat-option>
                     <mat-option value="no">No</mat-option>
