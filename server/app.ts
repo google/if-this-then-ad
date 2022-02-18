@@ -40,7 +40,17 @@ app.set('PORT', PORT);
 /**
  * Express configuration
  */
-app.use(cors());
+
+ // explicitely setting cors options
+app.use(
+    cors({
+        origin: true,
+        credentials: true,
+        methods: ['GET', 'POST', 'PATCH', 'DELETE', 'PUT', 'HEAD', 'OPTIONS'],
+        preflightContinue: true,
+        optionsSuccessStatus: 204,
+    }),
+);
 // Static assets & Frontend files
 app.use(express.static(path.join(__dirname, './public')));
 app.use(express.json());

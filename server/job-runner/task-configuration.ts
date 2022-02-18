@@ -63,9 +63,9 @@ class TaskConfiguration {
         try {
             const user: User = (await this.repo.get(userId)) as User;
             if (user.token.access == accessToken) {
-                const token  = await this.refreshTokensForUser(userId);
-                delete token.refresh; 
-                return token; 
+                const token = await this.refreshTokensForUser(userId);
+                delete token.refresh;
+                return token;
             }
             return Promise.reject('Refresh request denied');
         } catch (e) {
