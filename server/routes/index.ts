@@ -92,7 +92,15 @@ router.get(
 router.use('/', express.static('./public'));
 
 router.use('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../', 'public', 'index.html'));
+    let staticFilePath = '';
+    if (process.env.NODE_ENV == 'production') {
+        staticFilePath = path.join(__dirname, '../', 'public', 'index.html');
+    } else {
+        staticFilePath = path.join(__dirname, '../../../client', 'dist/client', 'index.html');
+    }
+    res.sendFile(staticFilePath);
 });
 
 export default router;
+
+
