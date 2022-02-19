@@ -10,5 +10,11 @@ export class User {
     Object.assign(this, input);
 
     return this;
-}
+  }
+
+  static fromJson(input: any): User {
+    return Object.assign(new User(), JSON.parse(input));
+  }
+
+
 }
