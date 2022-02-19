@@ -71,29 +71,37 @@ class OpenWeatherMap implements IAgent {
         };
     }
 
-    private transform(weatherData: AgentResponse): AgentResult {
+    private transform(weatherData: AgentResponse): AgentResult |undefined {
         const data = weatherData.data;
-        const code = data.weather[0]?.id;
+        log.info('Transforming weather data'); 
+        log.info(data);
+        try{
 
-        const weatherResult: AgentResult = {
-            agentId: this.agentId,
-            jobId: weatherData.jobId,
-            agentName: this.name,
-            jobOwner: weatherData.jobOwner,
-            data: {
-                targetLocation: data.name,
-                temperature: data.main.temp,
-                windSpeed: data.wind.speed,
-                thunderstorm: WeatherCodes.THUNDERSTORM.has(code),
-                snow: WeatherCodes.SNOW.has(code),
-                rain: WeatherCodes.RAIN.has(code) || WeatherCodes.DRIZZLE.has(code),
-                clouds: WeatherCodes.CLOUDS.has(code),
-                clearSky: WeatherCodes.CLEAR.has(code),
-            },
-            timestamp: new Date(),
-        };
-
-        return weatherResult;
+            const code = data.weather[0]?.id;
+    
+            const weatherResult: AgentResult = {
+                agentId: this.agentId,
+                jobId: weatherData.jobId,
+                agentName: this.name,
+                jobOwner: weatherData.jobOwner,
+                data: {
+                    targetLocation: data.name,
+                    temperature: data.main.temp,
+                    windSpeed: data.wind.speed,
+                    thunderstorm: WeatherCodes.THUNDERSTORM.has(code),
+                    snow: WeatherCodes.SNOW.has(code),
+                    rain: WeatherCodes.RAIN.has(code) || WeatherCodes.DRIZZLE.has(code),
+                    clouds: WeatherCodes.CLOUDS.has(code),
+                    clearSky: WeatherCodes.CLEAR.has(code),
+                },
+                timestamp: new Date(),
+            };
+            return weatherResult;
+        }catch(e){
+            log.error(e);
+            return;
+        }
+        
     }
 
     private getOptions(job: Job) {
@@ -124,7 +132,14 @@ class OpenWeatherMap implements IAgent {
         res.data.targetLocation = jobOptions.targetLocation;
         res.jobId = jobOptions.jobId as string;
 
-        return this.transform(res);
+    
+        const agentResult = this.transform(res);
+
+        if(agentResult !== undefined){
+            return Promise.resolve(agentResult);
+        }
+        const errorMessage = `Execution of Job ${job.id} failed, Agent ${job.agentId}, Query ${job.query}`;
+        return Promise.reject(errorMessage);
     }
 
     public static async getAgentMetadata(): Promise<AgentMetadata> {
