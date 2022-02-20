@@ -88,18 +88,25 @@ router.get(
 
 // router.post('/api/agent-results', PubSubController.messageHandler);
 
-// Serve static Angular build
-router.use('/', express.static('./public'));
+/**
+ * Depending on the env determine the location of static files. 
+ * @returns filePath
+ */
+ const getStaticFilePath = (): string => {
 
-router.use('*', (req, res) => {
-    let staticFilePath = '';
-    if (process.env.NODE_ENV == 'production') {
-        staticFilePath = path.join(__dirname, '../', 'public', 'index.html');
+    let filePath = ''
+
+    if (process.env.NODE_ENV == 'development') {
+        filePath = path.join(__dirname, '../../../client/dist/client');
     } else {
-        staticFilePath = path.join(__dirname, '../../../client', 'dist/client', 'index.html');
+        filePath = path.join(__dirname, '../', 'public');
     }
-    res.sendFile(staticFilePath);
-});
+
+    return filePath;
+}
+
+// Serve static Angular build environment dependent. 
+router.use('*', express.static(getStaticFilePath()));
 
 export default router;
 
