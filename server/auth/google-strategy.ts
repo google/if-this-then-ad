@@ -94,12 +94,12 @@ class GoogleStrategy {
                 if (userResults.length == 0) {
                     userData.id = await userRepo.save(userData);
                 } else {
-                    // return existing user from db 
+                    // return existing user from db
                     let existingUser = userResults[0]; //we are sure profileIds are unique
-                    // update access token and expiry time. 
+                    // update access token and expiry time.
                     existingUser.token.access = userData.token.access;
                     existingUser.token.expiry = date.add(Date.now(), { seconds: 3599 });
-                    await userRepo.update(existingUser.id!, existingUser); 
+                    await userRepo.update(existingUser.id!, existingUser);
                     delete existingUser.token.refresh;
                     return done(null, existingUser, true);
                 }

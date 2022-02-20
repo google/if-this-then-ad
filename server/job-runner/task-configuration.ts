@@ -60,10 +60,10 @@ class TaskConfiguration {
      * @param accessToken
      */
     public async reissueAuthTokenForUser(userId: string, accessToken: string): Promise<Token> {
-        if(!userId && !accessToken){
+        if (!userId && !accessToken) {
             return Promise.reject('Both userId and expired access Token are required for renewal');
         }
-        
+
         try {
             const user: User = (await this.repo.get(userId)) as User;
             if (user.token.access == accessToken) {

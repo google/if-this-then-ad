@@ -48,7 +48,8 @@ export const renewToken = (req: Request, res: Response) => {
     refreshToken(userId, oldToken)
         .then((newToken) => {
             res.json(newToken);
-        }).catch((reason) => {
-            res.status(400).json({status: 'error', message: reason});
+        })
+        .catch((reason) => {
+            res.status(400).json({ status: 'error', message: reason });
         });
 };

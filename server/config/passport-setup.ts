@@ -49,7 +49,7 @@ export const init = (app: Application): any => {
     GoogleStrategy.initialise(passport);
     log.info('Initialised  Passport with Google strategy');
     return app;
-}
+};
 
 /**
  * Checks if request is authenticated.
@@ -58,27 +58,46 @@ export const init = (app: Application): any => {
  * @param { NextFunction } next
  * @return {any}
  */
-export const isAuthenticated = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
-    const authorizationHeader = req.headers.authorization || ''
+export const isAuthenticated = (req: Request, res: Response, next: NextFunction): any => {
+    const authorizationHeader = req.headers.authorization || '';
     const accessToken = _extractAccessToken(authorizationHeader);
-    // Allowing clients to authenticate via authorization headers. 
-    // at the end check if the cookies are valid and let the request through. 
-    if (req.session['accessTokenIsValid']) {
+    // Allowing clients to authenticate via authorization headers.
+    // at the end check if the cookies are valid and let the request through.
+    log.debug(accessToken);
 
-        return next();
-    }
-    const tokenisValid = await _isValidAccessToken(accessToken || '');
-    req.session['accessTokenIsValid'] = tokenisValid;
-
-    if (tokenisValid) {
-        return next();
+    if (process.env.NODe_ENV == 'production') {
+        if (req.session['accessTokenIsValid']) {
+            log.debug('got token status from the session its good');
+            return next();
+        }
     }
 
-    if (req.isAuthenticated() || tokenisValid) {
+    _isValidAccessToken(accessToken || '')
+        .then((tokenResult) => {
+            log.debug('Validity of the submitted token ' + tokenResult);
+            req.session['accessTokenIsValid'] = tokenResult;
+            if (tokenResult) {
+                log.debug(`Token is valid ${tokenResult}`);
+                return next();
+            }
+            // res.sendStatus(401).send('Unauthorized')
+            log.debug('failed auth');
+        })
+        .catch((err) => {
+            log.debug(err);
+            return res.sendStatus(500);
+        })
+        .finally(() => {
+            log.debug('finally');
+            return res.sendStatus(401);
+        });
+
+    // finally check if user object
+    // was set as part of the cookie
+    if (req.isAuthenticated()) {
         return next();
     }
-    return res.sendStatus(401).send('Not authorized');
-}
+};
 
 /**
  * Checks if request is authorized.
@@ -91,7 +110,7 @@ export const isAuthorized = (req: Request, res: Response, next: NextFunction): a
     // TODO: check for existence of the token
     // otherwise redirect to /api/auth/google
     return true;
-}
+};
 
 /**
  * Extracts Access Token from authorization header
@@ -106,26 +125,23 @@ const _extractAccessToken = (authHeader: string): string | undefined => {
         return headerParts[1];
     }
     return undefined;
-}
+};
 
 /**
  * Checks validity of the token
- * @param {string} accessToken 
+ * @param {string} accessToken
  * @returns {boolean}
  */
 const _isValidAccessToken = async (accessToken: string): Promise<boolean> => {
-
     try {
         const result: User[] = await userRepo.getBy('token.access', accessToken);
         if (result.length > 0) {
-            // ensure that the token isnt expired. 
+            // ensure that the token isnt expired.
             const user: User = result[0];
             return date.isFuture(user.token.expiry);
         }
-
     } catch (err) {
         log.error(err);
     }
     return false;
-}
-
+};

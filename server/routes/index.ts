@@ -62,7 +62,7 @@ router.post('/api/accounts/:id', pass.isAuthenticated, AccountController.update)
 router.delete('/api/accounts/:id', pass.isAuthenticated, AccountController.remove);
 
 // Rules endpoints
-router.post('/api/rules',pass.isAuthenticated, RulesController.create);
+router.post('/api/rules', pass.isAuthenticated, RulesController.create);
 router.get('/api/rules', pass.isAuthenticated, RulesController.list);
 router.get('/api/rules/:id', pass.isAuthenticated, RulesController.get);
 router.get('/api/rules/user/:id', pass.isAuthenticated, RulesController.getByUser);
@@ -74,11 +74,7 @@ router.get('/api/jobs/execute', JobController.executeJobs);
 // TODO: Debug Endpoint
 router.get('/api/agents/dv360/fetch', someController.fetch);
 
-router.get(
-    '/api/agents/metadata',
-    pass.isAuthenticated,
-    AgentsController.getAgentsMetadata,
-);
+router.get('/api/agents/metadata', pass.isAuthenticated, AgentsController.getAgentsMetadata);
 
 router.get(
     '/api/agents/:agent/list/:entityType',
@@ -89,12 +85,11 @@ router.get(
 // router.post('/api/agent-results', PubSubController.messageHandler);
 
 /**
- * Depending on the env determine the location of static files. 
+ * Depending on the env determine the location of static files.
  * @returns filePath
  */
 const getStaticFilePath = (): string => {
-
-    let filePath = ''
+    let filePath = '';
 
     if (process.env.NODE_ENV == 'development') {
         filePath = path.join(__dirname, '../../../client/dist/client');
@@ -103,11 +98,9 @@ const getStaticFilePath = (): string => {
     }
 
     return filePath;
-}
+};
 
-// Serve static Angular build environment dependent. 
+// Serve static Angular build environment dependent.
 router.use('*', express.static(getStaticFilePath()));
 
 export default router;
-
-
