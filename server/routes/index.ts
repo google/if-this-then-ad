@@ -20,7 +20,7 @@ import * as RulesController from '../controllers/rules-controller';
 import * as JobController from '../controllers/jobs-controller';
 
 import someController from '../controllers/some';
-import pass from '../config/passport-setup';
+import * as pass from '../config/passport-setup';
 import passport from 'passport';
 import path from 'path';
 

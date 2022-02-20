@@ -19,7 +19,7 @@ import path from 'path';
 import router from './routes';
 import bodyParser from 'body-parser';
 import env from 'dotenv';
-import PassportSetup from './config/passport-setup';
+import * as PassportSetup from './config/passport-setup';
 import { log } from '@iftta/util';
 const { Firestore } = require('@google-cloud/firestore');
 const { FirestoreStore } = require('@google-cloud/connect-firestore');
@@ -61,7 +61,8 @@ app.use(express.urlencoded({ extended: true }));
 
 // Cookie settings
 let now = new Date().getTime();
-const interval = 3600 * 24 * 1000;
+// setting session time to match access Token TTL.
+const interval = 3600 * 1 * 1000;
 const cookieExpiresOn = new Date(now + interval);
 log.debug(`Cookie expires on : ${cookieExpiresOn}`);
 
