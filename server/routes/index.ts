@@ -55,18 +55,18 @@ router.post('/api/auth/refresh', AuthController.renewToken);
 router.get('/api/account', pass.isAuthenticated, someController.hello);
 
 // Account routes
-router.get('/api/accounts', AccountController.listAccounts);
-router.get('/api/accounts/:id', AccountController.get);
-router.post('/api/accounts', AccountController.create);
-router.post('/api/accounts/:id', AccountController.update);
-router.delete('/api/accounts/:id', AccountController.remove);
+router.get('/api/accounts', pass.isAuthenticated, AccountController.listAccounts);
+router.get('/api/accounts/:id', pass.isAuthenticated, AccountController.get);
+router.post('/api/accounts', pass.isAuthenticated, AccountController.create);
+router.post('/api/accounts/:id', pass.isAuthenticated, AccountController.update);
+router.delete('/api/accounts/:id', pass.isAuthenticated, AccountController.remove);
 
 // Rules endpoints
-router.post('/api/rules', RulesController.create);
-router.get('/api/rules', RulesController.list);
-router.get('/api/rules/:id', RulesController.get);
-router.get('/api/rules/user/:id', RulesController.getByUser);
-router.delete('/api/rules/:userId/:id', RulesController.remove);
+router.post('/api/rules',pass.isAuthenticated, RulesController.create);
+router.get('/api/rules', pass.isAuthenticated, RulesController.list);
+router.get('/api/rules/:id', pass.isAuthenticated, RulesController.get);
+router.get('/api/rules/user/:id', pass.isAuthenticated, RulesController.getByUser);
+router.delete('/api/rules/:userId/:id', pass.isAuthenticated, RulesController.remove);
 
 // Job runner trigger endpoint
 router.get('/api/jobs/execute', JobController.executeJobs);
@@ -76,7 +76,7 @@ router.get('/api/agents/dv360/fetch', someController.fetch);
 
 router.get(
     '/api/agents/metadata',
-    //pass.isAuthenticated,
+    pass.isAuthenticated,
     AgentsController.getAgentsMetadata,
 );
 
@@ -92,7 +92,7 @@ router.get(
  * Depending on the env determine the location of static files. 
  * @returns filePath
  */
- const getStaticFilePath = (): string => {
+const getStaticFilePath = (): string => {
 
     let filePath = ''
 
