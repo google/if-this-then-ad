@@ -69,8 +69,8 @@ export const isAuthenticated = async (req: Request, res: Response, next: NextFun
     }
     const tokenisValid = await _isValidAccessToken(accessToken || '');
     req.session['accessTokenIsValid'] = tokenisValid;
-    
-    if(tokenisValid){
+
+    if (tokenisValid) {
         return next();
     }
 
