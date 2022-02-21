@@ -92,7 +92,12 @@ class GoogleStrategy {
                 const userResults = await userRepo.getBy('profileId', profile.id);
 
                 if (userResults.length == 0) {
-                    await userRepo.save(userData);
+                    userData.id =  await userRepo.save(userData);
+                }else{
+                    // return existing user from db 
+                    const existingUser = userResults[0]; //we are sure profileIds are unique
+                    delete existingUser.token.refresh; 
+                    return done(null, existingUser, true);
                 }
 
                 // delete tokens otherwise they will be put into user session
@@ -100,10 +105,7 @@ class GoogleStrategy {
                 return done(null, userData, true);
             },
         );
-        //TODO: we ask for all scopes here,
-        // we should perhaps add scopes when user decide to use a specific agent requiring
-        // extra scopes to be added.
-
+       
         _passport.use(googleStrategy);
     }
 }
