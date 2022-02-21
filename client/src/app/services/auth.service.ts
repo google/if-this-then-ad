@@ -4,20 +4,20 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { environment } from 'src/environments/environment';
 
 import { User } from 'src/app/models/user.model';
-import { BehaviorSubject, Subject } from 'rxjs';
-
+import { BehaviorSubject } from 'rxjs';
+import { Token } from "../interfaces/token";
 @Injectable({
   providedIn: 'root'
 })
 
 export class AuthService {
-  currentUser: User|null;
-  userWatch: BehaviorSubject<User|null> = new BehaviorSubject<User|null>(null);
+  currentUser: User | null;
+  userWatch: BehaviorSubject<User | null> = new BehaviorSubject<User | null>(null);
 
   constructor(private route: ActivatedRoute, private router: Router) {
     // Get user from localStorage
     if (localStorage.getItem('user')) {
-      this.user = new User().deserialize(JSON.parse(localStorage.getItem('user')!));
+      this.currentUser = User.fromJSON(localStorage.getItem('user'));
     }
   }
 
@@ -70,5 +70,20 @@ export class AuthService {
   logout() {
     localStorage.removeItem('user');
     this.currentUser = null;
+  }
+  /**
+   * Gets Access token for a user
+   */
+  get accessToken() {
+    return this.currentUser?.token.access ?? '';
+  }
+
+  /**
+   * Set new user token
+   * @param {Token} userToken 
+   */
+  updateToken(userToken: Token) {
+    this.currentUser!.token = userToken;
+    this.user = this.currentUser;
   }
 }
