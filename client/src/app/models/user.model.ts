@@ -13,7 +13,7 @@ export class User {
     return this;
   }
 
-  static fromJson(input: any): User {
+  static fromJSON(input: any): User {
     return Object.assign(new User(), JSON.parse(input));
   }
 
