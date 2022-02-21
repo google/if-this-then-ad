@@ -21,9 +21,8 @@ describe('LoggedInComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ LoggedInComponent ]
-    })
-    .compileComponents();
+      declarations: [LoggedInComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

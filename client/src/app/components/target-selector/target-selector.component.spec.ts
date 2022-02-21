@@ -21,9 +21,8 @@ describe('TargetSelectorDebugComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ TargetSelectorComponent ]
-    })
-    .compileComponents();
+      declarations: [TargetSelectorComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {
