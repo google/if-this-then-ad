@@ -12,24 +12,26 @@
  */
 
 .wrapper {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .form-element {
-    margin-left: 10px;
+  margin-left: 10px;
 }
 
 .rules {
-    width: 100%;
+  width: 100%;
 }
 
 form {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
-[hidden] { display: none !important;}
+[hidden] {
+  display: none !important;
+}
