@@ -17,7 +17,7 @@ import { AddRuleComponent } from 'src/app/components/add-rule/add-rule.component
 import { LoginComponent } from 'src/app/components/login/login.component';
 import { LoggedInComponent } from 'src/app/components/logged-in/logged-in.component';
 
-import { AuthGuard } from "./services/auth.guard";
+import { AuthGuard } from './services/auth.guard';
 
 const routes: Routes = [
   {
@@ -37,11 +37,12 @@ const routes: Routes = [
     path: 'test',
     component: AddRuleComponent,
     canActivate: [AuthGuard],
-  }
+  },
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class AppRoutingModule { }
+// eslint-disable-next-line require-jsdoc
+export class AppRoutingModule {}

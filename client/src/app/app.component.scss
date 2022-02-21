@@ -11,26 +11,25 @@
     limitations under the License.
  */
 
-
 .wrapper {
-    padding-bottom: 2rem;
-    height: 100%;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
+  padding-bottom: 2rem;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .main {
-    margin-top: 64px;
-    padding-bottom: 2rem;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    flex: 1;
+  margin-top: 64px;
+  padding-bottom: 2rem;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
 }
 
 .content {
-    padding-top: 1rem;
-    flex: 1;
+  padding-top: 1rem;
+  flex: 1;
 }

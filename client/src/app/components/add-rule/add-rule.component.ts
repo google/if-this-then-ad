@@ -26,9 +26,12 @@ import { SourceAgentParameter } from 'src/app/interfaces/source-agent-parameter'
 @Component({
   selector: 'app-add-rule',
   templateUrl: './add-rule.component.html',
-  styleUrls: ['./add-rule.component.scss']
+  styleUrls: ['./add-rule.component.scss'],
 })
 
+/**
+ * Add rule component.
+ */
 export class AddRuleComponent implements OnInit {
   sources: SourceAgent[] = [];
   sourceDataPoints: DataPoint[] = [];
@@ -46,49 +49,70 @@ export class AddRuleComponent implements OnInit {
   @ViewChild('name', { static: true }) nameForm: NgForm;
   @ViewChild('source', { static: true }) sourceForm: NgForm;
   @ViewChild('condition', { static: true }) conditionForm: NgForm;
-  @ViewChild('executionInterval', { static: true }) executionIntervalForm: NgForm;
+  @ViewChild('executionInterval', { static: true })
+  executionIntervalForm: NgForm;
 
+  /**
+   * Constructor.
+   *
+   * @param {HttpClient} http
+   */
   constructor(private http: HttpClient) {
     // Watch save requirements
-    store.saveRequirements.subscribe(val => {
-      this.saveEnabled = Object.values(store.saveRequirements.value).every(x => x);
+    store.saveRequirements.subscribe((val) => {
+      this.saveEnabled = Object.values(store.saveRequirements.value).every(
+        (x) => x
+      );
     });
 
     // Watch targets update
-    store.targets.subscribe(targets => {
+    store.targets.subscribe((targets) => {
       this.currentRule.targets = targets;
     });
 
     this.loadSourceAgents();
   }
 
+  // eslint-disable-next-line require-jsdoc
   ngOnInit(): void {
     // Watch name form changes
-    this.nameForm.form.valueChanges.subscribe(val => {
+    this.nameForm.form.valueChanges.subscribe((val) => {
       const valid = !!this.nameForm.valid;
 
-      store.saveRequirements.next({...store.saveRequirements.value, ...{ name: valid }});
+      store.saveRequirements.next({
+        ...store.saveRequirements.value,
+        ...{ name: valid },
+      });
     });
 
     // Watch source form changes
-    this.sourceForm.form.valueChanges.subscribe(val => {
+    this.sourceForm.form.valueChanges.subscribe((val) => {
       const valid = !!this.sourceForm.valid;
 
-      store.saveRequirements.next({...store.saveRequirements.value, ...{ source: valid }});
+      store.saveRequirements.next({
+        ...store.saveRequirements.value,
+        ...{ source: valid },
+      });
     });
 
     // Watch executionInterval form changes
-    this.executionIntervalForm.form.valueChanges.subscribe(val => {
+    this.executionIntervalForm.form.valueChanges.subscribe((val) => {
       const valid = !!this.executionIntervalForm.valid;
 
-      store.saveRequirements.next({...store.saveRequirements.value, ...{ executionInterval: valid }});
+      store.saveRequirements.next({
+        ...store.saveRequirements.value,
+        ...{ executionInterval: valid },
+      });
     });
 
     // Watch condition form changes
-    this.conditionForm.form.valueChanges.subscribe(val => {
+    this.conditionForm.form.valueChanges.subscribe((val) => {
       const valid = !!this.conditionForm.valid;
 
-      store.saveRequirements.next({...store.saveRequirements.value, ...{ condition: valid }});
+      store.saveRequirements.next({
+        ...store.saveRequirements.value,
+        ...{ condition: valid },
+      });
     });
   }
 
@@ -99,18 +123,19 @@ export class AddRuleComponent implements OnInit {
    * @returns {SourceAgent | undefined}
    */
   getSourceAgent(id: string): SourceAgent | undefined {
-    return this.sources.find(source => source.id === id);
+    return this.sources.find((source) => source.id === id);
   }
 
   /**
    * Fetch all source agents from API.
    */
-   loadSourceAgents() {
-    this.http.get<Array<SourceAgent>>(`${environment.apiUrl}/agents/metadata`)
-    .pipe(map((res: Array<SourceAgent>) => res))
-    .subscribe(result => {
-      this.sources = result.filter(agent => agent.type === 'source-agent');
-    });
+  loadSourceAgents() {
+    this.http
+      .get<Array<SourceAgent>>(`${environment.apiUrl}/agents/metadata`)
+      .pipe(map((res: Array<SourceAgent>) => res))
+      .subscribe((result) => {
+        this.sources = result.filter((agent) => agent.type === 'source-agent');
+      });
   }
 
   /**
@@ -153,11 +178,12 @@ export class AddRuleComponent implements OnInit {
     // TODO: remove this!
     this.currentRule.owner = 'YrqYQc15jFYutbMdZNss';
 
-    this.http.post(`${environment.apiUrl}/rules`, this.currentRule)
-    .subscribe(result => {
-      // Inform the rules component about the new rule
-      store.ruleAdded.next(true);
-    });
+    this.http
+      .post(`${environment.apiUrl}/rules`, this.currentRule)
+      .subscribe((result) => {
+        // Inform the rules component about the new rule
+        store.ruleAdded.next(true);
+      });
 
     // Reset rule
     this.currentRule = new Rule();

@@ -1,19 +1,40 @@
+/**
+    Copyright 2022 Google LLC
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+        https://www.apache.org/licenses/LICENSE-2.0
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+ */
+
 import { SelectionModel } from '@angular/cdk/collections';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { Component } from '@angular/core';
 import { TargetAgent } from 'src/app/interfaces/target-agent';
 
-import { DynamicDataSource, DynamicDatabase, EntityNode } from 'src/app/models/dynamic-data-source.model';
+import {
+  DynamicDataSource,
+  DynamicDatabase,
+  EntityNode,
+} from 'src/app/models/dynamic-data-source.model';
 import { store } from 'src/app/store';
 
 /**
  * @title Tree with dynamic data
  */
- @Component({
+@Component({
   selector: 'app-target-selector',
   templateUrl: './target-selector.component.html',
-  styleUrls: ['./target-selector.component.scss']
+  styleUrls: ['./target-selector.component.scss'],
 })
+
+/**
+ * Target Selector component.
+ */
 export class TargetSelectorComponent {
   treeControl: FlatTreeControl<EntityNode>;
   dataSource: DynamicDataSource;
@@ -22,22 +43,30 @@ export class TargetSelectorComponent {
   // The selection for checklist
   checklistSelection = new SelectionModel<EntityNode>(true /* multiple */);
 
+  /**
+   * Constructor.
+   *
+   * @param {DynamicDatabase} database
+   */
   constructor(private database: DynamicDatabase) {
-    this.treeControl = new FlatTreeControl<EntityNode>(this.getLevel, this.isExpandable);
+    this.treeControl = new FlatTreeControl<EntityNode>(
+      this.getLevel,
+      this.isExpandable
+    );
     this.dataSource = new DynamicDataSource(this.treeControl, database);
 
     // Initialize data source
     this.init();
 
-    store.ruleAdded.subscribe(added => {
+    store.ruleAdded.subscribe((added) => {
       this.init();
-    })
+    });
   }
 
   /**
    * Initialize data source.
    */
-  init():void {
+  init(): void {
     this.dataSource.data = this.database.initialData();
   }
 
@@ -65,7 +94,7 @@ export class TargetSelectorComponent {
    * Check if node has children.
    *
    * @param {number} _
-   * @param {EntityNode} _nodeData 
+   * @param {EntityNode} _nodeData
    * @returns {boolean}
    */
   hasChild(_: number, _nodeData: EntityNode): boolean {
@@ -83,7 +112,7 @@ export class TargetSelectorComponent {
 
     const descAllSelected =
       descendants.length > 0 &&
-      descendants.every(child => {
+      descendants.every((child) => {
         return this.checklistSelection.isSelected(child);
       });
 
@@ -99,7 +128,9 @@ export class TargetSelectorComponent {
   descendantsPartiallySelected(node: EntityNode): boolean {
     if (this.allowSelectionBubbling) {
       const descendants = this.treeControl.getDescendants(node);
-      const result = descendants.some(child => this.checklistSelection.isSelected(child));
+      const result = descendants.some((child) =>
+        this.checklistSelection.isSelected(child)
+      );
 
       return result && !this.descendantsAllSelected(node);
     }
@@ -115,7 +146,7 @@ export class TargetSelectorComponent {
    */
   entitySelectionToggle(node: EntityNode): void {
     this.checklistSelection.toggle(node);
-    
+
     if (this.allowSelectionBubbling) {
       const descendants = this.treeControl.getDescendants(node);
 
@@ -124,18 +155,29 @@ export class TargetSelectorComponent {
         : this.checklistSelection.deselect(...descendants);
 
       // Force update for the parent
-      descendants.forEach(child => this.checklistSelection.isSelected(child));
+      descendants.forEach((child) => this.checklistSelection.isSelected(child));
       this.checkAllParentsSelection(node);
     }
 
     // Update targets in store
-    store.targets.next(this.entityToTargetAgent(this.checklistSelection.selected));
-    
+    store.targets.next(
+      this.entityToTargetAgent(this.checklistSelection.selected)
+    );
+
     // Update save requirements
     const valid = this.checkAllParentsSelection.length > 0;
-    store.saveRequirements.next({...store.saveRequirements.value, ...{ target: valid }});
+    store.saveRequirements.next({
+      ...store.saveRequirements.value,
+      ...{ target: valid },
+    });
   }
 
+  /**
+   * Check if node is selected.
+   *
+   * @param {EntityNode} node
+   * @returns {boolean}
+   */
   isSelected(node: EntityNode): boolean {
     const selected = this.checklistSelection.isSelected(node);
     return selected;
@@ -147,28 +189,30 @@ export class TargetSelectorComponent {
    * @returns {TargetAgent}
    */
   entityToTargetAgent(nodes: EntityNode[]): TargetAgent[] {
-    return [{
-      agentId: 'dv360-agent',
-      actions: nodes.map(node => {
-        return {
-          type: 'activate',
-          params: [
-            {
-              key: 'entityId',
-              value: node.id,
-            },
-            {
-              key: 'parentId',
-              value: '12345',
-            },
-            {
-              key: 'entityType',
-              value: 'lineItem',
-            },
-          ],
-        };
-      }),
-    }];
+    return [
+      {
+        agentId: 'dv360-agent',
+        actions: nodes.map((node) => {
+          return {
+            type: 'activate',
+            params: [
+              {
+                key: 'entityId',
+                value: node.id,
+              },
+              {
+                key: 'parentId',
+                value: '12345',
+              },
+              {
+                key: 'entityType',
+                value: 'lineItem',
+              },
+            ],
+          };
+        }),
+      },
+    ];
   }
 
   /**
@@ -201,7 +245,7 @@ export class TargetSelectorComponent {
 
   /**
    * Check root node checked state and change it accordingly.
-   * 
+   *
    * @param {EntityNode} node
    */
   checkRootNodeSelection(node: EntityNode): void {
@@ -213,7 +257,7 @@ export class TargetSelectorComponent {
     const descendants = this.treeControl.getDescendants(node);
     const descAllSelected =
       descendants.length > 0 &&
-      descendants.every(child => {
+      descendants.every((child) => {
         return this.checklistSelection.isSelected(child);
       });
 
@@ -226,7 +270,7 @@ export class TargetSelectorComponent {
 
   /**
    * Get the parent node of a node.
-   * 
+   *
    * @param {EntityNode} node
    * @returns {EntityNode | null}
    */
