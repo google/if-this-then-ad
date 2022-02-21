@@ -92,11 +92,15 @@ class GoogleStrategy {
                 const userResults = await userRepo.getBy('profileId', profile.id);
 
                 if (userResults.length == 0) {
-                    userData.id =  await userRepo.save(userData);
-                }else{
-                    // return existing user from db 
-                    const existingUser = userResults[0]; //we are sure profileIds are unique
-                    delete existingUser.token.refresh; 
+                    userData.id = await userRepo.save(userData);
+                } else {
+                    // return existing user from db
+                    let existingUser = userResults[0]; //we are sure profileIds are unique
+                    // update access token and expiry time.
+                    existingUser.token.access = userData.token.access;
+                    existingUser.token.expiry = date.add(Date.now(), { seconds: 3599 });
+                    await userRepo.update(existingUser.id!, existingUser);
+                    delete existingUser.token.refresh;
                     return done(null, existingUser, true);
                 }
 
@@ -105,7 +109,7 @@ class GoogleStrategy {
                 return done(null, userData, true);
             },
         );
-       
+
         _passport.use(googleStrategy);
     }
 }
