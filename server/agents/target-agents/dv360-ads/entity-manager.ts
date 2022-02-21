@@ -178,6 +178,10 @@ export default class EntityManager<T extends DV360Entity> {
             apiCallParams['params']['pageToken'] = nextPageToken;
             const tmpResult = await this.apiCall(apiCallParams);
 
+            if (!tmpResult || ! (this.object.listName in tmpResult) ) {
+                break;
+            }
+
             result = [...result, ...tmpResult[this.object.listName]];
             nextPageToken = tmpResult['nextPageToken'];
         } while (nextPageToken && !onlyFirstPage);
