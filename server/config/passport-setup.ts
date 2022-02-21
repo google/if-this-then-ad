@@ -65,9 +65,8 @@ export const isAuthenticated = (req: Request, res: Response, next: NextFunction)
     // at the end check if the cookies are valid and let the request through.
     log.debug(accessToken);
 
-    if (process.env.NODe_ENV == 'production') {
+    if (process.env.NODE_ENV == 'production') {
         if (req.session['accessTokenIsValid']) {
-            log.debug('got token status from the session its good');
             return next();
         }
     }
@@ -86,10 +85,6 @@ export const isAuthenticated = (req: Request, res: Response, next: NextFunction)
         .catch((err) => {
             log.debug(err);
             return res.sendStatus(500);
-        })
-        .finally(() => {
-            log.debug('finally');
-            return res.sendStatus(401);
         });
 
     // finally check if user object
