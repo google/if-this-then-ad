@@ -35,7 +35,7 @@ npm run pre-commit
 
 # Lint client
 ESLINT_CLIENT_EXIT=0
-STAGED_FILES_CLIENT=($(git diff --diff-filter=d --cached --name-only ./client | grep -E '^.*src\/.*\.(js|jsx|tsx|ts|vue)$'))
+STAGED_FILES_CLIENT=($(git diff --diff-filter=d --cached --name-only ./client | grep -E '^.*src\/.*\.(js|jsx|tsx|ts)$'))
 
 if [[ ${#STAGED_FILES_CLIENT[@]} > 0 ]]; then
   LINT_PATHS=()
@@ -55,6 +55,9 @@ if [[ ${#STAGED_FILES_CLIENT[@]} > 0 ]]; then
 
   # Store exit code
   ESLINT_CLIENT_EXIT="$?"
+
+  echo "git add:"
+  echo ${STAGED_FILES_CLIENT[@]}
 
   # Re-add files since they may have been fixed
   git add "${STAGED_FILES_CLIENT[@]}"
