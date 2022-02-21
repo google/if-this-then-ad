@@ -10,6 +10,7 @@ import { environment } from 'src/environments/environment';
 import { catchError, Observable, throwError } from 'rxjs';
 import { User } from '../models/user.model'
 import { Token } from '../interfaces/token';
+import { AuthService } from '../services/auth.service';
 
 
 /**
@@ -25,35 +26,32 @@ export class AuthInterceptor implements HttpInterceptor {
   private retries = 0;
 
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private authService:AuthService) { }
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
 
-    let accessToken = '';
-    const localUser = localStorage.getItem('user');
-    if (localUser) {
-      const user = User.fromJson(localUser);
-      accessToken = user.token.access;
-    }
-    
-    const req = request.clone({ setHeaders: { 'Authorization': 'Bearer ' + accessToken }, });
+    const accessToken = this.authService.accessToken;     
+    const req = request.clone({ setHeaders: { 'Authorization': 'Bearer ' + accessToken }});
     
     return next.handle(req).pipe(catchError((err) => {
       const codes = new Set([401, 403, 504]);
       if (codes.has(err.status) && this.retries < this.MAXRETRIES) {
 
         this.retries ++; 
-
+        
         this.refreshAccessToken().subscribe({
           next(t) {
-            console.log(t);
-            const retryRequest = req.clone({ setHeaders: { 'Authorization': 'Bearer ' + t.access }, });
+            const retryRequest = req.clone({ setHeaders: { 'Authorization': 'Bearer ' + t.access }});
             return next.handle(retryRequest);
           },
           error(e) { console.error(e) }
         }
 
         );
+        // update token on the user 
+        this.refreshAccessToken().subscribe({
+          next: (t) => this.authService.updateToken(t)
+        });
       }
       return throwError(() => new Error('Access Token expired: Login again'));
      }));
@@ -61,8 +59,8 @@ export class AuthInterceptor implements HttpInterceptor {
 
   private refreshAccessToken(): Observable<any> {
 
-    let user: User = User.fromJson(localStorage.getItem('user'));
-    const token = user.token.access;
+    let user: User = this.authService.currentUser!; 
+    const token = this.authService.accessToken; 
     const userId = user.id;
     const data = {
       userId,
