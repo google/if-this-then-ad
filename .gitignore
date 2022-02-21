@@ -5,3 +5,4 @@ notes.txt
 .env
 public
 !public/.gitkeep
+.DS_Store
