@@ -7,15 +7,7 @@ export class User {
   profilePhoto: string;
   token: Token;
 
-  deserialize(input: any): User {
-    Object.assign(this, input);
-
-    return this;
-  }
-
   static fromJSON(input: any): User {
     return Object.assign(new User(), JSON.parse(input));
   }
-
-
 }
