@@ -4,18 +4,27 @@ import {
   HttpHandler,
   HttpEvent,
   HttpInterceptor,
-  HttpResponse,
   HttpClient
 } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
-import { catchError, Observable, switchMap, throwError } from 'rxjs';
-import { map } from 'rxjs/operators'
+import { catchError, Observable, throwError } from 'rxjs';
 import { User } from '../models/user.model'
 import { Token } from '../interfaces/token';
+
+
+/**
+ * Interceptor for HTTP requests, it attaches Authorization 
+ * Header and attempts to do a token refresh when  current 
+ * access Token expires. 
+ * At other layers ensure user is redirected to login 
+ * if Token expired error is thrown.
+ */
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
   private  MAXRETRIES = 2;
   private retries = 0;
+
+
   constructor(private http: HttpClient) { }
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
@@ -32,7 +41,7 @@ export class AuthInterceptor implements HttpInterceptor {
     return next.handle(req).pipe(catchError((err) => {
       const codes = new Set([401, 403, 504]);
       if (codes.has(err.status) && this.retries < this.MAXRETRIES) {
-        console.log('Refreshing expired Access Token');
+
         this.retries ++; 
 
         this.refreshAccessToken().subscribe({
@@ -41,8 +50,7 @@ export class AuthInterceptor implements HttpInterceptor {
             const retryRequest = req.clone({ setHeaders: { 'Authorization': 'Bearer ' + t.access }, });
             return next.handle(retryRequest);
           },
-          error(e) { console.error(e) },
-          complete() { console.log('we are done') }
+          error(e) { console.error(e) }
         }
 
         );
@@ -63,11 +71,3 @@ export class AuthInterceptor implements HttpInterceptor {
     return this.http.post<Token>(`${environment.apiUrl}/auth/refresh`, data);
   }
 }
-
-// next(t){
-//   console.log(t); 
-//   const request = req.clone({ setHeaders: { 'Authorization': 'Bearer ' + t.access }, });
-//   return next.handle(request);
-// }, 
-// error(err) {console.error(err)},
-// complete() { console.log('we are done')}
