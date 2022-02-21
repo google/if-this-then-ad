@@ -26,12 +26,10 @@ CLIENT_DIR=$PROJECT_DIR/client
 $PROJECT_DIR/add-licence-headers.sh
 
 # Test the server side
-cd $SERVER_DIR
-npm run pre-commit
+npm run pre-commit --prefix $SERVER_DIR
 
 # Test the client side
-#cd $PROJECT_DIR/client
-#npm run test-no-browser
+#npm run test-no-browser --prefix $PROJECT_DIR/client
 
 # Lint client
 ESLINT_CLIENT_EXIT=0
@@ -55,9 +53,6 @@ if [[ ${#STAGED_FILES_CLIENT[@]} > 0 ]]; then
 
   # Store exit code
   ESLINT_CLIENT_EXIT="$?"
-
-  echo "git add:"
-  echo ${STAGED_FILES_CLIENT[@]}
 
   # Re-add files since they may have been fixed
   git add "${STAGED_FILES_CLIENT[@]}"
