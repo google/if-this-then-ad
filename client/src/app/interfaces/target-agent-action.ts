@@ -1,6 +1,6 @@
 export interface TargetAgentActionParam {
   key: string;
-  value: string | number | boolean;
+  value: string | number | boolean | undefined;
 }
 
 export interface TargetAgentAction {

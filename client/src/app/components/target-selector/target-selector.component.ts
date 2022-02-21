@@ -6,8 +6,8 @@ import { TargetAgent } from 'src/app/interfaces/target-agent';
 import {
   DynamicDataSource,
   DynamicDatabase,
-  EntityNode,
 } from 'src/app/models/dynamic-data-source.model';
+import { EntityNode } from 'src/app/models/entity-node.model';
 import { store } from 'src/app/store';
 
 /**

@@ -9,35 +9,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, merge, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
-
-/**
- * Entity node.
- */
-export class EntityNode {
-  /**
-   *
-   * @param {string} id
-   * @param {string} name
-   * @param {number} level
-   * @param {boolean} expandable
-   * @param {boolean} selectable
-   * @param {boolean} isLoading
-   * @param {string} advertiserId
-   * @param {string} type
-   * @param {EntityNode} children
-   */
-  constructor(
-    public id: string,
-    public name: string,
-    public level: number = 1,
-    public expandable: boolean = true,
-    public selectable: boolean = true,
-    public isLoading: boolean = false,
-    public advertiserId = '123',
-    public type = 'line-item',
-    public children?: EntityNode[]
-  ) {}
-}
+import { EntityNode } from './entity-node.model';
 
 @Injectable({ providedIn: 'root' })
 
@@ -69,24 +41,38 @@ export class DynamicDatabase {
    * @returns {Promise<EntityNode[] | undefined>}
    */
   getChildren(node: EntityNode): Promise<EntityNode[] | undefined> {
+    const agent = 'dv360-agent';
+    const method = 'list';
+    const endpoint = 'partner';
+
     return new Promise((resolve, reject) => {
       this.http
-        .get<Array<EntityNode>>(`${environment.apiUrl}/agents/dv360/fetch`, {
-          params: { level: node.level },
-        })
+        .get<Array<EntityNode>>(
+          `${environment.apiUrl}/agents/${agent}/${method}/${endpoint}`,
+          {
+            params: { level: node.level },
+          }
+        )
         .pipe(
           map((data) => {
-            return data.map((entity) => {
+            /* return data.map((entity) => {
               return new EntityNode(
                 entity.id,
                 entity.name,
                 node.level + 1,
                 true
               );
+            });*/
+            return data.map((entity) => {
+              const child = new EntityNode().deserialize(entity);
+              child.level = node.level + 1;
+
+              return child;
             });
           })
         )
         .subscribe((result) => {
+          console.log('children', result);
           resolve(result);
         });
     });
