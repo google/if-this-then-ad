@@ -4,20 +4,33 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { environment } from 'src/environments/environment';
 
 import { User } from 'src/app/models/user.model';
-import { BehaviorSubject, Subject } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 
+/**
+ * Authentication service to handle all auth API requests.
+ */
 export class AuthService {
-  currentUser: User|null;
-  userWatch: BehaviorSubject<User|null> = new BehaviorSubject<User|null>(null);
+  currentUser: User | null;
+  userWatch: BehaviorSubject<User | null> = new BehaviorSubject<User | null>(
+    null
+  );
 
+  /**
+   * Constructor.
+   *
+   * @param {ActivatedRoute} route
+   * @param {Router} router
+   */
   constructor(private route: ActivatedRoute, private router: Router) {
     // Get user from localStorage
     if (localStorage.getItem('user')) {
-      this.user = new User().deserialize(JSON.parse(localStorage.getItem('user')!));
+      this.user = new User().deserialize(
+        JSON.parse(localStorage.getItem('user')!)
+      );
     }
   }
 
@@ -34,7 +47,7 @@ export class AuthService {
 
   /**
    * Get logged in user.
-   * 
+   *
    * @returns {User|null}
    */
   get user(): User | null {
@@ -43,7 +56,7 @@ export class AuthService {
 
   /**
    * Check if logged in.
-   * 
+   *
    * @returns {boolean}
    */
   get isLoggedIn(): boolean {
@@ -52,8 +65,8 @@ export class AuthService {
 
   /**
    * Set user.
-   * 
-   * @param
+   *
+   * @param {User|null} user
    */
   set user(user: User | null) {
     localStorage.setItem('user', JSON.stringify(user));

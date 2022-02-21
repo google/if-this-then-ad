@@ -32,3 +32,38 @@ npm run pre-commit
 # Test the client side
 #cd $PROJECT_DIR/client
 #npm run test-no-browser
+
+# Lint client
+ESLINT_CLIENT_EXIT=0
+STAGED_FILES_CLIENT=($(git diff --diff-filter=d --cached --name-only ./client | grep -E '^.*src\/.*\.(js|jsx|tsx|ts|vue)$'))
+
+if [[ ${#STAGED_FILES_CLIENT[@]} > 0 ]]; then
+  LINT_PATHS=()
+
+  # Remove 'client/' from all paths
+  # eslint will be running from within client/
+  for i in "${!STAGED_FILES_CLIENT[@]}"
+  do
+    DATA=${STAGED_FILES_CLIENT[$i]}
+    pattern="client/"
+    DATA=${DATA/$pattern/}
+    LINT_PATHS[$i]=$DATA
+  done
+
+  # Actually lint
+  npm run lint --prefix ./client -- "${LINT_PATHS[@]}" --fix
+
+  # Store exit code
+  ESLINT_CLIENT_EXIT="$?"
+
+  # Re-add files since they may have been fixed
+  git add "${STAGED_FILES_CLIENT[@]}"
+fi
+
+# Check if everything went well
+if [[ "${ESLINT_CLIENT_EXIT}" == 0 ]]; then
+  printf "\n\e[30m\e[42mPRE-COMMIT CHECKS PASSED\e[0m\n"
+else
+  printf "\n\e[41mPRE-COMMIT CHECKS FAILED\e[0m\n"
+  exit 1
+fi

@@ -10,7 +10,7 @@
     See the License for the specific language governing permissions and
     limitations under the License.
  */
-import {sharedSettings} from './shared-settings'
+import { sharedSettings } from './shared-settings';
 
 export const environment = {
   ...sharedSettings,

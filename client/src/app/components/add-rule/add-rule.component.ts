@@ -29,9 +29,12 @@ declare const google: any;
 @Component({
   selector: 'app-add-rule',
   templateUrl: './add-rule.component.html',
-  styleUrls: ['./add-rule.component.scss']
+  styleUrls: ['./add-rule.component.scss'],
 })
 
+/**
+ * Add rule component.
+ */
 export class AddRuleComponent implements OnInit {
   sources: SourceAgent[] = [];
   sourceDataPoints: DataPoint[] = [];
@@ -52,23 +55,31 @@ export class AddRuleComponent implements OnInit {
   @ViewChild('name', { static: true }) nameForm: NgForm;
   @ViewChild('source', { static: true }) sourceForm: NgForm;
   @ViewChild('condition', { static: true }) conditionForm: NgForm;
-  @ViewChild('executionInterval', { static: true }) executionIntervalForm: NgForm;
+  @ViewChild('executionInterval', { static: true })
+  executionIntervalForm: NgForm;
 
+  /**
+   * Constructor.
+   *
+   * @param {HttpClient} http
+   */
   constructor(private http: HttpClient) {
     // Watch save requirements
-    store.saveRequirements.subscribe(val => {
-      this.saveEnabled = Object.values(store.saveRequirements.value).every(x => x);
+    store.saveRequirements.subscribe((val) => {
+      this.saveEnabled = Object.values(store.saveRequirements.value).every(
+        (x) => x
+      );
     });
 
     // Watch targets update
-    store.targets.subscribe(targets => {
+    store.targets.subscribe((targets) => {
       this.currentRule.targets = targets;
     });
 
     this.loadSourceAgents();
 
     // TODO: debug
-    /*this.currentRule.name = 'test';
+    /* this.currentRule.name = 'test';
     this.currentRule.executionInterval = 1;
     this.currentRule.condition.comparator = 'gt';
     this.currentRule.condition.value = 25;
@@ -83,38 +94,51 @@ export class AddRuleComponent implements OnInit {
     ];*/
   }
 
+  // eslint-disable-next-line require-jsdoc
   ngOnInit(): void {
     // Watch name form changes
-    this.nameForm.form.valueChanges.subscribe(val => {
+    this.nameForm.form.valueChanges.subscribe((val) => {
       const valid = !!this.nameForm.valid;
 
-      store.saveRequirements.next({...store.saveRequirements.value, ...{ name: valid }});
+      store.saveRequirements.next({
+        ...store.saveRequirements.value,
+        ...{ name: valid },
+      });
     });
 
     // Watch source form changes
-    this.sourceForm.form.valueChanges.subscribe(val => {
+    this.sourceForm.form.valueChanges.subscribe((val) => {
       const valid = !!this.sourceForm.valid;
 
-      store.saveRequirements.next({...store.saveRequirements.value, ...{ source: valid }});
+      store.saveRequirements.next({
+        ...store.saveRequirements.value,
+        ...{ source: valid },
+      });
     });
 
     // Watch executionInterval form changes
-    this.executionIntervalForm.form.valueChanges.subscribe(val => {
+    this.executionIntervalForm.form.valueChanges.subscribe((val) => {
       const valid = !!this.executionIntervalForm.valid;
 
-      store.saveRequirements.next({...store.saveRequirements.value, ...{ executionInterval: valid }});
+      store.saveRequirements.next({
+        ...store.saveRequirements.value,
+        ...{ executionInterval: valid },
+      });
     });
 
     // Watch condition form changes
-    this.conditionForm.form.valueChanges.subscribe(val => {
+    this.conditionForm.form.valueChanges.subscribe((val) => {
       const valid = !!this.conditionForm.valid;
 
-      store.saveRequirements.next({...store.saveRequirements.value, ...{ condition: valid }});
+      store.saveRequirements.next({
+        ...store.saveRequirements.value,
+        ...{ condition: valid },
+      });
     });
   }
 
-  ngAfterViewInit(): void {
-  }
+  // eslint-disable-next-line require-jsdoc
+  ngAfterViewInit(): void {}
 
   /**
    * Get source agent by ID.
@@ -123,18 +147,19 @@ export class AddRuleComponent implements OnInit {
    * @returns {SourceAgent | undefined}
    */
   getSourceAgent(id: string): SourceAgent | undefined {
-    return this.sources.find(source => source.id === id);
+    return this.sources.find((source) => source.id === id);
   }
 
   /**
    * Fetch all source agents from API.
    */
-   loadSourceAgents() {
-    this.http.get<Array<SourceAgent>>(`${environment.apiUrl}/agents/metadata`)
-    .pipe(map((res: Array<SourceAgent>) => res))
-    .subscribe(result => {
-      this.sources = result.filter(agent => agent.type === 'source-agent');
-    });
+  loadSourceAgents() {
+    this.http
+      .get<Array<SourceAgent>>(`${environment.apiUrl}/agents/metadata`)
+      .pipe(map((res: Array<SourceAgent>) => res))
+      .subscribe((result) => {
+        this.sources = result.filter((agent) => agent.type === 'source-agent');
+      });
   }
 
   /**
@@ -179,11 +204,12 @@ export class AddRuleComponent implements OnInit {
     // TODO: remove this!
     this.currentRule.owner = 'YrqYQc15jFYutbMdZNss';
 
-    this.http.post(`${environment.apiUrl}/rules`, this.currentRule)
-    .subscribe(result => {
-      // Inform the rules component about the new rule
-      store.ruleAdded.next(true);
-    });
+    this.http
+      .post(`${environment.apiUrl}/rules`, this.currentRule)
+      .subscribe((result) => {
+        // Inform the rules component about the new rule
+        store.ruleAdded.next(true);
+      });
 
     // Reset rule
     this.currentRule = new Rule();
@@ -195,10 +221,15 @@ export class AddRuleComponent implements OnInit {
     this.nameForm.resetForm();
   }
 
-  private async getApiKey() {
-    if (!this.googleMapsKey) { 
+  /**
+   * Get Google Maps API key.
+   *
+   * @returns {Promise<string>}
+   */
+  private async getApiKey(): Promise<string> {
+    if (!this.googleMapsKey) {
       const url = environment.apiUrl + '/get-api-key/GOOGLE_MAPS_API_KEY';
-      const result = await this.http.get<{key: string}>(url).toPromise();
+      const result = await this.http.get<{ key: string }>(url).toPromise();
       if (result) {
         this.googleMapsKey = result.key;
       }
@@ -207,23 +238,29 @@ export class AddRuleComponent implements OnInit {
     return this.googleMapsKey;
   }
 
+  /**
+   * Init geo search.
+   */
   private async initGeoSearch() {
-    const url = environment.GOOGLE_MAPS_AUTOCOMPLETE_URL + await this.getApiKey();
+    const url =
+      environment.GOOGLE_MAPS_AUTOCOMPLETE_URL + (await this.getApiKey());
     getScript(url, () => {
       this.setGeoListener(this.geoSearchHtmlClassName);
     });
   }
 
+  /**
+   * Set geo listener.
+   *
+   * @param {string} className
+   */
   private setGeoListener(className: string) {
     const inputs = document.getElementsByClassName(className);
     if (inputs.length) {
       const currentInput = inputs[0] as HTMLInputElement;
       const autocomplete = new google.maps.places.Autocomplete(currentInput);
 
-      autocomplete.setFields([
-        "address_components",
-        "name"
-      ]);
+      autocomplete.setFields(['address_components', 'name']);
 
       autocomplete.addListener('place_changed', () => {
         const place = autocomplete.getPlace();
@@ -241,9 +278,16 @@ export class AddRuleComponent implements OnInit {
     }
   }
 
+  /**
+   * Get formatted address.
+   *
+   * @param {any} place
+   * @returns {string}
+   */
   private getFormatedAddress(place: any): string {
     let locality = '';
     let country = '';
+
     for (const component of place.address_components) {
       switch (component.types[0]) {
         case 'locality':
@@ -256,6 +300,6 @@ export class AddRuleComponent implements OnInit {
       }
     }
 
-    return (locality ? `${locality}, `: '') + country;
+    return (locality ? `${locality}, ` : '') + country;
   }
 }

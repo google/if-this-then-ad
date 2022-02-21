@@ -1,4 +1,8 @@
-import { CollectionViewer, SelectionChange, DataSource } from '@angular/cdk/collections';
+import {
+  CollectionViewer,
+  SelectionChange,
+  DataSource,
+} from '@angular/cdk/collections';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
@@ -6,7 +10,22 @@ import { BehaviorSubject, merge, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 
+/**
+ * Entity node.
+ */
 export class EntityNode {
+  /**
+   *
+   * @param {string} id
+   * @param {string} name
+   * @param {number} level
+   * @param {boolean} expandable
+   * @param {boolean} selectable
+   * @param {boolean} isLoading
+   * @param {string} advertiserId
+   * @param {string} type
+   * @param {EntityNode} children
+   */
   constructor(
     public id: string,
     public name: string,
@@ -16,60 +35,117 @@ export class EntityNode {
     public isLoading: boolean = false,
     public advertiserId = '123',
     public type = 'line-item',
-    public children?: EntityNode[],
+    public children?: EntityNode[]
   ) {}
 }
+
+@Injectable({ providedIn: 'root' })
 
 /**
  * Database for dynamic data. When expanding a node in the tree, the data source will need to fetch
  * the descendants data from the database.
  */
-@Injectable({providedIn: 'root'})
 export class DynamicDatabase {
+  /**
+   * Constructor.
+   *
+   * @param {HttpClient} http
+   */
   constructor(private http: HttpClient) {}
 
-  /** Initial data from database */
+  /**
+   * Initial data from database.
+   *
+   * @returns {EntityNode[]}
+   */
   initialData(): EntityNode[] {
     return [new EntityNode('root', 'DV360', 0, true, false)];
   }
 
+  /**
+   * Get node children.
+   *
+   * @param {EntityNode} node
+   * @returns {Promise<EntityNode[] | undefined>}
+   */
   getChildren(node: EntityNode): Promise<EntityNode[] | undefined> {
     return new Promise((resolve, reject) => {
-      this.http.get<Array<EntityNode>>(`${environment.apiUrl}/agents/dv360/fetch`, {params: {level: node.level}})
-      .pipe(map(data => {
-        return data.map(entity => {
-          return new EntityNode(entity.id, entity.name, node.level + 1, true);
+      this.http
+        .get<Array<EntityNode>>(`${environment.apiUrl}/agents/dv360/fetch`, {
+          params: { level: node.level },
         })
-      })).subscribe(result => {
-        resolve(result);
-      });
-    })
+        .pipe(
+          map((data) => {
+            return data.map((entity) => {
+              return new EntityNode(
+                entity.id,
+                entity.name,
+                node.level + 1,
+                true
+              );
+            });
+          })
+        )
+        .subscribe((result) => {
+          resolve(result);
+        });
+    });
   }
- 
+
+  /**
+   * Check if node is expandable.
+   *
+   * @param {string} node
+   * @returns {boolean}
+   */
   isExpandable(node: string): boolean {
     return true;
   }
 }
 
+/**
+ * Dynamic data source.
+ */
 export class DynamicDataSource implements DataSource<EntityNode> {
   dataChange = new BehaviorSubject<EntityNode[]>([]);
 
+  /**
+   * Getter function for data.
+   *
+   * @returns {EntityNode[]}
+   */
   get data(): EntityNode[] {
     return this.dataChange.value;
   }
 
+  /**
+   * Setter function for data.
+   *
+   * @param {EntityNode[]} value
+   */
   set data(value: EntityNode[]) {
     this._treeControl.dataNodes = value;
     this.dataChange.next(value);
   }
 
+  /**
+   *
+   * @param {FlatTreeControl<EntityNode>} _treeControl
+   * @param {DynamicDatabase} _database
+   */
   constructor(
     private _treeControl: FlatTreeControl<EntityNode>,
-    private _database: DynamicDatabase,
+    private _database: DynamicDatabase
   ) {}
 
+  /**
+   * Connect.
+   *
+   * @param {CollectionViewer} collectionViewer
+   * @returns {Observable<EntityNode[]>}
+   */
   connect(collectionViewer: CollectionViewer): Observable<EntityNode[]> {
-    this._treeControl.expansionModel.changed.subscribe(change => {
+    this._treeControl.expansionModel.changed.subscribe((change) => {
       if (
         (change as SelectionChange<EntityNode>).added ||
         (change as SelectionChange<EntityNode>).removed
@@ -78,25 +154,32 @@ export class DynamicDataSource implements DataSource<EntityNode> {
       }
     });
 
-    return merge(collectionViewer.viewChange, this.dataChange).pipe(map(() => this.data));
+    return merge(collectionViewer.viewChange, this.dataChange).pipe(
+      map(() => this.data)
+    );
   }
 
+  /**
+   * Disconnect.
+   *
+   * @param {CollectionViewer} collectionViewer
+   */
   disconnect(collectionViewer: CollectionViewer): void {}
 
   /**
    * Handle expand/collapse behaviors
-   * 
+   *
    * @param {SelectionChange<EntityNode>} change
    */
   handleTreeControl(change: SelectionChange<EntityNode>) {
     if (change.added) {
-      change.added.forEach(node => this.toggleNode(node, true));
+      change.added.forEach((node) => this.toggleNode(node, true));
     }
     if (change.removed) {
       change.removed
         .slice()
         .reverse()
-        .forEach(node => this.toggleNode(node, false));
+        .forEach((node) => this.toggleNode(node, false));
     }
   }
 
@@ -120,7 +203,6 @@ export class DynamicDataSource implements DataSource<EntityNode> {
 
     if (expand) {
       this.data.splice(index + 1, 0, ...children);
-
     } else {
       let count = 0;
       for (

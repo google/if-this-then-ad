@@ -1,4 +1,4 @@
-import { SourceAgentSettingsParam } from "./source-agent-settings-parameter";
+import { SourceAgentSettingsParam } from './source-agent-settings-parameter';
 
 export interface SourceAgentSettings {
   agentId: string;

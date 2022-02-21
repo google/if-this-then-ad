@@ -2,12 +2,12 @@ import { BehaviorSubject, Subject } from 'rxjs';
 import { TargetAgent } from '../interfaces/target-agent';
 
 interface SaveRequirements {
-  name: boolean,
-  source: boolean,
-  params: true,
-  condition: boolean,
-  target: boolean,
-  executionInterval: boolean,
+  name: boolean;
+  source: boolean;
+  params: true;
+  condition: boolean;
+  target: boolean;
+  executionInterval: boolean;
 }
 
 const saveRequirements: SaveRequirements = {
