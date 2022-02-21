@@ -71,21 +71,6 @@ export class AddRuleComponent implements OnInit {
     });
 
     this.loadSourceAgents();
-
-    // TODO: debug
-    /* this.currentRule.name = 'test';
-    this.currentRule.executionInterval = 1;
-    this.currentRule.condition.comparator = 'gt';
-    this.currentRule.condition.value = 25;
-
-    this.currentRule.source.params = [
-      {
-        dataPoint: 'targetLocation',
-        name: 'Target Location',
-        type: 'string',
-        value: 'hamburg,de',
-      },
-    ];*/
   }
 
   // eslint-disable-next-line require-jsdoc

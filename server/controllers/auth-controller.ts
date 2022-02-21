@@ -42,13 +42,14 @@ export const logout = (req: Request, res: Response) => {
  * @param req
  * @param res
  */
-export const renewToken = async (req: Request, res: Response) => {
+export const renewToken = (req: Request, res: Response) => {
     const userId = req.body.userId;
     const oldToken = req.body.token;
-
-    if (userId && oldToken) {
-        const freshToken = await refreshToken(userId, oldToken);
-        return res.json(freshToken);
-    }
-    return res.status(400).send('Malformed request');
+    refreshToken(userId, oldToken)
+        .then((newToken) => {
+            res.json(newToken);
+        })
+        .catch((reason) => {
+            res.status(400).json({ status: 'error', message: reason });
+        });
 };
