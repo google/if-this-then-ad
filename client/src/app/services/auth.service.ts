@@ -51,8 +51,10 @@ export class AuthService {
   login() {
     this.route.queryParamMap.subscribe((params) => {
       const returnTo = params.get('returnTo') || '';
+      const clientUrl =
+        this.router['location']._platformLocation.location.origin;
 
-      window.location.href = `${environment.apiUrl}/auth/login?returnTo=${returnTo}&clientUrl=${this.router['location']._platformLocation.location.origin}`;
+      window.location.href = `${environment.apiUrl}/auth/login?returnTo=${returnTo}&clientUrl=${clientUrl}`;
     });
   }
 

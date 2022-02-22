@@ -13,12 +13,12 @@
 
 require('module-alias/register');
 
-import {Request, Response} from 'express';
-import {log} from '@iftta/util';
+import { Request, Response } from 'express';
+import { log } from '@iftta/util';
 import OpenWeatherMap from '@iftta/open-weather-map-agent';
 import DV360Agent from '@iftta/dv360-ads';
 import TaskConfiguration from '../job-runner/task-configuration';
-import {Token} from 'models/user';
+import { Token } from 'models/user';
 
 const allowedAgentMethods = {
     'dv360-agent': {
@@ -57,25 +57,18 @@ export const getAgentEntityList = async (req: Request, res: Response) => {
     const entityType = req.params.entityType;
     const method = 'list';
 
-    if (
-        !(agent in allowedAgentMethods) ||
-        !(method in allowedAgentMethods[agent])
-    ) {
+    if (!(agent in allowedAgentMethods) || !(method in allowedAgentMethods[agent])) {
         const message = `Agent "${agent}" OR method "${method}" are not allowed`;
         log.error(message);
-        return res.status(400).json({message: message});
+        return res.status(400).json({ message: message });
     }
 
     try {
         return res.json(
-            await allowedAgentMethods[agent][method](
-                token.access,
-                entityType,
-                req.query
-            )
+            await allowedAgentMethods[agent][method](token.access, entityType, req.query),
         );
     } catch (e) {
         log.error(e);
-        return res.status(400).json({message: (e as Error).message});
+        return res.status(400).json({ message: (e as Error).message });
     }
 };

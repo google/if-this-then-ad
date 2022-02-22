@@ -26,17 +26,13 @@ import {
     RuleResultValue,
     Parameter,
 } from './interfaces';
-import {config} from './config';
+import { config } from './config';
 
 export default class DV360Agent implements IAgent {
     public agentId = config.id;
     public name = config.name;
 
-    private transform(
-        task: AgentTask,
-        data: any,
-        error: any = null
-    ): ActionResult {
+    private transform(task: AgentTask, data: any, error: any = null): ActionResult {
         return {
             ruleId: task.target.ruleId,
             agentId: config.id,
@@ -50,7 +46,7 @@ export default class DV360Agent implements IAgent {
 
     private toInstanceOptions(a: Array<Parameter>): InstanceOptions {
         const o: Object = {};
-        a.forEach(p => {
+        a.forEach((p) => {
             o[p.key] = p.value;
         });
         if (!o['entityType']) {
@@ -60,11 +56,7 @@ export default class DV360Agent implements IAgent {
         return o as InstanceOptions;
     }
 
-    private async executeAction(
-        action: Action,
-        result: RuleResultValue,
-        token: string
-    ) {
+    private async executeAction(action: Action, result: RuleResultValue, token: string) {
         const instanceOptions = this.toInstanceOptions(action.params);
         const entity = EntityManager.getInstance(instanceOptions, token);
 
@@ -78,9 +70,7 @@ export default class DV360Agent implements IAgent {
                 break;
 
             default:
-                throw Error(
-                    `Not supported entity action method: ${instanceOptions.action}`
-                );
+                throw Error(`Not supported entity action method: ${instanceOptions.action}`);
         }
     }
 
@@ -88,11 +78,7 @@ export default class DV360Agent implements IAgent {
         const result: Array<ActionResult> = [];
         for (const action of task.target.actions) {
             try {
-                const data = await this.executeAction(
-                    action,
-                    task.target.result,
-                    task.token.auth
-                );
+                const data = await this.executeAction(action, task.target.result, task.token.auth);
                 result.push(this.transform(task, data));
             } catch (err) {
                 result.push(this.transform(task, {}, err));
@@ -177,24 +163,19 @@ export default class DV360Agent implements IAgent {
     }
 
     // Query DV360 entities for the UI
-    public async getEntityList(
-        token: string,
-        entityType: EntityType,
-        params: Object
-    ) {
+    public async getEntityList(token: string, entityType: EntityType, params: Object) {
         if (!entityType || !Object.values(EntityType).includes(entityType)) {
             throw new Error(`${entityType} is not a known entity type`);
         }
 
-        const instance = EntityManager.getInstance({entityType}, token, params);
+        const instance = EntityManager.getInstance({ entityType }, token, params);
         const result: any[] = [];
         (await instance.list(params)).forEach((o: any) => {
             result.push({
                 name: o?.displayName,
                 partnerId: o?.partnerId || params['partnerId'],
                 advertiserId: o?.advertiserId || params['advertiserId'],
-                insertionOrderId:
-                    o?.insertionOrderId || params['insertionOrderId'],
+                insertionOrderId: o?.insertionOrderId || params['insertionOrderId'],
                 lineItemId: o?.lineItemId,
                 entityStatus: o?.entityStatus,
             });

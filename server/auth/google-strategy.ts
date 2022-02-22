@@ -11,14 +11,14 @@
     limitations under the License.
  */
 
-import { Strategy } from 'passport-google-oauth20';
-import { log, date } from '@iftta/util';
-import { PassportStatic } from 'passport';
-import { Request } from 'express';
+import {Strategy} from 'passport-google-oauth20';
+import {log, date} from '@iftta/util';
+import {PassportStatic} from 'passport';
+import {Request} from 'express';
 import Repository from '../services/repository-service';
 import Collections from '../services/collection-factory';
-import { User } from '../models/user';
-import { Collection } from '../models/fire-store-entity';
+import {User} from '../models/user';
+import {Collection} from '../models/fire-store-entity';
 
 const usersCollection = Collections.get(Collection.USERS);
 const userRepo = new Repository<User>(usersCollection);
@@ -34,11 +34,11 @@ class GoogleStrategy {
     public static initialise(_passport: PassportStatic): any {
         if (typeof process.env.OAUTH_CALLBACK_URL == 'undefined') {
             throw new Error(
-                'OAUTH_CALLBACK_URL undefined, it must be defined as environment variable',
+                'OAUTH_CALLBACK_URL undefined, it must be defined as environment variable'
             );
         }
         log.warn(
-            `Set oauth callback URL to ${process.env.OAUTH_CALLBACK_URL}, adjust Authorized URLs in GCP client settings accordingly`,
+            `Set oauth callback URL to ${process.env.OAUTH_CALLBACK_URL}, adjust Authorized URLs in GCP client settings accordingly`
         );
 
         const googleStrategy = new Strategy(
@@ -59,7 +59,7 @@ class GoogleStrategy {
                 accessToken: string,
                 refreshToken: string,
                 profile: any,
-                done: any,
+                done: any
             ) => {
                 // this is the callback method called after
                 // successful authentication
@@ -79,7 +79,7 @@ class GoogleStrategy {
                     locale: jsonProfile.locale,
                     token: {
                         access: accessToken,
-                        expiry: date.add(Date.now(), { seconds: 3599 }), // expire access Tokens after 3599 sec.
+                        expiry: date.add(Date.now(), {seconds: 3599}), // expire access Tokens after 3599 sec.
                         refresh: refreshToken,
                         provider: profile.provider,
                         type: 'Bearer',
@@ -89,16 +89,21 @@ class GoogleStrategy {
                 log.debug(`User : ${JSON.stringify(userData, null, 2)}`);
 
                 // check if the user exists in db
-                const userResults = await userRepo.getBy('profileId', profile.id);
+                const userResults = await userRepo.getBy(
+                    'profileId',
+                    profile.id
+                );
 
                 if (userResults.length == 0) {
                     userData.id = await userRepo.save(userData);
                 } else {
                     // return existing user from db
-                    let existingUser = userResults[0]; //we are sure profileIds are unique
+                    const existingUser = userResults[0]; // we are sure profileIds are unique
                     // update access token and expiry time.
                     existingUser.token.access = userData.token.access;
-                    existingUser.token.expiry = date.add(Date.now(), { seconds: 3599 });
+                    existingUser.token.expiry = date.add(Date.now(), {
+                        seconds: 3599,
+                    });
                     await userRepo.update(existingUser.id!, existingUser);
                     delete existingUser.token.refresh;
                     return done(null, existingUser, true);
@@ -107,7 +112,7 @@ class GoogleStrategy {
                 // delete tokens otherwise they will be put into user session
                 delete userData.token.refresh;
                 return done(null, userData, true);
-            },
+            }
         );
 
         _passport.use(googleStrategy);
