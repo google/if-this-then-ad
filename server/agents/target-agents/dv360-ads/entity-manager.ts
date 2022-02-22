@@ -25,10 +25,29 @@ import { config } from './config';
 export default class EntityManager<T extends DV360Entity> {
     // Static method for instantiation
     public static getInstance(config: InstanceOptions, token: string, params = {}) {
-        if (params['advertiserId'] && !config.parentId) {
-            config.parentId = parseInt(params['advertiserId']);
-        } else if (params['partnerId'] && !config.parentId) {
-            config.parentId = parseInt(params['partnerId']);
+        if (
+            EntityType.insertionOrder == config.entityType
+            || EntityType.lineItem == config.entityType
+        ) {
+            if (params['advertiserId'] && !config.parentId) {
+                config.parentId = parseInt(params['advertiserId']);
+            }
+
+            if (! config.parentId) {
+                throw new Error(
+                    `For entity type ${config.entityType} you need to specify advertiserId`
+                );
+            }
+        } else if (EntityType.advertiser == config.entityType) {
+            if (params['partnerId'] && !config.parentId) {
+                config.parentId = parseInt(params['partnerId']);
+            }
+
+            if (! config.parentId) {
+                throw new Error(
+                    `For entity type ${config.entityType} you need to specify partnerId`
+                );
+            }
         }
 
         switch (config.entityType) {
@@ -39,7 +58,6 @@ export default class EntityManager<T extends DV360Entity> {
                     config?.entityId as number,
                     token,
                 );
-                break;
 
             case EntityType.lineItem:
                 return new EntityManager<LineItem>(
@@ -48,7 +66,6 @@ export default class EntityManager<T extends DV360Entity> {
                     config?.entityId as number,
                     token,
                 );
-                break;
 
             case EntityType.campaign:
                 return new EntityManager<Campaign>(
@@ -57,7 +74,6 @@ export default class EntityManager<T extends DV360Entity> {
                     config?.entityId as number,
                     token,
                 );
-                break;
 
             case EntityType.advertiser:
                 return new EntityManager<Advertiser>(
@@ -66,7 +82,6 @@ export default class EntityManager<T extends DV360Entity> {
                     config?.entityId as number,
                     token,
                 );
-                break;
 
             case EntityType.partner:
                 return new EntityManager<Partner>(
@@ -75,7 +90,6 @@ export default class EntityManager<T extends DV360Entity> {
                     config?.entityId as number,
                     token,
                 );
-                break;
 
             default:
                 throw new Error(`Entity type ${config.entityType} is not supported`);
@@ -171,23 +185,24 @@ export default class EntityManager<T extends DV360Entity> {
             apiCallParams['params'] = {};
         }
 
-        const filters = {};
+        const filters: string[] = [];
         if (params['insertionOrderId']) {
-            filters['insertionOrderId'] = parseInt(params['insertionOrderId']);
+            filters.push(`insertionOrderId=${parseInt(params['insertionOrderId'])}`);
         }
 
         if (getOnlyActive || params['entityStatus']) {
-            filters['entityStatus'] = params['entityStatus'] || 'ENTITY_STATUS_ACTIVE';
+            filters.push(`entityStatus=${params['entityStatus'] || 'ENTITY_STATUS_ACTIVE'}`);
         }
 
-        apiCallParams['params']['filter'] = new URLSearchParams(filters).toString();
+        if (filters.length) {
+            apiCallParams['params']['filter'] = filters.join(' AND ');
+        }
 
         // TODO: For testing on DEV
         if ('advertisers' == this.object.listName) {    
             apiCallParams['params']['filter'] 
                 = 'advertiserId=850782160 OR advertiserId=2436036 OR advertiserId=854769529 OR advertiserId=4304640';
         }
-
 
         let result: Object[] = [];
         let nextPageToken = '';
