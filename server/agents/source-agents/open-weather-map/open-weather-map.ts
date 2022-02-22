@@ -1,3 +1,16 @@
+/**
+    Copyright 2022 Google LLC
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+        https://www.apache.org/licenses/LICENSE-2.0
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+ */
+
 import axios, { AxiosInstance } from 'axios';
 import {
     IAgent,
@@ -71,14 +84,13 @@ class OpenWeatherMap implements IAgent {
         };
     }
 
-    private transform(weatherData: AgentResponse): AgentResult |undefined {
+    private transform(weatherData: AgentResponse): AgentResult | undefined {
         const data = weatherData.data;
-        log.info('Transforming weather data'); 
+        log.info('Transforming weather data');
         log.info(data);
-        try{
-
+        try {
             const code = data.weather[0]?.id;
-    
+
             const weatherResult: AgentResult = {
                 agentId: this.agentId,
                 jobId: weatherData.jobId,
@@ -97,11 +109,10 @@ class OpenWeatherMap implements IAgent {
                 timestamp: new Date(),
             };
             return weatherResult;
-        }catch(e){
+        } catch (e) {
             log.error(e);
             return;
         }
-        
     }
 
     private getOptions(job: Job) {
@@ -132,10 +143,9 @@ class OpenWeatherMap implements IAgent {
         res.data.targetLocation = jobOptions.targetLocation;
         res.jobId = jobOptions.jobId as string;
 
-    
         const agentResult = this.transform(res);
 
-        if(agentResult !== undefined){
+        if (agentResult !== undefined) {
             return Promise.resolve(agentResult);
         }
         const errorMessage = `Execution of Job ${job.id} failed, Agent ${job.agentId}, Query ${job.query}`;

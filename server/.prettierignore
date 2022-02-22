@@ -1,8 +1,11 @@
 node_modules
 build
-dist
+dist/*
+../client/dist/*
 res
 coverage
 docs
 package.json
 package-lock.json
+../client/.angular/*
+

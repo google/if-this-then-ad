@@ -11,8 +11,13 @@
     limitations under the License.
  */
 
-import * as rulesEngine from './src/message-handler';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { AuthInterceptor } from './auth.interceptor';
 
-export default {
-    processMessage: rulesEngine.processMessage,
-};
+export const httpInterceptorProviders = [
+  {
+    provide: HTTP_INTERCEPTORS,
+    useClass: AuthInterceptor,
+    multi: true,
+  },
+];
