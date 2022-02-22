@@ -43,14 +43,33 @@ export class DynamicDatabase {
   getChildren(node: EntityNode): Promise<EntityNode[] | undefined> {
     const agent = 'dv360-agent';
     const method = 'list';
-    const endpoint = 'partner';
+    let endpoint = 'partner';
+    const params = {
+      partnerId: '',
+      advertiserId: '',
+      insertionOrderId: '',
+    };
+
+    if (node.insertionOrderId) {
+      endpoint = 'lineItem';
+      params.partnerId = node.partnerId;
+      params.advertiserId = node.advertiserId;
+      params.insertionOrderId = node.insertionOrderId;
+    } else if (node.advertiserId) {
+      endpoint = 'insertionOrder';
+      params.partnerId = node.partnerId;
+      params.advertiserId = node.advertiserId;
+    } else if (node.partnerId) {
+      endpoint = 'advertiser';
+      params.partnerId = node.partnerId;
+    }
 
     return new Promise((resolve, reject) => {
       this.http
         .get<Array<EntityNode>>(
           `${environment.apiUrl}/agents/${agent}/${method}/${endpoint}`,
           {
-            params: { level: node.level },
+            params,
           }
         )
         .pipe(
@@ -63,8 +82,9 @@ export class DynamicDatabase {
                 true
               );
             });*/
+            console.log(data);
             return data.map((entity) => {
-              const child = new EntityNode().deserialize(entity);
+              const child = EntityNode.fromJSON(entity);
               child.level = node.level + 1;
 
               return child;

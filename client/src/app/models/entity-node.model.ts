@@ -40,4 +40,14 @@ export class EntityNode {
 
     return this;
   }
+
+  /**
+   * Parse User from JSON Object.
+   *
+   * @param {any} input
+   * @returns {User}
+   */
+  static fromJSON(input: any): EntityNode {
+    return Object.assign(new EntityNode(), input);
+  }
 }

@@ -25,7 +25,7 @@ import { store } from 'src/app/store';
 export class TargetSelectorComponent {
   treeControl: FlatTreeControl<EntityNode>;
   dataSource: DynamicDataSource;
-  allowSelectionBubbling: boolean = true;
+  allowSelectionBubbling: boolean = false;
 
   // The selection for checklist
   checklistSelection = new SelectionModel<EntityNode>(true /* multiple */);
