@@ -166,9 +166,6 @@ export default class EntityManager<T extends DV360Entity> {
 
     // List method
     public async list(params: Object, getOnlyActive = true, onlyFirstPage = false) {
-        // TODO: Debug
-        onlyFirstPage = true;
-
         const apiCallParams = this.getApiCallParams(this.object.apiConfig);
         if (!apiCallParams['params']) {
             apiCallParams['params'] = {};
@@ -184,6 +181,13 @@ export default class EntityManager<T extends DV360Entity> {
         }
 
         apiCallParams['params']['filter'] = new URLSearchParams(filters).toString();
+
+        // TODO: For testing on DEV
+        if ('advertisers' == this.object.listName) {    
+            apiCallParams['params']['filter'] 
+                = 'advertiserId=850782160 OR advertiserId=2436036 OR advertiserId=854769529 OR advertiserId=4304640';
+        }
+
 
         let result: Object[] = [];
         let nextPageToken = '';
