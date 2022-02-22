@@ -17,110 +17,10 @@ import {
   DataSource,
 } from '@angular/cdk/collections';
 import { FlatTreeControl } from '@angular/cdk/tree';
-import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
 import { BehaviorSubject, merge, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { environment } from 'src/environments/environment';
+import { DynamicDatabase } from './dynamic-database.model';
 import { EntityNode } from './entity-node.model';
-
-@Injectable({ providedIn: 'root' })
-
-/**
- * Database for dynamic data. When expanding a node in the tree, the data source will need to fetch
- * the descendants data from the database.
- */
-export class DynamicDatabase {
-  /**
-   * Constructor.
-   *
-   * @param {HttpClient} http
-   */
-  constructor(private http: HttpClient) {}
-
-  /**
-   * Initial data from database.
-   *
-   * @returns {EntityNode[]}
-   */
-  initialData(): EntityNode[] {
-    return [new EntityNode('root', 'DV360', 0, true, false)];
-  }
-
-  /**
-   * Get node children.
-   *
-   * @param {EntityNode} node
-   * @returns {Promise<EntityNode[] | undefined>}
-   */
-  getChildren(node: EntityNode): Promise<EntityNode[] | undefined> {
-    const agent = 'dv360-agent';
-    const method = 'list';
-    let endpoint = 'partner';
-    const params = {
-      partnerId: '',
-      advertiserId: '',
-      insertionOrderId: '',
-    };
-
-    if (node.insertionOrderId) {
-      endpoint = 'lineItem';
-      params.partnerId = node.partnerId;
-      params.advertiserId = node.advertiserId;
-      params.insertionOrderId = node.insertionOrderId;
-    } else if (node.advertiserId) {
-      endpoint = 'insertionOrder';
-      params.partnerId = node.partnerId;
-      params.advertiserId = node.advertiserId;
-    } else if (node.partnerId) {
-      endpoint = 'advertiser';
-      params.partnerId = node.partnerId;
-    }
-
-    return new Promise((resolve, reject) => {
-      this.http
-        .get<Array<EntityNode>>(
-          `${environment.apiUrl}/agents/${agent}/${method}/${endpoint}`,
-          {
-            params,
-          }
-        )
-        .pipe(
-          map((data) => {
-            /* return data.map((entity) => {
-              return new EntityNode(
-                entity.id,
-                entity.name,
-                node.level + 1,
-                true
-              );
-            });*/
-            console.log(data);
-            return data.map((entity) => {
-              const child = EntityNode.fromJSON(entity);
-              child.level = node.level + 1;
-
-              return child;
-            });
-          })
-        )
-        .subscribe((result) => {
-          console.log('children', result);
-          resolve(result);
-        });
-    });
-  }
-
-  /**
-   * Check if node is expandable.
-   *
-   * @param {string} node
-   * @returns {boolean}
-   */
-  isExpandable(node: string): boolean {
-    return true;
-  }
-}
 
 /**
  * Dynamic data source.
@@ -203,37 +103,51 @@ export class DynamicDataSource implements DataSource<EntityNode> {
   }
 
   /**
-   * Toggle the node, remove from display list
+   * Toggle node expansion, remove from display list
    *
    * @param {EntityNode} node
    * @param {boolean} expand
    * @returns {Promise<void>}
    */
   async toggleNode(node: EntityNode, expand: boolean): Promise<void> {
-    const children = await this._database.getChildren(node);
-    const index = this.data.indexOf(node);
-
-    if (!children || index < 0) {
-      // If no children, or cannot find the node, no op
+    if (!node.expandable) {
       return;
     }
 
+    // Set node to loading
     node.isLoading = true;
 
-    if (expand) {
-      this.data.splice(index + 1, 0, ...children);
-    } else {
-      let count = 0;
-      for (
-        let i = index + 1;
-        i < this.data.length && this.data[i].level > node.level;
-        i++, count++
-      ) {}
-      this.data.splice(index + 1, count);
-    }
+    // Get child nodes
+    try {
+      const children = await this._database.getChildren(node);
+      const index = this.data.indexOf(node);
 
-    // Notify the change
-    this.dataChange.next(this.data);
-    node.isLoading = false;
+      if (!children || index < 0) {
+        node.expandable = false;
+        node.children = null;
+        // If no children, or cannot find the node, no op
+        return;
+      }
+
+      if (expand) {
+        this.data.splice(index + 1, 0, ...children);
+      } else {
+        let count = 0;
+        for (
+          let i = index + 1;
+          i < this.data.length && this.data[i].level > node.level;
+          i++, count++
+        ) {}
+        this.data.splice(index + 1, count);
+      }
+
+      // Notify the change
+      this.dataChange.next(this.data);
+    } catch (err) {
+      console.error('Error loading children', err);
+      return;
+    } finally {
+      node.isLoading = false;
+    }
   }
 }

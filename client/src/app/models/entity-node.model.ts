@@ -31,28 +31,16 @@ export class EntityNode {
     public id?: string,
     public name?: string,
     public level: number = 1,
-    public expandable: boolean = true,
-    public selectable: boolean = true,
+    public expandable: boolean = false,
+    public selectable: boolean = false,
     public isLoading: boolean = false,
     public partnerId: string = '',
     public advertiserId: string = '',
     public insertionOrderId: string = '',
     public lineItemId: string = '',
-    public type = 'line-item',
-    public children?: EntityNode[]
+    public type: string = '',
+    public children: EntityNode[] | null = null
   ) {}
-
-  /**
-   * Parse User from JSON Object.
-   *
-   * @param {any} input
-   * @returns {User}
-   */
-  deserialize(input: any): EntityNode {
-    Object.assign(this, input);
-
-    return this;
-  }
 
   /**
    * Parse User from JSON Object.

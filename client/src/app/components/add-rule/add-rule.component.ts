@@ -22,6 +22,7 @@ import { Rule } from 'src/app/models/rule.model';
 import { store } from 'src/app/store';
 import { NgForm } from '@angular/forms';
 import { SourceAgentParameter } from 'src/app/interfaces/source-agent-parameter';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-add-rule',
@@ -57,9 +58,9 @@ export class AddRuleComponent implements OnInit {
    *
    * @param {HttpClient} http
    */
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private authService: AuthService) {
     // Watch save requirements
-    store.saveRequirements.subscribe((val) => {
+    store.saveRequirements.subscribe((_) => {
       this.saveEnabled = Object.values(store.saveRequirements.value).every(
         (x) => x
       );
@@ -175,9 +176,10 @@ export class AddRuleComponent implements OnInit {
    * Save rule.
    */
   saveRule() {
-    // TODO: remove this!
-    this.currentRule.owner = 'YrqYQc15jFYutbMdZNss';
+    // Add owner
+    this.currentRule.owner = this.authService.currentUser?.id;
 
+    // Send rule to API
     this.http
       .post(`${environment.apiUrl}/rules`, this.currentRule)
       .subscribe((result) => {
