@@ -21,7 +21,7 @@ import TaskConfiguration from '../job-runner/task-configuration';
 import { Token } from 'models/user';
 
 const allowedAgentMethods = {
-    'dv360-ads': {
+    'dv360-agent': {
         metadata: DV360Agent.getAgentMetadata,
         list: DV360Agent.getEntityList,
     },
@@ -44,7 +44,7 @@ export const getAgentEntityList = async (req: Request, res: Response) => {
 
     // TODO: obtain user ID from the Rule object
     // obtain freshTokens before running the jobs
-    const userId = 'YkHryPCUuAbwgBG3Zdle';
+    const userId = 'YrqYQc15jFYutbMdZNss';
     let token: Token;
     try {
         token = await TaskConfiguration.refreshTokensForUser(userId);

@@ -165,7 +165,7 @@ export default class DV360Agent implements IAgent {
     // Query DV360 entities for the UI
     public async getEntityList(token: string, entityType: EntityType, params: Object) {
         if (!entityType || !Object.values(EntityType).includes(entityType)) {
-            throw new Error('Please specify a correct "entityType"');
+            throw new Error(`${entityType} is not a known entity type`);
         }
 
         const instance = EntityManager.getInstance({ entityType }, token, params);

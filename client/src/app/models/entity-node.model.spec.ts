@@ -11,33 +11,10 @@
     limitations under the License.
  */
 
-.wrapper {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
+import { EntityNode } from './entity-node.model';
 
-.brand {
-  margin-bottom: 1.5rem;
-  font-size: 2rem;
-}
-
-.login {
-  width: 191px;
-  height: 46px;
-  background: url('/assets/img/btn_google_signin_dark_normal_web.png');
-  background-size: 100%;
-  background-repeat: no-repeat;
-  border: none;
-  cursor: pointer;
-
-  &:active {
-    background: url('/assets/img/btn_google_signin_dark_pressed_web.png');
-  }
-
-  &:disabled {
-    background: url('/assets/img/btn_google_signin_dark_disabled_web.png');
-  }
-}
+describe('EntityNode', () => {
+  it('should create an instance', () => {
+    expect(new EntityNode()).toBeTruthy();
+  });
+});

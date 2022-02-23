@@ -16,11 +16,9 @@ import { FlatTreeControl } from '@angular/cdk/tree';
 import { Component } from '@angular/core';
 import { TargetAgent } from 'src/app/interfaces/target-agent';
 
-import {
-  DynamicDataSource,
-  DynamicDatabase,
-  EntityNode,
-} from 'src/app/models/dynamic-data-source.model';
+import { DynamicDataSource } from 'src/app/models/dynamic-data-source.model';
+import { DynamicDatabase } from 'src/app/models/dynamic-database.model';
+import { EntityNode } from 'src/app/models/entity-node.model';
 import { store } from 'src/app/store';
 
 /**
@@ -38,7 +36,7 @@ import { store } from 'src/app/store';
 export class TargetSelectorComponent {
   treeControl: FlatTreeControl<EntityNode>;
   dataSource: DynamicDataSource;
-  allowSelectionBubbling: boolean = true;
+  allowSelectionBubbling: boolean = false;
 
   // The selection for checklist
   checklistSelection = new SelectionModel<EntityNode>(true /* multiple */);
@@ -159,6 +157,14 @@ export class TargetSelectorComponent {
       this.checkAllParentsSelection(node);
     }
 
+    // Publish selection change to store
+    this.publishSelectionChange();
+  }
+
+  /**
+   * Publish selection change to store.
+   */
+  publishSelectionChange() {
     // Update targets in store
     store.targets.next(
       this.entityToTargetAgent(this.checklistSelection.selected)
@@ -173,6 +179,23 @@ export class TargetSelectorComponent {
   }
 
   /**
+   * Toggle a leaf entity selection.
+   * Check all the parents to see if they changed
+   *
+   * @param {EntityNode} node
+   */
+  entityLeafItemSelectionToggle(node: EntityNode): void {
+    this.checklistSelection.toggle(node);
+
+    if (this.allowSelectionBubbling) {
+      this.checkAllParentsSelection(node);
+    }
+
+    // Publish selection change to all components
+    this.publishSelectionChange();
+  }
+
+  /**
    * Check if node is selected.
    *
    * @param {EntityNode} node
@@ -184,7 +207,8 @@ export class TargetSelectorComponent {
   }
 
   /**
-   * Transform entities to Target Agent
+   * Transform entities to Target Agent.
+   *
    * @param {EntityNode[]} nodes
    * @returns {TargetAgent}
    */
@@ -202,31 +226,17 @@ export class TargetSelectorComponent {
               },
               {
                 key: 'parentId',
-                value: '12345',
+                value: node.advertiserId,
               },
               {
                 key: 'entityType',
-                value: 'lineItem',
+                value: node.type,
               },
             ],
           };
         }),
       },
     ];
-  }
-
-  /**
-   * Toggle a leaf entity selection.
-   * Check all the parents to see if they changed
-   *
-   * @param {EntityNode} node
-   */
-  entityLeafItemSelectionToggle(node: EntityNode): void {
-    this.checklistSelection.toggle(node);
-
-    if (this.allowSelectionBubbling) {
-      this.checkAllParentsSelection(node);
-    }
   }
 
   /**
