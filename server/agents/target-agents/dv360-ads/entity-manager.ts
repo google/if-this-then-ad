@@ -26,16 +26,16 @@ export default class EntityManager<T extends DV360Entity> {
     // Static method for instantiation
     public static getInstance(config: InstanceOptions, token: string, params = {}) {
         if (
-            EntityType.insertionOrder == config.entityType
-            || EntityType.lineItem == config.entityType
+            EntityType.insertionOrder == config.entityType ||
+            EntityType.lineItem == config.entityType
         ) {
             if (params['advertiserId'] && !config.parentId) {
                 config.parentId = parseInt(params['advertiserId']);
             }
 
-            if (! config.parentId) {
+            if (!config.parentId) {
                 throw new Error(
-                    `For entity type ${config.entityType} you need to specify advertiserId`
+                    `For entity type ${config.entityType} you need to specify advertiserId`,
                 );
             }
         } else if (EntityType.advertiser == config.entityType) {
@@ -43,9 +43,9 @@ export default class EntityManager<T extends DV360Entity> {
                 config.parentId = parseInt(params['partnerId']);
             }
 
-            if (! config.parentId) {
+            if (!config.parentId) {
                 throw new Error(
-                    `For entity type ${config.entityType} you need to specify partnerId`
+                    `For entity type ${config.entityType} you need to specify partnerId`,
                 );
             }
         }
@@ -199,9 +199,9 @@ export default class EntityManager<T extends DV360Entity> {
         }
 
         // TODO: For testing on DEV
-        if ('advertisers' == this.object.listName) {    
-            apiCallParams['params']['filter'] 
-                = 'advertiserId=850782160 OR advertiserId=2436036 OR advertiserId=854769529 OR advertiserId=4304640';
+        if ('advertisers' == this.object.listName) {
+            apiCallParams['params']['filter'] =
+                'advertiserId=850782160 OR advertiserId=2436036 OR advertiserId=854769529 OR advertiserId=4304640';
         }
 
         let result: Object[] = [];
@@ -210,7 +210,7 @@ export default class EntityManager<T extends DV360Entity> {
             apiCallParams['params']['pageToken'] = nextPageToken;
             const tmpResult = await this.apiCall(apiCallParams);
 
-            if (!tmpResult || ! (this.object.listName in tmpResult) ) {
+            if (!tmpResult || !(this.object.listName in tmpResult)) {
                 break;
             }
 

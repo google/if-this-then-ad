@@ -11,6 +11,15 @@
     limitations under the License.
  */
 
+// Load environment variables first
+import env from 'dotenv';
+import { log } from '@iftta/util';
+
+const envConfig = env.config();
+if (envConfig.error || envConfig.parsed == null) {
+    log.error('Error loading configuration from .env file');
+}
+
 import express from 'express';
 import { Request, Response, NextFunction } from 'express';
 import session from 'express-session';
@@ -18,17 +27,9 @@ import cors from 'cors';
 import path from 'path';
 import router from './routes';
 import bodyParser from 'body-parser';
-import env from 'dotenv';
 import * as PassportSetup from './config/passport-setup';
-import { log } from '@iftta/util';
 const { Firestore } = require('@google-cloud/firestore');
 const { FirestoreStore } = require('@google-cloud/connect-firestore');
-
-// Loading env file config
-const envConfig = env.config();
-if (envConfig.error || envConfig.parsed == null) {
-    log.error('Error loading configuration from .env file');
-}
 
 let app = express();
 
@@ -60,11 +61,11 @@ app.use(bodyParser.json({ type: '*/*' }));
 app.use(express.urlencoded({ extended: true }));
 
 // Cookie settings
-let now = new Date().getTime();
-// setting session time to match access Token TTL.
+const now = new Date().getTime();
+// Setting session time to match access Token TTL
 const interval = 3600 * 1 * 1000;
 const cookieExpiresOn = new Date(now + interval);
-log.debug(`Cookie expires on : ${cookieExpiresOn}`);
+log.debug(`Cookie expires on: ${cookieExpiresOn}`);
 
 app.use(
     session({

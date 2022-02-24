@@ -69,7 +69,7 @@ export class AuthInterceptor implements HttpInterceptor {
           this.refreshAccessToken().subscribe({
             next(t) {
               const retryRequest = req.clone({
-                setHeaders: { Authorization: 'Bearer ' + t.access },
+                setHeaders: { Authorization: 'Bearer ' + t?.access },
               });
               return next.handle(retryRequest);
             },
