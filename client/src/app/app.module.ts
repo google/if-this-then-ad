@@ -39,6 +39,7 @@ import { HeaderComponent } from './components/header/header.component';
 import { LoginComponent } from './components/login/login.component';
 import { LoggedInComponent } from './components/logged-in/logged-in.component';
 import { httpInterceptorProviders } from './interceptors';
+import { InputGeoComponent } from './components/input-geo/input-geo.component';
 
 @NgModule({
   declarations: [
@@ -49,6 +50,7 @@ import { httpInterceptorProviders } from './interceptors';
     HeaderComponent,
     LoginComponent,
     LoggedInComponent,
+    InputGeoComponent,
   ],
   imports: [
     BrowserModule,

@@ -47,6 +47,7 @@ export interface AgentParam {
     dataPoint: string;
     name: string;
     type: string;
+    geo?: boolean;
 }
 
 export interface AgentMetadata {
