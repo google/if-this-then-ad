@@ -42,7 +42,7 @@
         <mat-form-field class="form-element" *ngFor="let param of currentRule.source.params">
             <mat-label>{{ param.name }}</mat-label>
             <app-location-auto-complete
-                *ngIf="param.geo; else noGeo" 
+                *ngIf="'location' == param.type; else noGeo" 
                 [dataPoint]="param.dataPoint"
                 [(targetLocation)]="param.value"
                 name="param.dataPoint"

@@ -174,8 +174,7 @@ class OpenWeatherMap implements IAgent {
                 {
                     dataPoint: 'targetLocation',
                     name: 'Target Location',
-                    type: 'string',
-                    geo: true,
+                    type: 'location',
                 },
             ],
             dataPoints: [
