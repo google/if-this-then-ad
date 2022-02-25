@@ -39,7 +39,7 @@ import { HeaderComponent } from './components/header/header.component';
 import { LoginComponent } from './components/login/login.component';
 import { LoggedInComponent } from './components/logged-in/logged-in.component';
 import { httpInterceptorProviders } from './interceptors';
-import { InputGeoComponent } from './components/input-geo/input-geo.component';
+import { LocationAutoComplete } from './components/location-auto-complete/location-auto-complete.component';
 
 @NgModule({
   declarations: [
@@ -50,7 +50,7 @@ import { InputGeoComponent } from './components/input-geo/input-geo.component';
     HeaderComponent,
     LoginComponent,
     LoggedInComponent,
-    InputGeoComponent,
+    LocationAutoComplete,
   ],
   imports: [
     BrowserModule,

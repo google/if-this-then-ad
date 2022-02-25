@@ -14,12 +14,12 @@ import { AuthService } from 'src/app/services/auth.service';
 declare const google: any;
 
 @Component({
-  selector: 'app-input-geo',
-  templateUrl: './input-geo.component.html',
-  styleUrls: ['./input-geo.component.scss'],
-  providers: [{provide: MatFormFieldControl, useExisting: InputGeoComponent}]
+  selector: 'app-location-auto-complete',
+  templateUrl: './location-auto-complete.component.html',
+  styleUrls: ['./location-auto-complete.component.scss'],
+  providers: [{provide: MatFormFieldControl, useExisting: LocationAutoComplete}]
 })
-export class InputGeoComponent implements OnInit, MatFormFieldControl<string> {
+export class LocationAutoComplete implements OnInit, MatFormFieldControl<string> {
   @Input() dataPoint: string|undefined;
   @Input() value: string;
   @ViewChild('geoInput') geoInput: ElementRef;
@@ -31,10 +31,10 @@ export class InputGeoComponent implements OnInit, MatFormFieldControl<string> {
   static scriptIsLoaded = false;
 
   // START: Implementing the MatFormFieldControl interface
-  controlType = 'input-geo';
+  controlType = 'location-auto-complete';
 
   static nextId = 0;
-  @HostBinding() id = `${this.controlType}-${InputGeoComponent.nextId++}`;
+  @HostBinding() id = `${this.controlType}-${LocationAutoComplete.nextId++}`;
   stateChanges = new Subject<void>();
 
   private _placeholder: string;
@@ -139,7 +139,7 @@ export class InputGeoComponent implements OnInit, MatFormFieldControl<string> {
   }
 
   private getScriptOnce(url: string, onLoad: Function) {
-    if (InputGeoComponent.scriptIsLoaded) {
+    if (LocationAutoComplete.scriptIsLoaded) {
       onLoad();
     } else {
       const script = this.document.createElement('script');
@@ -150,7 +150,7 @@ export class InputGeoComponent implements OnInit, MatFormFieldControl<string> {
       script.onload = () => { onLoad(); };
       this.document.head.appendChild(script);
 
-      InputGeoComponent.scriptIsLoaded = true;
+      LocationAutoComplete.scriptIsLoaded = true;
     }
   }
 
