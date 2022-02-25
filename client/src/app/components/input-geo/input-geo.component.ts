@@ -1,17 +1,15 @@
 import { 
   Component, OnInit, Input, Output, EventEmitter, HostBinding,
-  Optional, Self, ViewChild, ElementRef
+  Optional, Self, ViewChild, ElementRef, Inject,
 } from '@angular/core';
 import { FormGroup, NgControl, FormBuilder } from '@angular/forms';
 import { MatFormFieldControl } from '@angular/material/form-field';
 import { Subject } from "rxjs";
 import { coerceBooleanProperty } from '@angular/cdk/coercion';
 import { HttpClient } from '@angular/common/http';
+import { DOCUMENT } from '@angular/common';
 
-import { environment } from 'src/environments/environment';
 import { config } from './config';
-import { get as getScript } from 'scriptjs';
-import { User } from 'src/app/models/user.model';
 import { AuthService } from 'src/app/services/auth.service';
 declare const google: any;
 
@@ -30,6 +28,7 @@ export class InputGeoComponent implements OnInit, MatFormFieldControl<string> {
   @Output() targetLocationChange = new EventEmitter<string>();
 
   geoForm: FormGroup;
+  static scriptIsLoaded = false;
 
   // START: Implementing the MatFormFieldControl interface
   controlType = 'input-geo';
@@ -106,6 +105,7 @@ export class InputGeoComponent implements OnInit, MatFormFieldControl<string> {
     @Optional() @Self() public ngControl: NgControl,
     private http: HttpClient,
     private authService: AuthService,
+    @Inject(DOCUMENT) private document: Document
   ) {
     this.geoForm = fb.group({
       'targetLocation': '',
@@ -132,9 +132,26 @@ export class InputGeoComponent implements OnInit, MatFormFieldControl<string> {
 
   private async initGeoSearch() {
     const url = config.apiUrl + this.getApiKey('GOOGLE_MAPS_API_KEY');
-    getScript(url, () => {
+
+    this.getScriptOnce(url, () => {
       this.setGeoListener();
     });
+  }
+
+  private getScriptOnce(url: string, onLoad: Function) {
+    if (InputGeoComponent.scriptIsLoaded) {
+      onLoad();
+    } else {
+      const script = this.document.createElement('script');
+      script.innerHTML = '';
+      script.src = url;
+      script.async = true;
+      script.defer = true;
+      script.onload = () => { onLoad(); };
+      this.document.head.appendChild(script);
+
+      InputGeoComponent.scriptIsLoaded = true;
+    }
   }
 
   private setGeoListener() {
