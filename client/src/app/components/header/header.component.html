@@ -24,7 +24,7 @@
   <!-- Header buttons -->
   <button class="avatar-wrapper" *ngIf="authService.isLoggedIn" mat-icon-button mat-button [matMenuTriggerFor]="userMenu" aria-label="Example icon-button with share icon">
     <!-- User profile picture -->
-    <div *ngIf="avatarUrl; else defaultAvatar" class="avatar" [style.backgroundImage]="'url(' + avatarUrl + ')'"></div>
+    <div *ngIf="user" class="avatar" [style.backgroundImage]="'url(' + user.profilePhoto + ')'"></div>
 
     <!-- Default avatar icon -->
     <ng-template #defaultAvatar>
@@ -34,6 +34,19 @@
 
   <!-- User menu -->
   <mat-menu #userMenu="matMenu" xPosition="before">
-    <button mat-menu-item (click)="logout()">Logout</button>
+    <div class="avatar-wrapper avatar-wrapper-padding" *ngIf="user">
+      <div class="avatar avatar-big" [style.backgroundImage]="'url(' + user.profilePhoto + ')'"></div>
+    </div>
+    <div class="user-info">
+      <div class="centered-content name" *ngIf="user">
+        {{user.displayName}}
+      </div>
+      <div class="centered-content email" *ngIf="user">
+        {{user.email}}
+      </div>
+      <div class="centered-content logout">
+        <button mat-raised-button color="primary" (click)="logout()">Logout</button>
+      </div>
+    </div>
   </mat-menu>
 </mat-toolbar>
