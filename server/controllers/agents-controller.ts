@@ -42,9 +42,18 @@ export const getAgentsMetadata = async (req: Request, res: Response) => {
 export const getAgentEntityList = async (req: Request, res: Response) => {
     log.debug(`getAgentEntityList: ${JSON.stringify(req.params)}`);
 
-    // TODO: obtain user ID from the Rule object
-    // obtain freshTokens before running the jobs
-    const userId = 'YrqYQc15jFYutbMdZNss';
+    let userId = '';
+    if (
+        'undefined' != typeof req
+        && 'user' in req
+        && 'undefined' != typeof req['user']
+        && 'id' in req['user']
+    ) {
+        userId = req['user']['id'];
+    } else {
+        throw new Error('User must be logged in');
+    }
+
     let token: Token;
     try {
         token = await TaskConfiguration.refreshTokensForUser(userId);
