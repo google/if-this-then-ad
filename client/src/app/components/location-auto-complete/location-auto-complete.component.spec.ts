@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { InputGeoComponent } from './input-geo.component';
+import { LocationAutoComplete } from './location-auto-complete.component';
 
 describe('InputGeoComponent', () => {
-  let component: InputGeoComponent;
-  let fixture: ComponentFixture<InputGeoComponent>;
+  let component: LocationAutoComplete;
+  let fixture: ComponentFixture<LocationAutoComplete>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ InputGeoComponent ]
+      declarations: [ LocationAutoComplete ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(InputGeoComponent);
+    fixture = TestBed.createComponent(LocationAutoComplete);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
