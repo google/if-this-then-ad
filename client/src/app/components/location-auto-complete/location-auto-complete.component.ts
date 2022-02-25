@@ -1,5 +1,5 @@
 import { 
-  Component, OnInit, Input, Output, EventEmitter, HostBinding,
+  Component, Input, Output, EventEmitter, HostBinding,
   Optional, Self, ViewChild, ElementRef, Inject,
 } from '@angular/core';
 import { FormGroup, NgControl, FormBuilder } from '@angular/forms';
@@ -19,25 +19,29 @@ declare const google: any;
   styleUrls: ['./location-auto-complete.component.scss'],
   providers: [{provide: MatFormFieldControl, useExisting: LocationAutoComplete}]
 })
-export class LocationAutoComplete implements OnInit, MatFormFieldControl<string> {
+export class LocationAutoComplete implements MatFormFieldControl<string> {
   @Input() dataPoint: string|undefined;
   @Input() value: string;
   @ViewChild('geoInput') geoInput: ElementRef;
 
   targetLocationValue: string|number|undefined = '';
   @Output() targetLocationChange = new EventEmitter<string>();
-
+  
   geoForm: FormGroup;
   static scriptIsLoaded = false;
 
   // START: Implementing the MatFormFieldControl interface
+  private _disabled = false;
+  private _placeholder: string;
+  private _required = false;
+  focused = false;
+  touched = false;
+  
   controlType = 'location-auto-complete';
-
   static nextId = 0;
   @HostBinding() id = `${this.controlType}-${LocationAutoComplete.nextId++}`;
   stateChanges = new Subject<void>();
 
-  private _placeholder: string;
   @Input()
   get placeholder() {
     return this._placeholder;
@@ -47,8 +51,6 @@ export class LocationAutoComplete implements OnInit, MatFormFieldControl<string>
     this.stateChanges.next();
   }
 
-  focused = false;
-  touched = false;
   onFocusIn(event: FocusEvent) {
     if (!this.focused) {
       this.focused = true;
@@ -71,7 +73,6 @@ export class LocationAutoComplete implements OnInit, MatFormFieldControl<string>
     return this.focused || !this.empty;
   }
 
-  private _required = false;
   @Input()
   get required() {
     return this._required;
@@ -81,7 +82,6 @@ export class LocationAutoComplete implements OnInit, MatFormFieldControl<string>
     this.stateChanges.next();
   }
 
-  private _disabled = false;
   @Input()
   get disabled(): boolean { 
     return this._disabled; 
@@ -110,9 +110,6 @@ export class LocationAutoComplete implements OnInit, MatFormFieldControl<string>
     this.geoForm = fb.group({
       'targetLocation': '',
     });
-  }
-
-  ngOnInit(): void {
   }
 
   @Input()
