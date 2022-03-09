@@ -39,7 +39,8 @@ export class RulesProcessor {
         const rules: Rule[] = await repo.list();
 
         const rulesForJob = rules.filter((rule) => {
-            return rule.source.id == jobResult.agentId;
+            return rule.source.id == jobResult.agentId
+                && rule.jobId == jobResult.jobId;
         });
 
         log.info(`Got ${rulesForJob.length} rules for job ${jobResult.jobId}`);
