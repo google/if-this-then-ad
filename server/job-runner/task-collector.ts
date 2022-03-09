@@ -14,7 +14,7 @@
 import { AgentTask, AgentResult, RuleResult } from './interfaces';
 import TaskConfiguration from './task-configuration';
 
-class TaskCollector {
+export default class TaskCollector {
     private tasks: Array<AgentTask> = [];
 
     /**
@@ -55,5 +55,3 @@ class TaskCollector {
         return this.tasks;
     }
 }
-
-export default new TaskCollector();
