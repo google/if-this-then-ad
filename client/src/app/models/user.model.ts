@@ -22,6 +22,7 @@ export class User {
   displayName: string;
   profilePhoto: string;
   token: Token;
+  email?: string;
 
   /**
    * Parse User from JSON Object.

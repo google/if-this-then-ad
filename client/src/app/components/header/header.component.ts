@@ -15,6 +15,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { AuthService } from 'src/app/services/auth.service';
+import { User } from 'src/app/models/user.model';
 
 @Component({
   selector: 'app-header',
@@ -26,7 +27,7 @@ import { AuthService } from 'src/app/services/auth.service';
  * Header component.
  */
 export class HeaderComponent implements OnInit {
-  avatarUrl: string = '';
+  user: User|null;
 
   /**
    * Constructor.
@@ -37,12 +38,14 @@ export class HeaderComponent implements OnInit {
   constructor(public authService: AuthService, private router: Router) {
     // Get user's profile picture
     this.authService.userWatch.subscribe((user) => {
-      this.avatarUrl = user ? user.profilePhoto : '';
+      this.user = user;
     });
   }
 
   // eslint-disable-next-line require-jsdoc
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.user = this.authService.currentUser;
+  }
 
   /**
    * Logout - Navigate to Login page.
