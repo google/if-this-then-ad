@@ -1,0 +1,14 @@
+
+<ng-container [formGroup]="geoForm">
+    <input
+        #geoInput
+        matInput
+        name="{{ dataPoint }}"
+        type="text"
+        value="{{ value }}"
+        required
+        formControlName="targetLocation"
+        (focus)="onFocusIn($event)"
+        (focusout)="onFocusOut($event)"
+    />
+</ng-container>
