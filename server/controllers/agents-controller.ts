@@ -17,6 +17,7 @@ import { Request, Response } from 'express';
 import { log } from '@iftta/util';
 import OpenWeatherMap from '@iftta/open-weather-map-agent';
 import DV360Agent from '@iftta/dv360-ads';
+import AmbeeAgent from '@iftta/ambee-agent';
 import TaskConfiguration from '../job-runner/task-configuration';
 import { Token } from 'models/user';
 
@@ -28,6 +29,9 @@ const allowedAgentMethods = {
     'open-weather-map': {
         metadata: OpenWeatherMap.getAgentMetadata,
     },
+    'ambee': {
+        metadata: AmbeeAgent.getAgentMetadata,
+    }
 };
 
 export const getAgentsMetadata = async (req: Request, res: Response) => {

@@ -99,7 +99,7 @@ export class RulesComponent implements OnInit {
    */
   getComparatorUi(comparator: string): string {
     // @ts-ignore
-    return this.comparatorMapping[comparator];
+    return this.comparatorMapping[comparator] ?? comparator;
   }
 
   /**

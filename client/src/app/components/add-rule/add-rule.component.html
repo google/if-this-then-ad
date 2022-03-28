@@ -88,6 +88,11 @@
                     <mat-option value="gt">&gt;</mat-option>
                     <mat-option value="lt">&lt;</mat-option>
                 </mat-select>
+                <mat-select *ngSwitchCase="'enum'" name="rule-comparator" [(ngModel)]="currentRule.condition.comparator" required>
+                    <mat-option *ngFor="let enum of currentRule.condition.enum" [value]="enum">
+                        {{ enum }}
+                    </mat-option>
+                </mat-select>
             </ng-container>
         </mat-form-field>
 

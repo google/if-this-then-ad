@@ -11,9 +11,6 @@
     limitations under the License.
  */
 
-export interface DataPoint {
-  dataPoint: string;
-  name: string;
-  dataType: string;
-  enum?: Array<string>
-}
+import AmbeeAgent from './ambee';
+
+export default AmbeeAgent;

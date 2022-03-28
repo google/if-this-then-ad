@@ -109,6 +109,10 @@ export class RulesProcessor {
             return !dpResult;
         }
 
+        if (COMPARATORS.enum == rule.condition.dataType) {
+            return rule.condition.comparator == dpResult;
+        }
+
         return false;
     }
 }

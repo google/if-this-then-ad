@@ -11,9 +11,15 @@
     limitations under the License.
  */
 
-export interface DataPoint {
-  dataPoint: string;
-  name: string;
-  dataType: string;
-  enum?: Array<string>
-}
+import { Configuration } from './interfaces';
+
+export const config: Configuration = {
+    id: 'ambee',
+    name: 'Ambee (Pollen, Air Quality, etc.)',
+    baseUrl: {
+        pollenRiskLevel: 'https://api.ambeedata.com/latest/pollen/by-place?place={{location}}',
+        airQualityLevel: 'https://api.ambeedata.com/latest/by-city?city={{location}}',
+    },
+    apiKey: '',
+    jobOwner: '',
+};
