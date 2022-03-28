@@ -34,7 +34,6 @@ export default class AmbeeAgent implements IAgent {
     public name: string = config.name;
 
     private createApiClient(dataPoint: string, options: Configuration): AxiosInstance {
-        console.log('createApiClient', dataPoint, options);
         if (!options.apiKey) {
             const errorMessage = 'API Key not set, it needs to be set in the env file';
             log.error(errorMessage);
@@ -47,7 +46,6 @@ export default class AmbeeAgent implements IAgent {
         }
 
         const escapedUrl = encodeURI(url.replace('{{location}}', options.targetLocation));
-        console.log('createApiClient:url', escapedUrl);
         
         const client = axios.create({
             baseURL: escapedUrl,
@@ -117,7 +115,6 @@ export default class AmbeeAgent implements IAgent {
         log.info('Transforming ambee data');
         log.info(ambeeData);
 
-        console.log('ambeeData.jobOwner', ambeeData.jobOwner);
         const generalResponse = {
             agentId: this.agentId,
             jobId: ambeeData.jobId,
@@ -152,8 +149,6 @@ export default class AmbeeAgent implements IAgent {
     }
 
     private getOptions(job: Job) {
-        console.log('getOptions', job);
-
         let options = { ...config };
         let userSettings = {};
         job.ownerSettings!.params.map((p) => {
