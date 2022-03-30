@@ -158,15 +158,18 @@ class OpenWeatherMap implements IAgent {
 
         const meta: AgentMetadata = {
             id: config.id,
-            name: 'Weather',
+            name: config.name,
             type: AgentType.SOURCE,
             settings: {
                 agentId: config.id,
                 params: [
                     {
-                        key: 'apiKey',
-                        name: 'API Key',
-                        type: 'string',
+                        name: 'OpenWeatherMap API',
+                        settingName: 'OPENWEATHER_API_KEY',
+                    },
+                    {
+                        name: 'Google Maps API Key',
+                        settingName: 'GOOGLEMAPS_API_KEY',
                     },
                 ],
             },

@@ -11,7 +11,8 @@
     limitations under the License.
  */
 
-import { Component, OnInit, ViewChild, EventEmitter } from '@angular/core';
+import { Component, OnInit, ViewChild, Inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { map } from 'rxjs/operators';
@@ -21,7 +22,9 @@ import { Rule } from 'src/app/models/rule.model';
 
 import { store } from 'src/app/store';
 import { NgForm } from '@angular/forms';
+import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { SourceAgentParameter } from 'src/app/interfaces/source-agent-parameter';
+import { SourceAgentSettingsParam } from 'src/app/interfaces/source-agent-settings-parameter';
 import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
@@ -58,7 +61,11 @@ export class AddRuleComponent implements OnInit {
    *
    * @param {HttpClient} http
    */
-  constructor(private http: HttpClient, private authService: AuthService) {
+  constructor(
+    private http: HttpClient, 
+    private authService: AuthService,
+    public dialog: MatDialog
+  ) {
     // Watch save requirements
     store.saveRequirements.subscribe((_) => {
       this.saveEnabled = Object.values(store.saveRequirements.value).every(
@@ -154,6 +161,8 @@ export class AddRuleComponent implements OnInit {
       this.currentRule.source.params = agent.params;
 
       store.sourceSet.next(true);
+      
+      this.checkUserSettingsForAgent(agent.settings.params);
     }
   }
 
@@ -196,5 +205,42 @@ export class AddRuleComponent implements OnInit {
     this.sourceForm.resetForm();
     this.executionIntervalForm.resetForm();
     this.nameForm.resetForm();
+  }
+
+  private checkUserSettingsForAgent(params: Array<SourceAgentSettingsParam>) {
+    const missingSettings: Array<SourceAgentSettingsParam> = params.filter(
+      p => this.isMissing(p.settingName)
+    );
+    
+    if (missingSettings.length) {
+      this.showMissingSettingsDialog(missingSettings);
+    }
+  }
+
+  private isMissing(name: string) {
+    return true;
+  }
+
+  private showMissingSettingsDialog(missingSettings: Array<SourceAgentSettingsParam>) {
+    this.dialog.open(
+      MissingSettingsDialogComponent, 
+      {data: missingSettings}
+    );
+  }
+}
+
+@Component({
+  selector: 'missing-settings-dialog',
+  templateUrl: 'missing-settings-dialog.html',
+})
+export class MissingSettingsDialogComponent {
+  constructor(
+    @Inject(MAT_DIALOG_DATA) public settings: Array<SourceAgentSettingsParam>,
+    private router: Router
+  ) {}
+
+  goToUserSettings() {
+    const fragment = this.settings.map(s => s.settingName).join(',');
+    this.router.navigate(['/settings'], {fragment});
   }
 }

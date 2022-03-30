@@ -11,7 +11,10 @@
     limitations under the License.
  */
 
-export interface SourceAgentSettingsParam {
-  name: string;
+export interface UserSetting {
+  title: string;
+  description: string;
+  field: string;
   settingName: string;
+  expanded?: boolean;
 }

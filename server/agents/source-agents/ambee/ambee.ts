@@ -229,9 +229,12 @@ export default class AmbeeAgent implements IAgent {
                 agentId: config.id,
                 params: [
                     {
-                        key: 'apiKey',
                         name: 'Ambee API Key',
-                        type: 'string',
+                        settingName: 'AMBEE_API_KEY',
+                    },
+                    {
+                        name: 'Google Maps API Key',
+                        settingName: 'GOOGLEMAPS_API_KEY',
                     },
                 ],
             },
