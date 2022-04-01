@@ -167,6 +167,7 @@ export class AddRuleComponent implements OnInit {
     this.currentRule.condition.dataPoint = val.dataPoint;
     this.currentRule.condition.name = val.name;
     this.currentRule.condition.dataType = val.dataType;
+    this.currentRule.condition.enum = val?.enum;
 
     // Reset comparator
     this.currentRule.condition.comparator = undefined;

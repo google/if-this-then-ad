@@ -25,6 +25,7 @@ export enum COMPARATORS {
     less = 'lt',
     yes = 'yes',
     no = 'no',
+    enum = 'enum',
 }
 
 export interface Rule {
@@ -45,6 +46,7 @@ export interface Rule {
             | COMPARATORS.yes
             | COMPARATORS.no;
         value: string | number | boolean;
+        dataType?: string;
     };
     executionInterval: number;
     jobId: string;
