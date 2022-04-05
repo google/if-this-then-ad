@@ -11,26 +11,15 @@
     limitations under the License.
  */
 
-import { Token } from '../interfaces/token';
+import { Configuration } from './interfaces';
 
-/**
- * User class.
- */
-export class User {
-  id?: string;
-  profileId: string;
-  displayName: string;
-  profilePhoto: string;
-  token: Token;
-  email?: string;
-
-  /**
-   * Parse User from JSON Object.
-   *
-   * @param {any} input
-   * @returns {User}
-   */
-  static fromJSON(input: any): User {
-    return Object.assign(new User(), JSON.parse(input));
-  }
-}
+export const config: Configuration = {
+    id: 'ambee',
+    name: 'Ambee (Pollen, Air Quality, etc.)',
+    baseUrl: {
+        pollenRiskLevel: 'https://api.ambeedata.com/latest/pollen/by-place?place={{location}}',
+        airQualityLevel: 'https://api.ambeedata.com/latest/by-city?city={{location}}',
+    },
+    apiKey: '',
+    jobOwner: '',
+};

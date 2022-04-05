@@ -21,19 +21,29 @@
   <!-- Middle Spacer -->
   <span class="spacer"></span>
 
-  <!-- Header buttons -->
-  <button class="avatar-wrapper" *ngIf="authService.isLoggedIn" mat-icon-button mat-button [matMenuTriggerFor]="userMenu" aria-label="Example icon-button with share icon">
-    <!-- User profile picture -->
-    <div *ngIf="avatarUrl; else defaultAvatar" class="avatar" [style.backgroundImage]="'url(' + avatarUrl + ')'"></div>
+  <ng-container *ngIf="authService.isLoggedIn && user">
+    <!-- Header buttons -->
+    <button class="avatar-wrapper" mat-icon-button mat-button [matMenuTriggerFor]="userMenu" aria-label="User account menu">
+      <!-- User profile picture -->
+      <div class="avatar" [style.backgroundImage]="'url(' + user.profilePhoto + ')'"></div>
+    </button>
 
-    <!-- Default avatar icon -->
-    <ng-template #defaultAvatar>
-      <mat-icon>account_circle</mat-icon>
-    </ng-template>
-  </button>
-
-  <!-- User menu -->
-  <mat-menu #userMenu="matMenu" xPosition="before">
-    <button mat-menu-item (click)="logout()">Logout</button>
-  </mat-menu>
+    <!-- User menu -->
+    <mat-menu #userMenu="matMenu" xPosition="before">
+      <div class="avatar-wrapper avatar-wrapper-padding">
+        <div class="avatar avatar-big" [style.backgroundImage]="'url(' + user.profilePhoto + ')'"></div>
+      </div>
+      <div class="user-info">
+        <div class="centered-content name">
+          {{user.displayName}}
+        </div>
+        <div class="centered-content email">
+          {{user.email}}
+        </div>
+        <div class="centered-content logout">
+          <button mat-raised-button color="primary" (click)="logout()">Logout</button>
+        </div>
+      </div>
+    </mat-menu>
+  </ng-container>
 </mat-toolbar>

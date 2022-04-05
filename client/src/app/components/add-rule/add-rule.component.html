@@ -41,7 +41,15 @@
         <h2>Set Source Parameters</h2>
         <mat-form-field class="form-element" *ngFor="let param of currentRule.source.params">
             <mat-label>{{ param.name }}</mat-label>
-            <input matInput name="{{ param.dataPoint }}" type="text" [(ngModel)]="param.value" required>
+            <app-location-auto-complete
+                *ngIf="'location' == param.type; else noGeo" 
+                [dataPoint]="param.dataPoint"
+                [(targetLocation)]="param.value"
+                name="param.dataPoint"
+            ></app-location-auto-complete>
+            <ng-template #noGeo>
+                <input matInput name="{{ param.dataPoint }}" type="text" [(ngModel)]="param.value" required>
+            </ng-template>
         </mat-form-field>
     </form>
 
@@ -79,6 +87,11 @@
                 <mat-select *ngSwitchDefault name="rule-comparator" [(ngModel)]="currentRule.condition.comparator" required>
                     <mat-option value="gt">&gt;</mat-option>
                     <mat-option value="lt">&lt;</mat-option>
+                </mat-select>
+                <mat-select *ngSwitchCase="'enum'" name="rule-comparator" [(ngModel)]="currentRule.condition.comparator" required>
+                    <mat-option *ngFor="let enum of currentRule.condition.enum" [value]="enum">
+                        {{ enum }}
+                    </mat-option>
                 </mat-select>
             </ng-container>
         </mat-form-field>
