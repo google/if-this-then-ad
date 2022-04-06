@@ -101,7 +101,7 @@ export class AuthService {
    * Gets Access token for a user
    */
   get accessToken() {
-    return this.currentUser?.token.access ?? '';
+    return this.currentUser?.token?.access ?? '';
   }
 
   /**
