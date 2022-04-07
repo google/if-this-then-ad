@@ -17,6 +17,7 @@ import { Request, Response } from 'express';
 import { log } from '@iftta/util';
 import OpenWeatherMap from '@iftta/open-weather-map-agent';
 import DV360Agent from '@iftta/dv360-ads';
+import GoogleAdsAgent from '@iftta/google-ads';
 import TaskConfiguration from '../job-runner/task-configuration';
 import { Token } from 'models/user';
 
@@ -24,6 +25,10 @@ const allowedAgentMethods = {
     'dv360-agent': {
         metadata: DV360Agent.getAgentMetadata,
         list: DV360Agent.getEntityList,
+    },
+    'googleads-agent': {
+        metadata: GoogleAdsAgent.getAgentMetadata,
+        list: GoogleAdsAgent.getEntityList,
     },
     'open-weather-map': {
         metadata: OpenWeatherMap.getAgentMetadata,
