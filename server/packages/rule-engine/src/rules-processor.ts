@@ -39,7 +39,8 @@ export class RulesProcessor {
         const rules: Rule[] = await repo.list();
 
         const rulesForJob = rules.filter((rule) => {
-            return rule.source.id == jobResult.agentId;
+            return rule.source.id == jobResult.agentId
+                && rule.jobId == jobResult.jobId;
         });
 
         log.info(`Got ${rulesForJob.length} rules for job ${jobResult.jobId}`);
@@ -106,6 +107,10 @@ export class RulesProcessor {
 
         if (rule.condition.comparator == COMPARATORS.no) {
             return !dpResult;
+        }
+
+        if (COMPARATORS.enum == rule.condition.dataType) {
+            return rule.condition.comparator == dpResult;
         }
 
         return false;

@@ -119,8 +119,14 @@ export default class EntityManager<T extends DV360Entity> {
         };
         options.method = httpMethod;
 
-        const res = await axios(options);
-        return res.data;
+        // Add DV360 API error description to log
+        try {
+            const res = await axios(options);
+            return res.data;
+        } catch (e) {
+            console.log('DV360 ERROR:', (e as any).response.data);
+            throw e;
+        }
     }
 
     private parseTemplateString(s: string): string {

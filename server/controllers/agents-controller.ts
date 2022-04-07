@@ -18,6 +18,7 @@ import { log } from '@iftta/util';
 import OpenWeatherMap from '@iftta/open-weather-map-agent';
 import DV360Agent from '@iftta/dv360-ads';
 import GoogleAdsAgent from '@iftta/google-ads';
+import AmbeeAgent from '@iftta/ambee-agent';
 import TaskConfiguration from '../job-runner/task-configuration';
 import { Token } from 'models/user';
 
@@ -33,6 +34,9 @@ const allowedAgentMethods = {
     'open-weather-map': {
         metadata: OpenWeatherMap.getAgentMetadata,
     },
+    'ambee': {
+        metadata: AmbeeAgent.getAgentMetadata,
+    }
 };
 
 export const getAgentsMetadata = async (req: Request, res: Response) => {
@@ -47,9 +51,18 @@ export const getAgentsMetadata = async (req: Request, res: Response) => {
 export const getAgentEntityList = async (req: Request, res: Response) => {
     log.debug(`getAgentEntityList: ${JSON.stringify(req.params)}`);
 
-    // TODO: obtain user ID from the Rule object
-    // obtain freshTokens before running the jobs
-    const userId = 'YrqYQc15jFYutbMdZNss';
+    let userId = '';
+    if (
+        'undefined' != typeof req
+        && 'user' in req
+        && 'undefined' != typeof req['user']
+        && 'id' in req['user']
+    ) {
+        userId = req['user']['id'];
+    } else {
+        throw new Error('User must be logged in');
+    }
+
     let token: Token;
     try {
         token = await TaskConfiguration.refreshTokensForUser(userId);

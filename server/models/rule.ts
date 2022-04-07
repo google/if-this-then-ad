@@ -31,7 +31,7 @@ export interface Rule {
 }
 
 export interface Condition {
-    datapoint: string;
+    dataPoint: string;
     comparator:
         | COMPARATORS.equals
         | COMPARATORS.greater

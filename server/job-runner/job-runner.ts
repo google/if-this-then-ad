@@ -25,6 +25,7 @@ import Repository from '../services/repository-service';
 import { ExecutionTime, Job } from './interfaces';
 import TaskCollector from './task-collector';
 import TaskConfiguration from './task-configuration';
+import AmbeeAgent from '@iftta/ambee-agent';
 
 const pubSubClient = new PubSub();
 const jobsCollection = Collections.get(Collection.JOBS);
@@ -102,6 +103,7 @@ class JobRunner {
     private listSourceAgents() {
         return {
             'open-weather-map': new OpenWeatherMap(),
+            'ambee': new AmbeeAgent(),
         };
     }
 
@@ -217,6 +219,7 @@ class JobRunner {
         // Collect all actions that need to be performed
         // on the target systems.
 
+        const taskCollector = new TaskCollector();
         while (!(await agentResult).done) {
             log.debug('job-runner:runAll: jobResult');
             log.debug(await agentResult);
@@ -228,7 +231,7 @@ class JobRunner {
             log.debug(currentResult);
             const results: Array<RuleResult> = await rulesEngine.processMessage(currentResult);
 
-            TaskCollector.put(currentResult, results);
+            taskCollector.put(currentResult, results);
 
             agentResult = agentResultIter.next();
         }
@@ -238,12 +241,13 @@ class JobRunner {
         // Update execution times in the jobs collection
         await this.updateJobExecutionTimes(executionTimes);
 
-        const tasks = TaskCollector.get();
+        const tasks = taskCollector.get();
         await this.processTasks(tasks);
     }
 
     private async processTasks(tasks: Array<AgentTask>) {
         const agents = this.listTargetAgents();
+        log.debug(`job-runner:processTasks: #of tasks ${tasks.length}`);
         tasks.map(async (task) => {
             const targetAgent = agents[task.target.agentId];
             log.debug(`job-runner:processTasks: Executing task on agent ${task.target.agentId}`);
