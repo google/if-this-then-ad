@@ -35,6 +35,7 @@ export class Rule {
     dataType?: string;
     comparator?: string;
     value?: string | number;
+    enum?: Array<string>;
   } = {};
   targets: TargetAgent[] = [];
 }
