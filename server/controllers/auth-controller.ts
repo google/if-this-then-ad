@@ -11,25 +11,48 @@
     limitations under the License.
  */
 
-import { Request, Response } from 'express';
-import { log } from '@iftta/util';
-import { refreshToken } from '@iftta/job-runner';
+import {Request, Response} from 'express';
+import {log} from '@iftta/util';
+import {refreshToken} from '@iftta/job-runner';
 
 export const login = (req: Request, res: Response) => {
     // Store origin URL
+    console.log('### Storing returnTo', req.query.returnTo);
+    console.log('### Storing clientUrl', req.query.clientUrl);
+
     req.session['returnTo'] = req.query.returnTo;
     req.session['clientUrl'] = req.query.clientUrl;
 
     // Redirect to authentication
-    res.redirect('/api/auth/google');
+    res.redirect(
+        `/api/auth/google?returnTo=${req.query.returnTo}&clientUrl=${req.query.clientUrl}`
+    );
 };
 
 export const authDone = (req: Request, res: Response) => {
-    const returnTo = req.session['returnTo'] || '';
-    const user = JSON.stringify(req.user) || '';
-    const clientUrl = req.session['clientUrl'];
+    log.debug('### SESSION ###');
+    log.debug(req.session);
+    log.debug('### CHECK-ME-TOO');
+    log.debug(req.query);
 
-    res.redirect(`${clientUrl}/logged-in?returnTo=${returnTo}&user=${encodeURIComponent(user)}`);
+    const state = JSON.parse(
+        Buffer.from(req.query.state!.toString(), 'base64').toString()
+    );
+
+    log.debug(state);
+
+    const returnTo = state['returnTo'] || '';
+    const clientUrl = state['clientUrl'];
+
+    //const returnTo = req.session['returnTo'] || '';
+    const user = JSON.stringify(req.user) || '';
+    //const clientUrl = req.session['clientUrl'];
+
+    res.redirect(
+        `${clientUrl}/logged-in?returnTo=${returnTo}&user=${encodeURIComponent(
+            user
+        )}`
+    );
 };
 
 export const logout = (req: Request, res: Response) => {
@@ -46,10 +69,10 @@ export const renewToken = (req: Request, res: Response) => {
     const userId = req.body.userId;
     const oldToken = req.body.token;
     refreshToken(userId, oldToken)
-        .then((newToken) => {
+        .then(newToken => {
             res.json(newToken);
         })
-        .catch((reason) => {
-            res.status(400).json({ status: 'error', message: reason });
+        .catch(reason => {
+            res.status(400).json({status: 'error', message: reason});
         });
 };
