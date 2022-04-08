@@ -16,13 +16,6 @@ import {log} from '@iftta/util';
 import {refreshToken} from '@iftta/job-runner';
 
 export const login = (req: Request, res: Response) => {
-    // Store origin URL
-    console.log('### Storing returnTo', req.query.returnTo);
-    console.log('### Storing clientUrl', req.query.clientUrl);
-
-    req.session['returnTo'] = req.query.returnTo;
-    req.session['clientUrl'] = req.query.clientUrl;
-
     // Redirect to authentication
     res.redirect(
         `/api/auth/google?returnTo=${req.query.returnTo}&clientUrl=${req.query.clientUrl}`
@@ -30,23 +23,13 @@ export const login = (req: Request, res: Response) => {
 };
 
 export const authDone = (req: Request, res: Response) => {
-    log.debug('### SESSION ###');
-    log.debug(req.session);
-    log.debug('### CHECK-ME-TOO');
-    log.debug(req.query);
-
     const state = JSON.parse(
         Buffer.from(req.query.state!.toString(), 'base64').toString()
     );
-
-    log.debug(state);
-
     const returnTo = state['returnTo'] || '';
     const clientUrl = state['clientUrl'];
 
-    //const returnTo = req.session['returnTo'] || '';
     const user = JSON.stringify(req.user) || '';
-    //const clientUrl = req.session['clientUrl'];
 
     res.redirect(
         `${clientUrl}/logged-in?returnTo=${returnTo}&user=${encodeURIComponent(

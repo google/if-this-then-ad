@@ -35,50 +35,32 @@ const router = Router();
 const options: AuthenticateOptionsGoogle = {
     accessType: 'offline',
     prompt: 'consent',
-    //state: 'HERE-2',
 };
 
 router.get('/api/auth/login', AuthController.login);
-//router.get('/api/auth/google', passport.authenticate('google', options));
 
 router.get('/api/auth/google', (req, res, next) => {
-    console.log('STATE');
     const state = {
         returnTo: req.query.returnTo,
         clientUrl: req.query.clientUrl,
     };
-    //const state = Buffer.from('THIS-ACTUALLY-WORKED').toString('base64');
+
     const authenticator = passport.authenticate('google', {
         ...options,
         ...{state: Buffer.from(JSON.stringify(state)).toString('base64')},
     });
 
-    console.log(
-        '### ENCODED STATE',
-        Buffer.from(JSON.stringify({state})).toString('base64')
-    );
-
     authenticator(req, res, next);
 });
-
-/*router.get(
-    '/api/auth/oauthcallback',
-    passport.authenticate('google', {
-        failureRedirect: '/api/auth/login',
-        successRedirect: '/api/auth/done',
-    })
-);*/
 
 router.get(
     '/api/auth/oauthcallback',
     passport.authenticate('google', {
         failureRedirect: '/api/auth/login',
-        //successRedirect: '/api/auth/done',
     }),
     AuthController.authDone
 );
 
-//router.get('/api/auth/done', AuthController.authDone);
 router.get('/api/auth/logout', AuthController.logout);
 router.post('/api/auth/logout', AuthController.logout);
 router.post('/api/auth/refresh', AuthController.renewToken);
