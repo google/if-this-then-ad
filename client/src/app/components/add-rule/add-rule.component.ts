@@ -23,6 +23,7 @@ import { store } from 'src/app/store';
 import { NgForm } from '@angular/forms';
 import { SourceAgentParameter } from 'src/app/interfaces/source-agent-parameter';
 import { AuthService } from 'src/app/services/auth.service';
+import { StepperOrientation } from '@angular/cdk/stepper';
 
 @Component({
   selector: 'app-add-rule',
@@ -35,6 +36,7 @@ import { AuthService } from 'src/app/services/auth.service';
  */
 export class AddRuleComponent implements OnInit {
   isLinear = false;
+  stepperOrientation: StepperOrientation = 'horizontal'; // vertical
   sources: SourceAgent[] = [];
   sourceDataPoints: DataPoint[] = [];
   sourceParams: SourceAgentParameter[] = [];

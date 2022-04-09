@@ -13,7 +13,7 @@
 
 <div class="wrapper">
 
-    <mat-stepper [linear]="isLinear" #stepper>
+    <mat-stepper [linear]="isLinear" [orientation]="stepperOrientation" #stepper>
         <mat-step [stepControl]="nameForm.control">
             <form [formGroup]="nameForm.control">
                 <ng-template matStepLabel>Data source</ng-template>
