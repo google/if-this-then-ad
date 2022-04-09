@@ -34,7 +34,7 @@ import { AuthService } from 'src/app/services/auth.service';
  * Add rule component.
  */
 export class AddRuleComponent implements OnInit {
-  isLinear = true;
+  isLinear = false;
   sources: SourceAgent[] = [];
   sourceDataPoints: DataPoint[] = [];
   sourceParams: SourceAgentParameter[] = [];

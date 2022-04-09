@@ -30,7 +30,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatMenuModule } from '@angular/material/menu';
-
+import { MatStepperModule } from '@angular/material/stepper'; 
 import { AddRuleComponent } from './components/add-rule/add-rule.component';
 import { HttpClientModule } from '@angular/common/http';
 import { RulesComponent } from './components/rules/rules.component';
@@ -70,6 +70,7 @@ import { LocationAutoComplete } from './components/location-auto-complete/locati
     MatToolbarModule,
     MatMenuModule,
     HttpClientModule,
+    MatStepperModule,
   ],
   providers: [httpInterceptorProviders],
   bootstrap: [AppComponent],
