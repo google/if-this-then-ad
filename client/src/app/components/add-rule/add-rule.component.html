@@ -54,6 +54,7 @@
                 </form>
                 <div class="step-footer">
                     <button mat-raised-button color="primary" matStepperNext> Next </button>
+
                 </div>
             </form>
         </mat-step>
@@ -138,7 +139,19 @@
         </mat-step>
 
         <mat-step>
-            <ng-template matStepLabel>Done</ng-template>
+            <ng-template matStepLabel>Review & Finish</ng-template>
+            <div id="rule-summary">
+                <p>Rule name <i> {{this.currentRule.name}} </i></p>
+                <p>Monitor <i> {{this.currentRule.source.name}} </i> for <i *ngFor="let param of this.currentRule.source.params"> {{param.name}} : {{param.value}} </i> </p>
+                <p>Trigger when <i> {{this.currentRule.condition.name}} {{this.currentRule.condition.comparator}} {{ this.currentRule.condition.value }} </i> </p>
+
+                <p> Run every <i>  {{this.currentRule.executionInterval}} </i> minutes </p>
+
+                <p>Perform these actions: </p>
+                <ul *ngFor="let t of this.currentRule.targets">
+                    <li *ngFor="let a of t.actions">{{ a.type  }} - <i *ngFor="let ap of a.params"> {{ap.value}} &nbsp; </i> </li>
+                </ul>
+            </div>
             <div class="step-footer">
                 <button mat-raised-button matStepperPrevious> Back </button>
                 <!-- Save button -->
@@ -146,6 +159,4 @@
             </div>
         </mat-step>
     </mat-stepper>
-    <!-- All Rules -->
-    <app-rules class="rules"></app-rules>
 </div>

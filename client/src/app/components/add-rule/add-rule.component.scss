@@ -40,9 +40,17 @@ form {
   margin-top: 3em;
   text-align: right;
 }
+
 .mat-input-element {
   min-height: 2em;
 }
+
 button {
   margin-left: 1.5em;
+}
+
+#rule-summary>p>i {
+  font-weight: 300;
+  padding: 6px;
+  color: blue;
 }
