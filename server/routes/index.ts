@@ -138,6 +138,8 @@ const getStaticFilePath = (): string => {
 };
 
 // Serve static Angular build environment dependent.
-router.use('*', express.static(getStaticFilePath()));
+if(process.env.NODE_ENV !== 'development'){
+    router.use('*', express.static(getStaticFilePath()));
+}
 
 export default router;
