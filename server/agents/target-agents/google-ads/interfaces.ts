@@ -21,7 +21,7 @@ export interface ActionResult {
 
 export interface AgentMetadata {
     id: string;
-    displayName: string;
+    name: string;
     type: AgentType;
     arguments: Array<string>;
     api?: Array<ApiMethodInfo>;
