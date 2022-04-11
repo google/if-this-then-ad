@@ -95,7 +95,7 @@ export default class DV360Agent implements IAgent {
 
         const meta: AgentMetadata = {
             id: config.id,
-            displayName: this.name,
+            name: config.name,
             type: AgentType.TARGET,
             arguments: ['advertiserId', 'entityId', 'entityType'],
             api: [
