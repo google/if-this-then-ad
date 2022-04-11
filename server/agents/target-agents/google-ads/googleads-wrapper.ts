@@ -12,7 +12,7 @@ import { config } from './config';
  *
  * Facilitates calls to the Google Ads API.
  */
-export default class GoogleAdsWrapper {
+export default class GoogleAdsClient {
 
     /**
      * @param externalCustomerId - Ads account to operate on
@@ -26,7 +26,7 @@ export default class GoogleAdsWrapper {
         private oauthToken: string,
         private developerToken: string,
     ) {
-        if (!oauthToken || !externalCustomerId || !externalManagerCustomerId || !developerToken) {
+        if (!oauthToken || !externalCustomerId || !externalManagerCustomerId || !developerToken) {
             throw new Error('Incomplete configuration for Google Ads API.');
         }
     }
@@ -37,7 +37,7 @@ export default class GoogleAdsWrapper {
      * @param httpMethod - HTTP method to use
      * @returns {Object} - API response
      */
-      private async apiCall(options: AxiosRequestConfig, httpMethod: Method = HttpMethods.POST) {
+    private async apiCall(options: AxiosRequestConfig, httpMethod: Method = HttpMethods.POST) {
         options.headers = {
             'developer-token': this.developerToken,
             'login-customer-id': parseInt(this.externalManagerCustomerId),
@@ -70,7 +70,7 @@ export default class GoogleAdsWrapper {
             default:
                 throw new Error('Unsupported entity type requested to be modified.');
         }
-        return await this.apiCall({
+        return this.apiCall({
             url: `${config.baseUrl}/customers/${this.externalCustomerId}/googleAds:mutate`,
             data: {
                 'mutateOperations': {
@@ -117,9 +117,9 @@ export default class GoogleAdsWrapper {
         }
         // TODO: Add paging in case 10k+ results may be expected.
         let result = await this.apiCall({
-                url: `${config.baseUrl}/customers/${this.externalCustomerId}/googleAds:search`,
-                data: { 'query': query }
-            }, 'post');
+            url: `${config.baseUrl}/customers/${this.externalCustomerId}/googleAds:search`,
+            data: { 'query': query }
+        }, 'post');
         let formattedResult: Array<ListRecord>;
         switch (entityType) {
             case EntityType.campaign:
@@ -130,7 +130,7 @@ export default class GoogleAdsWrapper {
                         'name': e.campaign.name,
                         'status': e.campaign.status
                     };
-                }) || [];
+                }) || [];
                 break;
             case EntityType.adGroup:
                 formattedResult = result.results?.map(e => {
@@ -144,6 +144,6 @@ export default class GoogleAdsWrapper {
                 });
                 break;
         };
-        return formattedResult || [];
+        return formattedResult || [];
     }
 }

@@ -1,4 +1,4 @@
-import GoogleAdsWrapper from './googleads-wrapper';
+import GoogleAdsClient from './googleads-wrapper';
 import {
     ActionResult,
     AgentMetadata,
@@ -31,7 +31,7 @@ export default class GoogleAdsAgent implements IAgent {
     public async getAgentMetadata(): Promise<AgentMetadata> {
         const metadata: AgentMetadata = {
             id: config.id,
-            displayName: this.name,
+            name: config.name,
             type: AgentType.TARGET,
             arguments: ['campaignId', 'adGroupId'],
             api: [
@@ -73,14 +73,14 @@ export default class GoogleAdsAgent implements IAgent {
      * @param task - the task to execute
      * @returns {Array<ActionResult>} - results of all the task's actions
      */
-    public async execute(task: AgentTask) {
+    public async execute(task: AgentTask):Promise <Array<ActionResult>> {
         const result: Array<ActionResult> = [];
         for (const action of task.target.actions) {
             let instanceOptions = {} as InstanceOptions;
             action.params.forEach((p) => {
                 instanceOptions[p.key] = p.value;
             });
-            let googleAds = new GoogleAdsWrapper(
+            let googleAds = new GoogleAdsClient(
                 instanceOptions.externalCustomerId,
                 instanceOptions.externalManagerCustomerId,
                 task.token.auth,
@@ -90,7 +90,7 @@ export default class GoogleAdsAgent implements IAgent {
                 await googleAds.changeStatus(
                     instanceOptions.entityType as EntityType,
                     instanceOptions.entityId as string,
-                    shouldBeActive as Boolean);
+                    shouldBeActive as boolean);
                 result.push({
                     ruleId: task.target.ruleId,
                     agentId: config.id,
@@ -131,7 +131,7 @@ export default class GoogleAdsAgent implements IAgent {
         entityType: string,
         parentEntityId?: string,
         getOnlyActive = false) {
-        const googleAds = new GoogleAdsWrapper(
+        const googleAds = new GoogleAdsClient(
             externalCustomerId,
             externalManagerCustomerId,
             oauthToken,
