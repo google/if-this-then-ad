@@ -18,11 +18,17 @@ import { LoginComponent } from 'src/app/components/login/login.component';
 import { LoggedInComponent } from 'src/app/components/logged-in/logged-in.component';
 
 import { AuthGuard } from './services/auth.guard';
+import { RulesComponent } from './components/rules/rules.component';
 
 const routes: Routes = [
   {
-    path: '',
+    path: 'new-rule',
     component: AddRuleComponent,
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'list-rules',
+    component: RulesComponent,
     canActivate: [AuthGuard],
   },
   {
@@ -34,8 +40,8 @@ const routes: Routes = [
     component: LoggedInComponent,
   },
   {
-    path: 'test',
-    component: AddRuleComponent,
+    path: '',
+    component: RulesComponent,
     canActivate: [AuthGuard],
   },
 ];
@@ -45,4 +51,4 @@ const routes: Routes = [
   exports: [RouterModule],
 })
 // eslint-disable-next-line require-jsdoc
-export class AppRoutingModule {}
+export class AppRoutingModule { }

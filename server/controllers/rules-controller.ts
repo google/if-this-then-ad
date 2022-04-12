@@ -60,9 +60,10 @@ export const create = async (req: Request, res: Response) => {
         await JobController.assignRuleToJob(ruleId, jobId);
 
         log.info(`rules-controller:create: Successfully created rule with id : ${ruleId}`);
-        res.json(rule);
+        return res.json(rule);
     } catch (err) {
         console.log(err);
+        return res.sendStatus(500);
     }
 };
 
@@ -75,7 +76,7 @@ export const create = async (req: Request, res: Response) => {
 export const list = async (req: Request, res: Response) => {
     const rules = await repo.list();
 
-    res.json(rules);
+    return res.json(rules);
 };
 
 /**
