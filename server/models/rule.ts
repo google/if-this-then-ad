@@ -15,8 +15,6 @@ export enum COMPARATORS {
     equals = 'eq',
     greater = 'gt',
     less = 'lt',
-    yes = 'yes',
-    no = 'no',
 }
 
 export interface Rule {
@@ -33,12 +31,10 @@ export interface Rule {
 export interface Condition {
     dataPoint: string;
     comparator:
-        | COMPARATORS.equals
-        | COMPARATORS.greater
-        | COMPARATORS.less
-        | COMPARATORS.yes
-        | COMPARATORS.no;
-    targetValue: string | number | boolean;
+    | COMPARATORS.equals
+    | COMPARATORS.greater
+    | COMPARATORS.less;
+    value: string | number | boolean;
 }
 
 export interface Agent {
