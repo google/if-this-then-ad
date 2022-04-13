@@ -31,7 +31,7 @@ class OpenWeatherMap implements IAgent {
 
     private createApiClient(options: Configuration): AxiosInstance {
         if (!options.apiKey) {
-            const errorMessage = 'API Key not set, it needs to be set in the env file';
+            const errorMessage = 'API Key not set, it needs to be set in the user settings';
             log.error(errorMessage);
             throw new Error(errorMessage);
         }
@@ -116,15 +116,15 @@ class OpenWeatherMap implements IAgent {
     }
 
     private getOptions(job: Job) {
-        let options = { ...config };
-        let userSettings = {};
-        job.ownerSettings!.params.map((p) => {
-            userSettings[p.key] = p.value;
-        });
-        options.apiKey = userSettings['apiKey'] || (process.env.WEATHER_API_KEY as string);
-        options.jobId = job.id;
-        options.targetLocation = job.query ? job.query[0].value : '';
-        options.jobOwner = job.owner;
+        const options = { 
+            ...config,
+            apiKey: job && job?.ownerSettings 
+                ? job?.ownerSettings['OPENWEATHER_API_KEY'] : '',
+            jobId: job.id,
+            targetLocation: job.query ? job.query[0].value : '',
+            jobOwner: job.owner,
+        }
+
         log.debug(`${this.agentId} : Agent options used for this job`);
         log.debug(options);
 
@@ -135,6 +135,11 @@ class OpenWeatherMap implements IAgent {
         log.debug(`${this.agentId} : execute : Job to execute`);
         log.debug(job);
         const jobOptions = this.getOptions(job);
+        if (! jobOptions.apiKey) {
+            const errorMessage = `Execution of Job ${job.id} failed: Cannot run the job without the apiKey`;
+            log.debug(errorMessage);
+            return Promise.reject(errorMessage);
+        }
 
         const res = await this.run(jobOptions);
 

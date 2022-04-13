@@ -77,7 +77,6 @@
                     <!-- Data Point -->
                     <h3>Datapoint</h3>
                     <mat-form-field class="form-element">
-
                         <mat-label>Datapoint</mat-label>
                         <mat-select *ngIf="sourceDataPoints" name="rule-datapoint" required
                             [ngModel]="currentRule.condition" (selectionChange)="onDataPointChange($event.value)">

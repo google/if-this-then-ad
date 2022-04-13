@@ -128,7 +128,8 @@ export class LocationAutoComplete implements MatFormFieldControl<string> {
   }
 
   private async initGeoSearch() {
-    const url = config.apiUrl + this.getApiKey('GOOGLE_MAPS_API_KEY');
+    const url = config.apiUrl 
+      + this.authService.getUserSetting('GOOGLEMAPS_API_KEY');
 
     this.getScriptOnce(url, () => {
       this.setGeoListener();
