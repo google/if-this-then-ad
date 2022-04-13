@@ -11,6 +11,7 @@
     limitations under the License.
  */
 
+
 import { Component, OnInit, ViewChild, Inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
@@ -26,6 +27,7 @@ import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { SourceAgentParameter } from 'src/app/interfaces/source-agent-parameter';
 import { SourceAgentSettingsParam } from 'src/app/interfaces/source-agent-settings-parameter';
 import { AuthService } from 'src/app/services/auth.service';
+import { StepperOrientation } from '@angular/cdk/stepper';
 
 @Component({
   selector: 'app-add-rule',
@@ -37,6 +39,8 @@ import { AuthService } from 'src/app/services/auth.service';
  * Add rule component.
  */
 export class AddRuleComponent implements OnInit {
+  isLinear = false;
+  stepperOrientation: StepperOrientation = 'horizontal'; // vertical
   sources: SourceAgent[] = [];
   sourceDataPoints: DataPoint[] = [];
   sourceParams: SourceAgentParameter[] = [];
@@ -64,6 +68,7 @@ export class AddRuleComponent implements OnInit {
   constructor(
     private http: HttpClient, 
     private authService: AuthService,
+    private router:Router,
     public dialog: MatDialog
   ) {
     // Watch save requirements
@@ -204,7 +209,8 @@ export class AddRuleComponent implements OnInit {
     this.conditionForm.resetForm();
     this.sourceForm.resetForm();
     this.executionIntervalForm.resetForm();
-    this.nameForm.resetForm();
+    
+    this.router.navigate(['/list-rules']);
   }
 
   private checkUserSettingsForAgent(params: Array<SourceAgentSettingsParam>) {

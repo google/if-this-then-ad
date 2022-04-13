@@ -35,6 +35,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 import { AddRuleComponent, MissingSettingsDialogComponent } from './components/add-rule/add-rule.component';
+import { MatStepperModule } from '@angular/material/stepper'; 
 import { HttpClientModule } from '@angular/common/http';
 import { RulesComponent } from './components/rules/rules.component';
 import { TargetSelectorComponent } from './components/target-selector/target-selector.component';
@@ -79,6 +80,7 @@ import { UserSettingsComponent } from './components/user-settings/user-settings.
     MatDialogModule,
     MatSnackBarModule,
     HttpClientModule,
+    MatStepperModule,
   ],
   providers: [httpInterceptorProviders],
   bootstrap: [AppComponent],

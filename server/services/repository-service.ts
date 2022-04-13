@@ -49,7 +49,6 @@ class RepositoryService<T> {
 
             const data = snapshot.data();
 
-            // log.debug(Object.entries(data));
             deepInspect(data);
             log.debug(data);
             return data;
@@ -89,8 +88,8 @@ class RepositoryService<T> {
             return data;
         } catch (err) {
             log.error(err);
+            return Promise.reject(err);
         }
-        return data;
     }
 
     async get(id: string): Promise<T | undefined> {
@@ -111,8 +110,8 @@ class RepositoryService<T> {
             return data;
         } catch (err) {
             log.error(err);
+            return Promise.reject(err);
         }
-        return undefined;
     }
 
     async getBy(fieldName: any, fieldValue: string | number | boolean): Promise<T[]> {
@@ -131,8 +130,9 @@ class RepositoryService<T> {
             snapshot.forEach((doc) => {
                 data.push({ id: doc.id, ...doc.data() });
             });
-        } catch (e) {
-            log.error(e);
+        } catch (err) {
+            log.error(err);
+            return Promise.reject(err);
         }
 
         return Promise.resolve(data);
@@ -148,8 +148,8 @@ class RepositoryService<T> {
             return result.id;
         } catch (err) {
             log.error(err);
+            return Promise.reject(err);
         }
-        return undefined;
     }
 
     async delete(id: string): Promise<void> {
