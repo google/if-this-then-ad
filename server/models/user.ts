@@ -24,6 +24,7 @@ export interface User {
     locale?: string;
     token: Token;
     settings?: Array<setting>;
+    userSettings?: Object;
 }
 
 interface setting {

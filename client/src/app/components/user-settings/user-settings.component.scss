@@ -1,22 +1,22 @@
-.example-action-buttons {
+.user-settings-action-buttons {
     padding-bottom: 20px;
 }
 
-.example-headers-align .mat-expansion-panel-header-title,
-.example-headers-align .mat-expansion-panel-header-description {
+.user-settings-headers-align .mat-expansion-panel-header-title,
+.user-settings-headers-align .mat-expansion-panel-header-description {
     flex-basis: 0;
 }
 
-.example-headers-align .mat-expansion-panel-header-description {
+.user-settings-headers-align .mat-expansion-panel-header-description {
     justify-content: space-between;
     align-items: center;
 }
 
-.example-headers-align .mat-form-field + .mat-form-field {
+.user-settings-headers-align .mat-form-field + .mat-form-field {
     margin-left: 8px;
 }
 
 .mat-form-field{
-    width: 95% !important;
+    width: 80% !important;
 }
  

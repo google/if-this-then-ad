@@ -1,27 +1,41 @@
-<div class="example-action-buttons">
+<div class="user-settings-action-buttons">
   <button mat-icon-button (click)="back()">
     <mat-icon>arrow_back</mat-icon>
   </button>
   <button mat-button (click)="accordion.openAll()">Expand All</button>
   <button mat-button (click)="accordion.closeAll()">Collapse All</button>
 </div>
-<mat-accordion class="example-headers-align" multi>
-  <mat-expansion-panel *ngFor="let setting of settings" [expanded]="setting?.expanded">
-    <mat-expansion-panel-header>
-      <mat-panel-title>
-        {{setting.title}}
-      </mat-panel-title>
-      <mat-panel-description>
-        {{setting.description}}
-      </mat-panel-description>
-    </mat-expansion-panel-header>
+<form [formGroup]="userSettings">
+  <mat-accordion class="user-settings-headers-align" multi>
+    <mat-expansion-panel 
+      *ngFor="let setting of settings" 
+      [expanded]="setting?.expanded"
+      #userSettings
+    >
+      <mat-progress-bar 
+        mode="indeterminate"
+        *ngIf="savingUserSettings"
+      ></mat-progress-bar>
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          {{setting.title}}
+        </mat-panel-title>
+        <mat-panel-description>
+          {{setting.description}}
+        </mat-panel-description>
+      </mat-expansion-panel-header>
 
-    <mat-form-field appearance="fill">
-      <mat-label>{{setting.field}}</mat-label>
-      <input matInput [required]="setting?.expanded">
-      <mat-hint *ngIf="setting?.expanded">
-        This setting is <strong>required</strong>.
-      </mat-hint>
-    </mat-form-field>
-  </mat-expansion-panel>
-</mat-accordion>
+      <mat-form-field appearance="fill">
+        <mat-label>{{setting.field}}</mat-label>
+        <input 
+          matInput
+          [required]="!! setting?.expanded"
+          formControlName="{{ setting.settingName }}"
+        >
+        <mat-hint *ngIf="setting?.expanded">
+          This setting is <strong>required</strong>.
+        </mat-hint>
+      </mat-form-field>
+    </mat-expansion-panel>
+  </mat-accordion>
+</form>

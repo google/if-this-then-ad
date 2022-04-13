@@ -218,7 +218,7 @@ export class AddRuleComponent implements OnInit {
   }
 
   private isMissing(name: string) {
-    return true;
+    return ! this.authService.getUserSetting(name);
   }
 
   private showMissingSettingsDialog(missingSettings: Array<SourceAgentSettingsParam>) {
