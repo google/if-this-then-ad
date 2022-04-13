@@ -11,12 +11,12 @@
     limitations under the License.
  */
 
-import {log, date} from '@iftta/util';
-import {Application, NextFunction, Request, Response} from 'express';
+import { log, date } from '@iftta/util';
+import { Application, NextFunction, Request, Response } from 'express';
 import passport from 'passport';
 import GoogleStrategy from '../auth/google-strategy';
-import {Collection} from '../models/fire-store-entity';
-import {User} from '../models/user';
+import { Collection } from '../models/fire-store-entity';
+import { User } from '../models/user';
 import Collections from '../services/collection-factory';
 import Repository from '../services/repository-service';
 
@@ -63,7 +63,7 @@ export const init = (app: Application): any => {
 export const isAuthenticated = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
 ): Promise<any> => {
     const authorizationHeader = req.headers.authorization || '';
     const accessToken = _extractAccessToken(authorizationHeader);
@@ -107,11 +107,7 @@ export const isAuthenticated = async (
  * @param { NextFunction } next
  * @return { any }
  */
-export const isAuthorized = (
-    req: Request,
-    res: Response,
-    next: NextFunction
-): any => {
+export const isAuthorized = (req: Request, res: Response, next: NextFunction): any => {
     // TODO: check for existence of the token
     // otherwise redirect to /api/auth/google
     return true;
@@ -140,10 +136,7 @@ const _extractAccessToken = (authHeader: string): string | undefined => {
  */
 const _isValidAccessToken = async (accessToken: string): Promise<boolean> => {
     try {
-        const result: User[] = await userRepo.getBy(
-            'token.access',
-            accessToken
-        );
+        const result: User[] = await userRepo.getBy('token.access', accessToken);
         if (result.length > 0) {
             // ensure that the token isnt expired.
             const user: User = result[0];
