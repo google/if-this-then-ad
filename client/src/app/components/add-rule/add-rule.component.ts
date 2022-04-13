@@ -49,6 +49,15 @@ export class AddRuleComponent implements OnInit {
     { key: 'eq', value: 'equals' },
   ];
 
+  executionIntervals: any[] = [
+    { key: 30, value: '30 min' },
+    { key: 60, value: '60 min' },
+    { key: 120, value: '2 hrs' },
+    { key: 240, value: '4 hrs' },
+    { key: 480, value: '8 hrs' },
+    { key: 720, value: '12 hrs' },
+    { key: 1440, value: '24 hrs' },
+  ];
   dataPointListValues?: string[] = [];
   lockEquals: boolean = false;
   @ViewChild('name', { static: true }) nameForm: NgForm;
