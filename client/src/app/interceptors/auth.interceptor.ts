@@ -77,11 +77,15 @@ export class AuthInterceptor implements HttpInterceptor {
               console.error(e);
             },
           });
-          // update token on the user
+          // Update token on the user
           this.refreshAccessToken().subscribe({
             next: (t) => this.authService.updateToken(t),
           });
         }
+
+        // Logout on expired token
+        this.authService.logout();
+
         return throwError(() => new Error('Access Token expired: Login again'));
       })
     );
