@@ -33,10 +33,14 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
-
-import { AddRuleComponent, MissingSettingsDialogComponent } from './components/add-rule/add-rule.component';
 import { MatStepperModule } from '@angular/material/stepper'; 
-import { HttpClientModule } from '@angular/common/http';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatListModule } from '@angular/material/list';
+
+import {
+  AddRuleComponent,
+  MissingSettingsDialogComponent,
+} from './components/add-rule/add-rule.component';
 import { RulesComponent } from './components/rules/rules.component';
 import { TargetSelectorComponent } from './components/target-selector/target-selector.component';
 import { HeaderComponent } from './components/header/header.component';
@@ -45,6 +49,7 @@ import { LoggedInComponent } from './components/logged-in/logged-in.component';
 import { httpInterceptorProviders } from './interceptors';
 import { LocationAutoComplete } from './components/location-auto-complete/location-auto-complete.component';
 import { UserSettingsComponent } from './components/user-settings/user-settings.component';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 @NgModule({
   declarations: [
@@ -81,6 +86,9 @@ import { UserSettingsComponent } from './components/user-settings/user-settings.
     MatSnackBarModule,
     HttpClientModule,
     MatStepperModule,
+    MatSidenavModule,
+    MatListModule,
+    FontAwesomeModule,
   ],
   providers: [httpInterceptorProviders],
   bootstrap: [AppComponent],
