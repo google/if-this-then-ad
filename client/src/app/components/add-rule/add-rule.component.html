@@ -94,7 +94,7 @@
                     <mat-form-field class="form-element">
                         <mat-label>Comparator</mat-label>
                         <mat-select name="rule-comparator" [(ngModel)]="currentRule.condition.comparator"
-                            [disabled]="this.lockEquals" required>
+                            [disabled]="this.lockEquals" required >
                             <mat-option *ngFor="let c of this.comparatorMapping" value="{{c.key}}">{{c.value}}
                             </mat-option>
                         </mat-select>

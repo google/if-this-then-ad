@@ -60,7 +60,7 @@ export class RulesProcessor {
         // Outcome here should be ruleResult[] so that we can action on
         // the evalations of the result in the next step.
         const ruleResults: Array<RuleResult> = [];
-        rules.map((rule) => {
+        rules.forEach((rule) => {
             const evalResult = this.evaluate(rule, result);
             const ruleResult: RuleResult = {
                 ruleId: rule.id,
@@ -90,7 +90,25 @@ export class RulesProcessor {
         }
 
         if (rule.condition.comparator == COMPARATORS.equals) {
-            return dpResult == rule.condition.value;
+            // for equal comparison for different datatypes. 
+            if (rule.condition.dataType == 'boolean') {
+                return String(dpResult).toLowerCase() == 'true';
+            }
+
+            switch (rule.condition.dataType) {
+                case 'boolean': {
+                    return String(dpResult).toLowerCase() == 'true';
+                }
+                case 'number': {
+                    // TODO: decide if we only ints should be supported.
+                    return Number.parseFloat(dpResult) == rule.condition.value;
+                }
+                case 'enum': {
+                    return String(dpResult) === rule.condition.value;
+                }
+                default:
+                    return dpResult == rule.condition.value;
+            }
         }
 
         if (rule.condition.comparator == COMPARATORS.greater) {
@@ -99,18 +117,6 @@ export class RulesProcessor {
 
         if (rule.condition.comparator == COMPARATORS.less) {
             return dpResult < rule.condition.value;
-        }
-
-        if (rule.condition.comparator == COMPARATORS.yes) {
-            return !!dpResult;
-        }
-
-        if (rule.condition.comparator == COMPARATORS.no) {
-            return !dpResult;
-        }
-
-        if (COMPARATORS.enum == rule.condition.dataType) {
-            return rule.condition.comparator == dpResult;
         }
 
         return false;

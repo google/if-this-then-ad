@@ -60,6 +60,7 @@ export class AddRuleComponent implements OnInit {
   ];
   dataPointListValues?: string[] = [];
   lockEquals: boolean = false;
+
   @ViewChild('name', { static: true }) nameForm: NgForm;
   @ViewChild('source', { static: true }) sourceForm: NgForm;
   @ViewChild('condition', { static: true }) conditionForm: NgForm;
@@ -176,7 +177,7 @@ export class AddRuleComponent implements OnInit {
    * @param {DataPoint} val
    */
   onDataPointChange(val: DataPoint) {
-    console.log(val);
+
     // Store data point
     this.currentRule.condition.dataPoint = val.dataPoint;
     this.currentRule.condition.name = val.name;
@@ -190,12 +191,9 @@ export class AddRuleComponent implements OnInit {
     } else {
       this.lockEquals = false;
     }
-
     this.dataPointListValues = val.enum;
-
-
-    console.log(this.currentRule);
   }
+
 
   /**
    * Save rule.
