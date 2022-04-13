@@ -30,7 +30,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatMenuModule } from '@angular/material/menu';
-import { MatStepperModule } from '@angular/material/stepper'; 
+import { MatStepperModule } from '@angular/material/stepper';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatListModule } from '@angular/material/list';
 import { AddRuleComponent } from './components/add-rule/add-rule.component';
 import { HttpClientModule } from '@angular/common/http';
 import { RulesComponent } from './components/rules/rules.component';
@@ -40,6 +42,7 @@ import { LoginComponent } from './components/login/login.component';
 import { LoggedInComponent } from './components/logged-in/logged-in.component';
 import { httpInterceptorProviders } from './interceptors';
 import { LocationAutoComplete } from './components/location-auto-complete/location-auto-complete.component';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 @NgModule({
   declarations: [
@@ -71,6 +74,9 @@ import { LocationAutoComplete } from './components/location-auto-complete/locati
     MatMenuModule,
     HttpClientModule,
     MatStepperModule,
+    MatSidenavModule,
+    MatListModule,
+    FontAwesomeModule,
   ],
   providers: [httpInterceptorProviders],
   bootstrap: [AppComponent],
