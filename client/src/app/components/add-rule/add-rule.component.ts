@@ -11,8 +11,8 @@
     limitations under the License.
  */
 
-import { Component, OnInit, ViewChild, EventEmitter } from '@angular/core';
-import {Router } from "@angular/router"
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { map } from 'rxjs/operators';
@@ -62,7 +62,11 @@ export class AddRuleComponent implements OnInit {
    *
    * @param {HttpClient} http
    */
-  constructor(private http: HttpClient, private authService: AuthService, private router:Router) {
+  constructor(
+    private http: HttpClient,
+    private authService: AuthService,
+    private router: Router
+  ) {
     // Watch save requirements
     store.saveRequirements.subscribe((_) => {
       this.saveEnabled = Object.values(store.saveRequirements.value).every(
@@ -199,7 +203,7 @@ export class AddRuleComponent implements OnInit {
     this.conditionForm.resetForm();
     this.sourceForm.resetForm();
     this.executionIntervalForm.resetForm();
-    
+
     this.router.navigate(['/list-rules']);
   }
 }
