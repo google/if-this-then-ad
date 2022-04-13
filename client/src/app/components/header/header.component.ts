@@ -17,6 +17,8 @@ import { Router } from '@angular/router';
 import { AuthService } from 'src/app/services/auth.service';
 import { User } from 'src/app/models/user.model';
 
+import { store } from 'src/app/store';
+
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
@@ -27,7 +29,7 @@ import { User } from 'src/app/models/user.model';
  * Header component.
  */
 export class HeaderComponent implements OnInit {
-  user: User|null;
+  user: User | null;
 
   /**
    * Constructor.
@@ -48,7 +50,7 @@ export class HeaderComponent implements OnInit {
   }
 
   /**
-   * Logout - Navigate to Login page.
+   * Logout and navigate to Login page.
    */
   logout() {
     this.authService.logout();
@@ -60,5 +62,12 @@ export class HeaderComponent implements OnInit {
    */
   userSettings() {
     this.router.navigate(['/settings']);
+  }
+
+  /**
+   * Toggle sidenav.
+   */
+  toggleSidenav() {
+    store.sidenav.next(true);
   }
 }
