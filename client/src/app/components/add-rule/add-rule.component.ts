@@ -12,7 +12,7 @@
  */
 
 import { Component, OnInit, ViewChild, EventEmitter } from '@angular/core';
-import {Router } from "@angular/router"
+import { Router } from "@angular/router"
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { map } from 'rxjs/operators';
@@ -43,14 +43,14 @@ export class AddRuleComponent implements OnInit {
   sourceParams: SourceAgentParameter[] = [];
   currentRule: Rule = new Rule();
   saveEnabled: boolean = false;
-  comparatorMapping: {} = {
-    gt: 'Greater Than',
-    lt: 'Lower Than',
-    eq: 'Equal',
-    yes: 'Yes',
-    no: 'No',
-  };
+  comparatorMapping: any[] = [
+    { key: 'gt', value: 'greater than' },
+    { key: 'lt', value: 'less than' },
+    { key: 'eq', value: 'equals' },
+  ];
 
+  dataPointListValues?: string[] = [];
+  lockEquals: boolean = false;
   @ViewChild('name', { static: true }) nameForm: NgForm;
   @ViewChild('source', { static: true }) sourceForm: NgForm;
   @ViewChild('condition', { static: true }) conditionForm: NgForm;
@@ -62,7 +62,7 @@ export class AddRuleComponent implements OnInit {
    *
    * @param {HttpClient} http
    */
-  constructor(private http: HttpClient, private authService: AuthService, private router:Router) {
+  constructor(private http: HttpClient, private authService: AuthService, private router: Router) {
     // Watch save requirements
     store.saveRequirements.subscribe((_) => {
       this.saveEnabled = Object.values(store.saveRequirements.value).every(
@@ -167,14 +167,25 @@ export class AddRuleComponent implements OnInit {
    * @param {DataPoint} val
    */
   onDataPointChange(val: DataPoint) {
+    console.log(val);
     // Store data point
     this.currentRule.condition.dataPoint = val.dataPoint;
     this.currentRule.condition.name = val.name;
     this.currentRule.condition.dataType = val.dataType;
-    this.currentRule.condition.enum = val?.enum;
-
     // Reset comparator
     this.currentRule.condition.comparator = undefined;
+
+    if (val.dataType === 'boolean' || val.dataType === 'enum') {
+      this.currentRule.condition.comparator = 'eq';
+      this.lockEquals = true;
+    } else {
+      this.lockEquals = false;
+    }
+
+    this.dataPointListValues = val.enum;
+
+
+    console.log(this.currentRule);
   }
 
   /**
@@ -199,7 +210,7 @@ export class AddRuleComponent implements OnInit {
     this.conditionForm.resetForm();
     this.sourceForm.resetForm();
     this.executionIntervalForm.resetForm();
-    
+
     this.router.navigate(['/list-rules']);
   }
 }

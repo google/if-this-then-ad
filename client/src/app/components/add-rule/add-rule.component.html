@@ -90,33 +90,32 @@
                     <!-- Comparator -->
                     <mat-form-field class="form-element">
                         <mat-label>Comparator</mat-label>
-                        <ng-container [ngSwitch]="currentRule.condition.dataType">
-                            <input *ngSwitchCase="'string'" matInput name="rule-comparator"
-                                [(ngModel)]="currentRule.condition.comparator" required>
-                            <mat-select *ngSwitchCase="'boolean'" name="rule-comparator"
-                                [(ngModel)]="currentRule.condition.comparator" required>
-                                <mat-option value="yes">Yes</mat-option>
-                                <mat-option value="no">No</mat-option>
-                            </mat-select>
-                            <mat-select *ngSwitchDefault name="rule-comparator"
-                                [(ngModel)]="currentRule.condition.comparator" required>
-                                <mat-option value="gt">&gt;</mat-option>
-                                <mat-option value="lt">&lt;</mat-option>
-                            </mat-select>
-                            <mat-select *ngSwitchCase="'enum'" name="rule-comparator"
-                                [(ngModel)]="currentRule.condition.comparator" required>
-                                <mat-option *ngFor="let enum of currentRule.condition.enum" [value]="enum">
-                                    {{ enum }}
-                                </mat-option>
-                            </mat-select>
-                        </ng-container>
+                        <mat-select name="rule-comparator" [(ngModel)]="currentRule.condition.comparator"
+                            [disabled]="this.lockEquals" required>
+                            <mat-option *ngFor="let c of this.comparatorMapping" value="{{c.key}}">{{c.value}}
+                            </mat-option>
+                        </mat-select>
                     </mat-form-field>
 
                     <!-- Value -->
-                    <mat-form-field class="form-element" *ngIf="currentRule.condition.dataType === 'number'">
+                    <mat-form-field class="form-element" *ngIf="currentRule.condition.dataType">
                         <mat-label>Value</mat-label>
-                        <input [(ngModel)]="currentRule.condition.value" matInput name="rule-value" required
-                            type="number" step=1>
+                        <ng-container [ngSwitch]="currentRule.condition.dataType">
+                            <input *ngSwitchCase="'number'" [(ngModel)]="currentRule.condition.value" matInput
+                                name="rule-value" required type="number" step=1>
+                            <mat-select *ngSwitchCase="'boolean'" [(ngModel)]="currentRule.condition.value" matInput
+                                name="rule-value" required name="rule-value" [(ngModel)]="currentRule.condition.value"
+                                required>
+                                <mat-option value="true">Yes</mat-option>
+                                <mat-option value="false">No</mat-option>
+                            </mat-select>
+
+                            <mat-select *ngSwitchCase="'enum'" [(ngModel)]="currentRule.condition.value" matInput
+                                name="rule-value" required name="rule-value" [(ngModel)]="currentRule.condition.value"
+                                required>
+                                <mat-option *ngFor="let e of this.dataPointListValues" value="{{e}}">{{e}}</mat-option>
+                            </mat-select>
+                        </ng-container>
                     </mat-form-field>
 
                     <div class="step-footer">
@@ -142,14 +141,17 @@
             <ng-template matStepLabel>Review & Finish</ng-template>
             <div id="rule-summary">
                 <p>Rule name <i> {{this.currentRule.name}} </i></p>
-                <p>Monitor <i> {{this.currentRule.source.name}} </i> for <i *ngFor="let param of this.currentRule.source.params"> {{param.name}} : {{param.value}} </i> </p>
-                <p>Trigger when <i> {{this.currentRule.condition.name}} {{this.currentRule.condition.comparator}} {{ this.currentRule.condition.value }} </i> </p>
+                <p>Monitor <i> {{this.currentRule.source.name}} </i> for <i
+                        *ngFor="let param of this.currentRule.source.params"> {{param.name}} : {{param.value}} </i> </p>
+                <p>Trigger when <i> {{this.currentRule.condition.name}} {{this.currentRule.condition.comparator}} {{
+                        this.currentRule.condition.value }} </i> </p>
 
-                <p> Run every <i>  {{this.currentRule.executionInterval}} </i> minutes </p>
+                <p> Run every <i> {{this.currentRule.executionInterval}} </i> minutes </p>
 
                 <p>Perform these actions: </p>
                 <ul *ngFor="let t of this.currentRule.targets">
-                    <li *ngFor="let a of t.actions">{{ a.type  }} - <i *ngFor="let ap of a.params"> {{ap.value}} &nbsp; </i> </li>
+                    <li *ngFor="let a of t.actions">{{ a.type }} - <i *ngFor="let ap of a.params"> {{ap.value}} &nbsp;
+                        </i> </li>
                 </ul>
             </div>
             <div class="step-footer">
