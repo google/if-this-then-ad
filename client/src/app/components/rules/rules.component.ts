@@ -11,7 +11,7 @@
     limitations under the License.
  */
 
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { HttpClient } from '@angular/common/http';
@@ -30,7 +30,7 @@ import { store } from 'src/app/store';
 /**
  * Rules component.
  */
-export class RulesComponent implements OnInit {
+export class RulesComponent {
   rules: Rule[] = [];
   displayedColumns: string[] = [
     'name',
@@ -67,9 +67,6 @@ export class RulesComponent implements OnInit {
 
     this.loadRules();
   }
-
-  // eslint-disable-next-line require-jsdoc
-  ngOnInit(): void {}
 
   // eslint-disable-next-line require-jsdoc
   ngAfterViewInit() {
