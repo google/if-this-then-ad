@@ -58,7 +58,7 @@ export const init = (app: Application): any => {
  * @param { NextFunction } next
  * @return {any}
  */
-export const isAuthenticated = (req: Request, res: Response, next: NextFunction): any => {
+export const isAuthenticated = async (req: Request, res: Response, next: NextFunction): any => {
     const authorizationHeader = req.headers.authorization || '';
     const accessToken = _extractAccessToken(authorizationHeader);
     // Allowing clients to authenticate via authorization headers.
@@ -70,27 +70,26 @@ export const isAuthenticated = (req: Request, res: Response, next: NextFunction)
             return next();
         }
     }
+    
+    try {
+        const tokenResult = await _isValidAccessToken(accessToken || '');
+        log.debug('Validity of the submitted token ' + tokenResult);
+        req.session['accessTokenIsValid'] = tokenResult;
+        if (tokenResult) {
+            log.debug(`Token is valid ${tokenResult}`);
+            return next();
+        }
 
-    _isValidAccessToken(accessToken || '')
-        .then((tokenResult) => {
-            log.debug('Validity of the submitted token ' + tokenResult);
-            req.session['accessTokenIsValid'] = tokenResult;
-            if (tokenResult) {
-                log.debug(`Token is valid ${tokenResult}`);
-                return next();
-            }
-            // res.sendStatus(401).send('Unauthorized')
-            log.debug('failed auth');
-        })
-        .catch((err) => {
-            log.debug(err);
-            return res.sendStatus(500);
-        });
+        // finally check if user object
+        // was set as part of the cookie
+        if (req.isAuthenticated()) {
+            return next();
+        }
 
-    // finally check if user object
-    // was set as part of the cookie
-    if (req.isAuthenticated()) {
-        return next();
+        log.debug('failed auth');
+        return next('Failed auth');
+    } catch (err) {
+        return next(err);
     }
 };
 

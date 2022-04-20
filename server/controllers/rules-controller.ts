@@ -95,7 +95,7 @@ export const remove = async (req: Request, res: Response) => {
             await repo.delete(ruleId);
             return res.sendStatus(204);
         }
-
+        log.warn(`FORBIDDEN: Non ower userId: ${userId} attempted to delete Rule ${ruleId}`);
         return res.status(403).send('Forbidden');
     } catch (e) {
         log.error(e);
