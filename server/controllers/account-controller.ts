@@ -81,6 +81,19 @@ export const update = async (req: Request, res: Response) => {
     }
 };
 
+export const updateSettings = async (req: Request, res: Response) => {
+    try {
+        const user = (await userRepo.get(req.params.userId)) as User;
+        user.userSettings = req.body;
+        await userRepo.update(req.params.userId, user);
+    } catch (e) {
+        log.error(e);
+        res.status(500).json({error: 'Error accured while updating user settings.'});
+    }
+
+    return res.sendStatus(200);
+};
+
 export const remove = async (req: Request, res: Response) => {
     const id = req.params.id;
     log.debug(`Deleting document ${id}`);

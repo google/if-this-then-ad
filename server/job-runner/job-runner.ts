@@ -127,7 +127,11 @@ class JobRunner {
         for (const job of jobs) {
             const agent = agents[job.agentId];
             log.info(`Executing job ${job.id} via agent ${job.agentId}`);
-            yield await agent.execute(job);
+            try {
+                yield await agent.execute(job);
+            } catch (e) {
+                log.error(e);
+            }
         }
     }
 
@@ -179,10 +183,7 @@ class JobRunner {
 
         for (let job of jobs) {
             const userId = job.owner;
-            job.ownerSettings = await TaskConfiguration.getUserSettingsForAgent(
-                userId,
-                job.agentId,
-            );
+            job.ownerSettings = await TaskConfiguration.getUserSettings(userId);
             jobsWithSettings.push(job);
         }
         return jobsWithSettings;

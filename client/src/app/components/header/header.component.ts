@@ -11,7 +11,7 @@
     limitations under the License.
  */
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, TemplateRef } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { AuthService } from 'src/app/services/auth.service';
@@ -53,5 +53,12 @@ export class HeaderComponent implements OnInit {
   logout() {
     this.authService.logout();
     this.router.navigate(['/login']);
+  }
+
+  /**
+   * Settings - Navigate to user settings page.
+   */
+  userSettings() {
+    this.router.navigate(['/settings']);
   }
 }
