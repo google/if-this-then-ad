@@ -85,6 +85,12 @@ router.delete(
     pass.isAuthenticated,
     AccountController.remove
 );
+// User settings endpoint (save/update)
+router.post(
+    '/api/accounts/:userId/settings',
+    pass.isAuthenticated,
+    AccountController.updateSettings
+);
 
 // Rules endpoints
 router.post('/api/rules', pass.isAuthenticated, RulesController.create);
