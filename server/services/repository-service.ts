@@ -11,10 +11,10 @@
     limitations under the License.
  */
 
-import { log } from '@iftta/util';
+import { log, isObject } from '@iftta/util';
 import { FirestoreCollection } from '../models/fire-store-entity';
 import { QueryDocumentSnapshot } from '@google-cloud/firestore';
-import { isObject } from 'util';
+
 
 class RepositoryService<T> {
     db: any;

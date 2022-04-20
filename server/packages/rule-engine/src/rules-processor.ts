@@ -23,8 +23,7 @@ const repo = new Repository<Rule>(rulesCollection);
 export class RulesProcessor {
     public async processAgentResult(result: AgentResult): Promise<Array<RuleResult>> {
         const rules = await this.getValidRulesForAgent(result);
-        // to return RuleEvaluation[] to be passed to target-agents
-        return await this.evaluateRulesAgainstResult(rules, result);
+        return this.evaluateRulesAgainstResult(rules, result);
     }
 
     // get rules matching the agentId from firestore
@@ -82,7 +81,6 @@ export class RulesProcessor {
      */
     public evaluate(rule: Rule, jobResult: AgentResult): boolean {
         const dpResult = jobResult.data[rule.condition.dataPoint];
-
         if (typeof dpResult == 'undefined') {
             const msg = `Datapoint ${rule.condition.dataPoint} is not a valid property of AgentResult`;
             log.debug(msg);
@@ -90,25 +88,7 @@ export class RulesProcessor {
         }
 
         if (rule.condition.comparator == COMPARATORS.equals) {
-            // for equal comparison for different datatypes. 
-            if (rule.condition.dataType == 'boolean') {
-                return String(dpResult).toLowerCase() == 'true';
-            }
-
-            switch (rule.condition.dataType) {
-                case 'boolean': {
-                    return String(dpResult).toLowerCase() == 'true';
-                }
-                case 'number': {
-                    // TODO: decide if we only ints should be supported.
-                    return Number.parseFloat(dpResult) == rule.condition.value;
-                }
-                case 'enum': {
-                    return String(dpResult) === rule.condition.value;
-                }
-                default:
-                    return dpResult == rule.condition.value;
-            }
+            return dpResult == rule.condition.value;
         }
 
         if (rule.condition.comparator == COMPARATORS.greater) {
