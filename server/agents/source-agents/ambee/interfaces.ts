@@ -10,9 +10,6 @@
     See the License for the specific language governing permissions and
     limitations under the License.
  */
-
-import { Rule } from "packages/rule-engine/src/interfaces";
-
 export interface AgentResponse {
     jobId: string;
     jobOwner: string;
@@ -76,9 +73,25 @@ export interface AgentMetadata {
 export interface DataPoint {
     dataPoint: string;
     name: string;
-    dataType: string | number | boolean | Date;
+    dataType: string | number | boolean | Date ;
     enum?: Array<string>,
 }
+
+// export enum POLEN_LEVEL {
+//     LOW = 'Low',
+//     MODERATE = 'Moderate',
+//     HIGH = 'High',
+//     VERY_HIGH = 'Very High'
+// }
+
+// export enum AIR_QUALITY {
+//     GOOD = 'Good',
+//     MODERATE = 'Moderate',
+//     UNHEALTHY_SENSITIVE = 'Unhealthy for Sensitive Groups',
+//     UNHEALTHY = 'Unhealthy',
+//     VERY_UNHEALTHY = 'Very unhealthy',
+//     HAZARDOUS = 'hazardous'
+// }
 
 export const WeatherCodes = {
     THUNDERSTORM: new Set([200, 201, 202, 210, 211, 212, 221, 230, 231, 232]),
@@ -117,3 +130,4 @@ interface Parameter {
     key: string;
     value: string | number | boolean;
 }
+
