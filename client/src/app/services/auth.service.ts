@@ -39,7 +39,10 @@ export class AuthService {
    * @param {Router} router
    */
   constructor(private route: ActivatedRoute, private router: Router) {
-    // Get user from localStorage
+    this.getUserFromLocalStorage();
+  }
+
+  getUserFromLocalStorage() {
     if (localStorage.getItem('user')) {
       this.currentUser = User.fromJSON(localStorage.getItem('user'));
     }

@@ -167,6 +167,7 @@ export class AddRuleComponent implements OnInit {
 
       store.sourceSet.next(true);
       
+      this.authService.getUserFromLocalStorage();
       this.checkUserSettingsForAgent(agent.settings.params);
     }
   }

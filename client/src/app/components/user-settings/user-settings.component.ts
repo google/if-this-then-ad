@@ -94,7 +94,7 @@ export class UserSettingsComponent {
 
     this.userSettings.valueChanges
       .pipe(
-        debounceTime(1500),
+        debounceTime(1000),
         switchMap((value) => of(value))
       )
       .subscribe((value: UserSettingKeyValue) => {
@@ -110,8 +110,8 @@ export class UserSettingsComponent {
   save(value: UserSettingKeyValue) {
     this.http
       .post(
-        `${environment.apiUrl}/user-settings/${this.authService.currentUser?.id}`,
-        {userSettings: value}
+        `${environment.apiUrl}/accounts/${this.authService.currentUser?.id}/settings`,
+        value
       )
       .subscribe({
         next: _ => {

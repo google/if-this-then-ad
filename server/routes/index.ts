@@ -18,7 +18,6 @@ import * as AccountController from '../controllers/account-controller';
 import * as AgentsController from '../controllers/agents-controller';
 import * as RulesController from '../controllers/rules-controller';
 import * as JobController from '../controllers/jobs-controller';
-import * as UserSettingsController from '../controllers/user-settings-controller';
 
 import someController from '../controllers/some';
 import * as pass from '../config/passport-setup';
@@ -86,6 +85,12 @@ router.delete(
     pass.isAuthenticated,
     AccountController.remove
 );
+// User settings endpoint (save/update)
+router.post(
+    '/api/accounts/:userId/settings',
+    pass.isAuthenticated,
+    AccountController.updateSettings
+);
 
 // Rules endpoints
 router.post('/api/rules', pass.isAuthenticated, RulesController.create);
@@ -100,13 +105,6 @@ router.delete(
     '/api/rules/:userId/:id',
     pass.isAuthenticated,
     RulesController.remove
-);
-
-// User settings endpoint (save/update)
-router.post(
-    '/api/user-settings/:userId', 
-    pass.isAuthenticated, 
-    UserSettingsController.update
 );
 
 // Job runner trigger endpoint
