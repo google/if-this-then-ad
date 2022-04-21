@@ -111,8 +111,9 @@ export class RulesComponent implements OnInit {
    * @param {Rule} rule
    */
   removeRule(rule: Rule) {
+    const userId = this.user!.id;
     this.http
-      .delete(`${environment.apiUrl}/rules/${this.user}/${rule.id}`)
+      .delete(`${environment.apiUrl}/rules/${userId}/${rule.id}`)
       .subscribe((_) => {
         // Reload rules
         this.loadRules();
