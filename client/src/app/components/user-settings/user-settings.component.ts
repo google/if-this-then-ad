@@ -90,8 +90,6 @@ export class UserSettingsComponent {
   }
 
   ngOnInit(): void {
-    console.log(this.authService.currentUser);
-
     this.userSettings.valueChanges
       .pipe(
         debounceTime(1000),
