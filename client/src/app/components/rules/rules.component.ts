@@ -17,9 +17,11 @@ import { MatTableDataSource } from '@angular/material/table';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { map } from 'rxjs/operators';
+import { AuthService } from 'src/app/services/auth.service'
 import { Rule } from 'src/app/models/rule.model';
 
 import { store } from 'src/app/store';
+import { User } from 'src/app/models/user.model';
 
 @Component({
   selector: 'app-rules',
@@ -49,8 +51,8 @@ export class RulesComponent implements OnInit {
     yes: 'Yes',
     no: 'No',
   };
-  // TODO: remove this!
-  user: string = 'YrqYQc15jFYutbMdZNss';
+
+  user: User | null;
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
@@ -59,8 +61,9 @@ export class RulesComponent implements OnInit {
    *
    * @param {HttpClient} http
    */
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private authService: AuthService) {
     // Reload rules when rule was added
+    this.user = this.authService.currentUser;
     store.ruleAdded.subscribe((v) => {
       this.loadRules();
     });
@@ -69,7 +72,7 @@ export class RulesComponent implements OnInit {
   }
 
   // eslint-disable-next-line require-jsdoc
-  ngOnInit(): void {}
+  ngOnInit(): void { }
 
   // eslint-disable-next-line require-jsdoc
   ngAfterViewInit() {
@@ -77,11 +80,11 @@ export class RulesComponent implements OnInit {
   }
 
   /**
-   * Fetch all rules.
+   * Fetch all rules for logged in user.
    */
   loadRules() {
     this.http
-      .get<Array<Rule>>(`${environment.apiUrl}/rules`)
+      .get<Array<Rule>>(`${environment.apiUrl}/rules/user/${this.user?.id}`)
       .pipe(map((res: Array<Rule>) => res))
       .subscribe((result) => {
         this.rules = result;

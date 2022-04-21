@@ -132,6 +132,6 @@ export const getByUser = async (req: Request, res: Response) => {
         return res.json(rules);
     } catch (e) {
         log.error(e);
-        return res.sendStatus(500);
+        return res.sendStatus(500).json(e);
     }
 };
