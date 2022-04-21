@@ -72,8 +72,8 @@ export interface DataPoint {
     dataType: string | number | boolean | Date ;
     enum?: Array<string>,
 }
-
-// export enum POLEN_LEVEL {
+//TODO: implement this.
+// export enum POLLEN_LEVEL {
 //     LOW = 'Low',
 //     MODERATE = 'Moderate',
 //     HIGH = 'High',

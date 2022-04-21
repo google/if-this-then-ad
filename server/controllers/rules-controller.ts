@@ -88,15 +88,16 @@ export const remove = async (req: Request, res: Response) => {
     try {
         const userId = req.params.userId;
         const ruleId = req.params.id;
-
+     
         const rule = await repo.get(ruleId);
         if (rule?.owner == userId) {
             await JobController.removeRuleFromJob(ruleId);
             await repo.delete(ruleId);
             return res.sendStatus(204);
         }
-        log.warn(`FORBIDDEN: Non ower userId: ${userId} attempted to delete Rule ${ruleId}`);
-        return res.status(403).send('Forbidden');
+        const msg = `FORBIDDEN: Non ower userId: ${userId} attempted to delete Rule ${ruleId}`;
+        log.warn(msg);
+        return res.status(403).send(msg);
     } catch (e) {
         log.error(e);
         return res.sendStatus(500);
