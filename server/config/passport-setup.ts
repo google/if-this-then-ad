@@ -58,7 +58,7 @@ export const init = (app: Application): any => {
  * @param { NextFunction } next
  * @return {any}
  */
-export const isAuthenticated = async (req: Request, res: Response, next: NextFunction): any => {
+export const isAuthenticated = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
     const authorizationHeader = req.headers.authorization || '';
     const accessToken = _extractAccessToken(authorizationHeader);
     // Allowing clients to authenticate via authorization headers.
