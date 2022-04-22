@@ -15,12 +15,22 @@ export interface FirestoreCollection {
     db: any;
 }
 
+const resolveCollectionName = (collection): string => {
+    let prefix = '';
+    if ('DEMO_ENV_NAME' in process.env && process.env.DEMO_ENV_NAME) {
+        console.log(`Demo environment name ${process.env.DEMO_ENV_NAME}`);
+        prefix = process.env.DEMO_ENV_NAME.replace('/', '-') + ':';
+    }
+    return prefix + collection;
+}
+
 /**
  * Allowed collection types for use with the
  * repository
  */
-export enum Collection {
-    USERS = 'users',
-    RULES = 'rules',
-    JOBS = 'jobs',
+export const Collection = {
+    USERS: resolveCollectionName('users'),
+    RULES: resolveCollectionName('rules'),
+    JOBS: resolveCollectionName('jobs'),
+    SESSIONS: resolveCollectionName('sessions'),
 }

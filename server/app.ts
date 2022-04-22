@@ -28,6 +28,7 @@ import path from 'path';
 import router from './routes';
 import bodyParser from 'body-parser';
 import * as PassportSetup from './config/passport-setup';
+import { Collection } from './models/fire-store-entity';
 const { Firestore } = require('@google-cloud/firestore');
 const { FirestoreStore } = require('@google-cloud/connect-firestore');
 
@@ -67,16 +68,11 @@ const interval = 3600 * 1 * 1000;
 const cookieExpiresOn = new Date(now + interval);
 log.debug(`Cookie expires on: ${cookieExpiresOn}`);
 
-let prefix = '';
-if ('DEMO_ENV_NAME' in process.env && process.env.DEMO_ENV_NAME) {
-    prefix = process.env.DEMO_ENV_NAME.replace('/', '-') + ':';
-}
-
 app.use(
     session({
         store: new FirestoreStore({
             dataset: new Firestore(),
-            kind: prefix + 'iftta-sessions',
+            kind: Collection.SESSIONS,
         }),
         secret: process.env.SESSION_SECRET || 's9hp0VtUkd$FJM$T91lB',
         cookie: {
