@@ -117,23 +117,10 @@ class TaskConfiguration {
      * @param {string} userId
      * @param {string} agentId
      */
-    public async getUserSettingsForAgent(
-        userId: string,
-        agentId: string,
-    ): Promise<setting | undefined> {
+    public async getUserSettings(userId: string): Promise<Object | undefined> {
         try {
             const user: User = (await this.repo.get(userId)) as User;
-
-            if (Array.isArray(user.settings)) {
-                const agentSettings = user.settings!.filter((s) => {
-                    return s.agentId == agentId;
-                });
-
-                if (agentSettings.length > 0) {
-                    return Promise.resolve(agentSettings[0]);
-                }
-            }
-            return undefined;
+            return user?.userSettings;
         } catch (err) {
             return Promise.reject(err);
         }

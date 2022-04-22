@@ -67,11 +67,16 @@ const interval = 3600 * 1 * 1000;
 const cookieExpiresOn = new Date(now + interval);
 log.debug(`Cookie expires on: ${cookieExpiresOn}`);
 
+let prefix = '';
+if ('DEMO_ENV_NAME' in process.env && process.env.DEMO_ENV_NAME) {
+    prefix = process.env.DEMO_ENV_NAME.replace('/', '-') + ':';
+}
+
 app.use(
     session({
         store: new FirestoreStore({
             dataset: new Firestore(),
-            kind: 'iftta-sessions',
+            kind: prefix + 'iftta-sessions',
         }),
         secret: process.env.SESSION_SECRET || 's9hp0VtUkd$FJM$T91lB',
         cookie: {

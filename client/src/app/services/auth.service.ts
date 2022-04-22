@@ -16,7 +16,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 
 import { environment } from 'src/environments/environment';
 
-import { User } from 'src/app/models/user.model';
+import { User, UserSettingKeyValue } from 'src/app/models/user.model';
 import { BehaviorSubject } from 'rxjs';
 import { Token } from '../interfaces/token';
 @Injectable({
@@ -39,7 +39,10 @@ export class AuthService {
    * @param {Router} router
    */
   constructor(private route: ActivatedRoute, private router: Router) {
-    // Get user from localStorage
+    this.getUserFromLocalStorage();
+  }
+
+  getUserFromLocalStorage() {
     if (localStorage.getItem('user')) {
       this.currentUser = User.fromJSON(localStorage.getItem('user'));
     }
@@ -111,5 +114,20 @@ export class AuthService {
   updateToken(userToken: Token) {
     this.currentUser!.token = userToken;
     this.user = this.currentUser;
+  }
+
+  getUserSetting(s: string) {
+    return this.currentUser 
+      && this.currentUser.userSettings
+      && (s in this.currentUser.userSettings)
+        ? this.currentUser.userSettings[s] as string
+        : '';
+  }
+
+  setUserSettings(userSettings: UserSettingKeyValue) {
+    if (this.currentUser && this.currentUser.userSettings) {
+        this.currentUser.userSettings = userSettings;
+        this.user = this.currentUser;
+    }
   }
 }

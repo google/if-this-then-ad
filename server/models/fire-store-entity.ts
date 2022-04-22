@@ -11,9 +11,10 @@
     limitations under the License.
  */
 export interface FirestoreCollection {
-    name: Collection;
+    name: string;
     db: any;
 }
+
 /**
  * Allowed collection types for use with the
  * repository
