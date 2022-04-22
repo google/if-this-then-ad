@@ -32,4 +32,5 @@ export const Collection = {
     USERS: resolveCollectionName('users'),
     RULES: resolveCollectionName('rules'),
     JOBS: resolveCollectionName('jobs'),
+    SESSIONS: resolveCollectionName('sessions'),
 }
