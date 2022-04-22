@@ -63,7 +63,7 @@ export class AuthInterceptor implements HttpInterceptor {
 
     return next.handle(req).pipe(
       catchError((err) => {
-        const codes = new Set([401, 403, 504]);
+        const codes = new Set([401]);
         if (codes.has(err.status) && this.retries < this.MAXRETRIES) {
           this.retries++;
           this.refreshAccessToken().subscribe({

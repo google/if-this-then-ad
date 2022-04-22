@@ -15,7 +15,8 @@
 module.exports = {
     preset: 'ts-jest',
     testEnvironment: 'node',
+    modulePathIgnorePatterns: ['<rootDir>/dist'], 
     moduleNameMapper: {
-        "@iftta/util": "<rootDir>/../../util"
+        "@iftta/util": "<rootDir>/util"
     }
 };
