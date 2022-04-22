@@ -205,7 +205,6 @@ export class AddRuleComponent implements OnInit {
     this.dataPointListValues = val.enum;
   }
 
-
   /**
    * Save rule.
    */
@@ -231,7 +230,10 @@ export class AddRuleComponent implements OnInit {
 
     this.router.navigate(['/list-rules']);
   }
-
+  /**
+   *  Checks user Settings
+   *  @param {Array<SourceAgentSettingsParam>}  params
+   */
   private checkUserSettingsForAgent(params: Array<SourceAgentSettingsParam>) {
     const missingSettings: Array<SourceAgentSettingsParam> = params.filter(
       p => this.isMissing(p.settingName)
@@ -241,16 +243,22 @@ export class AddRuleComponent implements OnInit {
       this.showMissingSettingsDialog(missingSettings);
     }
   }
-
+  /**
+   * Checks if value is missing
+   * @param {string } name
+   * @returns {boolean}
+   */
   private isMissing(name: string) {
     return !this.authService.getUserSetting(name);
   }
-
-  private showMissingSettingsDialog(missingSettings: Array<SourceAgentSettingsParam>) {
-    this.dialog.open(
-      MissingSettingsDialogComponent,
-      { data: missingSettings }
-    );
+  /**
+   * Displays settings dialog
+   * @param {Array<SourceAgentSettingsParam>} missingSettings
+   */
+  private showMissingSettingsDialog(
+    missingSettings: Array<SourceAgentSettingsParam>
+  ) {
+    this.dialog.open(MissingSettingsDialogComponent, { data: missingSettings });
   }
 }
 
@@ -258,14 +266,25 @@ export class AddRuleComponent implements OnInit {
   selector: 'missing-settings-dialog',
   templateUrl: 'missing-settings-dialog.html',
 })
+/**
+ *  User Settings Dialog Component
+ */
 export class MissingSettingsDialogComponent {
+  /**
+   * Component constructor
+   * @param {Array<SourceAgentSettingsParam>} settings
+   * @param {Router} router
+   */
   constructor(
     @Inject(MAT_DIALOG_DATA) public settings: Array<SourceAgentSettingsParam>,
     private router: Router
   ) { }
 
+  /**
+   * Navigate to user settings
+   */
   goToUserSettings() {
-    const fragment = this.settings.map(s => s.settingName).join(',');
+    const fragment = this.settings.map((s) => s.settingName).join(',');
     this.router.navigate(['/settings'], { fragment });
   }
 }

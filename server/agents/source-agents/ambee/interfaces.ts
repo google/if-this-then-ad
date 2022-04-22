@@ -69,7 +69,7 @@ export interface AgentMetadata {
 export interface DataPoint {
     dataPoint: string;
     name: string;
-    dataType: string | number | boolean | Date ;
+    dataType: string | number | boolean | Date;
     enum?: Array<string>,
 }
 //TODO: implement this.
