@@ -54,7 +54,6 @@
                 </form>
                 <div class="step-footer">
                     <button mat-raised-button color="primary" matStepperNext> Next </button>
-
                 </div>
             </form>
         </mat-step>
@@ -66,12 +65,11 @@
                 <form #executionInterval="ngForm">
                     <h3>Run every</h3>
                     <mat-form-field class="form-element">
-                        <mat-label> Interval </mat-label>
+                        <mat-label>Interval</mat-label>
                         <mat-select [(ngModel)]="currentRule.executionInterval" name="rule-interval">
                             <mat-option *ngFor="let i of this.executionIntervals" value="{{i.key}}"> {{i.value}}
                             </mat-option>
                         </mat-select>
-
                     </mat-form-field>
                 </form>
 
