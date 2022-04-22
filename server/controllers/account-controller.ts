@@ -72,7 +72,7 @@ export const updateSettings = async (req: Request, res: Response) => {
 
     } catch (e) {
         log.error(e);
-        return res.status(500).json({ error: 'Error occured while updating user settings' });
+        return res.status(500).json({ error: 'Error occurred while updating user settings' });
     }
     return res.status(200).json({ status: 'ok' });
 };
