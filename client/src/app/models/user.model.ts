@@ -23,6 +23,7 @@ export class User {
   profilePhoto: string;
   token: Token;
   email?: string;
+  userSettings?: UserSettingKeyValue;
 
   /**
    * Parse User from JSON Object.
@@ -33,4 +34,8 @@ export class User {
   static fromJSON(input: any): User {
     return Object.assign(new User(), JSON.parse(input));
   }
+}
+
+export interface UserSettingKeyValue {
+  [key: string]: string;
 }

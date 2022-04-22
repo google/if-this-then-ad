@@ -95,8 +95,9 @@ export const remove = async (req: Request, res: Response) => {
             await repo.delete(ruleId);
             return res.sendStatus(204);
         }
-
-        return res.status(403).send('Forbidden');
+        const msg = `FORBIDDEN: Non ower userId: ${userId} attempted to delete Rule ${ruleId}`;
+        log.warn(msg);
+        return res.status(403).send(msg);
     } catch (e) {
         log.error(e);
         return res.sendStatus(500);
@@ -131,6 +132,6 @@ export const getByUser = async (req: Request, res: Response) => {
         return res.json(rules);
     } catch (e) {
         log.error(e);
-        return res.sendStatus(500);
+        return res.sendStatus(500).json(e);
     }
 };

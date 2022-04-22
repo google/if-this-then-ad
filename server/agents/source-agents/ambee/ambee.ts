@@ -20,7 +20,7 @@ import {
     WeatherCodes,
     AgentMetadata,
     AgentType,
-    Job
+    Job,
 } from './interfaces';
 import { config } from './config';
 import { log } from '@iftta/util';
@@ -35,25 +35,25 @@ export default class AmbeeAgent implements IAgent {
 
     private createApiClient(dataPoint: string, options: Configuration): AxiosInstance {
         if (!options.apiKey) {
-            const errorMessage = 'API Key not set, it needs to be set in the env file';
+            const errorMessage = 'API Key not set, it needs to be set in the user settings';
             log.error(errorMessage);
             throw new Error(errorMessage);
         }
 
         const url = options.baseUrl[dataPoint];
-        if (! url) {
+        if (!url) {
             throw new Error(`${dataPoint} was not found in ${JSON.stringify(options.baseUrl)}`);
         }
 
         const escapedUrl = encodeURI(url.replace('{{location}}', options.targetLocation));
-        
+
         const client = axios.create({
             baseURL: escapedUrl,
             method: 'GET',
             responseType: 'json',
             headers: {
                 'x-api-key': options.apiKey,
-            }
+            },
         });
 
         log.debug(`${this.agentId} : HTTP Client created, with options`);
@@ -74,12 +74,12 @@ export default class AmbeeAgent implements IAgent {
             // Get rule
             const rulesCollection = Collections.get(Collection.RULES);
             const repo = new Repository<Rule>(rulesCollection);
-            if (! options.rules || !options.rules.length) {
+            if (!options.rules || !options.rules.length) {
                 throw new Error(`Empty rules array: ${JSON.stringify(options)}`);
             }
 
             const rule = await repo.get(options.rules[0]);
-            if (! rule) {
+            if (!rule) {
                 throw new Error(`Cannot find the rule: ${options.rules[0]}`);
             }
 
@@ -149,22 +149,17 @@ export default class AmbeeAgent implements IAgent {
     }
 
     private getOptions(job: Job) {
-        let options = { ...config };
-        let userSettings = {};
-        job.ownerSettings!.params.map((p) => {
-            userSettings[p.key] = p.value;
-        });
-        
-        options.apiKey = userSettings['apiKey'];
-        options.jobId = job.id;
-        options.jobOwner = job.owner;
-        options.rules = job.rules;
-
-
         if (!job.query || !job.query.length || !job.query[0].value) {
             throw new Error('job.query is empty, cannot get the "targetLocation"');
         }
-        options.targetLocation =  job.query[0].value as string;
+
+        const options = {
+            ...config,
+            apiKey: job && job?.ownerSettings ? job?.ownerSettings['AMBEE_API_KEY'] : '',
+            jobId: job.id,
+            targetLocation: job.query[0].value as string,
+            jobOwner: job.owner,
+        };
 
         log.debug(`${this.agentId} : Agent options used for this job`);
         log.debug(options);
@@ -174,18 +169,14 @@ export default class AmbeeAgent implements IAgent {
 
     private getHeighestLevel(l1: string, l2: string, l3: string) {
         const pollenLevels = {
-            'Low': 0,
-            'Moderate': 1,
-            'High': 2,
+            Low: 0,
+            Moderate: 1,
+            High: 2,
             'Very High': 3,
         };
 
-        const maxLevel = Math.max(
-            pollenLevels[l1], 
-            pollenLevels[l2], 
-            pollenLevels[l3]
-        );
-        
+        const maxLevel = Math.max(pollenLevels[l1], pollenLevels[l2], pollenLevels[l3]);
+
         for (let key in pollenLevels) {
             if (pollenLevels[key] == maxLevel) {
                 return key;
@@ -199,6 +190,11 @@ export default class AmbeeAgent implements IAgent {
         log.debug(`${this.agentId} : execute : Job to execute`);
         log.debug(job);
         const jobOptions = this.getOptions(job);
+        if (!jobOptions.apiKey) {
+            const errorMessage = `Execution of Job ${job.id} failed: Cannot run the job without the apiKey`;
+            log.debug(errorMessage);
+            return Promise.reject(errorMessage);
+        }
 
         const res = await this.run(jobOptions);
 
@@ -229,9 +225,12 @@ export default class AmbeeAgent implements IAgent {
                 agentId: config.id,
                 params: [
                     {
-                        key: 'apiKey',
                         name: 'Ambee API Key',
-                        type: 'string',
+                        settingName: 'AMBEE_API_KEY',
+                    },
+                    {
+                        name: 'Google Maps API Key',
+                        settingName: 'GOOGLEMAPS_API_KEY',
                     },
                 ],
             },
@@ -247,12 +246,7 @@ export default class AmbeeAgent implements IAgent {
                     dataPoint: 'pollenRiskLevel',
                     name: 'Pollen Level',
                     dataType: 'enum',
-                    enum: [
-                        'Low',
-                        'Moderate',
-                        'High',
-                        'Very High',
-                    ],
+                    enum: ['Low', 'Moderate', 'High', 'Very High'],
                 },
                 {
                     dataPoint: 'airQualityLevel',

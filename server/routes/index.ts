@@ -73,6 +73,12 @@ router.get('/api/accounts/:id', pass.isAuthenticated, AccountController.get);
 router.post('/api/accounts', pass.isAuthenticated, AccountController.create);
 router.post('/api/accounts/:id', pass.isAuthenticated, AccountController.update);
 router.delete('/api/accounts/:id', pass.isAuthenticated, AccountController.remove);
+// User settings endpoint (save/update)
+router.post(
+    '/api/accounts/:userId/settings',
+    pass.isAuthenticated,
+    AccountController.updateSettings,
+);
 
 // Rules endpoints
 router.post('/api/rules', pass.isAuthenticated, RulesController.create);
@@ -85,7 +91,7 @@ router.delete('/api/rules/:userId/:id', pass.isAuthenticated, RulesController.re
 router.get('/api/jobs/execute', JobController.executeJobs);
 
 // TODO: Debug Endpoint
-router.get('/api/agents/dv360/fetch/:entityType', someController.fetch);
+router.get('/api/agents/dv360-dev/fetch/:entityType', someController.fetch);
 
 router.get('/api/agents/metadata', pass.isAuthenticated, AgentsController.getAgentsMetadata);
 
@@ -94,8 +100,6 @@ router.get(
     //pass.isAuthenticated,
     AgentsController.getAgentEntityList,
 );
-
-// router.post('/api/agent-results', PubSubController.messageHandler);
 
 /**
  * Depending on the env determine the location of static files.

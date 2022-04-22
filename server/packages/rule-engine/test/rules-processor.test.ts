@@ -10,11 +10,15 @@
     See the License for the specific language governing permissions and
     limitations under the License.
  */
-
+require('module-alias/register');
 import { RulesProcessor } from '../src/rules-processor';
 import { AgentResult, Rule, COMPARATORS } from '../src/interfaces';
-
-describe('test add ', () => {
+import {
+    HazardousAirRule,
+    PollenAgentResult as ModeratePollenResult,
+    PollenTestRule as ModeratePollenRule,
+} from './rule.mocks';
+describe('Rule evaluation test suite ', () => {
     const rp = new RulesProcessor();
 
     const agentResult: AgentResult = {
@@ -52,46 +56,77 @@ describe('test add ', () => {
         executionInterval: 60,
     };
 
-    const warmWeatherRule = Object.create(testRule);
-    warmWeatherRule.ruleDatapoint = 'temperature';
-    warmWeatherRule.ruleCondition = COMPARATORS.greater;
-    warmWeatherRule.ruleTargetValue = 20.0;
-
-    const coldWeatherRule = Object.create(warmWeatherRule);
-    coldWeatherRule.ruleCondition = COMPARATORS.less;
-    coldWeatherRule.ruleTargetValue = 10;
-
-    const nonExistingDataPointRule = Object.create(coldWeatherRule);
-    nonExistingDataPointRule.ruleDatapoint = 'Nonexisting';
-
     it('Should evaluate to True given data point equals the target value', () => {
         const ruleResult = rp.evaluate(testRule, agentResult);
         expect(ruleResult).toBe(true);
     });
 
-    it('Should evaluate to False if temp is not above the threshold', () => {
+    it('Should evaluate to False if temp is below the threshold', () => {
+        const warmWeatherRule: Rule = { ...testRule };
+        warmWeatherRule.condition.dataPoint = 'temperature';
+        warmWeatherRule.condition.comparator = COMPARATORS.greater;
+        warmWeatherRule.condition.value = 20.0;
+
         const ruleResult = rp.evaluate(warmWeatherRule, agentResult);
         expect(ruleResult).toBe(false);
     });
 
     it('Should evaluate to True if temp is below threshold', () => {
+        const coldWeatherRule = { ...testRule };
+        coldWeatherRule.condition.dataPoint = 'temperature';
+        coldWeatherRule.condition.comparator = COMPARATORS.less;
+        coldWeatherRule.condition.value = 10;
         const ruleResult = rp.evaluate(coldWeatherRule, agentResult);
         expect(ruleResult).toBe(true);
     });
 
     it('Should evaluate to False when passed invalid data point', () => {
+        const nonExistingDataPointRule = { ...testRule };
+        nonExistingDataPointRule.condition.dataPoint = 'Nonexisting';
         expect(rp.evaluate(nonExistingDataPointRule, agentResult)).toBe(false);
     });
 
-    it('Should return valid rules for the AgentResult', async () => {
-        const rulesForAgent = await rp.getValidRulesForAgent(agentResult);
-        expect(rulesForAgent.length).toBe(2);
+    // it('Should return valid rules for the AgentResult', async () => {
+    //     const rulesForAgent = await rp.getValidRulesForAgent(agentResult);
+    //     expect(rulesForAgent.length).toBe(2);
+    // });
+
+    // it('Should return no rules given invalid AgentResult', async () => {
+    //     let invalidAgentResult = Object.create(agentResult);
+    //     invalidAgentResult.agentId = 'non-existing-agent';
+    //     const rulesForAgent = await rp.getValidRulesForAgent(invalidAgentResult);
+    //     expect(rulesForAgent.length).toBe(0);
+    // });
+
+    it('Should evaluate to False, if no rain is detected', () => {
+        const rainFalseRule = { ...testRule };
+        rainFalseRule.condition.dataPoint = 'rain';
+        rainFalseRule.condition.comparator = COMPARATORS.equals;
+        const ruleResult = rp.evaluate(rainFalseRule, agentResult);
+        expect(ruleResult).toBe(false);
     });
 
-    it('Should return no rules given invalid AgentResult', async () => {
-        let invalidAgentResult = Object.create(agentResult);
-        invalidAgentResult.agentId = 'non-existing-agent';
-        const rulesForAgent = await rp.getValidRulesForAgent(invalidAgentResult);
-        expect(rulesForAgent.length).toBe(0);
+    it('Should return True for Moderate Pollen values', () => {
+        const ruleResult = rp.evaluate(ModeratePollenRule, ModeratePollenResult);
+        expect(ruleResult).toBe(true);
+    });
+
+    it('Should evaluate return False for Low Pollen values', () => {
+        const lowPollenResult = { ...ModeratePollenResult };
+        lowPollenResult.data.pollenRiskLevel = 'Low';
+        const ruleResult = rp.evaluate(ModeratePollenRule, lowPollenResult);
+        expect(ruleResult).toBe(false);
+    });
+
+    it('Should evaluate return True for Hazardous Air quality', () => {
+        const hazardousAirResult = { ...ModeratePollenResult }; // contains hazardous air data
+        const ruleResult = rp.evaluate(HazardousAirRule, hazardousAirResult);
+        expect(ruleResult).toBe(true);
+    });
+
+    it('Should evaluate return False when Air quality  is not hazardous', () => {
+        const hazardousAirResult = { ...ModeratePollenResult };
+        const ruleResult = rp.evaluate(HazardousAirRule, hazardousAirResult);
+        expect(ruleResult).toBe(true);
     });
 });

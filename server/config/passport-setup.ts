@@ -81,22 +81,21 @@ export const isAuthenticated = async (
         const tokenResult = await _isValidAccessToken(accessToken || '');
         log.debug('Validity of the submitted token ' + tokenResult);
         req.session['accessTokenIsValid'] = tokenResult;
-
         if (tokenResult) {
+            log.debug(`Token is valid ${tokenResult}`);
             return next();
         }
-        //res.sendStatus(401).send('Unauthorized');
-        log.debug('Authentication failed');
-        //return;
-    } catch (err) {
-        log.debug(err);
-        return res.sendStatus(500);
-    }
 
-    // finally check if user object
-    // was set as part of the cookie
-    if (req.isAuthenticated()) {
-        return next();
+        // finally check if user object
+        // was set as part of the cookie
+        if (req.isAuthenticated()) {
+            return next();
+        }
+
+        log.debug('failed auth');
+        return next('Failed auth');
+    } catch (err) {
+        return next(err);
     }
 };
 

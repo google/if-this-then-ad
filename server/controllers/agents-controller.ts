@@ -29,9 +29,9 @@ const allowedAgentMethods = {
     'open-weather-map': {
         metadata: OpenWeatherMap.getAgentMetadata,
     },
-    'ambee': {
+    ambee: {
         metadata: AmbeeAgent.getAgentMetadata,
-    }
+    },
 };
 
 export const getAgentsMetadata = async (req: Request, res: Response) => {
@@ -48,10 +48,10 @@ export const getAgentEntityList = async (req: Request, res: Response) => {
 
     let userId = '';
     if (
-        'undefined' != typeof req
-        && 'user' in req
-        && 'undefined' != typeof req['user']
-        && 'id' in req['user']
+        'undefined' != typeof req &&
+        'user' in req &&
+        'undefined' != typeof req['user'] &&
+        'id' in req['user']
     ) {
         userId = req['user']['id'];
     } else {

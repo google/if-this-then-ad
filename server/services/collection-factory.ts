@@ -31,8 +31,14 @@ class CollectionFactory {
     }
 
     public get(collectionName: Collection) {
+        let prefix = '';
+        if ('DEMO_ENV_NAME' in process.env && process.env.DEMO_ENV_NAME) {
+            console.log(`Demo environment name ${process.env.DEMO_ENV_NAME}`);
+            prefix = process.env.DEMO_ENV_NAME.replace('/', '-') + ':';
+        }
+
         const collection: FirestoreCollection = {
-            name: collectionName,
+            name: prefix + collectionName,
             db: this.db,
         };
         return collection;

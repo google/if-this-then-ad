@@ -23,8 +23,7 @@ const repo = new Repository<Rule>(rulesCollection);
 export class RulesProcessor {
     public async processAgentResult(result: AgentResult): Promise<Array<RuleResult>> {
         const rules = await this.getValidRulesForAgent(result);
-        // to return RuleEvaluation[] to be passed to target-agents
-        return await this.evaluateRulesAgainstResult(rules, result);
+        return this.evaluateRulesAgainstResult(rules, result);
     }
 
     // get rules matching the agentId from firestore
@@ -39,8 +38,7 @@ export class RulesProcessor {
         const rules: Rule[] = await repo.list();
 
         const rulesForJob = rules.filter((rule) => {
-            return rule.source.id == jobResult.agentId
-                && rule.jobId == jobResult.jobId;
+            return rule.source.id == jobResult.agentId && rule.jobId == jobResult.jobId;
         });
 
         log.info(`Got ${rulesForJob.length} rules for job ${jobResult.jobId}`);
@@ -60,7 +58,7 @@ export class RulesProcessor {
         // Outcome here should be ruleResult[] so that we can action on
         // the evalations of the result in the next step.
         const ruleResults: Array<RuleResult> = [];
-        rules.map((rule) => {
+        rules.forEach((rule) => {
             const evalResult = this.evaluate(rule, result);
             const ruleResult: RuleResult = {
                 ruleId: rule.id,
@@ -82,7 +80,6 @@ export class RulesProcessor {
      */
     public evaluate(rule: Rule, jobResult: AgentResult): boolean {
         const dpResult = jobResult.data[rule.condition.dataPoint];
-
         if (typeof dpResult == 'undefined') {
             const msg = `Datapoint ${rule.condition.dataPoint} is not a valid property of AgentResult`;
             log.debug(msg);
@@ -99,18 +96,6 @@ export class RulesProcessor {
 
         if (rule.condition.comparator == COMPARATORS.less) {
             return dpResult < rule.condition.value;
-        }
-
-        if (rule.condition.comparator == COMPARATORS.yes) {
-            return !!dpResult;
-        }
-
-        if (rule.condition.comparator == COMPARATORS.no) {
-            return !dpResult;
-        }
-
-        if (COMPARATORS.enum == rule.condition.dataType) {
-            return rule.condition.comparator == dpResult;
         }
 
         return false;

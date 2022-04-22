@@ -92,14 +92,15 @@
           <mat-form-field class="form-element">
             <mat-label>Interval</mat-label>
             <mat-select
-              name="rule-interval"
-              required
               [(ngModel)]="currentRule.executionInterval"
+              name="rule-interval"
             >
-              <mat-option value="30"> 30 min </mat-option>
-              <mat-option value="60"> 60 min </mat-option>
-              <mat-option value="720"> 12 h </mat-option>
-              <mat-option value="3600"> 24 h </mat-option>
+              <mat-option
+                *ngFor="let i of this.executionIntervals"
+                value="{{ i.key }}"
+              >
+                {{ i.value }}
+              </mat-option>
             </mat-select>
           </mat-form-field>
         </form>
@@ -129,62 +130,67 @@
           <!-- Comparator -->
           <mat-form-field class="form-element">
             <mat-label>Comparator</mat-label>
-            <ng-container [ngSwitch]="currentRule.condition.dataType">
-              <input
-                *ngSwitchCase="'string'"
-                matInput
-                name="rule-comparator"
-                [(ngModel)]="currentRule.condition.comparator"
-                required
-              />
-              <mat-select
-                *ngSwitchCase="'boolean'"
-                name="rule-comparator"
-                [(ngModel)]="currentRule.condition.comparator"
-                required
-              >
-                <mat-option value="yes">Yes</mat-option>
-                <mat-option value="no">No</mat-option>
-              </mat-select>
-              <mat-select
-                *ngSwitchDefault
-                name="rule-comparator"
-                [(ngModel)]="currentRule.condition.comparator"
-                required
-              >
-                <mat-option value="gt">&gt;</mat-option>
-                <mat-option value="lt">&lt;</mat-option>
-              </mat-select>
-              <mat-select
-                *ngSwitchCase="'enum'"
-                name="rule-comparator"
-                [(ngModel)]="currentRule.condition.comparator"
-                required
-              >
-                <mat-option
-                  *ngFor="let enum of currentRule.condition.enum"
-                  [value]="enum"
-                >
-                  {{ enum }}
-                </mat-option>
-              </mat-select>
-            </ng-container>
+            <mat-select
+              name="rule-comparator"
+              [(ngModel)]="currentRule.condition.comparator"
+              [disabled]="this.lockEquals"
+              required
+            >
+              <mat-option
+                *ngFor="let c of this.comparatorMapping"
+                value="{{ c.key }}"
+                >{{ c.value }}
+              </mat-option>
+            </mat-select>
           </mat-form-field>
 
           <!-- Value -->
           <mat-form-field
             class="form-element"
-            *ngIf="currentRule.condition.dataType === 'number'"
+            *ngIf="currentRule.condition.dataType"
           >
             <mat-label>Value</mat-label>
-            <input
-              [(ngModel)]="currentRule.condition.value"
-              matInput
-              name="rule-value"
-              required
-              type="number"
-              step="1"
-            />
+            <ng-container [ngSwitch]="currentRule.condition.dataType">
+              <input
+                *ngSwitchCase="'number'"
+                [(ngModel)]="currentRule.condition.value"
+                matInput
+                name="rule-value"
+                required
+                type="number"
+                step="1"
+              />
+              <mat-select
+                *ngSwitchCase="'boolean'"
+                [(ngModel)]="currentRule.condition.value"
+                matInput
+                name="rule-value"
+                required
+                name="rule-value"
+                [(ngModel)]="currentRule.condition.value"
+                required
+              >
+                <mat-option value="true">Yes</mat-option>
+                <mat-option value="false">No</mat-option>
+              </mat-select>
+
+              <mat-select
+                *ngSwitchCase="'enum'"
+                [(ngModel)]="currentRule.condition.value"
+                matInput
+                name="rule-value"
+                required
+                name="rule-value"
+                [(ngModel)]="currentRule.condition.value"
+                required
+              >
+                <mat-option
+                  *ngFor="let e of this.dataPointListValues"
+                  value="{{ e }}"
+                  >{{ e }}</mat-option
+                >
+              </mat-select>
+            </ng-container>
           </mat-form-field>
 
           <div class="step-footer">

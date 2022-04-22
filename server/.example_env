@@ -8,3 +8,4 @@ NODE_ENV=development
 PORT=8080
 AGENTS_TOPIC_ID=agent-results
 WEATHER_API_KEY=open-weather-api
+DEMO_ENV_NAME=test

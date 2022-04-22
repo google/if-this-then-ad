@@ -34,23 +34,6 @@ export const listAccounts = async (req: Request, res: Response) => {
 
 export const create = async (req: Request, res: Response) => {
     // TODO: implement data validation.
-
-    // const user:User = {
-    //     profileId : req.body.profileId,
-    //     displayName : req.body.displayName,
-    //     givenName : req.body.givenName,
-    //     familyName : req.body.familyName,
-    //     gender : req.body.gender,
-    //     email : req.body.email,
-    //     verified : req.body.verified,
-    //     profilePhoto : req.body.profilePhoto,
-    //     locale : req.body.locale,
-    //     authToken : req.body.authToken,
-    //     refreshToken : req.body.refreshToken,
-    //     tokenProvider : req.body.tokenProvider,
-    // };
-
-    // can also be done like this
     const user: User = { ...req.body };
 
     const result = await userRepo.save(user);
@@ -79,6 +62,18 @@ export const update = async (req: Request, res: Response) => {
         log.error(e);
         return res.sendStatus(500);
     }
+};
+
+export const updateSettings = async (req: Request, res: Response) => {
+    try {
+        const user = (await userRepo.get(req.params.userId)) as User;
+        user.userSettings = req.body;
+        await userRepo.update(req.params.userId, user);
+    } catch (e) {
+        log.error(e);
+        return res.status(500).json({ error: 'Error occurred while updating user settings' });
+    }
+    return res.status(200).json({ status: 'ok' });
 };
 
 export const remove = async (req: Request, res: Response) => {

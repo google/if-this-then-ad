@@ -15,7 +15,7 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
-
+import { HttpClientModule } from '@angular/common/http';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -30,11 +30,17 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
-import { AddRuleComponent } from './components/add-rule/add-rule.component';
-import { HttpClientModule } from '@angular/common/http';
+
+import {
+  AddRuleComponent,
+  MissingSettingsDialogComponent,
+} from './components/add-rule/add-rule.component';
 import { RulesComponent } from './components/rules/rules.component';
 import { TargetSelectorComponent } from './components/target-selector/target-selector.component';
 import { HeaderComponent } from './components/header/header.component';
@@ -42,6 +48,7 @@ import { LoginComponent } from './components/login/login.component';
 import { LoggedInComponent } from './components/logged-in/logged-in.component';
 import { httpInterceptorProviders } from './interceptors';
 import { LocationAutoComplete } from './components/location-auto-complete/location-auto-complete.component';
+import { UserSettingsComponent } from './components/user-settings/user-settings.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 @NgModule({
@@ -54,6 +61,8 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
     LoginComponent,
     LoggedInComponent,
     LocationAutoComplete,
+    UserSettingsComponent,
+    MissingSettingsDialogComponent,
   ],
   imports: [
     BrowserModule,
@@ -72,6 +81,9 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
     MatProgressBarModule,
     MatToolbarModule,
     MatMenuModule,
+    MatExpansionModule,
+    MatDialogModule,
+    MatSnackBarModule,
     HttpClientModule,
     MatStepperModule,
     MatSidenavModule,

@@ -1,0 +1,54 @@
+<!--
+    Copyright 2022 Google LLC
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+        https://www.apache.org/licenses/LICENSE-2.0
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+ -->
+
+<div class="user-settings-action-buttons">
+  <button mat-icon-button (click)="back()">
+    <mat-icon>arrow_back</mat-icon>
+  </button>
+  <button mat-button (click)="accordion.openAll()">Expand All</button>
+  <button mat-button (click)="accordion.closeAll()">Collapse All</button>
+</div>
+<form [formGroup]="userSettings">
+  <mat-accordion class="user-settings-headers-align" multi>
+    <mat-expansion-panel 
+      *ngFor="let setting of settings" 
+      [expanded]="setting?.expanded"
+      #userSettings
+    >
+      <mat-progress-bar 
+        mode="indeterminate"
+        *ngIf="savingUserSettings"
+      ></mat-progress-bar>
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          {{setting.title}}
+        </mat-panel-title>
+        <mat-panel-description>
+          {{setting.description}}
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+
+      <mat-form-field appearance="fill">
+        <mat-label>{{setting.field}}</mat-label>
+        <input 
+          matInput
+          [required]="!! setting?.expanded"
+          formControlName="{{ setting.settingName }}"
+        >
+        <mat-hint *ngIf="setting?.expanded">
+          This setting is <strong>required</strong>.
+        </mat-hint>
+      </mat-form-field>
+    </mat-expansion-panel>
+  </mat-accordion>
+</form>

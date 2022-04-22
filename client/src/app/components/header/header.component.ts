@@ -40,7 +40,7 @@ export class HeaderComponent implements OnInit {
   constructor(public authService: AuthService, private router: Router) {
     // Get user's profile picture
     this.authService.userWatch.subscribe((user) => {
-      this.user = user;
+      this.user = user!;
     });
   }
 
@@ -55,6 +55,13 @@ export class HeaderComponent implements OnInit {
   logout() {
     this.authService.logout();
     this.router.navigate(['/login']);
+  }
+
+  /**
+   * Settings - Navigate to user settings page.
+   */
+  userSettings() {
+    this.router.navigate(['/settings']);
   }
 
   /**

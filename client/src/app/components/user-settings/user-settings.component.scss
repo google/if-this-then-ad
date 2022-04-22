@@ -11,7 +11,25 @@
     limitations under the License.
  */
 
-export interface SourceAgentSettingsParam {
-  name: string;
-  settingName: string;
+.user-settings-action-buttons {
+    padding-bottom: 20px;
 }
+
+.user-settings-headers-align .mat-expansion-panel-header-title,
+.user-settings-headers-align .mat-expansion-panel-header-description {
+    flex-basis: 0;
+}
+
+.user-settings-headers-align .mat-expansion-panel-header-description {
+    justify-content: space-between;
+    align-items: center;
+}
+
+.user-settings-headers-align .mat-form-field + .mat-form-field {
+    margin-left: 8px;
+}
+
+.mat-form-field{
+    width: 80% !important;
+}
+ 
