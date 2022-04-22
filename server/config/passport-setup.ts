@@ -11,12 +11,12 @@
     limitations under the License.
  */
 
-import { log, date } from '@iftta/util';
-import { Application, NextFunction, Request, Response } from 'express';
+import {log, date} from '@iftta/util';
+import {Application, NextFunction, Request, Response} from 'express';
 import passport from 'passport';
 import GoogleStrategy from '../auth/google-strategy';
-import { Collection } from '../models/fire-store-entity';
-import { User } from '../models/user';
+import {Collection} from '../models/fire-store-entity';
+import {User} from '../models/user';
 import Collections from '../services/collection-factory';
 import Repository from '../services/repository-service';
 
@@ -24,7 +24,8 @@ const usersCollection = Collections.get(Collection.USERS);
 const userRepo = new Repository<User>(usersCollection);
 
 /**
- * Init passport
+ * Init passport.
+ *
  * @param { Application } app
  * @return {any}
  */
@@ -47,16 +48,17 @@ export const init = (app: Application): any => {
     });
 
     GoogleStrategy.initialise(passport);
-    log.info('Initialised  Passport with Google strategy');
+    log.info('Initialised Passport with Google strategy');
     return app;
 };
 
 /**
  * Checks if request is authenticated.
+ *
  * @param { Request } req
  * @param { Response } res
  * @param { NextFunction } next
- * @return {any}
+ * @return { any }
  */
 export const isAuthenticated = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
     const authorizationHeader = req.headers.authorization || '';
@@ -98,22 +100,26 @@ export const isAuthenticated = async (req: Request, res: Response, next: NextFun
  * @param { Request } req
  * @param { Response } res
  * @param { NextFunction } next
- * @return {any}
+ * @return { any }
  */
-export const isAuthorized = (req: Request, res: Response, next: NextFunction): any => {
+export const isAuthorized = (
+    req: Request,
+    res: Response,
+    next: NextFunction
+): any => {
     // TODO: check for existence of the token
     // otherwise redirect to /api/auth/google
     return true;
 };
 
 /**
- * Extracts Access Token from authorization header
+ * Extract Access Token from authorization header.
+ *
  * @param {string} authHeader Auth Header
- * @returns {string} String
+ * @returns {string}
  */
 const _extractAccessToken = (authHeader: string): string | undefined => {
     const headerParts = authHeader.split(' ');
-    log.debug(headerParts);
 
     if (headerParts.length == 2) {
         return headerParts[1];
@@ -122,13 +128,17 @@ const _extractAccessToken = (authHeader: string): string | undefined => {
 };
 
 /**
- * Checks validity of the token
- * @param {string} accessToken
- * @returns {boolean}
+ * Check access token validity.
+ *
+ * @param { string } accessToken
+ * @returns { boolean }
  */
 const _isValidAccessToken = async (accessToken: string): Promise<boolean> => {
     try {
-        const result: User[] = await userRepo.getBy('token.access', accessToken);
+        const result: User[] = await userRepo.getBy(
+            'token.access',
+            accessToken
+        );
         if (result.length > 0) {
             // ensure that the token isnt expired.
             const user: User = result[0];

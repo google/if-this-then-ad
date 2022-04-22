@@ -11,7 +11,15 @@
     limitations under the License.
  */
 
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
+import {
+  faHouse,
+  faList,
+  faSquarePlus,
+} from '@fortawesome/free-solid-svg-icons';
+
+import { store } from 'src/app/store';
+import { AuthService } from './services/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -20,5 +28,24 @@ import { Component } from '@angular/core';
 })
 // eslint-disable-next-line require-jsdoc
 export class AppComponent {
+  faHouse = faHouse;
+  faList = faList;
+  faSquarePlus = faSquarePlus;
   title = 'IFTTA';
+
+  @ViewChild('sidenav') sidenav: any;
+
+  /**
+   * Constructor.
+   *
+   * @param {AuthService} authService
+   * @param {Router} router
+   */
+  constructor(public authService: AuthService) {
+    store.sidenav.subscribe((v) => {
+      if (authService.isLoggedIn) {
+        this.sidenav.toggle();
+      }
+    });
+  }
 }
