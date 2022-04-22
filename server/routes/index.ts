@@ -85,6 +85,12 @@ router.delete(
     pass.isAuthenticated,
     AccountController.remove
 );
+// User settings endpoint (save/update)
+router.post(
+    '/api/accounts/:userId/settings',
+    pass.isAuthenticated,
+    AccountController.updateSettings
+);
 
 // Rules endpoints
 router.post('/api/rules', pass.isAuthenticated, RulesController.create);
@@ -138,6 +144,8 @@ const getStaticFilePath = (): string => {
 };
 
 // Serve static Angular build environment dependent.
-router.use('*', express.static(getStaticFilePath()));
+if(process.env.NODE_ENV !== 'development'){
+    router.use('*', express.static(getStaticFilePath()));
+}
 
 export default router;

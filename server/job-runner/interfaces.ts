@@ -22,7 +22,7 @@ export interface Job {
     owner: string;
     executionInterval: number;
     lastExecution?: Date | number;
-    ownerSettings?: setting;
+    ownerSettings?: Object;
     query?: {
         dataPoint: string;
         value: string | number | boolean;
