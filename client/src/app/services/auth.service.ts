@@ -117,6 +117,8 @@ export class AuthService {
   }
 
   getUserSetting(s: string) {
+    this.getUserFromLocalStorage();
+
     return this.currentUser 
       && this.currentUser.userSettings
       && (s in this.currentUser.userSettings)
