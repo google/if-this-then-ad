@@ -41,6 +41,12 @@
         <span class="sidenav-label">All Rules</span>
       </a>
     </mat-nav-list>
+    <mat-nav-list>
+      <a mat-list-item [routerLink]="'/settings'" (click)="sidenav.close()">
+        <fa-icon [icon]="faGear"></fa-icon>
+        <span class="sidenav-label">Settings</span>
+      </a>
+    </mat-nav-list>
   </mat-sidenav>
 
   <mat-sidenav-content>
