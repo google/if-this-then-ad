@@ -99,18 +99,6 @@ export class DynamicDatabase {
       childEntityType = 'advertiser';
     }
 
-    // Build cache key
-    const hash = btoa(`${JSON.stringify(params)}`);
-
-    // Return cached children if available
-    if (localStorage.getItem(hash)) {
-      return new Promise((resolve) => {
-        const children = JSON.parse(localStorage.getItem(hash)!);
-        resolve(children);
-      });
-    }
-
-    // Fetch children from server
     return new Promise((resolve, reject) => {
       this.http
         .get<Array<EntityNode>>(
@@ -122,14 +110,19 @@ export class DynamicDatabase {
         .pipe(
           map((data) => {
             return data.map((entity) => {
-              return this.parseEntity(entity, node);
+              const child = EntityNode.fromJSON(entity);
+              child.id = this.getEntityId(child);
+              child.level = node.level + 1;
+              child.type = this.getEntityType(child);
+              child.selectable = !!(child.insertionOrderId || child.lineItemId);
+              child.expandable = childEntityType != 'lineItem';
+
+              return child;
             });
           })
         )
         .subscribe({
           next: (result) => {
-            // Store children in cache
-            localStorage.setItem(hash, JSON.stringify(result));
             resolve(result);
           },
           error: (err) => {
@@ -137,24 +130,6 @@ export class DynamicDatabase {
           },
         });
     });
-  }
-
-  /**
-   * Parse entity from JSON to proper model.
-   *
-   * @param {object} entity
-   * @param {EntityNode} parent
-   * @returns {EntityNode}
-   */
-  parseEntity(entity: object, parent: EntityNode) {
-    const child = EntityNode.fromJSON(entity);
-    child.id = this.getEntityId(child);
-    child.level = parent.level + 1;
-    child.type = this.getEntityType(child);
-    child.selectable = !!(child.insertionOrderId || child.lineItemId);
-    child.expandable = child.lineItemId === null;
-
-    return child;
   }
 
   /**
