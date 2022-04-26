@@ -124,7 +124,7 @@ class RepositoryService<T> {
             const snapshot = await colRef.where(fieldName, '==', fieldValue).get();
 
             if (snapshot.empty) {
-                log.debug(`No matching documents found for ${fieldName} : ${fieldValue}`);
+                log.debug(`Collection ${this.fireStoreCollection.name} contains no document with field ${fieldName} : ${fieldValue}`);
             }
 
             snapshot.forEach((doc) => {
