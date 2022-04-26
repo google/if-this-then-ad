@@ -20,7 +20,7 @@ import { LoggedInComponent } from 'src/app/components/logged-in/logged-in.compon
 import { AuthGuard } from './services/auth.guard';
 import { UserSettingsComponent } from './components/user-settings/user-settings.component';
 import { RulesComponent } from './components/rules/rules.component';
-
+import { RulesStatusComponent } from './components/rules-status/rules.status.component';
 
 const routes: Routes = [
   {
@@ -48,7 +48,7 @@ const routes: Routes = [
   },
   {
     path: '',
-    component: RulesComponent,
+    component: RulesStatusComponent,
     canActivate: [AuthGuard],
   },
 ];
