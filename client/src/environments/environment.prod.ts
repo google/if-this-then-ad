@@ -13,5 +13,5 @@
 
 export const environment = {
   production: true,
-  apiUrl: 'https://iftta-rwinmjotea-ey.a.run.app/api',
+  apiUrl: '/api',
 };
