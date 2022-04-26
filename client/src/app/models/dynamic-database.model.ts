@@ -82,7 +82,7 @@ export class DynamicDatabase {
    * @returns {Promise<EntityNode[] | undefined>}
    */
   getChildren(node: EntityNode): Promise<EntityNode[] | undefined> {
-    const agent = 'dv360-agent';
+    const agent = 'dv360-dev';
     const method = 'list';
     let childEntityType = 'partner';
     const params = {
@@ -99,8 +99,11 @@ export class DynamicDatabase {
       childEntityType = 'advertiser';
     }
 
+    // Build request URL
+    const url = `agents/${agent}/${method}/${childEntityType}`;
+
     // Build cache key
-    const hash = btoa(`${JSON.stringify(params)}`);
+    const hash = btoa(`${url}-${JSON.stringify(params)}`);
 
     // Return cached children if available
     if (localStorage.getItem(hash)) {
@@ -113,12 +116,9 @@ export class DynamicDatabase {
     // Fetch children from server
     return new Promise((resolve, reject) => {
       this.http
-        .get<Array<EntityNode>>(
-          `${environment.apiUrl}/agents/${agent}/${method}/${childEntityType}`,
-          {
-            params,
-          }
-        )
+        .get<Array<EntityNode>>(`${environment.apiUrl}/${url}`, {
+          params,
+        })
         .pipe(
           map((data) => {
             return data.map((entity) => {
