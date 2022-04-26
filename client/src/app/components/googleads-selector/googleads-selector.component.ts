@@ -6,9 +6,9 @@ import {MatTreeFlatDataSource, MatTreeFlattener} from '@angular/material/tree';
  * Food data with nested structure.
  * Each node has a name and an optional list of children.
  */
-interface FoodNode {
+interface AccountNode {
   name: string;
-  children?: FoodNode[];
+  children?: AccountNode[];
 }
 
 interface ExampleFlatNode {
@@ -17,7 +17,7 @@ interface ExampleFlatNode {
   level: number;
 }
 
-const TREE_DATA: FoodNode[] = [
+const TREE_DATA: AccountNode[] = [
   {
     name: 'Google Ads',
     children: [
@@ -33,8 +33,8 @@ const TREE_DATA: FoodNode[] = [
   templateUrl: './googleads-selector.component.html',
   styleUrls: ['./googleads-selector.component.scss']
 })
-export class GoogleadsSelectorComponent {
-  private _transformer = (node: FoodNode, level: number) => {
+export class GoogleAdsSelectorComponent {
+  private _transformer = (node: AccountNode, level: number) => {
     return {
       expandable: !!node.children && node.children.length > 0,
       name: node.name,

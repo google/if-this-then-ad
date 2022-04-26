@@ -51,7 +51,7 @@ import { httpInterceptorProviders } from './interceptors';
 import { LocationAutoComplete } from './components/location-auto-complete/location-auto-complete.component';
 import { UserSettingsComponent } from './components/user-settings/user-settings.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { GoogleadsSelectorComponent } from './components/googleads-selector/googleads-selector.component';
+import { GoogleAdsSelectorComponent } from './components/googleads-selector/googleads-selector.component';
 
 @NgModule({
   declarations: [
@@ -65,7 +65,7 @@ import { GoogleadsSelectorComponent } from './components/googleads-selector/goog
     LocationAutoComplete,
     UserSettingsComponent,
     MissingSettingsDialogComponent,
-    GoogleadsSelectorComponent,
+    GoogleAdsSelectorComponent,
   ],
   imports: [
     BrowserModule,
