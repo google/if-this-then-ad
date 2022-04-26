@@ -41,10 +41,10 @@ export class RulesStatusComponent implements AfterViewInit {
   successIcon = faCircleCheck;
   rules: Rule[] = [];
   displayedColumns: string[] = [
+    'status',
     'name',
     'source',
     'lastExecution',
-    'status',
     'message',
   ];
   dataSource = new MatTableDataSource<any>(this.rules);

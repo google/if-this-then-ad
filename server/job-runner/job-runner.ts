@@ -277,7 +277,7 @@ class JobRunner {
                 const status = {
                     success: actionResult.success ? actionResult.success : false,
                     lastExecution: actionResult.timestamp,
-                    message: actionResult.error ? actionResult.error : '-'
+                    message: actionResult.error ? actionResult.error : `${actionResult.displayName} : ${actionResult.entityStatus}`
                 }
                 rule.status = status;
                 this.rulesRepository.update(rule.id!, rule);
