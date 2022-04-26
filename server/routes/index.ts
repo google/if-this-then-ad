@@ -71,21 +71,13 @@ router.get('/api/account', pass.isAuthenticated, someController.hello);
 router.get('/api/accounts', pass.isAuthenticated, AccountController.listAccounts);
 router.get('/api/accounts/:id', pass.isAuthenticated, AccountController.get);
 router.post('/api/accounts', pass.isAuthenticated, AccountController.create);
-router.post(
-    '/api/accounts/:id',
-    pass.isAuthenticated,
-    AccountController.update
-);
-router.delete(
-    '/api/accounts/:id',
-    pass.isAuthenticated,
-    AccountController.remove
-);
+router.post('/api/accounts/:id', pass.isAuthenticated, AccountController.update);
+router.delete('/api/accounts/:id', pass.isAuthenticated, AccountController.remove);
 // User settings endpoint (save/update)
 router.post(
     '/api/accounts/:userId/settings',
     pass.isAuthenticated,
-    AccountController.updateSettings
+    AccountController.updateSettings,
 );
 
 // Rules endpoints
@@ -99,7 +91,7 @@ router.delete('/api/rules/:userId/:id', pass.isAuthenticated, RulesController.re
 router.get('/api/jobs/execute', JobController.executeJobs);
 
 // TODO: Debug Endpoint
-router.get('/api/agents/dv360/fetch/:entityType', someController.fetch);
+router.get('/api/agents/dv360-dev/list/:entityType', someController.fetch);
 
 router.get('/api/agents/metadata', pass.isAuthenticated, AgentsController.getAgentsMetadata);
 
