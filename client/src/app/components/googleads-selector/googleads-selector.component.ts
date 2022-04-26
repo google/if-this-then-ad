@@ -3,7 +3,7 @@ import {FlatTreeControl} from '@angular/cdk/tree';
 import {MatTreeFlatDataSource, MatTreeFlattener} from '@angular/material/tree';
 
 /**
- * Food data with nested structure.
+ * Account data with nested structure.
  * Each node has a name and an optional list of children.
  */
 interface AccountNode {
