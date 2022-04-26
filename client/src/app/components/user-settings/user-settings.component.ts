@@ -54,6 +54,24 @@ export class UserSettingsComponent {
       field: 'Api Key',
       settingName: 'GOOGLEMAPS_API_KEY',
     },
+    {
+      title: 'Google Ads Developer Token',
+      description: 'Required to access Google Ads API',
+      field: 'Developer Token',
+      settingName: 'GOOGLEADS_DEV_TOKEN',
+    },
+    {
+      title: 'Google Ads Manager Account ID',
+      description: 'Specifies the manager account to use',
+      field: 'ID without dashes',
+      settingName: 'GOOGLEADS_MANAGER_ACCOUNT_ID',
+    },
+    {
+      title: 'Google Ads Account ID',
+      description: 'Specifies the account to modify',
+      field: 'ID without dashes',
+      settingName: 'GOOGLEADS_ACCOUNT_ID',
+    },
   ];
 
   constructor(

@@ -44,6 +44,7 @@ export default class GoogleAdsClient {
             'Authorization': `Bearer ${this.oauthToken}`,
         };
         options.method = httpMethod;
+        console.log(options);
         const result = await axios(options);
         return result.data;
     }

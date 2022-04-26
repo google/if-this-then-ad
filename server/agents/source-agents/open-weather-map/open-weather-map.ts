@@ -116,6 +116,7 @@ class OpenWeatherMap implements IAgent {
     }
 
     private getOptions(job: Job) {
+        console.log('OpenWeatherMap.getOptions job?.ownerSettings', job?.ownerSettings);
         const options = { 
             ...config,
             apiKey: job && job?.ownerSettings 
