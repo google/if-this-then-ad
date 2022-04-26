@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { GoogleadsSelectorComponent } from './googleads-selector.component';
+import { GoogleAdsSelectorComponent } from './googleads-selector.component';
 
-describe('GoogleadsSelectorComponent', () => {
-  let component: GoogleadsSelectorComponent;
-  let fixture: ComponentFixture<GoogleadsSelectorComponent>;
+describe('GoogleAdsSelectorComponent', () => {
+  let component: GoogleAdsSelectorComponent;
+  let fixture: ComponentFixture<GoogleAdsSelectorComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ GoogleadsSelectorComponent ]
+      declarations: [ GoogleAdsSelectorComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(GoogleadsSelectorComponent);
+    fixture = TestBed.createComponent(GoogleAdsSelectorComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

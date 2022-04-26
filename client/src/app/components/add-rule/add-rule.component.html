@@ -141,12 +141,12 @@
                 </mat-radio-button>
             </mat-radio-group>
 
-            <app-target-selector *ngIf="'dv360-agent' == targetAgent"></app-target-selector>
-            <app-googleads-selector *ngIf="'googleads-agent' == targetAgent"></app-googleads-selector>
+            <app-target-selector *ngIf="'dv360-agent' === targetAgent"></app-target-selector>
+            <app-googleads-selector *ngIf="'googleads-agent' === targetAgent"></app-googleads-selector>
 
             <div class="step-footer">
-                <button mat-raised-button matStepperPrevious> Back </button>
-                <button mat-raised-button color="primary" matStepperNext> Next </button>
+                <button mat-raised-button matStepperPrevious>Back</button>
+                <button mat-raised-button color="primary" matStepperNext>Next</button>
             </div>
         </mat-step>
 
