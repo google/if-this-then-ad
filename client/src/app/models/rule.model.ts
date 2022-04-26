@@ -38,4 +38,9 @@ export class Rule {
     enum?: Array<string>;
   } = {};
   targets: TargetAgent[] = [];
+  status?: {
+    lastExecution: Date;
+    success: boolean;
+    message?: string;
+  };
 }

@@ -83,3 +83,51 @@ interface Parameter {
     key: string;
     value: string | number | boolean;
 }
+
+export interface ActionResult {
+    ruleId: string;
+    agentId: string;
+    displayName: string;
+    entityStatus: string;
+    timestamp: Date;
+    success: boolean;
+    error: string;
+}
+export interface Rule {
+    id?: string;
+    jobId?: string;
+    name: string;
+    owner: string;
+    source: Agent;
+    condition: Condition;
+    executionInterval: number;
+    targets?: Array<TargetAgent>;
+    status?: {
+        success: boolean,
+        lastExecution: Date;
+        message: string;
+    }
+}
+
+export interface Condition {
+    dataPoint: string;
+    comparator:
+    | COMPARATORS.equals
+    | COMPARATORS.greater
+    | COMPARATORS.less;
+    value: string | number | boolean;
+}
+
+export interface Agent {
+    id: string;
+    params: {
+        dataPoint: string;
+        value: string | number | boolean;
+    };
+}
+
+export enum COMPARATORS {
+    equals = 'eq',
+    greater = 'gt',
+    less = 'lt',
+}

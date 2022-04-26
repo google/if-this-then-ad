@@ -43,6 +43,7 @@ import {
   MissingSettingsDialogComponent,
 } from './components/add-rule/add-rule.component';
 import { RulesComponent } from './components/rules/rules.component';
+import { RulesStatusComponent } from './components/rules-status/rules.status.component';
 import { TargetSelectorComponent } from './components/target-selector/target-selector.component';
 import { HeaderComponent } from './components/header/header.component';
 import { LoginComponent } from './components/login/login.component';
@@ -58,6 +59,7 @@ import { GoogleAdsSelectorComponent } from './components/googleads-selector/goog
     AppComponent,
     AddRuleComponent,
     RulesComponent,
+    RulesStatusComponent,
     TargetSelectorComponent,
     HeaderComponent,
     LoginComponent,

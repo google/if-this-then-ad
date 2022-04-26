@@ -26,6 +26,11 @@ export interface Rule {
     condition: Condition;
     executionInterval: number;
     targets?: Array<TargetAgent>;
+    status?: {
+        success: boolean,
+        lastRun: Date;
+        error: string;
+    }
 }
 
 export interface Condition {
@@ -51,14 +56,14 @@ export interface RuleResult {
     target: Array<TargetAgent>;
 }
 
-interface actionParam {
+interface ActionParam {
     param: string;
     value: string | number | boolean;
 }
 
 interface TargetActions {
     action: string;
-    actionParams: Array<actionParam>;
+    actionParams: Array<ActionParam>;
 }
 
 export interface TargetAgent {
