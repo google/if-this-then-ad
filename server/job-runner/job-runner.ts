@@ -15,7 +15,7 @@ const { PubSub } = require('@google-cloud/pubsub');
 import { log, date } from '@iftta/util';
 import OpenWeatherMap from '../agents/source-agents/open-weather-map';
 import DV360Ads from '../agents/target-agents/dv360-ads';
-import { AgentResult, RuleResult, AgentTask, ExecutionTime, Job, ActionResult } from './interfaces';
+import { AgentResult, RuleResult, AgentTask, ExecutionTime, Job, ActionResult, Rule } from './interfaces';
 import { Collection } from '../models/fire-store-entity';
 import rulesEngine from '../packages/rule-engine';
 import Collections from '../services/collection-factory';
@@ -23,7 +23,7 @@ import Repository from '../services/repository-service';
 import TaskCollector from './task-collector';
 import TaskConfiguration from './task-configuration';
 import AmbeeAgent from '@iftta/ambee-agent';
-import { Rule } from 'models/rule';
+
 
 //Temp coupling between packages/
 //TODO: replace this with sending messages over pubsub.
@@ -262,7 +262,10 @@ class JobRunner {
             await this.updateRuleRunStatus(taskResults.flat());
         });
     }
-
+    /**
+     * Updates each affected rule with timestamp and execution status
+     * @param {ActionResult[]}taskExecutionResults 
+     */
     private async updateRuleRunStatus(taskExecutionResults: Array<ActionResult>) {
 
         for (let actionResult of taskExecutionResults) {
@@ -273,7 +276,7 @@ class JobRunner {
 
                 const status = {
                     success: actionResult.success ? actionResult.success : false,
-                    lastRun: actionResult.timestamp,
+                    lastExecution: actionResult.timestamp,
                     error: actionResult.error
                 }
                 rule.status = status;

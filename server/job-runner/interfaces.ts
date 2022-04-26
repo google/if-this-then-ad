@@ -104,7 +104,7 @@ export interface Rule {
     targets?: Array<TargetAgent>;
     status?: {
         success: boolean,
-        lastRun: Date;
+        lastExecution: Date;
         error: string;
     }
 }
