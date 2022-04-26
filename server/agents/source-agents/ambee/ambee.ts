@@ -157,7 +157,7 @@ export default class AmbeeAgent implements IAgent {
             ...config,
             apiKey: job && job?.ownerSettings 
                 ? job?.ownerSettings['AMBEE_API_KEY'] : '',
-                jobId: job.id,
+            jobId: job.id,
             targetLocation: job.query[0].value as string,
             jobOwner: job.owner,
         }

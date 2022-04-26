@@ -42,6 +42,7 @@ export default class TaskCollector {
                         auth: token.access,
                     },
                     target: target,
+                    ownerId: agentResult.jobOwner
                 };
                 this.tasks.push(task);
             }

@@ -68,6 +68,17 @@ export default class GoogleAdsAgent implements IAgent {
         return Promise.resolve(metadata);
     }
 
+    // TODO: move to the class AgentTask (first convert interface)
+    private getRequiredUserSetting(task: AgentTask, settingName: string) {
+        if (
+            !task || ! task.ownerSettings || !task.ownerSettings[settingName]
+        ) {
+            throw new Error(`Owner setting ${settingName} must be defined`);
+        }
+
+        return task.ownerSettings[settingName];
+    }
+
     /**
      * Executes all of a task's actions on Google Ads.
      * @param task - the task to execute
@@ -76,30 +87,40 @@ export default class GoogleAdsAgent implements IAgent {
     public async execute(task: AgentTask):Promise <Array<ActionResult>> {
         const result: Array<ActionResult> = [];
         for (const action of task.target.actions) {
+            console.log('ads.execute task', task);
             let instanceOptions = {} as InstanceOptions;
             action.params.forEach((p) => {
                 instanceOptions[p.key] = p.value;
             });
+
+            console.log('ads.execute instanceOptions', instanceOptions);
+
             let googleAds = new GoogleAdsClient(
-                instanceOptions.externalCustomerId,
-                instanceOptions.externalManagerCustomerId,
+                this.getRequiredUserSetting(task, 'GOOGLEADS_ACCOUNT_ID'),
+                this.getRequiredUserSetting(task, 'GOOGLEADS_MANAGER_ACCOUNT_ID'),
                 task.token.auth,
-                instanceOptions.developerToken);
+                this.getRequiredUserSetting(task, 'GOOGLEADS_DEV_TOKEN')
+            );
             let shouldBeActive = action.type == EntityActions.ACTIVATE && task.target.result;
+            console.log('shouldBeActive', shouldBeActive);
+            
             try {
                 await googleAds.changeStatus(
                     instanceOptions.entityType as EntityType,
                     instanceOptions.entityId as string,
                     shouldBeActive as boolean);
-                result.push({
+                const tmpResult = {
                     ruleId: task.target.ruleId,
                     agentId: config.id,
                     displayName: '', // TODO: Fill with what?
                     entityStatus: shouldBeActive ? EntityStatus.ACTIVE : EntityStatus.PAUSED,
                     timestamp: new Date(),
                     success: true
-                });
+                };
+                console.log('ads.execute tmpResult', tmpResult);
+                result.push(tmpResult);
             } catch (err) {
+                console.log('ads.agent Error:', err);
                 result.push({
                     ruleId: task.target.ruleId,
                     agentId: config.id,

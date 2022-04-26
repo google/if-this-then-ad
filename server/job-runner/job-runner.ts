@@ -15,6 +15,7 @@ const { PubSub } = require('@google-cloud/pubsub');
 import { log, date } from '@iftta/util';
 import OpenWeatherMap from '../agents/source-agents/open-weather-map';
 import DV360Ads from '../agents/target-agents/dv360-ads';
+import googleAdsAgent from '../agents/target-agents/google-ads';
 import { AgentResult, RuleResult, AgentTask } from './interfaces';
 import { Collection } from '../models/fire-store-entity';
 //TODO: replace this with sending messages over pubsub.
@@ -110,6 +111,7 @@ class JobRunner {
     private listTargetAgents() {
         return {
             'dv360-agent': DV360Ads,
+            'googleads-agent': googleAdsAgent,
         };
     }
     /**
@@ -188,6 +190,18 @@ class JobRunner {
         }
         return jobsWithSettings;
     }
+
+    private async getUserSettingsForTasks(tasks: AgentTask[]) {
+        let tasksWithSettings: AgentTask[] = [];
+
+        for (let task of tasks) {
+            const userId = task.ownerId!;
+            task.ownerSettings = await TaskConfiguration.getUserSettings(userId);
+            tasksWithSettings.push(task);
+        }
+        return tasksWithSettings;
+    }
+
     public async runAll() {
         const executionTimes: Array<ExecutionTime> = [];
         const collectExecutionTimes = (currentResult) => {
@@ -211,6 +225,7 @@ class JobRunner {
         }
 
         const eligibleJobsWithSettings = await this.getUserSettingsForJobs(eligibleJobs);
+        log.debug(['JobRunner.runAll eligibleJobs', eligibleJobs]);
         // execute each job agent
         // await for yielded results
         log.info('job-runner:runAll: Executing jobs on all available agents');
@@ -243,7 +258,9 @@ class JobRunner {
         await this.updateJobExecutionTimes(executionTimes);
 
         const tasks = taskCollector.get();
-        await this.processTasks(tasks);
+        const tasksWithSettings = await this.getUserSettingsForTasks(tasks);
+        log.debug(['JobRunner.runAll tasksWithSettings', tasksWithSettings]);
+        await this.processTasks(tasksWithSettings);
     }
 
     private async processTasks(tasks: Array<AgentTask>) {
