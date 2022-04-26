@@ -27,8 +27,8 @@ export class Rule {
     name?: string;
     params: SourceAgentParameter[];
   } = {
-      params: [],
-    };
+    params: [],
+  };
   condition: {
     name?: string;
     dataPoint?: string;
@@ -44,8 +44,3 @@ export class Rule {
     message?: string;
   };
 }
-
-// export enum RuleExecutionStatus {
-//   SUCCESS = 'Success', 
-//   ERROR = 'Error',
-// }

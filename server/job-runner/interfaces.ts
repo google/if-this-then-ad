@@ -105,7 +105,7 @@ export interface Rule {
     status?: {
         success: boolean,
         lastExecution: Date;
-        error: string;
+        message: string;
     }
 }
 

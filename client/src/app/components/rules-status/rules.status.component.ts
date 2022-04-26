@@ -12,7 +12,6 @@
  */
 
 import { Component, ViewChild, AfterViewInit } from '@angular/core';
-import { DatePipe } from '@angular/common'
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { HttpClient } from '@angular/common/http';
