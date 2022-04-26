@@ -61,8 +61,16 @@ button {
 }
 
 img.radio-group {
-  height: 15px;
-  width: 15px;
-  margin-right: 5px;
-  margin-left: 5px;
+  height: 50px;
+  width: 50px;
+  margin-right: 10px;
+  margin-left: 10px;
+}
+.target-app {
+  font-size:medium;
+  font-weight: 200;
+  text-align: center;
+  margin: auto;
+  width: 50%;
+  padding: 10px;
 }
