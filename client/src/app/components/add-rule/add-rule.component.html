@@ -130,10 +130,23 @@
             <ng-template matStepLabel>Target</ng-template>
             <h3>Application to target</h3>
             <!-- Target -->
-            <app-target-selector></app-target-selector>
+            <mat-radio-group aria-label="Select the target" [(ngModel)]="targetAgent">
+                <mat-radio-button value="dv360-agent">
+                    <img class="radio-group" src="assets/img/dv360.png" />
+                    DV360
+                </mat-radio-button>
+                <mat-radio-button value="googleads-agent">
+                    <img class="radio-group" src="assets/img/ads.png" />
+                    Google Ads
+                </mat-radio-button>
+            </mat-radio-group>
+
+            <app-target-selector *ngIf="'dv360-agent' === targetAgent"></app-target-selector>
+            <app-googleads-selector *ngIf="'googleads-agent' === targetAgent"></app-googleads-selector>
+
             <div class="step-footer">
-                <button mat-raised-button matStepperPrevious> Back </button>
-                <button mat-raised-button color="primary" matStepperNext> Next </button>
+                <button mat-raised-button matStepperPrevious>Back</button>
+                <button mat-raised-button color="primary" matStepperNext>Next</button>
             </div>
         </mat-step>
 
