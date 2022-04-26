@@ -20,8 +20,11 @@
 }
 
 .brand {
+  margin-top: 2.5rem;
   margin-bottom: 1.5rem;
   font-size: 2rem;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  letter-spacing: 5px;
 }
 
 .login {
@@ -40,4 +43,6 @@
   &:disabled {
     background: url('/assets/img/btn_google_signin_dark_disabled_web.png');
   }
+
+
 }

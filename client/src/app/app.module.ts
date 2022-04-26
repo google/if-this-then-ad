@@ -37,6 +37,7 @@ import { MatStepperModule } from '@angular/material/stepper';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 import { MatRadioModule } from '@angular/material/radio';
+import { MatCardModule } from '@angular/material/card';
 
 import {
   AddRuleComponent,
@@ -53,6 +54,7 @@ import { LocationAutoComplete } from './components/location-auto-complete/locati
 import { UserSettingsComponent } from './components/user-settings/user-settings.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { GoogleAdsSelectorComponent } from './components/googleads-selector/googleads-selector.component';
+import { DashComponent } from './components/dash/dash.component';
 
 @NgModule({
   declarations: [
@@ -68,6 +70,7 @@ import { GoogleAdsSelectorComponent } from './components/googleads-selector/goog
     UserSettingsComponent,
     MissingSettingsDialogComponent,
     GoogleAdsSelectorComponent,
+    DashComponent,
   ],
   imports: [
     BrowserModule,
@@ -94,6 +97,7 @@ import { GoogleAdsSelectorComponent } from './components/googleads-selector/goog
     MatSidenavModule,
     MatListModule,
     MatRadioModule,
+    MatCardModule,
     FontAwesomeModule,
   ],
   providers: [httpInterceptorProviders],

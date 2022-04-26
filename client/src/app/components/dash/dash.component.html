@@ -1,0 +1,20 @@
+<div class="rule-stats">
+    <h2>Welcome {{this.displayName}}</h2>
+    <mat-card class="rule-stats-card">
+        <mat-card-title>Overview</mat-card-title>
+        <mat-card-subtitle>Total Rules</mat-card-subtitle>
+        <mat-card-content>
+            <p><span class="rule-count"> {{this.adsManaged}} </span> Ads managed</p>
+            <p><span class="rule-count"> {{this.activeRules}} </span> Active</p>
+            <p><span class="rule-count"> {{this.inactiveRules }} </span> Inactive</p>
+            <p><span class="rule-count"> {{this.errorRules}} </span> Errors</p>
+            <mat-card-actions>
+                <div class="footer">
+                    <button mat-raised-button color="primary" mat-button><a href="/new-rule">+ Rule</a> </button>
+                    <button mat-raised-button color="primary" mat-button> <a href="/list-rules">View All </a></button>
+                    <button mat-raised-button color="primary" mat-button> <a href="/rules-status"> Status </a></button>
+                </div>
+            </mat-card-actions>
+        </mat-card-content>
+    </mat-card>
+</div>
