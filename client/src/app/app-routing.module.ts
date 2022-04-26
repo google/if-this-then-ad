@@ -21,6 +21,7 @@ import { AuthGuard } from './services/auth.guard';
 import { UserSettingsComponent } from './components/user-settings/user-settings.component';
 import { RulesComponent } from './components/rules/rules.component';
 import { RulesStatusComponent } from './components/rules-status/rules.status.component';
+import { DashComponent } from './components/dash/dash.component';
 
 const routes: Routes = [
   {
@@ -47,8 +48,13 @@ const routes: Routes = [
     canActivate: [AuthGuard],
   },
   {
-    path: '',
+    path: 'rules-status',
     component: RulesStatusComponent,
+    canActivate: [AuthGuard],
+  },
+  {
+    path: '',
+    component: DashComponent,
     canActivate: [AuthGuard],
   },
 ];
