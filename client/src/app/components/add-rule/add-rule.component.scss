@@ -54,3 +54,15 @@ button {
   padding: 6px;
   color: blue;
 }
+
+.mat-radio-button ~ .mat-radio-button {
+  margin-left: 25px;
+  margin-bottom: 15px;
+}
+
+img.radio-group {
+  height: 15px;
+  width: 15px;
+  margin-right: 5px;
+  margin-left: 5px;
+}
