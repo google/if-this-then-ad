@@ -91,7 +91,7 @@
                     <mat-form-field class="form-element">
                         <mat-label>Comparator</mat-label>
                         <mat-select name="rule-comparator" [(ngModel)]="currentRule.condition.comparator"
-                            [disabled]="this.lockEquals" required >
+                            [disabled]="this.lockEquals" required>
                             <mat-option *ngFor="let c of this.comparatorMapping" value="{{c.key}}">{{c.value}}
                             </mat-option>
                         </mat-select>
@@ -132,12 +132,12 @@
             <!-- Target -->
             <mat-radio-group aria-label="Select the target" [(ngModel)]="targetAgent">
                 <mat-radio-button value="dv360-agent">
-                    <img class="radio-group" src="assets/img/dv360.png" />
-                    DV360
+                    <img class="radio-group" alt="DV360" src="assets/img/dv360.png" />
+                    <span ngClass="target-app">DV 360</span>
                 </mat-radio-button>
                 <mat-radio-button value="googleads-agent">
-                    <img class="radio-group" src="assets/img/ads.png" />
-                    Google Ads
+                    <img class="radio-group" alt="Google ads" src="assets/img/ads.png" />
+                    <span ngClass="target-app"> Google Ads</span>
                 </mat-radio-button>
             </mat-radio-group>
 
