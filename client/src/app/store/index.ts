@@ -37,4 +37,5 @@ export const store = {
   sourceSet: new BehaviorSubject<boolean>(false),
   ruleAdded: new Subject<boolean>(),
   targets: new Subject<TargetAgent[]>(),
+  sidenav: new Subject<boolean>(),
 };

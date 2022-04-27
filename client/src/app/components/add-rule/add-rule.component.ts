@@ -46,13 +46,24 @@ export class AddRuleComponent implements OnInit {
   sourceParams: SourceAgentParameter[] = [];
   currentRule: Rule = new Rule();
   saveEnabled: boolean = false;
-  comparatorMapping: {} = {
-    gt: 'Greater Than',
-    lt: 'Lower Than',
-    eq: 'Equal',
-    yes: 'Yes',
-    no: 'No',
-  };
+  comparatorMapping: any[] = [
+    { key: 'gt', value: 'greater than' },
+    { key: 'lt', value: 'less than' },
+    { key: 'eq', value: 'equals' },
+  ];
+
+  executionIntervals: any[] = [
+    { key: 30, value: '30 min' },
+    { key: 60, value: '60 min' },
+    { key: 120, value: '2 hrs' },
+    { key: 240, value: '4 hrs' },
+    { key: 480, value: '8 hrs' },
+    { key: 720, value: '12 hrs' },
+    { key: 1440, value: '24 hrs' },
+  ];
+  dataPointListValues?: string[] = [];
+  lockEquals: boolean = false;
+  targetAgent: string;
 
   @ViewChild('name', { static: true }) nameForm: NgForm;
   @ViewChild('source', { static: true }) sourceForm: NgForm;
@@ -66,9 +77,9 @@ export class AddRuleComponent implements OnInit {
    * @param {HttpClient} http
    */
   constructor(
-    private http: HttpClient, 
+    private http: HttpClient,
     private authService: AuthService,
-    private router:Router,
+    private router: Router,
     public dialog: MatDialog
   ) {
     // Watch save requirements
@@ -166,8 +177,7 @@ export class AddRuleComponent implements OnInit {
       this.currentRule.source.params = agent.params;
 
       store.sourceSet.next(true);
-      
-      this.authService.getUserFromLocalStorage();
+
       this.checkUserSettingsForAgent(agent.settings.params);
     }
   }
@@ -178,14 +188,21 @@ export class AddRuleComponent implements OnInit {
    * @param {DataPoint} val
    */
   onDataPointChange(val: DataPoint) {
+
     // Store data point
     this.currentRule.condition.dataPoint = val.dataPoint;
     this.currentRule.condition.name = val.name;
     this.currentRule.condition.dataType = val.dataType;
-    this.currentRule.condition.enum = val?.enum;
-
     // Reset comparator
     this.currentRule.condition.comparator = undefined;
+
+    if (val.dataType === 'boolean' || val.dataType === 'enum') {
+      this.currentRule.condition.comparator = 'eq';
+      this.lockEquals = true;
+    } else {
+      this.lockEquals = false;
+    }
+    this.dataPointListValues = val.enum;
   }
 
   /**
@@ -210,29 +227,38 @@ export class AddRuleComponent implements OnInit {
     this.conditionForm.resetForm();
     this.sourceForm.resetForm();
     this.executionIntervalForm.resetForm();
-    
+
     this.router.navigate(['/list-rules']);
   }
-
+  /**
+   *  Checks user Settings
+   *  @param {Array<SourceAgentSettingsParam>}  params
+   */
   private checkUserSettingsForAgent(params: Array<SourceAgentSettingsParam>) {
     const missingSettings: Array<SourceAgentSettingsParam> = params.filter(
       p => this.isMissing(p.settingName)
     );
-    
+
     if (missingSettings.length) {
       this.showMissingSettingsDialog(missingSettings);
     }
   }
-
+  /**
+   * Checks if value is missing
+   * @param {string } name
+   * @returns {boolean}
+   */
   private isMissing(name: string) {
-    return ! this.authService.getUserSetting(name);
+    return !this.authService.getUserSetting(name);
   }
-
-  private showMissingSettingsDialog(missingSettings: Array<SourceAgentSettingsParam>) {
-    this.dialog.open(
-      MissingSettingsDialogComponent, 
-      {data: missingSettings}
-    );
+  /**
+   * Displays settings dialog
+   * @param {Array<SourceAgentSettingsParam>} missingSettings
+   */
+  private showMissingSettingsDialog(
+    missingSettings: Array<SourceAgentSettingsParam>
+  ) {
+    this.dialog.open(MissingSettingsDialogComponent, { data: missingSettings });
   }
 }
 
@@ -240,14 +266,25 @@ export class AddRuleComponent implements OnInit {
   selector: 'missing-settings-dialog',
   templateUrl: 'missing-settings-dialog.html',
 })
+/**
+ *  User Settings Dialog Component
+ */
 export class MissingSettingsDialogComponent {
+  /**
+   * Component constructor
+   * @param {Array<SourceAgentSettingsParam>} settings
+   * @param {Router} router
+   */
   constructor(
     @Inject(MAT_DIALOG_DATA) public settings: Array<SourceAgentSettingsParam>,
     private router: Router
-  ) {}
+  ) { }
 
+  /**
+   * Navigate to user settings
+   */
   goToUserSettings() {
-    const fragment = this.settings.map(s => s.settingName).join(',');
-    this.router.navigate(['/settings'], {fragment});
+    const fragment = this.settings.map((s) => s.settingName).join(',');
+    this.router.navigate(['/settings'], { fragment });
   }
 }

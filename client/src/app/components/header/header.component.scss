@@ -65,3 +65,13 @@
 .logout, .settings {
   padding-top: 15px;
 }
+
+.menu-links {
+  display: none;
+}
+
+@media only screen and (min-width: 768px) {
+  .menu-links {
+    display: block;
+  }
+}

@@ -11,10 +11,10 @@
     limitations under the License.
  */
 
-import { log } from '@iftta/util';
+import { log, isObject } from '@iftta/util';
 import { FirestoreCollection } from '../models/fire-store-entity';
 import { QueryDocumentSnapshot } from '@google-cloud/firestore';
-import { isObject } from 'util';
+
 
 class RepositoryService<T> {
     db: any;
@@ -124,7 +124,7 @@ class RepositoryService<T> {
             const snapshot = await colRef.where(fieldName, '==', fieldValue).get();
 
             if (snapshot.empty) {
-                log.debug(`No matching documents found for ${fieldName} : ${fieldValue}`);
+                log.debug(`Collection ${this.fireStoreCollection.name} contains no document with field ${fieldName} : ${fieldValue}`);
             }
 
             snapshot.forEach((doc) => {

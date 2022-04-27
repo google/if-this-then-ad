@@ -25,6 +25,7 @@ import { AuthService } from 'src/app/services/auth.service';
  * Login component.
  */
 export class LoginComponent implements OnInit {
+  bannerImage = 'assets/img/iftta-banner.png';
   /**
    * Constructor.
    *

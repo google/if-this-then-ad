@@ -17,41 +17,37 @@ import { MatTableDataSource } from '@angular/material/table';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { map } from 'rxjs/operators';
-import { AuthService } from 'src/app/services/auth.service'
+import { AuthService } from 'src/app/services/auth.service';
 import { Rule } from 'src/app/models/rule.model';
 
 import { store } from 'src/app/store';
 import { User } from 'src/app/models/user.model';
+import {
+  faTriangleExclamation,
+  faCircleCheck,
+} from '@fortawesome/free-solid-svg-icons';
 
 @Component({
-  selector: 'app-rules',
-  templateUrl: './rules.component.html',
-  styleUrls: ['./rules.component.scss'],
+  selector: 'app-rules-status',
+  templateUrl: './rules.status.component.html',
+  styleUrls: ['./rules.status.component.scss'],
 })
 
 /**
  * Rules component.
  */
-export class RulesComponent implements AfterViewInit {
+export class RulesStatusComponent implements AfterViewInit {
+  errorIcon = faTriangleExclamation;
+  successIcon = faCircleCheck;
   rules: Rule[] = [];
   displayedColumns: string[] = [
+    'status',
     'name',
     'source',
-    'type',
-    'comparator',
-    'value',
-    'interval',
-    'actions',
+    'lastExecution',
+    'message',
   ];
   dataSource = new MatTableDataSource<any>(this.rules);
-  comparatorMapping: {} = {
-    gt: 'Greater Than',
-    lt: 'Lower Than',
-    eq: 'Equal',
-    yes: 'Yes',
-    no: 'No',
-  };
-
   user: User | null;
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -85,35 +81,9 @@ export class RulesComponent implements AfterViewInit {
       .pipe(map((res: Array<Rule>) => res))
       .subscribe((result) => {
         this.rules = result;
-
+        console.log(this.rules);
         this.dataSource.data = this.rules;
         this.dataSource.paginator = this.paginator;
-      });
-  }
-
-  /**
-   * Get UI friendly comparator name.
-   *
-   * @param {string} comparator
-   * @returns {string}
-   */
-  getComparatorUi(comparator: string): string {
-    // @ts-ignore
-    return this.comparatorMapping[comparator] ?? comparator;
-  }
-
-  /**
-   * Delete rule.
-   *
-   * @param {Rule} rule
-   */
-  removeRule(rule: Rule) {
-    const userId = this.user!.id;
-    this.http
-      .delete(`${environment.apiUrl}/rules/${userId}/${rule.id}`)
-      .subscribe((_) => {
-        // Reload rules
-        this.loadRules();
       });
   }
 }

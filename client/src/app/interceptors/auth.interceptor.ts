@@ -63,7 +63,7 @@ export class AuthInterceptor implements HttpInterceptor {
 
     return next.handle(req).pipe(
       catchError((err) => {
-        const codes = new Set([401, 403, 504]);
+        const codes = new Set([401]);
         if (codes.has(err.status) && this.retries < this.MAXRETRIES) {
           this.retries++;
           this.refreshAccessToken().subscribe({
@@ -77,11 +77,15 @@ export class AuthInterceptor implements HttpInterceptor {
               console.error(e);
             },
           });
-          // update token on the user
+          // Update token on the user
           this.refreshAccessToken().subscribe({
             next: (t) => this.authService.updateToken(t),
           });
         }
+
+        // Logout on expired token
+        this.authService.logout();
+
         return throwError(() => new Error('Access Token expired: Login again'));
       })
     );
