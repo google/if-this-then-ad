@@ -1,0 +1,36 @@
+// dash css
+.rule-stats {
+    width: 100%;
+}
+
+:host {
+    .mat-card-subtitle {
+        padding-top: 20px;
+        padding-bottom: 20px;
+        font-size: large;
+        font-weight: 300;
+    }
+
+    .rule-count {
+        font-style: bold;
+        font-size: x-large;
+        padding-right: 15px;
+    }
+
+    .card-child {
+        width: 50%;
+        float: left;
+        padding: 20px;
+    }
+    .card-footer {
+        float:left;
+        width: 100%;
+        padding: 20px;
+    }
+    p{
+        font-size: medium;
+    }
+    .footer {
+        text-align: right;
+    }
+}

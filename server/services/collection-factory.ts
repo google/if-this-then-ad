@@ -30,14 +30,10 @@ class CollectionFactory {
         this.db.settings({ ignoreUndefinedProperties: true });
     }
 
-    public get(collectionName: Collection) {
-        let prefix = '';
-        if ('DEMO_ENV_NAME' in process.env && process.env.DEMO_ENV_NAME) {
-            prefix = process.env.DEMO_ENV_NAME.replace('/', '-') + ':';
-        }
-
+    public get(collectionName: string) {
+    
         const collection: FirestoreCollection = {
-            name: prefix + collectionName,
+            name: collectionName,
             db: this.db,
         };
         return collection;

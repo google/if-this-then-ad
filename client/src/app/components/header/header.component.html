@@ -13,38 +13,58 @@
 
 <mat-toolbar class="header" color="primary">
   <!-- Sidebar button -->
-  <button mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon">
-    <mat-icon>menu</mat-icon>
+  <button
+    mat-icon-button
+    class="example-icon"
+    aria-label="Example icon-button with menu icon"
+  >
+    <mat-icon (click)="toggleSidenav()">menu</mat-icon>
   </button>
-  <span>If This Then Ad</span>
+  <span><a href="/" > If This Then Ad </a></span>
 
   <!-- Middle Spacer -->
   <span class="spacer"></span>
 
   <ng-container *ngIf="authService.isLoggedIn && user">
+    <!-- Menu links -->
+    <div class="menu-links">
+      <a mat-button [routerLink]="'/new-rule'">Create Rule</a>
+      <a mat-button [routerLink]="'/list-rules'">All Rules</a>
+    </div>
     <!-- Header buttons -->
-    <button class="avatar-wrapper" mat-icon-button mat-button [matMenuTriggerFor]="userMenu" aria-label="User account menu">
+    <button
+      class="avatar-wrapper"
+      mat-icon-button
+      mat-button
+      [matMenuTriggerFor]="userMenu"
+      aria-label="User account menu"
+    >
       <!-- User profile picture -->
-      <div class="avatar" [style.backgroundImage]="'url(' + user.profilePhoto + ')'"></div>
+      <div
+        class="avatar"
+        [style.backgroundImage]="'url(' + user.profilePhoto + ')'"
+      ></div>
     </button>
 
     <!-- User menu -->
     <mat-menu #userMenu="matMenu" xPosition="before">
       <div class="avatar-wrapper avatar-wrapper-padding">
-        <div class="avatar avatar-big" [style.backgroundImage]="'url(' + user.profilePhoto + ')'"></div>
+        <div
+          class="avatar avatar-big"
+          [style.backgroundImage]="'url(' + user.profilePhoto + ')'"
+        ></div>
       </div>
       <div class="user-info">
         <div class="centered-content name">
-          {{user.displayName}}
+          {{ user.displayName }}
         </div>
         <div class="centered-content email">
-          {{user.email}}
-        </div>
-        <div class="centered-content settings">
-          <button mat-raised-button color="accent" (click)="userSettings()">Settings</button>
+          {{ user.email }}
         </div>
         <div class="centered-content logout">
-          <button mat-raised-button color="primary" (click)="logout()">Logout</button>
+          <button mat-raised-button color="primary" (click)="logout()">
+            Logout
+          </button>
         </div>
       </div>
     </mat-menu>

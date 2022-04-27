@@ -23,9 +23,6 @@ export enum COMPARATORS {
     equals = 'eq',
     greater = 'gt',
     less = 'lt',
-    yes = 'yes',
-    no = 'no',
-    enum = 'enum',
 }
 
 export interface Rule {
@@ -42,9 +39,7 @@ export interface Rule {
         comparator:
             | COMPARATORS.equals
             | COMPARATORS.greater
-            | COMPARATORS.less
-            | COMPARATORS.yes
-            | COMPARATORS.no;
+            | COMPARATORS.less;
         value: string | number | boolean;
         dataType?: string;
     };

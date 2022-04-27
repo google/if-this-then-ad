@@ -11,7 +11,7 @@
     limitations under the License.
  */
 
-import { Request, Response } from 'express';
+import {Request, Response} from 'express';
 
 class SomeController {
     /**
@@ -25,17 +25,37 @@ class SomeController {
     }
 
     public async fetch(req: Request, res: Response) {
-        console.log(req.query.level);
-        if (req.query.level === '0') {
+        console.log(req.params.entityType);
+        if (req.params.entityType === 'partner') {
             const entities = [
                 {
-                    id: '2015636',
                     name: '! AC2 Testing Partner',
-                    level: 1,
-                    expandable: true,
-                    isLoading: false,
+                    partnerId: '2015636',
+                    advertiserId: null,
+                    insertionOrderId: null,
+                    lineItemId: null,
+                    entityStatus: 'ACTIVE',
+                },
+            ];
+
+            res.json(entities);
+        } else if (req.params.entityType === 'advertiser') {
+            const entities = [
+                {
+                    name: 'My Advertiser 1',
+                    partnerId: '2015636',
                     advertiserId: '123',
-                    type: 'line-item',
+                    insertionOrderId: null,
+                    lineItemId: null,
+                    entityStatus: 'ACTIVE',
+                },
+                {
+                    name: 'My Advertiser 2',
+                    partnerId: '2015636',
+                    advertiserId: '234',
+                    insertionOrderId: null,
+                    lineItemId: null,
+                    entityStatus: 'ACTIVE',
                 },
             ];
 
@@ -43,22 +63,12 @@ class SomeController {
         } else {
             const entities = [
                 {
-                    id: 'adv-1',
-                    name: 'My Advertiser 1',
-                    level: 2,
-                    expandable: true,
-                    isLoading: false,
+                    name: 'My Insertion Order 1',
+                    partnerId: '2015636',
                     advertiserId: '123',
-                    type: 'advertiser',
-                },
-                {
-                    id: 'adv-2',
-                    name: 'My Advertiser 2',
-                    level: 2,
-                    expandable: true,
-                    isLoading: false,
-                    advertiserId: '123',
-                    type: 'advertiser',
+                    insertionOrderId: '135',
+                    lineItemId: null,
+                    entityStatus: 'ACTIVE',
                 },
             ];
 
