@@ -36,12 +36,15 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatCardModule } from '@angular/material/card';
 
 import {
   AddRuleComponent,
   MissingSettingsDialogComponent,
 } from './components/add-rule/add-rule.component';
 import { RulesComponent } from './components/rules/rules.component';
+import { RulesStatusComponent } from './components/rules-status/rules.status.component';
 import { TargetSelectorComponent } from './components/target-selector/target-selector.component';
 import { HeaderComponent } from './components/header/header.component';
 import { LoginComponent } from './components/login/login.component';
@@ -50,12 +53,15 @@ import { httpInterceptorProviders } from './interceptors';
 import { LocationAutoComplete } from './components/location-auto-complete/location-auto-complete.component';
 import { UserSettingsComponent } from './components/user-settings/user-settings.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { GoogleAdsSelectorComponent } from './components/googleads-selector/googleads-selector.component';
+import { DashComponent } from './components/dash/dash.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     AddRuleComponent,
     RulesComponent,
+    RulesStatusComponent,
     TargetSelectorComponent,
     HeaderComponent,
     LoginComponent,
@@ -63,6 +69,8 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
     LocationAutoComplete,
     UserSettingsComponent,
     MissingSettingsDialogComponent,
+    GoogleAdsSelectorComponent,
+    DashComponent,
   ],
   imports: [
     BrowserModule,
@@ -88,6 +96,8 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
     MatStepperModule,
     MatSidenavModule,
     MatListModule,
+    MatRadioModule,
+    MatCardModule,
     FontAwesomeModule,
   ],
   providers: [httpInterceptorProviders],

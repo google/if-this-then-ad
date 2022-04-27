@@ -11,7 +11,54 @@
     limitations under the License.
  */
 
-export const environment = {
-  production: true,
-  apiUrl: '/api',
-};
+.wrapper {
+  margin-top: 2rem;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.table {
+  width: 100%;
+}
+
+.paginator {
+  width: 100%;
+}
+
+th.mat-header-cell {
+  text-align: left;
+  padding: 15px;
+  font-size: medium;
+}
+
+td {
+  margin: 20px;
+}
+
+.mat-column-status {
+  width: 7%;
+}
+
+.mat-column-message {
+  word-wrap: break-word;
+  min-width: 40%;
+}
+
+.fa-lg {
+  font-size: 1.5em;
+  line-height: 0.05em;
+  vertical-align: -0.075em;
+}
+
+.error-icon {
+  color: red !important;
+}
+
+.success-icon {
+  color: #3a9e07 !important;
+}
+
+
+

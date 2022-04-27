@@ -20,7 +20,7 @@
   >
     <mat-icon (click)="toggleSidenav()">menu</mat-icon>
   </button>
-  <span>If This Then Ad</span>
+  <span><a href="/" > If This Then Ad </a></span>
 
   <!-- Middle Spacer -->
   <span class="spacer"></span>
@@ -31,7 +31,6 @@
       <a mat-button [routerLink]="'/new-rule'">Create Rule</a>
       <a mat-button [routerLink]="'/list-rules'">All Rules</a>
     </div>
-
     <!-- Header buttons -->
     <button
       class="avatar-wrapper"
@@ -61,9 +60,6 @@
         </div>
         <div class="centered-content email">
           {{ user.email }}
-        </div>
-        <div class="centered-content settings">
-          <button mat-raised-button color="accent" (click)="userSettings()">Settings</button>
         </div>
         <div class="centered-content logout">
           <button mat-raised-button color="primary" (click)="logout()">

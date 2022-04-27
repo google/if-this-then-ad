@@ -15,29 +15,29 @@ const { PubSub } = require('@google-cloud/pubsub');
 import { log, date } from '@iftta/util';
 import OpenWeatherMap from '../agents/source-agents/open-weather-map';
 import DV360Ads from '../agents/target-agents/dv360-ads';
-import { AgentResult, RuleResult, AgentTask } from './interfaces';
+import { AgentResult, RuleResult, AgentTask, ExecutionTime, Job, ActionResult, Rule } from './interfaces';
 import { Collection } from '../models/fire-store-entity';
-//TODO: replace this with sending messages over pubsub.
-//Temp coupling between packages/
 import rulesEngine from '../packages/rule-engine';
 import Collections from '../services/collection-factory';
 import Repository from '../services/repository-service';
-import { ExecutionTime, Job } from './interfaces';
 import TaskCollector from './task-collector';
 import TaskConfiguration from './task-configuration';
 import AmbeeAgent from '@iftta/ambee-agent';
 
+
+//Temp coupling between packages/
+//TODO: replace this with sending messages over pubsub.
 const pubSubClient = new PubSub();
 const jobsCollection = Collections.get(Collection.JOBS);
-const repo = new Repository<Job>(jobsCollection);
+const rulesCollection = Collections.get(Collection.RULES);
 
+const jobsRepo = new Repository<Job>(jobsCollection);
+const rulesRepo = new Repository<Rule>(rulesCollection);
 class JobRunner {
     client: any;
-    jobsRepo: Repository<Job>;
 
-    constructor(client: any, repository: Repository<Job>) {
+    constructor(client: any, private jobsRepository: Repository<Job>, private rulesRepository: Repository<Rule>) {
         this.client = client;
-        this.jobsRepo = repository;
     }
 
     private async getTopic(name: string) {
@@ -137,10 +137,10 @@ class JobRunner {
 
     private async updateJobExecutionTimes(jobs: Array<ExecutionTime>) {
         for (const j of jobs) {
-            const job = await this.jobsRepo.get(j.jobId);
+            const job: Job | undefined = await this.jobsRepository.get(j.jobId);
             if (job) {
                 job.lastExecution = new Date();
-                await this.jobsRepo.update(j.jobId, job);
+                await this.jobsRepository.update(j.jobId, job);
                 log.info(`Set lastExecution time: ${j.lastExecution} on job : ${j.jobId}`);
             }
         }
@@ -154,7 +154,7 @@ class JobRunner {
     private async getEligibleJobs(): Promise<Array<Job>> {
         // Get a list of jobs to execute
         log.info('Fetching job list to execute');
-        const allJobs: Job[] = await this.jobsRepo.list();
+        const allJobs: Job[] = await this.jobsRepository.list();
 
         // Filter by execution interval
         const nowUTC = new Date();
@@ -243,21 +243,48 @@ class JobRunner {
         await this.updateJobExecutionTimes(executionTimes);
 
         const tasks = taskCollector.get();
+        log.debug('TASKS')
+        log.debug(tasks);
         await this.processTasks(tasks);
     }
 
     private async processTasks(tasks: Array<AgentTask>) {
         const agents = this.listTargetAgents();
         log.debug(`job-runner:processTasks: #of tasks ${tasks.length}`);
-        tasks.map(async (task) => {
-            const targetAgent = agents[task.target.agentId];
-            log.debug(`job-runner:processTasks: Executing task on agent ${task.target.agentId}`);
-            log.debug(task);
-            const taskResult = await targetAgent.execute(task);
-            log.debug(`job-runner:processTasks: Execution result`);
-            log.debug(taskResult);
+        let taskExecutionResults: Array<ActionResult> = []
+        Promise.all(
+            tasks.map(async (task) => {
+                const targetAgent = agents[task.target.agentId];
+                return targetAgent.execute(task)
+            })
+        ).then(async (taskResults) => {
+            log.debug(taskResults);
+            await this.updateRuleRunStatus(taskResults.flat());
         });
+    }
+    /**
+     * Updates each affected rule with timestamp and execution status
+     * @param {ActionResult[]}taskExecutionResults 
+     */
+    private async updateRuleRunStatus(taskExecutionResults: Array<ActionResult>) {
+
+        for (let actionResult of taskExecutionResults) {
+
+            const rule = await this.rulesRepository.get(actionResult.ruleId)!;
+
+            if (rule) {
+
+                const status = {
+                    success: actionResult.success ? actionResult.success : false,
+                    lastExecution: actionResult.timestamp,
+                    message: actionResult.error ? actionResult.error : `${actionResult.displayName} : ${actionResult.entityStatus}`
+                }
+                rule.status = status;
+                this.rulesRepository.update(rule.id!, rule);
+                log.debug(`Execution : Rule ${rule.id} success: ${status.success}`, status);
+            }
+        }
     }
 }
 
-export default new JobRunner(pubSubClient, repo);
+export default new JobRunner(pubSubClient, jobsRepo, rulesRepo);

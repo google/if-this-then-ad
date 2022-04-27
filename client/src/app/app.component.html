@@ -11,16 +11,6 @@
     limitations under the License.
  -->
 
-<!--<div class="wrapper">
-    <app-header></app-header>
-
-    <div class="main">
-        <div class="col-s-8 content">
-            <router-outlet></router-outlet>
-        </div>
-    </div>
-</div>-->
-
 <mat-sidenav-container>
   <mat-sidenav #sidenav>
     <mat-nav-list>
@@ -39,6 +29,12 @@
       <a mat-list-item [routerLink]="'/list-rules'" (click)="sidenav.close()">
         <fa-icon [icon]="faList"></fa-icon>
         <span class="sidenav-label">All Rules</span>
+      </a>
+    </mat-nav-list>
+    <mat-nav-list>
+      <a mat-list-item [routerLink]="'/settings'" (click)="sidenav.close()">
+        <fa-icon [icon]="faGear"></fa-icon>
+        <span class="sidenav-label">Settings</span>
       </a>
     </mat-nav-list>
   </mat-sidenav>

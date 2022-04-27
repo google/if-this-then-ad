@@ -63,6 +63,7 @@ export class AddRuleComponent implements OnInit {
   ];
   dataPointListValues?: string[] = [];
   lockEquals: boolean = false;
+  targetAgent: string;
 
   @ViewChild('name', { static: true }) nameForm: NgForm;
   @ViewChild('source', { static: true }) sourceForm: NgForm;
@@ -177,7 +178,6 @@ export class AddRuleComponent implements OnInit {
 
       store.sourceSet.next(true);
 
-      this.authService.getUserFromLocalStorage();
       this.checkUserSettingsForAgent(agent.settings.params);
     }
   }
