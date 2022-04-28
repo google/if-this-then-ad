@@ -11,8 +11,10 @@
     limitations under the License.
  */
 
+import { log } from '@iftta/util';
 import { AgentTask, AgentResult, RuleResult } from './interfaces';
 import TaskConfiguration from './task-configuration';
+import { Token } from './../models/user';
 
 export default class TaskCollector {
     private tasks: Array<AgentTask> = [];
@@ -23,8 +25,14 @@ export default class TaskCollector {
      * @param ruleResults Rule evaluation Results for agentResults
      */
     public async put(agentResult: AgentResult, ruleResults: Array<RuleResult>) {
-        // new token
-        const token = await TaskConfiguration.refreshTokensForUser(agentResult.jobOwner);
+        let token: Token|undefined;
+        try {
+            // new token
+            token = await TaskConfiguration.refreshTokensForUser(agentResult.jobOwner);
+        } catch (e) {
+            log.error(['Could not refresh the token.', e as string]);
+            return;
+        }
 
         // target
         for (let rr of ruleResults) {
