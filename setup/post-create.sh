@@ -26,11 +26,8 @@ gcloud services enable displayvideo.googleapis.com --no-user-output-enabled
 # Generate session secret
 SESSION_SECRET=$(openssl rand -hex 32)
 
-# Get Cloud Run URL
-CLOUD_RUN_URL=$(gcloud run services describe ${SERVICE_NAME} --format 'value(status.url)')
-
 # Build OAuth Callback URL
-OAUTH_CALLBACK_URL=${CLOUD_RUN_URL}/api/auth/oauthcallback
+OAUTH_CALLBACK_URL=${SERVICE_URL}/api/auth/oauthcallback
 
 # Update environment variables
 echo "Updating environment variables..."
