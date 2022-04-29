@@ -19,6 +19,9 @@
     "skip": true
   },
   "hooks": {
+    "prebuild": {
+      "commands": ["./setup/pre-build.sh"]
+    },
     "postbuild": {
       "commands": ["./setup/post-build.sh"]
     },
