@@ -2,7 +2,8 @@
   "name": "if-this-then-ad",
   "env": {
     "PROJECT_ID": {
-      "value": ""
+      "value": "",
+      "required": false
     },
     "GOOGLE_CLIENT_ID": {
       "description": "OAuth 2.0 Client ID",
@@ -13,16 +14,20 @@
       "required": true
     },
     "OAUTH_CALLBACK_URL": {
-      "value": ""
+      "value": "",
+      "required": false
     },
     "SESSION_SECRET": {
-      "value": ""
+      "value": "",
+      "required": false
     },
     "LOG_LEVEL": {
-      "value": "INFO"
+      "value": "INFO",
+      "required": false
     },
     "NODE_ENV": {
-      "value": "production"
+      "value": "production",
+      "required": false
     }
   },
   "options": {
