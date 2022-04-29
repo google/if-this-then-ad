@@ -68,7 +68,7 @@ SERVICE=$(gcloud run services list --filter="SERVICE:'${SERVICE_NAME}'" --format
 
 if [[ "${SERVICE}" == "[]" ]]; then
   echo "Deploying Service..."
-  gcloud run deploy ${SERVICE_NAME} --image ${SERVICE_IMAGE} --allow-unauthenticated --no-user-output-enabled --set-env-vars=PROJECT_ID=${PROJECT_ID},GOOGLE_CLIENT_ID=${CLIENT_ID},GOOGLE_CLIENT_SECRET=${CLIENT_SECRET},SESSION_SECRET=${SESSION_SECRET},OAUTH_CALLBACK_URL='none'
+  gcloud run deploy ${SERVICE_NAME} --image ${SERVICE_IMAGE} --allow-unauthenticated --no-user-output-enabled --set-env-vars=PROJECT_ID=${PROJECT_ID},GOOGLE_CLIENT_ID=${CLIENT_ID},GOOGLE_CLIENT_SECRET=${CLIENT_SECRET},SESSION_SECRET=${SESSION_SECRET},OAUTH_CALLBACK_URL='',LOG_LEVEL='INFO',NODE_ENV='production',PORT=8080
 
   # Get Cloud Run URL
   CLOUD_RUN_URL=$(gcloud run services describe ${SERVICE_NAME} --format 'value(status.url)')
