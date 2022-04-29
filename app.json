@@ -1,0 +1,42 @@
+{
+  "name": "if-this-then-ad",
+  "env": {
+    "PROJECT_ID": {
+      "value": "",
+      "required": false
+    },
+    "GOOGLE_CLIENT_ID": {
+      "description": "OAuth 2.0 Client ID"
+    },
+    "GOOGLE_CLIENT_SECRET": {
+      "description": "OAuth 2.0 Client Secret"
+    },
+    "OAUTH_CALLBACK_URL": {
+      "value": ""
+    },
+    "PORT": {
+      "value": 8080
+    },
+    "SESSION_SECRET": {
+      "value": ""
+    },
+    "LOG_LEVEL": {
+      "value": "INFO"
+    },
+    "NODE_ENV": {
+      "value": "production"
+    }
+  },
+  "options": {
+    "allow-unauthenticated": false,
+    "region": "europe-west3"
+  },
+  "build": {
+    "skip": false
+  },
+  "hooks": {
+    "postcreate": {
+      "commands": ["./setup/post-create.sh"]
+    }
+  }
+}

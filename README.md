@@ -29,19 +29,9 @@
 
 1. Take not of the **Client ID** and **Client Secret** presented to you
 
-1. Open [Cloud Shell](https://shell.cloud.google.com)
+1. Click the big blue button to deploy:
 
-1. Clone the GitHub repository
-
-   ```
-   git clone https://github.com/google/if-this-then-ad.git
-   ```
-
-1. Execute the setup script
-
-   ```
-   ./if-this-then-ad/setup/init.sh
-   ```
+   [![Run on Google Cloud](https://deploy.cloud.run/button.svg)](https://deploy.cloud.run)
 
 ## Development
 
