@@ -74,7 +74,7 @@ export const isAuthenticated = async (req: Request, res: Response, next: NextFun
     }
     
     try {
-        const tokenResult = await _validateAccessToken(accessToken, req);
+        const tokenResult = await _validateAccessToken(accessToken!, req);
         log.debug('Validity of the submitted token ' + tokenResult);
         req.session['accessTokenIsValid'] = tokenResult;
         if (tokenResult) {
@@ -148,6 +148,7 @@ const _validateAccessToken = async (accessToken: string, req): Promise<boolean> 
         }
     } catch (err) {
         log.error(err);
+        return Promise.reject(err);
     }
     return false;
 };
