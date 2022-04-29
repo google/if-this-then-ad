@@ -1,6 +1,5 @@
 #!/bin/bash
 
-SERVICE_NAME='if-this-then-ad'
 PROJECT_ID=$(gcloud config list --format 'value(core.project)' 2>/dev/null)
 
 # Enable Identity-Aware Proxy API
@@ -31,7 +30,7 @@ OAUTH_CALLBACK_URL=${SERVICE_URL}/api/auth/oauthcallback
 
 # Update environment variables
 echo "Updating environment variables..."
-gcloud run services update ${SERVICE_NAME} --no-user-output-enabled  --update-env-vars PROJECT_ID=${PROJECT_ID},SESSION_SECRET=${SESSION_SECRET},OAUTH_CALLBACK_URL=${OAUTH_CALLBACK_URL}
+gcloud run services update ${K_SERVICE} --no-user-output-enabled  --update-env-vars PROJECT_ID=${PROJECT_ID},SESSION_SECRET=${SESSION_SECRET},OAUTH_CALLBACK_URL=${OAUTH_CALLBACK_URL}
 
-echo "Add the following URL to your OAuth Client ID's 'Authorized JavaScript origins':" ${CLOUD_RUN_URL}
+echo "Add the following URL to your OAuth Client ID's 'Authorized JavaScript origins':" ${SERVICE_URL}
 echo "Add the following URL to your OAuth Client ID's 'Authorized redirect URIs':" ${OAUTH_CALLBACK_URL}
