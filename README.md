@@ -33,6 +33,14 @@
 
    [![Run on Google Cloud](https://deploy.cloud.run/button.svg)](https://deploy.cloud.run)
 
+1. Choose the Google Cloud Project where you want to deploy the app
+
+1. Select the region where you want to deploy
+
+1. Enter your Client ID and Client Secret when prompted
+
+1. Ignore any other prompts, which will get auto-populated
+
 ## Development
 
 ### Git: Pre commit
