@@ -32,7 +32,7 @@ OAUTH_CALLBACK_URL=${SERVICE_URL}/api/auth/oauthcallback
 
 # Update environment variables
 echo "Updating environment variables..."
-gcloud run services update ${K_SERVICE} --no-user-output-enabled  --update-env-vars PROJECT_ID=${GOOGLE_CLOUD_PROJECT},SESSION_SECRET=${SESSION_SECRET},OAUTH_CALLBACK_URL=${OAUTH_CALLBACK_URL}
+gcloud run services update ${K_SERVICE} --region=${GOOGLE_CLOUD_REGION} --no-user-output-enabled  --update-env-vars PROJECT_ID=${GOOGLE_CLOUD_PROJECT},SESSION_SECRET=${SESSION_SECRET},OAUTH_CALLBACK_URL=${OAUTH_CALLBACK_URL}
 
 echo "Add the following URL to your OAuth Client ID's 'Authorized JavaScript origins':" ${SERVICE_URL}
 echo "Add the following URL to your OAuth Client ID's 'Authorized redirect URIs':" ${OAUTH_CALLBACK_URL}
