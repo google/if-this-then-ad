@@ -1,5 +1,9 @@
 #!/bin/bash
 
+echo "Post Create Script started"
+
+echo "Project:" ${GOOGLE_CLOUD_PROJECT}
+
 PROJECT_ID=$(gcloud config list --format 'value(core.project)' 2>/dev/null)
 
 # Enable Identity-Aware Proxy API
