@@ -27,7 +27,7 @@
 
 1. Set the name to "**if-this-then-ad**"
 
-1. Take not of the **Client ID** and **Client Secret** presented to you
+1. Take note of the **Client ID** and **Client Secret** presented to you
 
 1. Click the big blue button to deploy:
 
