@@ -4,7 +4,9 @@ echo "Post Create Script started"
 
 echo "Project:" ${GOOGLE_CLOUD_PROJECT}
 
-PROJECT_ID=$(gcloud config list --format 'value(core.project)' 2>/dev/null)
+# Set Project ID
+echo "Setting Project ID: ${GOOGLE_CLOUD_PROJECT}"
+gcloud config set project ${GOOGLE_CLOUD_PROJECT}
 
 # Enable Identity-Aware Proxy API
 echo "Enabling API: Identity-Aware Proxy..."
@@ -34,7 +36,7 @@ OAUTH_CALLBACK_URL=${SERVICE_URL}/api/auth/oauthcallback
 
 # Update environment variables
 echo "Updating environment variables..."
-gcloud run services update ${K_SERVICE} --no-user-output-enabled  --update-env-vars PROJECT_ID=${PROJECT_ID},SESSION_SECRET=${SESSION_SECRET},OAUTH_CALLBACK_URL=${OAUTH_CALLBACK_URL}
+gcloud run services update ${K_SERVICE} --no-user-output-enabled  --update-env-vars PROJECT_ID=${GOOGLE_CLOUD_PROJECT},SESSION_SECRET=${SESSION_SECRET},OAUTH_CALLBACK_URL=${OAUTH_CALLBACK_URL}
 
 echo "Add the following URL to your OAuth Client ID's 'Authorized JavaScript origins':" ${SERVICE_URL}
 echo "Add the following URL to your OAuth Client ID's 'Authorized redirect URIs':" ${OAUTH_CALLBACK_URL}
