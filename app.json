@@ -10,23 +10,37 @@
       "description": "OAuth 2.0 Client Secret",
       "required": true,
       "order": 2
+    },
+    "PROJECT_ID": {
+      "value": " ",
+      "required": false
+    },
+    "OAUTH_CALLBACK_URL": {
+      "value": " ",
+      "required": false
+    },
+    "SESSION_SECRET": {
+      "value": " ",
+      "required": false
+    },
+    "LOG_LEVEL": {
+      "value": "INFO",
+      "required": false
+    },
+    "NODE_ENV": {
+      "value": "production",
+      "required": false
     }
   },
   "options": {
     "allow-unauthenticated": false
   },
   "build": {
-    "skip": true
+    "skip": false
   },
   "hooks": {
-    "prebuild": {
-      "commands": ["./setup/pre-build.sh"]
-    },
-    "postbuild": {
-      "commands": ["./setup/post-build.sh"]
-    },
     "postcreate": {
-      "commands": ["./setup/post-create.sh"]
+      "commands": ["./setup/test.sh"]
     }
   }
 }
