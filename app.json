@@ -2,20 +2,21 @@
   "name": "if-this-then-ad",
   "env": {
     "PROJECT_ID": {
-      "value": "",
-      "required": false
+      "value": ""
     },
     "GOOGLE_CLIENT_ID": {
-      "description": "OAuth 2.0 Client ID"
+      "description": "OAuth 2.0 Client ID",
+      "required": true
     },
     "GOOGLE_CLIENT_SECRET": {
-      "description": "OAuth 2.0 Client Secret"
+      "description": "OAuth 2.0 Client Secret",
+      "required": true
     },
     "OAUTH_CALLBACK_URL": {
       "value": ""
     },
     "PORT": {
-      "value": 8080
+      "value": "8080"
     },
     "SESSION_SECRET": {
       "value": ""
