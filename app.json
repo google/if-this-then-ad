@@ -33,7 +33,7 @@
     }
   },
   "options": {
-    "allow-unauthenticated": false
+    "allow-unauthenticated": true
   },
   "build": {
     "skip": false
