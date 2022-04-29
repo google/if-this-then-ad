@@ -1,37 +1,35 @@
 import {
-    AdCampaign,
     AdGroup,
     EntityStatus,
-    EntityType,
     HttpMethods,
-    ListRecord,
     AdGroupOperation,
     MutateOperation,
     AdGroupObject
 } from './interfaces';
 import axios, { AxiosRequestConfig, Method } from 'axios';
+import { log } from '@iftta/util';
 import { config } from './config';
 
 /**
- * Class GoogleAdsWrapper
+ * Class GoogleAdsClient
  *
  * Facilitates calls to the Google Ads API.
  */
 export default class GoogleAdsClient {
 
     /**
-     * @param customerId - Ads account to operate on
-     * @param managerId - Manager account from which to operate
+     * @param customerAccountId - Ads account to operate on
+     * @param managerAccountId - Manager account from which to operate
      * @param oauthToken - OAuth token authorising this access
      * @param developerToken - developer token to use
      */
     constructor(
-        private customerId: string,
-        private managerId: string,
+        private customerAccountId: string,
+        private managerAccountId: string,
         private oauthToken: string,
         private developerToken: string,
     ) {
-        if (!oauthToken || !customerId || !managerId || !developerToken) {
+        if (!oauthToken || !customerAccountId || !managerAccountId || !developerToken) {
             throw new Error('Incomplete configuration for Google Ads API.');
         }
     }
@@ -42,38 +40,49 @@ export default class GoogleAdsClient {
      * @param httpMethod - HTTP method to use
      * @returns {Object} - API response
      */
-    private async apiCall(options: AxiosRequestConfig, httpMethod: Method = HttpMethods.POST) {
+    private async apiCall(options: AxiosRequestConfig, httpMethod: Method = HttpMethods.POST): Promise<any> {
         options.headers = {
             'developer-token': this.developerToken,
-            'login-customer-id': parseInt(this.managerId),
+            'login-customer-id': parseInt(this.managerAccountId),
             'Authorization': `Bearer ${this.oauthToken}`,
         };
         options.method = httpMethod;
         try {
             const result = await axios(options);
-            return result.data;
+            if (result.status == 200) {
+                return result.data;
+            }
+            return Promise.reject(result.statusText);
         } catch (err) {
             console.error(err);
+            return Promise.reject(err);
         }
     }
 
     /**
-       * Sends HTTP request to Google Ads api.
-       * and returns the query result.
-       * @param {string} query 
-       * @returns {Promise<any>} http result
-       */
+     * Sends HTTP request to Google Ads api.
+     * and returns the query result.
+     * @param {string} query 
+     * @returns {Promise<any>} http result
+     */
     private async queryAdsApi(query): Promise<any> {
 
         return this.apiCall({
-            url: `${config.baseUrl}/customers/${this.customerId}/googleAds:search`,
+            url: `${config.baseUrl}/customers/${this.customerAccountId}/googleAds:search`,
             data: { 'query': query }
         }, HttpMethods.POST);
     }
 
+    /**
+     * Composes Update Object to send to Ads Api
+     * @param {string} entityId AdGroup Id
+     * @param { string } updateMask 
+     * @param { field object } field Object to update
+     * @returns 
+     */
     private makeUpdateOperation(entityId: string, updateMask: string, field: {}): MutateOperation {
         const adGroup: AdGroupObject = {
-            resourceName: `customers/${this.customerId}/adGroups/${entityId}`,
+            resourceName: `customers/${this.customerAccountId}/adGroups/${entityId}`,
             ...field
         }
         const updateOperation: AdGroupOperation = {
@@ -85,28 +94,34 @@ export default class GoogleAdsClient {
         }
     }
 
+    /**
+     * Updates the AdGroup
+     * @param { string } entityId AdGroup Id
+     * @param { boolean } activate 
+     * @returns 
+     */
     public async updateAdGroup(
         entityId: string,
         activate: boolean): Promise<any> {
 
         const _data = this.makeUpdateOperation(entityId, 'status', { 'status': activate ? EntityStatus.ACTIVE : EntityStatus.PAUSED })
-        console.log(JSON.stringify(_data, null, 2));
         return this.apiCall({
-            url: `${config.baseUrl}/customers/${this.customerId}/adGroups:mutate`,
+            url: `${config.baseUrl}/customers/${this.customerAccountId}/adGroups:mutate`,
             data: _data
         }, HttpMethods.POST);
     }
 
-
-
     /**
      * Fetches available Ad Groups from the customer account.
+     * @param { boolean } active
+     * @returns { Promise<AdGroup[]> } Array of AdGroups
      */
-    public async listAdGroups(active: boolean = false) {
+    public async listAdGroups(active: boolean = false): Promise<AdGroup[]> {
         let query = `SELECT ad_group.name,
                         campaign.id,
                         campaign.name,
                         ad_group.id,
+                        ad_group.name,
                         ad_group.status,
                         ad_group.type
                     FROM ad_group
@@ -114,44 +129,52 @@ export default class GoogleAdsClient {
         if (active) {
             query += ` AND campaign.status = 'ENABLED' AND ad_group.status = 'ENABLED'`;
         }
-        const httpResult = await this.queryAdsApi(query);
-        return httpResult.results.map((res) => {
-            const adGroup: AdGroup = {
-                customerId: this.customerId,
-                campaignId: res.campaign.id,
-                adGroupId: res.adGroup.id,
-                name: res.adGroup.name,
-                adGroupType: res.adGroup.type,
-                status: res.adGroup.status,
-            }
-            return adGroup;
-        });
+        try {
+            const httpResult = await this.queryAdsApi(query);
+            return httpResult.results.map((res) => {
+                const adGroup: AdGroup = {
+                    customerId: this.customerAccountId,
+                    campaignId: res.campaign.id,
+                    id: res.adGroup.id,
+                    name: res.adGroup.name,
+                    type: res.adGroup.type,
+                    status: res.adGroup.status,
+                }
+                return adGroup;
+            });
+        } catch (err) {
+            log.error(err);
+            return Promise.reject(err);
+        }
     }
 
-    /**
-     * Fetches a list of campaigns
-     * @param {boolean} active flag to filter active campaigns
-     * @returns 
-     */
-    public async listCampaigns(active: boolean = false): Promise<Array<AdCampaign>> {
-
-        let query = `SELECT campaign.id, campaign.name, campaign.labels, campaign.status
-                        FROM campaign
-                        WHERE campaign.status != 'REMOVED'`;
-        if (active) {
-            query += ` AND campaign.status = 'ENABLED'`;
-        }
-
-        const httpResult = await this.queryAdsApi(query);
-
-        return httpResult.results.map((res) => {
-            const adCampaign: AdCampaign = {
-                customerId: this.customerId,
-                campaignId: res.campaign.id,
-                name: res.campaign.name,
-                status: res.campaign.status,
+    public async getAdGroupById(id: string):Promise<AdGroup> {
+            let query = `SELECT ad_group.name,
+                            campaign.id,
+                            campaign.name,
+                            ad_group.name,
+                            ad_group.id,
+                            ad_group.status,
+                            ad_group.type
+                        FROM ad_group
+                        WHERE ad_group.status != 'REMOVED' AND ad_group.id =${id}`;
+            
+            try {
+                const httpResult = await this.queryAdsApi(query);
+                return httpResult.results.map((res) => {
+                    const adGroup: AdGroup = {
+                        customerId: this.customerAccountId,
+                        campaignId: res.campaign.id,
+                        id: res.adGroup.id,
+                        name: res.adGroup.name,
+                        type: res.adGroup.type,
+                        status: res.adGroup.status,
+                    }
+                    return adGroup;
+                });
+            } catch (err) {
+                log.error(err);
+                return Promise.reject(err);
             }
-            return adCampaign;
-        });
     }
 }

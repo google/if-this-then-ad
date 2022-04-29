@@ -117,8 +117,8 @@ export interface IAgent {
 export interface AdGroup {
     customerId: string;
     campaignId: string;
-    adGroupId: string;
-    adGroupType: string;
+    id: string;
+    type: string;
     name: string;
     status: string;
 }
@@ -145,21 +145,12 @@ export interface AdCampaign {
 }
 
 export interface InstanceOptions {
-    externalCustomerId: string;
-    externalManagerCustomerId: string;
+    customerAccountId: string;
+    managerAccountId: string;
     entityType?: string;
     entityId?: string;
     developerToken: string;
 }
-
-export interface ListRecord {
-    externalCustomerId: string,
-    campaignId: string,
-    adGroupId?: string,
-    name: string,
-    status: string
-}
-
 export interface Parameter {
     key: string;
     value: string | number | boolean;

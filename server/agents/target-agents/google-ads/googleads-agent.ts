@@ -1,19 +1,18 @@
-import GoogleAdsClient from './googleads-wrapper';
+import GoogleAdsClient from './googleads-client';
 import {
     ActionResult,
+    AdGroup,
     AgentMetadata,
     AgentTask,
     AgentType,
     EntityActions,
     EntityStatus,
-    EntityType,
     HttpMethods,
     IAgent,
-    InstanceOptions,
-    ListRecord
+    InstanceOptions
 } from './interfaces';
 import { config } from './config';
-
+import { log } from '@iftta/util';
 /**
  * Class GoogleAdsAgent
  *
@@ -24,9 +23,8 @@ export default class GoogleAdsAgent implements IAgent {
     public name = config.name;
 
     /**
-     * Describes this class' operations to be exposed to the UI.
-     * TODO: Correct likely bugs.
-     * @returns {Object} - resolved Promise
+     * Describes agent capabilities and return types.
+     * @returns {Promise<AgentMetadata>} - Agent Metadata
      */
     public async getAgentMetadata(): Promise<AgentMetadata> {
         const metadata: AgentMetadata = {
@@ -36,19 +34,10 @@ export default class GoogleAdsAgent implements IAgent {
             arguments: ['campaignId', 'adGroupId'],
             api: [
                 {
-                    dataPoint: 'campaignId',
-                    list: {
-                        url: `/api/agents/${config.id}/list/campaign`,
-                        method: HttpMethods.GET,
-                        params: {},
-                    },
-                },
-                {
                     dataPoint: 'adgroupId',
                     list: {
-                        url: `/api/agents/${config.id}/list/adgroup`,
+                        url: `/api/agents/${config.id}/list/adgroups`,
                         method: HttpMethods.GET,
-                        params: { campaignId: String },
                     },
                 },
             ],
@@ -56,22 +45,36 @@ export default class GoogleAdsAgent implements IAgent {
                 {
                     id: 'campaignId',
                     name: 'Campaign',
-                    dataType: typeof String,
+                    dataType: typeof Number(),
                 },
                 {
-                    id: 'adgroupId',
+                    id: 'adGroupId',
                     name: 'AdGroup',
-                    dataType: typeof String,
+                    dataType: typeof Number(),
+                },
+                {
+                    id: 'adGroupStatus',
+                    name: 'Status',
+                    dataType: typeof String(),
+                },
+                {
+                    id: 'adGroupType',
+                    name: 'Type',
+                    dataType: typeof String(),
                 },
             ],
         };
         return Promise.resolve(metadata);
     }
-
-    // TODO: move to the class AgentTask (first convert interface)
+    /**
+     * Gets user settings from the provided task
+     * @param { AgentTask } task 
+     * @param { string } settingName 
+     * @returns { string } Setting value
+     */
     private getRequiredUserSetting(task: AgentTask, settingName: string) {
         if (
-            !task || ! task.ownerSettings || !task.ownerSettings[settingName]
+            !task || !task.ownerSettings || !task.ownerSettings[settingName]
         ) {
             throw new Error(`Owner setting ${settingName} must be defined`);
         }
@@ -84,43 +87,39 @@ export default class GoogleAdsAgent implements IAgent {
      * @param task - the task to execute
      * @returns {Array<ActionResult>} - results of all the task's actions
      */
-    public async execute(task: AgentTask):Promise <Array<ActionResult>> {
+    public async execute(task: AgentTask): Promise<Array<ActionResult>> {
         const result: Array<ActionResult> = [];
-        for (const action of task.target.actions) {
-            console.log('ads.execute task', task);
+        for (let action of task.target.actions) {
+            log.debug('ads.execute task');
+            log.debug(task);
+
             let instanceOptions = {} as InstanceOptions;
             action.params.forEach((p) => {
                 instanceOptions[p.key] = p.value;
             });
 
-            console.log('ads.execute instanceOptions', instanceOptions);
-
-            let googleAds = new GoogleAdsClient(
-                this.getRequiredUserSetting(task, 'GOOGLEADS_ACCOUNT_ID'),
-                this.getRequiredUserSetting(task, 'GOOGLEADS_MANAGER_ACCOUNT_ID'),
-                task.token.auth,
-                this.getRequiredUserSetting(task, 'GOOGLEADS_DEV_TOKEN')
-            );
-            let shouldBeActive = action.type == EntityActions.ACTIVATE && task.target.result;
-            console.log('shouldBeActive', shouldBeActive);
-            
             try {
-                await googleAds.changeStatus(
-                    instanceOptions.entityType as EntityType,
-                    instanceOptions.entityId as string,
-                    shouldBeActive as boolean);
-                const tmpResult = {
+                let googleAds = new GoogleAdsClient(
+                    this.getRequiredUserSetting(task, 'customerAccountId'),
+                    this.getRequiredUserSetting(task, 'managerAccountId'),
+                    task.token.auth,
+                    this.getRequiredUserSetting(task, 'developerToken')
+                );
+                let shouldBeActive: boolean = action.type == EntityActions.ACTIVATE && task.target.result as boolean;
+                await googleAds.updateAdGroup(instanceOptions.entityId!, shouldBeActive);
+                const currentAdGroup: AdGroup = await googleAds.getAdGroupById(instanceOptions.entityId!);
+                const updateResult = {
                     ruleId: task.target.ruleId,
                     agentId: config.id,
-                    displayName: '', // TODO: Fill with what?
+                    displayName: currentAdGroup.name,
                     entityStatus: shouldBeActive ? EntityStatus.ACTIVE : EntityStatus.PAUSED,
                     timestamp: new Date(),
                     success: true
                 };
-                console.log('ads.execute tmpResult', tmpResult);
-                result.push(tmpResult);
+                log.debug('ads.execute tmpResult', updateResult);
+                result.push(updateResult);
             } catch (err) {
-                console.log('ads.agent Error:', err);
+                log.debug('ads.agent Error:', err);
                 result.push({
                     ruleId: task.target.ruleId,
                     agentId: config.id,
@@ -134,40 +133,29 @@ export default class GoogleAdsAgent implements IAgent {
     }
 
     /**
-     * Obtains a list of Google Ads entities.
+     * Obtains a list of Google Ads Group entities.
      * @param oauthToken - OAuth token authorising this access
      * @param developerToken - developer token to use
-     * @param externalCustomerId - Ads account to operate on
-     * @param externalManagerCustomerId - Manager account from which to operate
+     * @param customerId - Ads account to operate on
+     * @param managerCustomerId - Manager account from which to operate
      * @param entityType - type of entity to list
      * @param parentEntityId - ID of the entity whose children are to be listed
      * @param getOnlyActive - true if only enabled entities should be returned (false: all not removed)
-     * @returns {Array<ListRecord>} - list of campaigns or ad groups // TODO: Adapt receiving end to object structure.
+     * @returns {Array<AdGroup>} - list of ad groups
      */
-    public async getEntityList(
+    public async listAdGroups(
         oauthToken: string,
         developerToken: string,
-        externalManagerCustomerId: string,
-        externalCustomerId: string,
-        entityType: string,
-        parentEntityId?: string,
-        getOnlyActive = false) {
+        managerAccountId: string,
+        customerAccountId: string,
+        getOnlyActive = false): Promise<AdGroup[]> {
+
         const googleAds = new GoogleAdsClient(
-            externalCustomerId,
-            externalManagerCustomerId,
+            customerAccountId,
+            managerAccountId,
             oauthToken,
             developerToken);
-        const result: Array<ListRecord> = [];
-        (await googleAds.list(entityType as EntityType, parentEntityId, getOnlyActive)).forEach((o: any) => {
-            result.push({
-                externalCustomerId: o?.externalCustomerId,
-                campaignId: o?.campaignId,
-                adGroupId: o?.adGroupId,
-                name: o?.name,
-                status: o?.status,
-            });
-        });
-        return result;
-    }
 
+        return googleAds.listAdGroups(getOnlyActive);
+    }
 }
