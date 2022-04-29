@@ -114,6 +114,36 @@ export interface IAgent {
     getAgentMetadata(): Promise<AgentMetadata>;
 }
 
+export interface AdGroup {
+    customerId: string;
+    campaignId: string;
+    adGroupId: string;
+    adGroupType: string;
+    name: string;
+    status: string;
+}
+
+export interface MutateOperation {
+    operations: AdGroupOperation[]
+}
+export interface AdGroupOperation {
+    updateMask: string;
+    create?: AdGroupObject;
+    update?: AdGroupObject;
+    delete?: AdGroupObject;
+}
+// TODO define a full AdGroupObject shape 
+// based on future requirements
+export interface AdGroupObject {
+    resourceName: string;
+}
+export interface AdCampaign {
+    customerId: string;
+    campaignId: string;
+    name: string;
+    status: string;
+}
+
 export interface InstanceOptions {
     externalCustomerId: string;
     externalManagerCustomerId: string;

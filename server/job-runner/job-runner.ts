@@ -23,7 +23,7 @@ import Repository from '../services/repository-service';
 import TaskCollector from './task-collector';
 import TaskConfiguration from './task-configuration';
 import AmbeeAgent from '@iftta/ambee-agent';
-
+import googleAdsAgent from '@iftta/google-ads';
 
 //Temp coupling between packages/
 //TODO: replace this with sending messages over pubsub.
