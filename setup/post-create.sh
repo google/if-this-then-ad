@@ -6,17 +6,8 @@ echo "Running post create..."
 echo "Setting Project ID: ${GOOGLE_CLOUD_PROJECT}"
 gcloud config set project ${GOOGLE_CLOUD_PROJECT}
 
-# Generate session secret
-SESSION_SECRET=$(openssl rand -hex 32)
-
-echo "Deploying Service..."
-gcloud run deploy ${K_SERVICE} --region=${GOOGLE_CLOUD_REGION} --image ${IMAGE_URL} --allow-unauthenticated --no-user-output-enabled --set-env-vars=PROJECT_ID=${GOOGLE_CLOUD_PROJECT},GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID},GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET},SESSION_SECRET=${SESSION_SECRET},OAUTH_CALLBACK_URL='',LOG_LEVEL='INFO',NODE_ENV='production',PORT=8080
-
-# Get Cloud Run URL
-CLOUD_RUN_URL=$(gcloud run services describe ${K_SERVICE} --format 'value(status.url)')
-
 # Build OAuth Callback URL
-OAUTH_CALLBACK_URL=${CLOUD_RUN_URL}/api/auth/oauthcallback
+OAUTH_CALLBACK_URL=${SERVICE_URL}/api/auth/oauthcallback
 
 # Update environment variables
 echo "Updating environment variables..."
