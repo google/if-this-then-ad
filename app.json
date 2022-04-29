@@ -29,8 +29,7 @@
     }
   },
   "options": {
-    "allow-unauthenticated": false,
-    "region": "europe-west3"
+    "allow-unauthenticated": false
   },
   "build": {
     "skip": false
