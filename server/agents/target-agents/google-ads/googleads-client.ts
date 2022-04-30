@@ -135,6 +135,7 @@ export default class GoogleAdsClient {
                 const adGroup: AdGroup = {
                     customerId: this.customerAccountId,
                     campaignId: res.campaign.id,
+                    campaignName: res.campaign.name,
                     id: res.adGroup.id,
                     name: res.adGroup.name,
                     type: res.adGroup.type,
@@ -165,6 +166,7 @@ export default class GoogleAdsClient {
                     const adGroup: AdGroup = {
                         customerId: this.customerAccountId,
                         campaignId: res.campaign.id,
+                        campaignName: res.campaign.name,
                         id: res.adGroup.id,
                         name: res.adGroup.name,
                         type: res.adGroup.type,

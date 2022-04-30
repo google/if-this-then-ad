@@ -2,6 +2,7 @@ import GoogleAdsClient from './googleads-client';
 import {
     ActionResult,
     AdGroup,
+    AdGroupResult,
     AgentMetadata,
     AgentTask,
     AgentType,
@@ -21,6 +22,34 @@ import { log } from '@iftta/util';
 export default class GoogleAdsAgent implements IAgent {
     public agentId = config.id;
     public name = config.name;
+
+    /**
+     * Transforms results by grouping adGroups 
+     * under respective campaigns
+     * @param adGroups 
+     */
+     private  transformIntoGroups(adGroups: AdGroup[]): AdGroupResult[] {
+        let campaigns = {};
+
+        for (let adGroup of adGroups) {
+            if (campaigns[adGroup.campaignId] == undefined) {
+                campaigns[adGroup.campaignId] = {
+                    campaignId: adGroup.campaignId,
+                    campaignName: adGroup.campaignName,
+                    customerId: adGroup.customerId,
+                    adGroups : [{ id: adGroup.id, name: adGroup.name, status: adGroup.status, type: adGroup.type}]
+                }
+            }else{
+                campaigns[adGroup.campaignId].adGroups.push({ id: adGroup.id, name: adGroup.name, status: adGroup.status, type: adGroup.type});
+            }
+        }
+        
+        let adGroupResults : AdGroupResult[] = []; 
+        for(let k of Object.keys(campaigns)){
+            adGroupResults.push(campaigns[k]);
+        }
+        return adGroupResults; 
+    }
 
     /**
      * Describes agent capabilities and return types.
@@ -148,7 +177,7 @@ export default class GoogleAdsAgent implements IAgent {
         developerToken: string,
         managerAccountId: string,
         customerAccountId: string,
-        getOnlyActive = false): Promise<AdGroup[]> {
+        getOnlyActive = false): Promise<AdGroupResult[]> {
 
         const googleAds = new GoogleAdsClient(
             customerAccountId,
@@ -156,6 +185,6 @@ export default class GoogleAdsAgent implements IAgent {
             oauthToken,
             developerToken);
 
-        return googleAds.listAdGroups(getOnlyActive);
+        return this.transformIntoGroups(await googleAds.listAdGroups(getOnlyActive));
     }
 }

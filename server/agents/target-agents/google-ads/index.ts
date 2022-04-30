@@ -1,4 +1,5 @@
 import GoogleAdsAgent from './googleads-agent';
 
-const googleAdsAgent = new GoogleAdsAgent();
-export default googleAdsAgent;
+
+export default new GoogleAdsAgent();
+export const googleAds = GoogleAdsAgent; 
