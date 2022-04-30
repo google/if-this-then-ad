@@ -23,34 +23,6 @@ export default class GoogleAdsAgent implements IAgent {
     public name = config.name;
 
     /**
-     * Transforms results by grouping adGroups 
-     * under respective campaigns
-     * @param adGroups 
-     */
-     private  transformIntoGroups(adGroups: AdGroup[]): AdGroupResult[] {
-        let campaigns = {};
-
-        for (let adGroup of adGroups) {
-            if (campaigns[adGroup.campaignId] == undefined) {
-                campaigns[adGroup.campaignId] = {
-                    campaignId: adGroup.campaignId,
-                    campaignName: adGroup.campaignName,
-                    customerId: adGroup.customerId,
-                    adGroups : [{ id: adGroup.id, name: adGroup.name, status: adGroup.status, type: adGroup.type}]
-                }
-            }else{
-                campaigns[adGroup.campaignId].adGroups.push({ id: adGroup.id, name: adGroup.name, status: adGroup.status, type: adGroup.type});
-            }
-        }
-        
-        let adGroupResults : AdGroupResult[] = []; 
-        for(let k of Object.keys(campaigns)){
-            adGroupResults.push(campaigns[k]);
-        }
-        return adGroupResults; 
-    }
-
-    /**
      * Describes agent capabilities and return types.
      * @returns {Promise<AgentMetadata>} - Agent Metadata
      */
