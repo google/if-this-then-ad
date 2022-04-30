@@ -117,10 +117,23 @@ export interface IAgent {
 export interface AdGroup {
     customerId: string;
     campaignId: string;
+    campaignName: string;
     id: string;
     type: string;
     name: string;
     status: string;
+}
+
+export interface AdGroupResult {
+    campaignId: string; 
+    campaignName: string; 
+    customerId: string; 
+    adGroups: [{
+        id: string; 
+        name: string; 
+        status: string; 
+        type: string;
+    }]
 }
 
 export interface MutateOperation {

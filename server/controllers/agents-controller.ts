@@ -17,9 +17,10 @@ import { Request, Response } from 'express';
 import { log } from '@iftta/util';
 import OpenWeatherMap from '@iftta/open-weather-map-agent';
 import DV360Agent from '@iftta/dv360-ads';
-import GoogleAdsAgent from '@iftta/google-ads';
+import GoogleAdsAgent, { googleAds } from '@iftta/google-ads';
 import AmbeeAgent from '@iftta/ambee-agent';
 import { Token, User } from 'models/user';
+
 
 const registeredAgents = {
     'dv360-agent': {
@@ -63,7 +64,8 @@ export const getAgentEntityList = async (req: Request, res: Response) => {
                 const developerToken = user.userSettings['GOOGLEADS_DEV_TOKEN'];
                 const managerAccountId = user.userSettings['GOOGLEADS_MANAGER_ACCOUNT_ID'];
                 const customerAccountId = user.userSettings['GOOGLEADS_ACCOUNT_ID'];
-                return res.status(200).json(await agent.list(token.access, developerToken, managerAccountId, customerAccountId));
+                const googleAdsAgent = new googleAds();
+                return res.status(200).json(await googleAdsAgent.listAdGroups(token.access, developerToken, managerAccountId, customerAccountId));
             }
         }
         if (agentId == 'dv360-agent') {
