@@ -2,7 +2,6 @@ import GoogleAdsClient from './googleads-client';
 import {
     ActionResult,
     AdGroup,
-    AdGroupResult,
     AgentMetadata,
     AgentTask,
     AgentType,
@@ -177,7 +176,7 @@ export default class GoogleAdsAgent implements IAgent {
         developerToken: string,
         managerAccountId: string,
         customerAccountId: string,
-        getOnlyActive = false): Promise<AdGroupResult[]> {
+        getOnlyActive = false): Promise<AdGroup[]> {
 
         const googleAds = new GoogleAdsClient(
             customerAccountId,
@@ -185,6 +184,6 @@ export default class GoogleAdsAgent implements IAgent {
             oauthToken,
             developerToken);
 
-        return this.transformIntoGroups(await googleAds.listAdGroups(getOnlyActive));
+        return googleAds.listAdGroups(getOnlyActive); 
     }
 }

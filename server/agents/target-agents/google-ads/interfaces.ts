@@ -123,19 +123,6 @@ export interface AdGroup {
     name: string;
     status: string;
 }
-
-export interface AdGroupResult {
-    campaignId: string; 
-    campaignName: string; 
-    customerId: string; 
-    adGroups: [{
-        id: string; 
-        name: string; 
-        status: string; 
-        type: string;
-    }]
-}
-
 export interface MutateOperation {
     operations: AdGroupOperation[]
 }
