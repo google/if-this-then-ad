@@ -10,6 +10,9 @@ import { map } from 'rxjs/operators';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { faLightbulb as LightBulbOn, faCirclePause } from '@fortawesome/free-solid-svg-icons';
+import { store } from 'src/app/store';
+import { TargetAgent } from '../../interfaces/target-agent';
+import { TargetAgentAction } from 'src/app/interfaces/target-agent-action';
 // import { faLightbulb as LightBulbOff } from '@fortawesome/free-regular-svg-icons';
 
 interface AdGroup {
@@ -49,12 +52,33 @@ export class GoogleAdsSelectorComponent implements AfterViewInit {
   }
 
   selectRow(r: any) {
-    console.log(r);
     if (this.selectedRows.has(r)) {
       this.selectedRows.delete(r);
     } else {
       this.selectedRows.add(r);
     }
+    const targetAgentActions = this.transformToActions(this.selectedRows);
+    store.addTarget(targetAgentActions);
+  }
+
+  private transformToActions(userSelection: Set<AdGroup>): TargetAgent {
+    const actions: TargetAgentAction[] = [];
+    userSelection.forEach((row: AdGroup) => {
+      const a = {
+        type: 'activate',
+        params: [
+          {
+            key: 'entityId',
+            value: row.id,
+          },
+        ],
+      };
+      actions.push(a);
+    });
+    return {
+      agentId: 'googleads-agent',
+      actions: actions,
+    };
   }
 
   private fetchAccountData() {
