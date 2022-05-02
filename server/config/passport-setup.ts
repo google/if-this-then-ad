@@ -136,16 +136,19 @@ const _extractAccessToken = (authHeader: string): string | undefined => {
  */
 const _validateAccessToken = async (accessToken: string, req): Promise<boolean> => {
     try {
-        const result: User[] = await userRepo.getBy(
-            'token.access',
-            accessToken
-        );
-        if (result.length > 0) {
-            // ensure that the token isnt expired.
-            const user: User = result[0];
-            req.user = user; 
-            return date.isFuture(user.token.expiry);
+        if(!accessToken == undefined){
+            const result: User[] = await userRepo.getBy(
+                'token.access',
+                accessToken
+            );
+            if (result.length > 0) {
+                // ensure that the token isnt expired.
+                const user: User = result[0];
+                req.user = user; 
+                return date.isFuture(user.token.expiry);
+            }
         }
+
     } catch (err) {
         log.error(err);
         return Promise.reject(err);

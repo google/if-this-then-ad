@@ -1,19 +1,16 @@
-/* eslint-disable require-jsdoc */
-import {
-  Component,
-  ViewChild,
-  AfterViewInit,
-} from '@angular/core';
+import { Component, ViewChild, AfterViewInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { map } from 'rxjs/operators';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
-import { faLightbulb as LightBulbOn, faCirclePause } from '@fortawesome/free-solid-svg-icons';
+import {
+  faLightbulb as LightBulbOn,
+  faCirclePause,
+} from '@fortawesome/free-solid-svg-icons';
 import { store } from 'src/app/store';
 import { TargetAgent } from '../../interfaces/target-agent';
 import { TargetAgentAction } from 'src/app/interfaces/target-agent-action';
-// import { faLightbulb as LightBulbOff } from '@fortawesome/free-regular-svg-icons';
 
 interface AdGroup {
   customerId: string;
@@ -30,6 +27,9 @@ interface AdGroup {
   templateUrl: './googleads-selector.component.html',
   styleUrls: ['./googleads-selector.component.scss'],
 })
+/**
+ *  Google ad groups selector component
+ */
 export class GoogleAdsSelectorComponent implements AfterViewInit {
   adGroupEnabled = LightBulbOn;
   adGroupDisabled = faCirclePause;
@@ -38,7 +38,10 @@ export class GoogleAdsSelectorComponent implements AfterViewInit {
   selectedRows = new Set<AdGroup>();
   dataSource = new MatTableDataSource<any>(this.adGroups);
   @ViewChild(MatPaginator) paginator!: MatPaginator;
-
+  /**
+   * Constructor: Http client gets injected
+   * @param {HttpClient} http Http client
+   */
   constructor(private http: HttpClient) { }
 
 
@@ -47,11 +50,18 @@ export class GoogleAdsSelectorComponent implements AfterViewInit {
     this.dataSource.paginator = this.paginator;
   }
 
+  /**
+   * Fetch Google ads data to display
+   */
   ngOnInit(): void {
     this.fetchAccountData();
   }
 
-  selectRow(r: any) {
+  /**
+   * Handles select row click event
+   * @param {AdGroup} r clicked row 
+   */
+  selectRow(r: AdGroup) {
     if (this.selectedRows.has(r)) {
       this.selectedRows.delete(r);
     } else {
@@ -61,6 +71,11 @@ export class GoogleAdsSelectorComponent implements AfterViewInit {
     store.addTarget(targetAgentActions);
   }
 
+  /**
+   * Transforms user selection into a TargetAgent object
+   * @param { Set<AdGroup> } userSelection
+   * @returns { TargetAgent } TargetAgent Object
+   */
   private transformToActions(userSelection: Set<AdGroup>): TargetAgent {
     const actions: TargetAgentAction[] = [];
     userSelection.forEach((row: AdGroup) => {
@@ -80,12 +95,15 @@ export class GoogleAdsSelectorComponent implements AfterViewInit {
       actions: actions,
     };
   }
-
+  /**
+   * Fetch Google Ads account data
+   */
   private fetchAccountData() {
     this.http
       .get<AdGroup[]>(
         `${environment.apiUrl}/agents/googleads-agent/list/adgroups`
-      ).pipe(map((res: AdGroup[]) => res))
+      )
+      .pipe(map((res: AdGroup[]) => res))
       .subscribe((adGroups) => {
         this.adGroups = adGroups;
         this.dataSource.data = this.adGroups;
