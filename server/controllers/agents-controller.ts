@@ -68,31 +68,34 @@ export const getAgentEntityList = async (req: Request, res: Response) => {
     try {
         let token: Token;
         const accessToken = req.headers.authorization?.split(' ')[1];
-        const result = await userRepo.getBy('token.access', accessToken!);
-        let user: User;
+        log.debug('agents-controller:getAgentEntityList: Access Token', accessToken);
+        if (accessToken != undefined) {
+            const result = await userRepo.getBy('token.access', accessToken!);
+            let user: User;
 
-        if (result.length > 0) {
-            user = result[0];
-            token = user.token;
-            if (user.userSettings !== undefined) {
-                developerToken = user.userSettings['GOOGLEADS_DEV_TOKEN'];
-                managerAccountId = user.userSettings['GOOGLEADS_MANAGER_ACCOUNT_ID'];
-                customerAccountId = user.userSettings['GOOGLEADS_ACCOUNT_ID'];
-            }
+            if (result.length > 0) {
+                user = result[0];
+                token = user.token;
+                if (user.userSettings !== undefined) {
+                    developerToken = user.userSettings['GOOGLEADS_DEV_TOKEN'];
+                    managerAccountId = user.userSettings['GOOGLEADS_MANAGER_ACCOUNT_ID'];
+                    customerAccountId = user.userSettings['GOOGLEADS_ACCOUNT_ID'];
+                }
 
-            if (agentId == 'googleads-agent') {
-                const googleAdsAgent = new googleAds();
-                return res.status(200).json(await googleAdsAgent.listAdGroups(token.access, developerToken, managerAccountId, customerAccountId));
-                // return res.json(mockGoogleAdsData());
-            }
-            if (agentId == 'dv360-agent') {
-                return res.status(200).json(await agent.list(token.access, entityType, req.query));
+                if (agentId == 'googleads-agent') {
+                    const googleAdsAgent = new googleAds();
+                    return res.status(200).json(await googleAdsAgent.listAdGroups(token.access, developerToken, managerAccountId, customerAccountId));
+                    // return res.json(mockGoogleAdsData());
+                }
+                if (agentId == 'dv360-agent') {
+                    return res.status(200).json(await agent.list(token.access, entityType, req.query));
+                }
             }
         }
         return res.status(404);
     } catch (err) {
         log.error(err);
-        return res.status(400).json({ message: (err as Error).message });
+        return res.status(404).json({ message: (err as Error).message });
     }
 };
 
