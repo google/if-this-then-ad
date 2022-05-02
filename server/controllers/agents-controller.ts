@@ -86,7 +86,7 @@ export const getAgentEntityList = async (req: Request, res: Response) => {
                 // return res.json(mockGoogleAdsData());
             }
             if (agentId == 'dv360-agent') {
-                return res.status(200).json(agent.list(token.access, entityType, req.query));
+                return res.status(200).json(await agent.list(token.access, entityType, req.query));
             }
         }
         return res.status(404);

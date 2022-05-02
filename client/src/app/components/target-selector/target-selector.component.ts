@@ -165,10 +165,8 @@ export class TargetSelectorComponent {
    * Publish selection change to store.
    */
   publishSelectionChange() {
-    // Update targets in store
-    store.targets.next(
-      this.entityToTargetAgent(this.checklistSelection.selected)
-    );
+
+    store.addTarget(this.entityToTargetAgent(this.checklistSelection.selected));
 
     // Update save requirements
     const valid = this.checkAllParentsSelection.length > 0;
@@ -212,31 +210,29 @@ export class TargetSelectorComponent {
    * @param {EntityNode[]} nodes
    * @returns {TargetAgent}
    */
-  entityToTargetAgent(nodes: EntityNode[]): TargetAgent[] {
-    return [
-      {
-        agentId: 'dv360-agent',
-        actions: nodes.map((node) => {
-          return {
-            type: 'activate',
-            params: [
-              {
-                key: 'entityId',
-                value: node.id,
-              },
-              {
-                key: 'parentId',
-                value: node.advertiserId,
-              },
-              {
-                key: 'entityType',
-                value: node.type,
-              },
-            ],
-          };
-        }),
-      },
-    ];
+  entityToTargetAgent(nodes: EntityNode[]): TargetAgent {
+    return {
+      agentId: 'dv360-agent',
+      actions: nodes.map((node) => {
+        return {
+          type: 'activate',
+          params: [
+            {
+              key: 'entityId',
+              value: node.id,
+            },
+            {
+              key: 'parentId',
+              value: node.advertiserId,
+            },
+            {
+              key: 'entityType',
+              value: node.type,
+            },
+          ],
+        };
+      }),
+    };
   }
 
   /**
