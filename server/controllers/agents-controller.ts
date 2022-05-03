@@ -70,7 +70,7 @@ export const getAgentEntityList = async (req: Request, res: Response) => {
         const accessToken = req.headers.authorization?.split(' ')[1];
         log.debug('agents-controller:getAgentEntityList: Access Token', accessToken);
         if (accessToken != undefined) {
-            const result = await userRepo.getBy('token.access', accessToken!);
+            const result = await userRepo.getBy('token.access', accessToken);
             let user: User;
 
             if (result.length > 0) {
@@ -95,7 +95,7 @@ export const getAgentEntityList = async (req: Request, res: Response) => {
         return res.status(404);
     } catch (err) {
         log.error(err);
-        return res.status(404).json({ message: (err as Error).message });
+        return res.status(500).json({ message: (err as Error).message });
     }
 };
 
