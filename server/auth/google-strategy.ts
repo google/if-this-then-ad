@@ -34,7 +34,7 @@ class GoogleStrategy {
     public static initialise(_passport: PassportStatic): any {
         if (typeof process.env.OAUTH_CALLBACK_URL == 'undefined') {
             throw new Error(
-                'OAUTH_CALLBACK_URL undefined, it must be defined as environment variable',
+                'OAUTH_CALLBACK_URL undefined, it must be set as environment variable',
             );
         }
         log.warn(
