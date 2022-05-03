@@ -102,22 +102,24 @@ class GoogleStrategy {
                         return done(null, userData, true);
                     }
 
-                    // Get user from DB
-                    const existingUser = userResults[0]; // we are sure profileIds are unique
+                   
+                // Get user from DB
+                const existingUser = userResults[0]; // we are sure profileIds are unique
 
-                    // Update access token and expiry time.
-                    existingUser.token.access = userData.token.access;
-                    existingUser.token.expiry = date.add(Date.now(), {
-                        seconds: 3599,
-                    });
+                // Update access token and expiry time.
+                existingUser.token.access = userData.token.access;
+                existingUser.token.refresh = userData.token.refresh;
+                existingUser.token.expiry = date.add(Date.now(), {
+                    seconds: 3599,
+                });
 
-                    // Save updated user to DB
-                    await userRepo.update(existingUser.id!, existingUser);
+                // Save updated user to DB
+                await userRepo.update(existingUser.id!, existingUser);
 
-                    // Delete tokens to prevent them from being put into user session
-                    delete existingUser.token.refresh;
+                // Delete tokens to prevent them from being put into user session
+                delete existingUser.token.refresh;
 
-                    return done(null, existingUser, true);
+                return done(null, existingUser, true);
                 } catch (err) {
                     log.error(err);
                 }

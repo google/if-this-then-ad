@@ -109,6 +109,7 @@ class TaskConfiguration {
 
             return newToken;
         } catch (err) {
+            log.error(['TaskConfiguration:refreshTokensForUser:Error', err as string]);
             return Promise.reject(err);
         }
     }
