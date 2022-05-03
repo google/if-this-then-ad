@@ -4,10 +4,7 @@ import { environment } from 'src/environments/environment';
 import { map } from 'rxjs/operators';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
-import {
-  faLightbulb as LightBulbOn,
-  faCirclePause,
-} from '@fortawesome/free-solid-svg-icons';
+import { faCircle, faCirclePause } from '@fortawesome/free-solid-svg-icons';
 import { store } from 'src/app/store';
 import { TargetAgent } from '../../interfaces/target-agent';
 import { TargetAgentAction } from 'src/app/interfaces/target-agent-action';
@@ -31,7 +28,7 @@ interface AdGroup {
  *  Google ad groups selector component
  */
 export class GoogleAdsSelectorComponent implements AfterViewInit {
-  adGroupEnabled = LightBulbOn;
+  adGroupEnabled = faCircle;
   adGroupDisabled = faCirclePause;
   adGroups: AdGroup[] = [];
   displayedColumns: string[] = ['id', 'name', 'campaignName', 'type', 'status'];
@@ -42,8 +39,7 @@ export class GoogleAdsSelectorComponent implements AfterViewInit {
    * Constructor: Http client gets injected
    * @param {HttpClient} http Http client
    */
-  constructor(private http: HttpClient) { }
-
+  constructor(private http: HttpClient) {}
 
   // eslint-disable-next-line require-jsdoc
   ngAfterViewInit() {
@@ -59,7 +55,7 @@ export class GoogleAdsSelectorComponent implements AfterViewInit {
 
   /**
    * Handles select row click event
-   * @param {AdGroup} r clicked row 
+   * @param {AdGroup} r clicked row
    */
   selectRow(r: AdGroup) {
     if (this.selectedRows.has(r)) {
