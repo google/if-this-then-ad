@@ -69,6 +69,13 @@ export class GoogleAdsSelectorComponent implements AfterViewInit {
     }
     const targetAgentActions = this.transformToActions(this.selectedRows);
     store.addTarget(targetAgentActions);
+
+    // Update save requirements
+    const valid = this.selectedRows.size > 0;
+    store.saveRequirements.next({
+      ...store.saveRequirements.value,
+      ...{ target: valid },
+    });
   }
 
   /**
