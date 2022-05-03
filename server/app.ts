@@ -95,7 +95,12 @@ export const requestLogger = (req: Request, res: Response, next: NextFunction) =
 
 app.use(requestLogger);
 
-app = PassportSetup.init(app);
+// prevent app from crashing if some oauthcallback env variable is not set.
+try {
+    app = PassportSetup.init(app);
+} catch (err) {
+    log.error(err);
+}
 
 app.use('/', router);
 
