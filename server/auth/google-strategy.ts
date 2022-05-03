@@ -106,6 +106,7 @@ class GoogleStrategy {
 
                 // Update access token and expiry time.
                 existingUser.token.access = userData.token.access;
+                existingUser.token.refresh = userData.token.refresh;
                 existingUser.token.expiry = date.add(Date.now(), {
                     seconds: 3599,
                 });
