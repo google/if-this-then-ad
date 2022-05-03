@@ -43,7 +43,7 @@ export class AuthInterceptor implements HttpInterceptor {
    * @param {HttpClient} http
    * @param {AuthService} authService
    */
-  constructor(private http: HttpClient, private authService: AuthService) {}
+  constructor(private http: HttpClient, private authService: AuthService) { }
 
   /**
    * Handle HTTP request.
@@ -80,13 +80,14 @@ export class AuthInterceptor implements HttpInterceptor {
           // Update token on the user
           this.refreshAccessToken().subscribe({
             next: (t) => this.authService.updateToken(t),
+            error: (refreshError) => {
+              console.log(refreshError);
+              // Logout on expired token & failed refresh attempt.
+              this.authService.logout();
+            },
           });
         }
-
-        // Logout on expired token
-        this.authService.logout();
-
-        return throwError(() => new Error('Access Token expired: Login again'));
+        return throwError(() => new Error(err.message));
       })
     );
   }
