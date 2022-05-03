@@ -40,7 +40,7 @@
   },
   "hooks": {
     "postcreate": {
-      "commands": ["./setup/test.sh"]
+      "commands": ["./setup/post-create.sh"]
     }
   }
 }
