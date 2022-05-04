@@ -17,7 +17,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { map } from 'rxjs/operators';
-import { AuthService } from 'src/app/services/auth.service'
+import { AuthService } from 'src/app/services/auth.service';
 import { Rule } from 'src/app/models/rule.model';
 
 import { store } from 'src/app/store';

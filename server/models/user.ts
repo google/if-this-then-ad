@@ -11,6 +11,10 @@
     limitations under the License.
  */
 
+export interface UserSettingKeyValue {
+    [key: string]: string
+}
+
 export interface User {
     id?: string;
     profileId: number;
@@ -24,7 +28,7 @@ export interface User {
     locale?: string;
     token: Token;
     settings?: Array<setting>;
-    userSettings?: Object;
+    userSettings?: UserSettingKeyValue;
 }
 
 interface setting {

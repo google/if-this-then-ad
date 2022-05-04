@@ -118,6 +118,9 @@ class RepositoryService<T> {
         log.debug('Repository:getBy');
         let data: Array<T> = [];
         try {
+            if (fieldValue == undefined){
+                throw new Error(`Searches by undefined field values are not supported. ${fieldName}:${fieldValue}`);
+            }
             const colRef = this.db
                 .collection(this.fireStoreCollection.name)
                 .withConverter(this.dateConverter());

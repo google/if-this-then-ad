@@ -34,7 +34,7 @@ class GoogleStrategy {
     public static initialise(_passport: PassportStatic): any {
         if (typeof process.env.OAUTH_CALLBACK_URL == 'undefined') {
             throw new Error(
-                'OAUTH_CALLBACK_URL undefined, it must be defined as environment variable',
+                'OAUTH_CALLBACK_URL undefined, it must be set as environment variable',
             );
         }
         log.warn(
@@ -61,46 +61,48 @@ class GoogleStrategy {
                 profile: any,
                 done: any,
             ) => {
-                // this is the callback method called after
-                // successful authentication
-                log.debug(`Profile : ${JSON.stringify(profile, null, 2)}`);
+                try {
+                    // this is the callback method called after
+                    // successful authentication
+                    log.debug(`Profile : ${JSON.stringify(profile, null, 2)}`);
 
-                const jsonProfile = JSON.parse(profile._raw);
+                    const jsonProfile = JSON.parse(profile._raw);
 
-                const userData: User = {
-                    profileId: profile.id,
-                    displayName: profile.displayName,
-                    givenName: profile.name.givenName,
-                    familyName: profile.name.familyName,
-                    email: jsonProfile.email,
-                    verified: jsonProfile.email_verified,
-                    gender: profile.gender,
-                    profilePhoto: jsonProfile.picture,
-                    locale: jsonProfile.locale,
-                    token: {
-                        access: accessToken,
-                        expiry: date.add(Date.now(), { seconds: 3599 }), // expire access Tokens after 3599 sec.
-                        refresh: refreshToken,
-                        provider: profile.provider,
-                        type: 'Bearer',
-                    },
-                };
+                    const userData: User = {
+                        profileId: profile.id,
+                        displayName: profile.displayName,
+                        givenName: profile.name.givenName,
+                        familyName: profile.name.familyName,
+                        email: jsonProfile.email,
+                        verified: jsonProfile.email_verified,
+                        gender: profile.gender,
+                        profilePhoto: jsonProfile.picture,
+                        locale: jsonProfile.locale,
+                        token: {
+                            access: accessToken,
+                            expiry: date.add(Date.now(), { seconds: 3599 }), // expire access Tokens after 3599 sec.
+                            refresh: refreshToken,
+                            provider: profile.provider,
+                            type: 'Bearer',
+                        },
+                    };
 
-                log.debug(`User : ${JSON.stringify(userData, null, 2)}`);
+                    log.debug(`User : ${JSON.stringify(userData, null, 2)}`);
 
-                // Check if the user exists in db
-                const userResults = await userRepo.getBy('profileId', profile.id);
+                    // Check if the user exists in db
+                    const userResults = await userRepo.getBy('profileId', profile.id);
 
-                // Create user if new
-                if (userResults.length == 0) {
-                    userData.id = await userRepo.save(userData);
+                    // Create user if new
+                    if (userResults.length == 0) {
+                        userData.id = await userRepo.save(userData);
 
-                    // Delete tokens to prevent them from being put into user session
-                    delete userData.token.refresh;
+                        // Delete tokens to prevent them from being put into user session
+                        delete userData.token.refresh;
 
-                    return done(null, userData, true);
-                }
+                        return done(null, userData, true);
+                    }
 
+                   
                 // Get user from DB
                 const existingUser = userResults[0]; // we are sure profileIds are unique
 
@@ -118,6 +120,9 @@ class GoogleStrategy {
                 delete existingUser.token.refresh;
 
                 return done(null, existingUser, true);
+                } catch (err) {
+                    log.error(err);
+                }
             },
         );
 
