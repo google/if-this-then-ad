@@ -93,11 +93,13 @@ router.get('/api/jobs/execute', JobController.executeJobs);
 // TODO: Debug Endpoint
 router.get('/api/agents/dv360-dev/list/:entityType', someController.fetch);
 
-router.get('/api/agents/metadata', pass.isAuthenticated, AgentsController.getAgentsMetadata);
+router.get('/api/agents/metadata',
+    pass.isAuthenticated,
+    AgentsController.getAgentsMetadata);
 
 router.get(
     '/api/agents/:agent/list/:entityType',
-    //pass.isAuthenticated,
+    pass.isAuthenticated,
     AgentsController.getAgentEntityList,
 );
 

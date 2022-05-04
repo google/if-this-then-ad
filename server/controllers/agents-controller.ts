@@ -17,14 +17,24 @@ import { Request, Response } from 'express';
 import { log } from '@iftta/util';
 import OpenWeatherMap from '@iftta/open-weather-map-agent';
 import DV360Agent from '@iftta/dv360-ads';
+import GoogleAdsAgent, { googleAds } from '@iftta/google-ads';
 import AmbeeAgent from '@iftta/ambee-agent';
-import TaskConfiguration from '../job-runner/task-configuration';
-import { Token } from 'models/user';
+import { Token, User } from 'models/user';
+import Repository from '../services/repository-service'
+import Collections from '../services/collection-factory';
+import { Collection } from '../models/fire-store-entity';
 
-const allowedAgentMethods = {
+const usersCollection = Collections.get(Collection.USERS);
+const userRepo = new Repository<User>(usersCollection);
+
+const registeredAgents = {
     'dv360-agent': {
         metadata: DV360Agent.getAgentMetadata,
         list: DV360Agent.getEntityList,
+    },
+    'googleads-agent': {
+        metadata: GoogleAdsAgent.getAgentMetadata,
+        list: GoogleAdsAgent.listAdGroups,
     },
     'open-weather-map': {
         metadata: OpenWeatherMap.getAgentMetadata,
@@ -36,52 +46,55 @@ const allowedAgentMethods = {
 
 export const getAgentsMetadata = async (req: Request, res: Response) => {
     const result: Object[] = [];
-    for (const agent in allowedAgentMethods) {
-        result.push(await allowedAgentMethods[agent]?.metadata());
+    for (const agent in registeredAgents) {
+        result.push(await registeredAgents[agent]?.metadata());
     }
 
     return res.json(result);
 };
 
 export const getAgentEntityList = async (req: Request, res: Response) => {
-    log.debug(`getAgentEntityList: ${JSON.stringify(req.params)}`);
 
-    let userId = '';
-    if (
-        'undefined' != typeof req
-        && 'user' in req
-        && 'undefined' != typeof req['user']
-        && 'id' in req['user']
-    ) {
-        userId = req['user']['id'];
-    } else {
-        throw new Error('User must be logged in');
-    }
-
-    let token: Token;
-    try {
-        token = await TaskConfiguration.refreshTokensForUser(userId);
-    } catch (e) {
-        console.log('Cannot get token', e);
-        throw new Error('Cannot get token');
-    }
-
-    const agent = req.params.agent;
+    const agentId = req.params.agent;
     const entityType = req.params.entityType;
-    const method = 'list';
 
-    if (!(agent in allowedAgentMethods) || !(method in allowedAgentMethods[agent])) {
-        const message = `Agent "${agent}" OR method "${method}" are not allowed`;
-        log.error(message);
-        return res.status(400).json({ message: message });
-    }
+    // TODO rethink the design here
+    const agent = registeredAgents[agentId];
+
+    let developerToken = '';
+    let managerAccountId = '';
+    let customerAccountId = '';
 
     try {
-        return res.json(
-            await allowedAgentMethods[agent][method](token.access, entityType, req.query),
-        );
-    } catch (e) {
-        log.error(e);
-        return res.status(400).json({ message: (e as Error).message });
+        let token: Token;
+        const accessToken = req.headers.authorization?.split(' ')[1];
+        log.debug('agents-controller:getAgentEntityList: Access Token', accessToken);
+        if (accessToken != undefined) {
+            const result = await userRepo.getBy('token.access', accessToken);
+            let user: User;
+
+            if (result.length > 0) {
+                user = result[0];
+                token = user.token;
+                if (user.userSettings !== undefined) {
+                    developerToken = user.userSettings['GOOGLEADS_DEV_TOKEN'];
+                    managerAccountId = user.userSettings['GOOGLEADS_MANAGER_ACCOUNT_ID'];
+                    customerAccountId = user.userSettings['GOOGLEADS_ACCOUNT_ID'];
+                }
+
+                if (agentId == 'googleads-agent') {
+                    const googleAdsAgent = new googleAds();
+                    return res.status(200).json(await googleAdsAgent.listAdGroups(token.access, developerToken, managerAccountId, customerAccountId));
+                }
+                if (agentId == 'dv360-agent') {
+                    return res.status(200).json(await agent.list(token.access, entityType, req.query));
+                }
+            }
+        }
+        return res.status(404);
+    } catch (err) {
+        log.error(err);
+        return res.status(500).json({ message: (err as Error).message });
     }
 };
+

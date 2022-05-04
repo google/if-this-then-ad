@@ -1,0 +1,46 @@
+{
+  "name": "if-this-then-ad",
+  "env": {
+    "GOOGLE_CLIENT_ID": {
+      "description": "OAuth 2.0 Client ID",
+      "required": true,
+      "order": 1
+    },
+    "GOOGLE_CLIENT_SECRET": {
+      "description": "OAuth 2.0 Client Secret",
+      "required": true,
+      "order": 2
+    },
+    "PROJECT_ID": {
+      "value": " ",
+      "required": false
+    },
+    "OAUTH_CALLBACK_URL": {
+      "value": " ",
+      "required": false
+    },
+    "SESSION_SECRET": {
+      "value": " ",
+      "required": false
+    },
+    "LOG_LEVEL": {
+      "value": "INFO",
+      "required": false
+    },
+    "NODE_ENV": {
+      "value": "production",
+      "required": false
+    }
+  },
+  "options": {
+    "allow-unauthenticated": true
+  },
+  "build": {
+    "skip": false
+  },
+  "hooks": {
+    "postcreate": {
+      "commands": ["./setup/post-create.sh"]
+    }
+  }
+}

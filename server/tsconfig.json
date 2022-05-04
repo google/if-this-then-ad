@@ -24,6 +24,7 @@
             "@iftta/open-weather-map-agent": ["./agents/source-agents/open-weather-map"],
             "@iftta/ambee-agent": ["./agents/source-agents/ambee"],
             "@iftta/dv360-ads": ["./agents/target-agents/dv360-ads"],
+            "@iftta/google-ads": ["./agents/target-agents/google-ads"],
             "@iftta/job-runner": ["./job-runner"],
             "@iftta/rules-engine": ["./packages/rule-engine"],
             "@iftta/util": ["./util"]

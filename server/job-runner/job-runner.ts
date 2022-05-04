@@ -23,7 +23,7 @@ import Repository from '../services/repository-service';
 import TaskCollector from './task-collector';
 import TaskConfiguration from './task-configuration';
 import AmbeeAgent from '@iftta/ambee-agent';
-
+import googleAdsAgent from '@iftta/google-ads';
 
 //Temp coupling between packages/
 //TODO: replace this with sending messages over pubsub.
@@ -110,6 +110,7 @@ class JobRunner {
     private listTargetAgents() {
         return {
             'dv360-agent': DV360Ads,
+            'googleads-agent': googleAdsAgent,
         };
     }
     /**
@@ -188,6 +189,18 @@ class JobRunner {
         }
         return jobsWithSettings;
     }
+
+    private async getUserSettingsForTasks(tasks: AgentTask[]) {
+        let tasksWithSettings: AgentTask[] = [];
+
+        for (let task of tasks) {
+            const userId = task.ownerId!;
+            task.ownerSettings = await TaskConfiguration.getUserSettings(userId);
+            tasksWithSettings.push(task);
+        }
+        return tasksWithSettings;
+    }
+
     public async runAll() {
         const executionTimes: Array<ExecutionTime> = [];
         const collectExecutionTimes = (currentResult) => {
@@ -211,6 +224,7 @@ class JobRunner {
         }
 
         const eligibleJobsWithSettings = await this.getUserSettingsForJobs(eligibleJobs);
+        log.debug(['JobRunner.runAll eligibleJobs', eligibleJobs]);
         // execute each job agent
         // await for yielded results
         log.info('job-runner:runAll: Executing jobs on all available agents');

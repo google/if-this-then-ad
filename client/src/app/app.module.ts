@@ -55,6 +55,7 @@ import { UserSettingsComponent } from './components/user-settings/user-settings.
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { GoogleAdsSelectorComponent } from './components/googleads-selector/googleads-selector.component';
 import { DashComponent } from './components/dash/dash.component';
+import { StringReplacePipe } from './pipes/string-replace.pipe';
 
 @NgModule({
   declarations: [
@@ -71,6 +72,7 @@ import { DashComponent } from './components/dash/dash.component';
     MissingSettingsDialogComponent,
     GoogleAdsSelectorComponent,
     DashComponent,
+    StringReplacePipe,
   ],
   imports: [
     BrowserModule,
