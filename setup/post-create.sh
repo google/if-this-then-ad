@@ -20,9 +20,27 @@ gcloud services enable firestore.googleapis.com --no-user-output-enabled
 echo "Enabling API: Cloud Run..."
 gcloud services enable run.googleapis.com --no-user-output-enabled
 
+# Enable App Engine API
+echo "Enabling API: App Engine..."
+gcloud services enable appengine.googleapis.com --no-user-output-enabled
+
 # Enable DV360 API
 echo "Enabling API: DV360..."
 gcloud services enable displayvideo.googleapis.com --no-user-output-enabled
+
+# Create App Engine if not exists
+echo "Checking for App Engine..."
+
+gcloud app describe --no-user-output-enabled -q --verbosity="none"
+RESULT=$?
+
+if [ $RESULT != 0 ]; then
+  echo "Creating App Engine..."
+  gcloud app create --region ${GOOGLE_CLOUD_REGION}
+fi
+
+# Create Firestore in Native Mode
+gcloud firestore databases create --region ${GOOGLE_CLOUD_REGION} --no-user-output-enabled -q --verbosity="none"
 
 # Generate session secret
 SESSION_SECRET=$(openssl rand -hex 32)
