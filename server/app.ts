@@ -95,8 +95,34 @@ export const requestLogger = (req: Request, res: Response, next: NextFunction) =
 
 app.use(requestLogger);
 
-app = PassportSetup.init(app);
+// prevent app from crashing if some oauthcallback env variable is not set.
+try {
+    app = PassportSetup.init(app);
+} catch (err) {
+    log.error(err);
+}
 
 app.use('/', router);
+
+
+/**
+ * Last layer to handle errors thrown by API, prevents some routes 
+ * to throw 500 errors which are caused by missing auth token. 
+ * @param { string } err Error message
+ * @param { Request } req Request 
+ * @param { Resonse }res Response
+ * @param { NextFunction } next Next 
+ * @returns Response
+ */
+const errorHandler = (err: string, req: Request, res: Response, next: NextFunction) => {
+
+    if (err == 'Failed auth') {
+        return res.status(401).json({ 'error': err });
+    }
+    return res.status(500);
+}
+
+
+app.use(errorHandler);
 
 export default app;

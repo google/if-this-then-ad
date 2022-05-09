@@ -70,6 +70,7 @@ export default class AmbeeAgent implements IAgent {
     }
 
     private async run(options: Configuration): Promise<AgentResponse> {
+        log.debug(['ambee:run: options', options]);
         try {
             // Get rule
             const rulesCollection = Collections.get(Collection.RULES);
@@ -101,7 +102,7 @@ export default class AmbeeAgent implements IAgent {
             log.debug(agentResponse);
             return Promise.resolve(agentResponse);
         } catch (err) {
-            log.error(JSON.stringify(err));
+            log.error(err as string);
         }
 
         return {
@@ -155,9 +156,10 @@ export default class AmbeeAgent implements IAgent {
 
         const options = { 
             ...config,
+            ...job,
             apiKey: job && job?.ownerSettings 
                 ? job?.ownerSettings['AMBEE_API_KEY'] : '',
-                jobId: job.id,
+            jobId: job.id,
             targetLocation: job.query[0].value as string,
             jobOwner: job.owner,
         }

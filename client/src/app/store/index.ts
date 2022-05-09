@@ -13,6 +13,7 @@
 
 import { BehaviorSubject, Subject } from 'rxjs';
 import { TargetAgent } from '../interfaces/target-agent';
+import { TargetAgentAction } from '../interfaces/target-agent-action';
 
 interface SaveRequirements {
   name: boolean;
@@ -22,6 +23,8 @@ interface SaveRequirements {
   target: boolean;
   executionInterval: boolean;
 }
+
+const targetsCollector = new Map<string, TargetAgentAction[]>();
 
 const saveRequirements: SaveRequirements = {
   name: false,
@@ -38,4 +41,12 @@ export const store = {
   ruleAdded: new Subject<boolean>(),
   targets: new Subject<TargetAgent[]>(),
   sidenav: new Subject<boolean>(),
+  addTarget: (_targetAgent: TargetAgent) => {
+    targetsCollector.set(_targetAgent.agentId, _targetAgent.actions);
+    const targets: TargetAgent[] = [];
+    for (const k of targetsCollector.keys()) {
+      targets.push({ agentId: k, actions: targetsCollector.get(k)! });
+    }
+    store.targets.next(targets);
+  },
 };

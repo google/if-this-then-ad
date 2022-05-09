@@ -1,0 +1,32 @@
+.ads-table>table {
+    width: 100%;
+}
+
+.selected-rows {
+    background-color: #6e79b455;
+}
+
+.mat-row .mat-cell {
+    border-bottom: 1px solid transparent;
+    border-top: 1px solid transparent;
+    cursor: pointer;
+}
+
+.mat-header-cell {
+    font-size: large;
+    color: #6e79b4;
+}
+
+.mat-row:hover .mat-cell {
+    border-color: #6e79b4;
+}
+.adgroup-enabled {
+    color: yellowgreen;
+}
+.adgroup-paused {
+    color:dimgrey
+}
+.mat-column-status {
+    font-size: large;
+    text-align: center;
+}

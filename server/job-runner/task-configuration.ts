@@ -17,7 +17,7 @@ import { Collection } from '../models/fire-store-entity';
 import { log, date } from '@iftta/util';
 import axios from 'axios';
 import { User, Token } from './../models/user';
-import { setting } from './interfaces';
+import { UserSettingKeyValue } from './interfaces';
 
 const usersCollection = Collections.get(Collection.USERS);
 const userRepository = new Repository<User>(usersCollection);
@@ -109,6 +109,7 @@ class TaskConfiguration {
 
             return newToken;
         } catch (err) {
+            log.error(['TaskConfiguration:refreshTokensForUser:Error', err as string]);
             return Promise.reject(err);
         }
     }
@@ -117,7 +118,7 @@ class TaskConfiguration {
      * @param {string} userId
      * @param {string} agentId
      */
-    public async getUserSettings(userId: string): Promise<Object | undefined> {
+    public async getUserSettings(userId: string): Promise<UserSettingKeyValue | undefined> {
         try {
             const user: User = (await this.repo.get(userId)) as User;
             return user?.userSettings;
