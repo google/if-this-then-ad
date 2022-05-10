@@ -12,165 +12,282 @@
  -->
 
 <div class="rule-configuration">
-    <mat-stepper [linear]="isLinear" [orientation]="stepperOrientation" #stepper>
-        <mat-step [stepControl]="nameForm.control">
-            <form [formGroup]="nameForm.control">
-                <ng-template matStepLabel>Data source</ng-template>
-                <!-- Name -->
-                <form #name="ngForm">
-                    <h3>Rule name</h3>
-                    <mat-form-field class="form-element">
-                        <mat-label>Rule name</mat-label>
-                        <input matInput name="rule-name" type="text" required [(ngModel)]="currentRule.name">
-                    </mat-form-field>
-                </form>
-                <!-- Data source -->
-                <form #source="ngForm">
-                    <h3>Select a data source</h3>
-                    <mat-form-field class="form-element">
-                        <mat-label>Data Source</mat-label>
-                        <mat-select [(ngModel)]="currentRule.source.id" name="rule-source"
-                            (selectionChange)="onSourceChange($event.value)">
-                            <mat-option *ngFor="let source of sources" name="rule-source" [value]="source.id">
-                                {{ source.name }}
-                            </mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                </form>
+  <mat-stepper [linear]="isLinear" [orientation]="stepperOrientation" #stepper>
+    <mat-step [stepControl]="nameForm.control">
+      <form [formGroup]="nameForm.control">
+        <ng-template matStepLabel>Data source</ng-template>
+        <!-- Name -->
+        <form #name="ngForm">
+          <h3>Rule name</h3>
+          <mat-form-field class="form-element">
+            <mat-label>Rule name</mat-label>
+            <input
+              matInput
+              name="rule-name"
+              type="text"
+              required
+              [(ngModel)]="currentRule.name"
+            />
+          </mat-form-field>
+        </form>
+        <!-- Data source -->
+        <form #source="ngForm">
+          <h3>Select a data source</h3>
+          <mat-form-field class="form-element">
+            <mat-label>Data Source</mat-label>
+            <mat-select
+              [(ngModel)]="currentRule.source.id"
+              name="rule-source"
+              (selectionChange)="onSourceChange($event.value)"
+            >
+              <mat-option
+                *ngFor="let source of sources"
+                name="rule-source"
+                [value]="source.id"
+              >
+                {{ source.name }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </form>
 
-                <!-- Parameters -->
-                <form [hidden]="!currentRule.source.id" #params="ngForm">
-                    <h3>Parameters</h3>
-                    <mat-form-field class="form-element" *ngFor="let param of currentRule.source.params">
-                        <mat-label>{{ param.name }}</mat-label>
-                        <app-location-auto-complete *ngIf="'location' == param.type; else noGeo"
-                            [dataPoint]="param.dataPoint" [(targetLocation)]="param.value" name="param.dataPoint">
-                        </app-location-auto-complete>
-                        <ng-template #noGeo>
-                            <input matInput name="{{ param.dataPoint }}" type="text" [(ngModel)]="param.value" required>
-                        </ng-template>
-                    </mat-form-field>
-                </form>
-                <div class="step-footer">
-                    <button mat-raised-button color="primary" matStepperNext> Next </button>
-                </div>
-            </form>
-        </mat-step>
+        <!-- Parameters -->
+        <form [hidden]="!currentRule.source.id" #params="ngForm">
+          <h3>Parameters</h3>
+          <mat-form-field
+            class="form-element"
+            *ngFor="let param of currentRule.source.params"
+          >
+            <mat-label>{{ param.name }}</mat-label>
+            <app-location-auto-complete
+              *ngIf="'location' == param.type; else noGeo"
+              [dataPoint]="param.dataPoint"
+              [(targetLocation)]="param.value"
+              name="param.dataPoint"
+            >
+            </app-location-auto-complete>
+            <ng-template #noGeo>
+              <input
+                matInput
+                name="{{ param.dataPoint }}"
+                type="text"
+                [(ngModel)]="param.value"
+                required
+              />
+            </ng-template>
+          </mat-form-field>
+        </form>
+        <div class="step-footer">
+          <button mat-raised-button color="primary" matStepperNext>Next</button>
+        </div>
+      </form>
+    </mat-step>
 
-        <mat-step [stepControl]="conditionForm.control">
-            <form [formGroup]="conditionForm.control">
-                <ng-template matStepLabel>Rule conditions</ng-template>
-                <!-- Execution Interval -->
-                <form #executionInterval="ngForm">
-                    <h3>Run every</h3>
-                    <mat-form-field class="form-element">
-                        <mat-label>Interval</mat-label>
-                        <mat-select [(ngModel)]="currentRule.executionInterval" name="rule-interval">
-                            <mat-option *ngFor="let i of this.executionIntervals" value="{{i.key}}"> {{i.value}}
-                            </mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                </form>
+    <mat-step [stepControl]="conditionForm.control">
+      <form [formGroup]="conditionForm.control">
+        <ng-template matStepLabel>Rule conditions</ng-template>
+        <!-- Execution Interval -->
+        <form #executionInterval="ngForm">
+          <h3>Run every</h3>
+          <mat-form-field class="form-element">
+            <mat-label>Interval</mat-label>
+            <mat-select
+              [(ngModel)]="currentRule.executionInterval"
+              name="rule-interval"
+            >
+              <mat-option
+                *ngFor="let i of this.executionIntervals"
+                value="{{ i.key }}"
+              >
+                {{ i.value }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </form>
 
-                <!-- Condition -->
-                <form [hidden]="!currentRule.source.id" #condition="ngForm">
-                    <!-- Data Point -->
-                    <h3>Datapoint</h3>
-                    <mat-form-field class="form-element">
-                        <mat-label>Datapoint</mat-label>
-                        <mat-select *ngIf="sourceDataPoints" name="rule-datapoint" required
-                            [ngModel]="currentRule.condition" (selectionChange)="onDataPointChange($event.value)">
-                            <mat-option *ngFor="let dataPoint of sourceDataPoints" [value]="dataPoint">
-                                {{ dataPoint.name }}
-                            </mat-option>
-                        </mat-select>
-                    </mat-form-field>
+        <!-- Condition -->
+        <form [hidden]="!currentRule.source.id" #condition="ngForm">
+          <!-- Data Point -->
+          <h3>Datapoint</h3>
+          <mat-form-field class="form-element">
+            <mat-label>Datapoint</mat-label>
+            <mat-select
+              *ngIf="sourceDataPoints"
+              name="rule-datapoint"
+              required
+              [ngModel]="currentRule.condition"
+              (selectionChange)="onDataPointChange($event.value)"
+            >
+              <mat-option
+                *ngFor="let dataPoint of sourceDataPoints"
+                [value]="dataPoint"
+              >
+                {{ dataPoint.name }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
 
-                    <!-- Comparator -->
-                    <mat-form-field class="form-element">
-                        <mat-label>Comparator</mat-label>
-                        <mat-select name="rule-comparator" [(ngModel)]="currentRule.condition.comparator"
-                            [disabled]="this.lockEquals" required>
-                            <mat-option *ngFor="let c of this.comparatorMapping" value="{{c.key}}">{{c.value}}
-                            </mat-option>
-                        </mat-select>
-                    </mat-form-field>
+          <!-- Comparator -->
+          <mat-form-field class="form-element">
+            <mat-label>Comparator</mat-label>
+            <mat-select
+              name="rule-comparator"
+              [(ngModel)]="currentRule.condition.comparator"
+              [disabled]="this.lockEquals"
+              required
+            >
+              <mat-option
+                *ngFor="let c of this.comparatorMapping"
+                value="{{ c.key }}"
+                >{{ c.value }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
 
-                    <!-- Value -->
-                    <mat-form-field class="form-element" *ngIf="currentRule.condition.dataType">
-                        <mat-label>Value</mat-label>
-                        <ng-container [ngSwitch]="currentRule.condition.dataType">
-                            <input *ngSwitchCase="'number'" [(ngModel)]="currentRule.condition.value" matInput
-                                name="rule-value" required type="number" step=1>
-                            <mat-select *ngSwitchCase="'boolean'" [(ngModel)]="currentRule.condition.value" matInput
-                                name="rule-value" required name="rule-value" [(ngModel)]="currentRule.condition.value"
-                                required>
-                                <mat-option value="true">Yes</mat-option>
-                                <mat-option value="false">No</mat-option>
-                            </mat-select>
+          <!-- Value -->
+          <mat-form-field
+            class="form-element"
+            *ngIf="currentRule.condition.dataType"
+          >
+            <mat-label>Value</mat-label>
+            <ng-container [ngSwitch]="currentRule.condition.dataType">
+              <input
+                *ngSwitchCase="'number'"
+                [(ngModel)]="currentRule.condition.value"
+                matInput
+                name="rule-value"
+                required
+                type="number"
+                step="1"
+              />
+              <mat-select
+                *ngSwitchCase="'boolean'"
+                [(ngModel)]="currentRule.condition.value"
+                matInput
+                name="rule-value"
+                required
+                name="rule-value"
+                [(ngModel)]="currentRule.condition.value"
+                required
+              >
+                <mat-option value="true">Yes</mat-option>
+                <mat-option value="false">No</mat-option>
+              </mat-select>
 
-                            <mat-select *ngSwitchCase="'enum'" [(ngModel)]="currentRule.condition.value" matInput
-                                name="rule-value" required name="rule-value" [(ngModel)]="currentRule.condition.value"
-                                required>
-                                <mat-option *ngFor="let e of this.dataPointListValues" value="{{e}}">{{e}}</mat-option>
-                            </mat-select>
-                        </ng-container>
-                    </mat-form-field>
+              <mat-select
+                *ngSwitchCase="'enum'"
+                [(ngModel)]="currentRule.condition.value"
+                matInput
+                name="rule-value"
+                required
+                name="rule-value"
+                [(ngModel)]="currentRule.condition.value"
+                required
+              >
+                <mat-option
+                  *ngFor="let e of this.dataPointListValues"
+                  value="{{ e }}"
+                  >{{ e }}</mat-option
+                >
+              </mat-select>
+            </ng-container>
+          </mat-form-field>
 
-                    <div class="step-footer">
-                        <button mat-raised-button matStepperPrevious> Back </button>
-                        <button mat-raised-button color="primary" matStepperNext> Next </button>
-                    </div>
-                </form>
-            </form>
-        </mat-step>
+          <div class="step-footer">
+            <button mat-raised-button matStepperPrevious>Back</button>
+            <button mat-raised-button color="primary" matStepperNext>
+              Next
+            </button>
+          </div>
+        </form>
+      </form>
+    </mat-step>
 
-        <mat-step>
-            <ng-template matStepLabel>Target</ng-template>
-            <h3>Application to target</h3>
-            <!-- Target -->
-            <mat-radio-group aria-label="Select the target" [(ngModel)]="targetAgent">
-                <mat-radio-button value="dv360-agent">
-                    <img class="radio-group" alt="DV360" src="assets/img/dv360.png" />
-                    <span ngClass="target-app">DV 360</span>
-                </mat-radio-button>
-                <mat-radio-button value="googleads-agent">
-                    <img class="radio-group" alt="Google ads" src="assets/img/ads.png" />
-                    <span ngClass="target-app"> Google Ads</span>
-                </mat-radio-button>
-            </mat-radio-group>
+    <mat-step>
+      <ng-template matStepLabel>Target</ng-template>
+      <h3>Application to target</h3>
+      <!-- Target -->
+      <mat-radio-group aria-label="Select the target" [(ngModel)]="targetAgent">
+        <mat-radio-button value="dv360-agent">
+          <div class="radio-button-content">
+            <img
+              class="radio-button-icon"
+              alt="DV360"
+              src="assets/img/dv360.png"
+            />
+            <span class="radio-button-label">DV360</span>
+          </div>
+        </mat-radio-button>
+        <mat-radio-button value="googleads-agent">
+          <div class="radio-button-content">
+            <img
+              class="radio-button-icon"
+              alt="Google Ads"
+              src="assets/img/ads.png"
+            />
+            <span class="radio-button-label">Google Ads</span>
+          </div>
+        </mat-radio-button>
+      </mat-radio-group>
 
-            <app-target-selector *ngIf="'dv360-agent' === targetAgent"></app-target-selector>
-            <app-googleads-selector *ngIf="'googleads-agent' === targetAgent"></app-googleads-selector>
+      <app-target-selector
+        *ngIf="'dv360-agent' === targetAgent"
+      ></app-target-selector>
+      <app-googleads-selector
+        *ngIf="'googleads-agent' === targetAgent"
+      ></app-googleads-selector>
 
-            <div class="step-footer">
-                <button mat-raised-button matStepperPrevious>Back</button>
-                <button mat-raised-button color="primary" matStepperNext>Next</button>
-            </div>
-        </mat-step>
+      <div class="step-footer">
+        <button mat-raised-button matStepperPrevious>Back</button>
+        <button mat-raised-button color="primary" matStepperNext>Next</button>
+      </div>
+    </mat-step>
 
-        <mat-step>
-            <ng-template matStepLabel>Review & Finish</ng-template>
-            <div id="rule-summary">
-                <p>Rule name <i> {{this.currentRule.name}} </i></p>
-                <p>Monitor <i> {{this.currentRule.source.name}} </i> for <i
-                        *ngFor="let param of this.currentRule.source.params"> {{param.name}} : {{param.value}} </i> </p>
-                <p>Trigger when <i> {{this.currentRule.condition.name}} {{this.currentRule.condition.comparator}} {{
-                        this.currentRule.condition.value }} </i> </p>
+    <mat-step>
+      <ng-template matStepLabel>Review & Finish</ng-template>
+      <div id="rule-summary">
+        <p>
+          Rule name <i> {{ this.currentRule.name }} </i>
+        </p>
+        <p>
+          Monitor <i> {{ this.currentRule.source.name }} </i> for
+          <i *ngFor="let param of this.currentRule.source.params">
+            {{ param.name }} : {{ param.value }}
+          </i>
+        </p>
+        <p>
+          Trigger when
+          <i>
+            {{ this.currentRule.condition.name }}
+            {{ this.currentRule.condition.comparator }}
+            {{ this.currentRule.condition.value }}
+          </i>
+        </p>
 
-                <p> Run every <i> {{this.currentRule.executionInterval}} </i> minutes </p>
+        <p>
+          Run every <i> {{ this.currentRule.executionInterval }} </i> minutes
+        </p>
 
-                <p>Perform these actions: </p>
-                <ul *ngFor="let t of this.currentRule.targets">
-                    <li *ngFor="let a of t.actions">{{ a.type }} - <i *ngFor="let ap of a.params"> {{ap.value}} &nbsp;
-                        </i> </li>
-                </ul>
-            </div>
-            <div class="step-footer">
-                <button mat-raised-button matStepperPrevious> Back </button>
-                <!-- Save button -->
-                <button [disabled]="!saveEnabled" mat-raised-button color="accent" (click)="saveRule()">Save</button>
-            </div>
-        </mat-step>
-    </mat-stepper>
+        <p>Perform these actions:</p>
+        <ul *ngFor="let t of this.currentRule.targets">
+          <li *ngFor="let a of t.actions">
+            {{ a.type }} -
+            <i *ngFor="let ap of a.params"> {{ ap.value }} &nbsp; </i>
+          </li>
+        </ul>
+      </div>
+      <div class="step-footer">
+        <button mat-raised-button matStepperPrevious>Back</button>
+        <!-- Save button -->
+        <button
+          [disabled]="!saveEnabled"
+          mat-raised-button
+          color="accent"
+          (click)="saveRule()"
+        >
+          Save
+        </button>
+      </div>
+    </mat-step>
+  </mat-stepper>
 </div>
