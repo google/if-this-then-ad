@@ -13,6 +13,7 @@
 
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { faGear } from '@fortawesome/free-solid-svg-icons';
 
 import { AuthService } from 'src/app/services/auth.service';
 import { User } from 'src/app/models/user.model';
@@ -30,6 +31,7 @@ import { store } from 'src/app/store';
  */
 export class HeaderComponent implements OnInit {
   user: User | null;
+  faGear = faGear;
 
   /**
    * Constructor.

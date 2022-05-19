@@ -32,6 +32,20 @@ export default class GoogleAdsAgent implements IAgent {
             name: config.name,
             type: AgentType.TARGET,
             arguments: ['campaignId', 'adGroupId'],
+            params: [
+                {
+                    name: 'Google Ads Developer Token',
+                    settingName: 'GOOGLEADS_DEV_TOKEN',
+                },
+                {
+                    name: 'Google Ads Manager Account ID',
+                    settingName: 'GOOGLEADS_MANAGER_ACCOUNT_ID',
+                },
+                {
+                    name: 'Google Ads Account ID',
+                    settingName: 'GOOGLEADS_ACCOUNT_ID',
+                },
+            ],
             api: [
                 {
                     dataPoint: 'adgroupId',

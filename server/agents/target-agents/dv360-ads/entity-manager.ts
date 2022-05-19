@@ -185,7 +185,7 @@ export default class EntityManager<T extends DV360Entity> {
     }
 
     // List method
-    public async list(params: Object, getOnlyActive = true, onlyFirstPage = false) {
+    public async list(params: Object, getOnlyActive = false, onlyFirstPage = false) {
         const apiCallParams = this.getApiCallParams(this.object.apiConfig);
         if (!apiCallParams['params']) {
             apiCallParams['params'] = {};
@@ -202,12 +202,6 @@ export default class EntityManager<T extends DV360Entity> {
 
         if (filters.length) {
             apiCallParams['params']['filter'] = filters.join(' AND ');
-        }
-
-        // TODO: For testing on DEV
-        if ('advertisers' == this.object.listName) {
-            apiCallParams['params']['filter'] =
-                'advertiserId=850782160 OR advertiserId=2436036 OR advertiserId=854769529 OR advertiserId=4304640';
         }
 
         let result: Object[] = [];
