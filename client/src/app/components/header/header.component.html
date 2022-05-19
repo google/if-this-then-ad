@@ -62,6 +62,12 @@
           {{ user.email }}
         </div>
         <div class="centered-content logout">
+          <a [routerLink]="'/settings'">
+            <fa-icon [icon]="faGear"></fa-icon>
+            <span class="sidenav-label">Settings</span>
+          </a>
+        </div>
+        <div class="centered-content logout">
           <button mat-raised-button color="primary" (click)="logout()">
             Logout
           </button>

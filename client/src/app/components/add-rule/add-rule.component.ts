@@ -17,13 +17,14 @@ import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { map } from 'rxjs/operators';
-import { SourceAgent } from 'src/app/interfaces/source-agent';
 import { DataPoint } from 'src/app/interfaces/datapoint';
 import { Rule } from 'src/app/models/rule.model';
 
 import { store } from 'src/app/store';
 import { NgForm } from '@angular/forms';
 import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { SourceAgent } from 'src/app/interfaces/source-agent';
+import { TargetAgent } from 'src/app/interfaces/target-agent';
 import { SourceAgentParameter } from 'src/app/interfaces/source-agent-parameter';
 import { SourceAgentSettingsParam } from 'src/app/interfaces/source-agent-settings-parameter';
 import { AuthService } from 'src/app/services/auth.service';
@@ -42,6 +43,7 @@ export class AddRuleComponent implements OnInit {
   isLinear = false;
   stepperOrientation: StepperOrientation = 'horizontal'; // vertical
   sources: SourceAgent[] = [];
+  targets: TargetAgent[] = [];
   sourceDataPoints: DataPoint[] = [];
   sourceParams: SourceAgentParameter[] = [];
   currentRule: Rule = new Rule();
@@ -94,7 +96,7 @@ export class AddRuleComponent implements OnInit {
       this.currentRule.targets = targets;
     });
 
-    this.loadSourceAgents();
+    this.loadAgents();
   }
 
   // eslint-disable-next-line require-jsdoc
@@ -151,14 +153,25 @@ export class AddRuleComponent implements OnInit {
   }
 
   /**
+   * Get target agent by ID.
+   *
+   * @param {string} id
+   * @returns {TargetAgent | undefined}
+   */
+  getTargetAgent(id: string): TargetAgent | undefined {
+    return this.targets.find((agent) => agent.id === id);
+  }
+
+  /**
    * Fetch all source agents from API.
    */
-  loadSourceAgents() {
+  loadAgents() {
     this.http
-      .get<Array<SourceAgent>>(`${environment.apiUrl}/agents/metadata`)
-      .pipe(map((res: Array<SourceAgent>) => res))
+      .get<Array<SourceAgent|TargetAgent>>(`${environment.apiUrl}/agents/metadata`)
+      .pipe(map((res: Array<SourceAgent|TargetAgent>) => res))
       .subscribe((result) => {
-        this.sources = result.filter((agent) => agent.type === 'source-agent');
+        this.sources = result.filter((agent) => agent.type === 'source-agent') as SourceAgent[];
+        this.targets = result.filter((agent) => agent.type === 'target-agent') as TargetAgent[];
       });
   }
 
@@ -179,6 +192,19 @@ export class AddRuleComponent implements OnInit {
       store.sourceSet.next(true);
 
       this.checkUserSettingsForAgent(agent.settings.params);
+    }
+  }
+
+  /**
+   * Handle source change.
+   *
+   * @param {string} val
+   */
+  onTargetChange(val: string) {
+    const agent = this.getTargetAgent(val);
+
+    if (agent && agent.params) {
+      this.checkUserSettingsForAgent(agent.params);
     }
   }
 

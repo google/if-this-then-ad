@@ -19,6 +19,11 @@ export interface ActionResult {
     error?: string;
 }
 
+export interface AgentParams {
+    name: string,
+    settingName: string,
+}
+
 export interface AgentMetadata {
     id: string;
     name: string;
@@ -26,6 +31,7 @@ export interface AgentMetadata {
     arguments: Array<string>;
     api?: Array<ApiMethodInfo>;
     dataPoints: Array<DataPoint>;
+    params?: Array<AgentParams>;
 }
 
 export interface AgentOptions {

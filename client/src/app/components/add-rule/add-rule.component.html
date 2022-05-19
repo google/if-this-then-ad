@@ -129,7 +129,11 @@
             <ng-template matStepLabel>Target</ng-template>
             <h3>Application to target</h3>
             <!-- Target -->
-            <mat-radio-group aria-label="Select the target" [(ngModel)]="targetAgent">
+            <mat-radio-group 
+                aria-label="Select the target" 
+                [(ngModel)]="targetAgent"
+                (change)="onTargetChange($event.value)"
+            >
                 <mat-radio-button value="dv360-agent">
                     <img class="radio-group" alt="DV360" src="assets/img/dv360.png" />
                     <span ngClass="target-app">DV 360</span>
