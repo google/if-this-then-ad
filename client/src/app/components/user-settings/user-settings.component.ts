@@ -86,7 +86,6 @@ export class UserSettingsComponent {
       if (f) {
         this.requiredSettings = (f as string).split(',');
       }
-
     });
 
     this.settings = this.settings.map(v => {

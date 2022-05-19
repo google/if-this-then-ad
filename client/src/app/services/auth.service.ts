@@ -127,7 +127,7 @@ export class AuthService {
   }
 
   setUserSettings(userSettings: UserSettingKeyValue) {
-    if (this.currentUser && this.currentUser.userSettings) {
+    if (this.currentUser) {
         this.currentUser.userSettings = userSettings;
         this.user = this.currentUser;
     }
