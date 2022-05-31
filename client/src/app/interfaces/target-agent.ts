@@ -14,6 +14,14 @@
 import { TargetAgentAction } from './target-agent-action';
 
 export interface TargetAgent {
+  type?: string;
   agentId: string;
+  id?: string;
   actions: TargetAgentAction[];
+  params?: Array<AgentParams>;
+}
+
+export interface AgentParams {
+  name: string,
+  settingName: string,
 }

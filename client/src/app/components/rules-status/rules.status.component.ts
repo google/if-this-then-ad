@@ -25,6 +25,7 @@ import { User } from 'src/app/models/user.model';
 import {
   faTriangleExclamation,
   faCircleCheck,
+  faQuestion
 } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
@@ -39,6 +40,7 @@ import {
 export class RulesStatusComponent implements AfterViewInit {
   errorIcon = faTriangleExclamation;
   successIcon = faCircleCheck;
+  unknownStatusIcon = faQuestion;
   rules: Rule[] = [];
   displayedColumns: string[] = [
     'status',
