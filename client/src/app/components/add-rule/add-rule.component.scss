@@ -49,7 +49,7 @@ button {
   margin-left: 1.5em;
 }
 
-#rule-summary>p>i {
+#rule-summary > p > i {
   font-weight: 300;
   padding: 6px;
   color: blue;
@@ -60,17 +60,19 @@ button {
   margin-bottom: 15px;
 }
 
-img.radio-group {
+.radio-button-content {
+  display: flex !important;
+  align-items: center;
+}
+
+.radio-button-icon {
   height: 50px;
   width: 50px;
   margin-right: 10px;
   margin-left: 10px;
 }
-.target-app {
-  font-size:medium;
+
+.radio-button-label {
+  font-size: medium;
   font-weight: 200;
-  text-align: center;
-  margin: auto;
-  width: 50%;
-  padding: 10px;
 }
