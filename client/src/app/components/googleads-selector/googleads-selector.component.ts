@@ -4,10 +4,14 @@ import { environment } from 'src/environments/environment';
 import { map } from 'rxjs/operators';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
-import { faCircle, faCirclePause } from '@fortawesome/free-solid-svg-icons';
 import { store } from 'src/app/store';
 import { TargetAgent } from '../../interfaces/target-agent';
 import { TargetAgentAction } from 'src/app/interfaces/target-agent-action';
+import { 
+  faCircle, 
+  faCirclePause, 
+  faRefresh,
+} from '@fortawesome/free-solid-svg-icons';
 
 interface AdGroup {
   customerId: string;
@@ -30,6 +34,7 @@ interface AdGroup {
 export class GoogleAdsSelectorComponent implements AfterViewInit {
   adGroupEnabled = faCircle;
   adGroupDisabled = faCirclePause;
+  faRefresh = faRefresh;
   isLoading = true;
   adGroups: AdGroup[] = [];
   displayedColumns: string[] = ['status', 'name', 'campaignName', 'type', 'id', ];
@@ -99,6 +104,12 @@ export class GoogleAdsSelectorComponent implements AfterViewInit {
       actions: actions,
     };
   }
+
+  refreshAdGroups() {
+    this.isLoading = true;
+    this.fetchAccountData();
+  }
+
   /**
    * Fetch Google Ads account data
    */

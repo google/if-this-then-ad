@@ -12,6 +12,10 @@
  -->
 <div class="ads-table">
   <h2>Select Ad Groups</h2>
+  <a [routerLink]="" (click)="refreshAdGroups()" class="refresh">
+      <fa-icon [icon]="faRefresh"></fa-icon>
+      Refresh adGroups
+  </a>
   <mat-progress-bar mode="indeterminate" *ngIf="isLoading"></mat-progress-bar>
   <table mat-table [dataSource]="this.dataSource">
     <ng-container matColumnDef="status">
