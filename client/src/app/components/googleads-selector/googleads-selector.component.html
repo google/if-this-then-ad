@@ -12,11 +12,14 @@
  -->
 <div class="ads-table">
   <h2>Select Ad Groups</h2>
+  <mat-progress-bar mode="indeterminate" *ngIf="isLoading"></mat-progress-bar>
   <table mat-table [dataSource]="this.dataSource">
-
-    <ng-container matColumnDef="id">
-      <th mat-header-cell *matHeaderCellDef>Id </th>
-      <td mat-cell *matCellDef="let ad"> {{ad.id}} </td>
+    <ng-container matColumnDef="status">
+      <th mat-header-cell *matHeaderCellDef> Status </th>
+      <td mat-cell *matCellDef="let ad">
+        <fa-icon *ngIf="ad.status == 'ENABLED' " [ngClass]="'adgroup-enabled'" [icon]="this.adGroupEnabled"> </fa-icon>
+        <fa-icon *ngIf="ad.status == 'PAUSED' " [ngClass]="'adgroup-paused'" [icon]="this.adGroupDisabled"> </fa-icon>
+      </td>
     </ng-container>
 
     <ng-container matColumnDef="name">
@@ -34,12 +37,9 @@
       <td mat-cell *matCellDef="let ad"> {{ad.type | stringReplace : '_' : ' ' }} </td>
     </ng-container>
 
-    <ng-container matColumnDef="status">
-      <th mat-header-cell *matHeaderCellDef> Status </th>
-      <td mat-cell *matCellDef="let ad">
-        <fa-icon *ngIf="ad.status == 'ENABLED' " [ngClass]="'adgroup-enabled'" [icon]="this.adGroupEnabled"> </fa-icon>
-        <fa-icon *ngIf="ad.status == 'PAUSED' " [ngClass]="'adgroup-paused'" [icon]="this.adGroupDisabled"> </fa-icon>
-      </td>
+    <ng-container matColumnDef="id">
+      <th mat-header-cell *matHeaderCellDef>Id </th>
+      <td mat-cell *matCellDef="let ad"> {{ad.id}} </td>
     </ng-container>
 
     <tr mat-header-row class="table-header" *matHeaderRowDef="displayedColumns"></tr>
@@ -50,7 +50,8 @@
   <!-- Paginator -->
   <mat-paginator
     class="paginator"
-    [pageSizeOptions]="[10, 20,30]"
+    [pageSize]="50"
+    [pageSizeOptions]="[10, 50, 100]"
     showFirstLastButtons
     aria-label="Select page of adGroups"
   >
