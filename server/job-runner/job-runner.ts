@@ -190,17 +190,6 @@ class JobRunner {
         return jobsWithSettings;
     }
 
-    private async getUserSettingsForTasks(tasks: AgentTask[]) {
-        let tasksWithSettings: AgentTask[] = [];
-
-        for (let task of tasks) {
-            const userId = task.ownerId!;
-            task.ownerSettings = await TaskConfiguration.getUserSettings(userId);
-            tasksWithSettings.push(task);
-        }
-        return tasksWithSettings;
-    }
-
     public async runAll() {
         const executionTimes: Array<ExecutionTime> = [];
         const collectExecutionTimes = (currentResult) => {
@@ -265,7 +254,7 @@ class JobRunner {
     private async processTasks(tasks: Array<AgentTask>) {
         const agents = this.listTargetAgents();
         log.debug(`job-runner:processTasks: #of tasks ${tasks.length}`);
-        let taskExecutionResults: Array<ActionResult> = []
+
         Promise.all(
             tasks.map(async (task) => {
                 const targetAgent = agents[task.target.agentId];
@@ -281,17 +270,15 @@ class JobRunner {
      * @param {ActionResult[]}taskExecutionResults 
      */
     private async updateRuleRunStatus(taskExecutionResults: Array<ActionResult>) {
-
         for (let actionResult of taskExecutionResults) {
-
             const rule = await this.rulesRepository.get(actionResult.ruleId)!;
-
             if (rule) {
-
                 const status = {
                     success: actionResult.success ? actionResult.success : false,
                     lastExecution: actionResult.timestamp,
-                    message: actionResult.error ? actionResult.error : `${actionResult.displayName} : ${actionResult.entityStatus}`
+                    message: actionResult.error 
+                        ? actionResult.error 
+                        : `New status: ${actionResult.entityStatus}`
                 }
                 rule.status = status;
                 this.rulesRepository.update(rule.id!, rule);

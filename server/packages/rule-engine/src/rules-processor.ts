@@ -88,7 +88,9 @@ export class RulesProcessor {
         }
 
         if (rule.condition.comparator == COMPARATORS.equals) {
-            return dpResult == rule.condition.value;
+            return dpResult == this.convertToType(
+                rule.condition.value, rule.condition.dataType
+            );
         }
 
         if (rule.condition.comparator == COMPARATORS.greater) {
@@ -100,5 +102,13 @@ export class RulesProcessor {
         }
 
         return false;
+    }
+
+    private convertToType(v: any, t: string|undefined) {
+        if ('boolean' === t) {
+            return 'true' === v ? true : false;
+        }
+
+        return v;
     }
 }
