@@ -12,62 +12,59 @@
  */
 
 export enum COMPARATORS {
-    equals = 'eq',
-    greater = 'gt',
-    less = 'lt',
+  equals = 'eq',
+  greater = 'gt',
+  less = 'lt',
 }
 
 export interface Rule {
-    id?: string;
-    jobId?: string;
-    name: string;
-    owner: string;
-    source: Agent;
-    condition: Condition;
-    executionInterval: number;
-    targets?: Array<TargetAgent>;
-    status?: {
-        success: boolean,
-        lastRun: Date;
-        error: string;
-    }
+  id?: string;
+  jobId?: string;
+  name: string;
+  owner: string;
+  source: Agent;
+  condition: Condition;
+  executionInterval: number;
+  targets?: Array<TargetAgent>;
+  status?: {
+    success: boolean;
+    lastRun: Date;
+    error: string;
+  };
 }
 
 export interface Condition {
-    dataPoint: string;
-    comparator:
-    | COMPARATORS.equals
-    | COMPARATORS.greater
-    | COMPARATORS.less;
-    value: string | number | boolean;
+  dataPoint: string;
+  comparator: COMPARATORS.equals | COMPARATORS.greater | COMPARATORS.less;
+  value: string | number | boolean;
 }
 
 export interface Agent {
-    id: string;
-    params: {
-        dataPoint: string;
-        value: string | number | boolean;
-    };
+  id: string;
+  params: {
+    dataPoint: string;
+    value: string | number | boolean;
+  };
 }
 
 export interface RuleResult {
-    ruleId: string;
-    result: boolean | number;
-    target: Array<TargetAgent>;
+  ruleId: string;
+  result: boolean | number;
+  target: Array<TargetAgent>;
 }
 
 interface ActionParam {
-    param: string;
-    value: string | number | boolean;
+  param: string;
+  value: string | number | boolean;
 }
 
 interface TargetActions {
-    action: string;
-    actionParams: Array<ActionParam>;
+  action: string;
+  actionParams: Array<ActionParam>;
 }
 
 export interface TargetAgent {
-    agentId: string;
-    ruleResult?: RuleResult;
-    actions: Array<TargetActions>;
+  agentId: string;
+  ruleResult?: RuleResult;
+  actions: Array<TargetActions>;
 }

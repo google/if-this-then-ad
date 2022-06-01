@@ -30,13 +30,15 @@ import { RulesProcessor } from './rules-processor';
 //         }
 // }
 
-export const processMessage = async (message: AgentResult): Promise<Array<RuleResult>> => {
-    log.debug('Message-Handler: Received incoming message');
-    log.debug(message);
-    const rp = new RulesProcessor();
+export const processMessage = async (
+  message: AgentResult
+): Promise<Array<RuleResult>> => {
+  log.debug('Message-Handler: Received incoming message');
+  log.debug(message);
+  const rp = new RulesProcessor();
 
-    return await rp.processAgentResult(message);
-    // push ruleEvalResults into pubsub queue
-    // for now we just pass it to the job-runner
-    // so that it can execute it on the target system
+  return await rp.processAgentResult(message);
+  // push ruleEvalResults into pubsub queue
+  // for now we just pass it to the job-runner
+  // so that it can execute it on the target system
 };

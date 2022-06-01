@@ -16,6 +16,6 @@ import { logger } from './logger';
 export { date } from './dateUtil';
 
 export const isObject = (value) => {
-    return value !== null && typeof value === 'object'
-}
+  return value !== null && typeof value === 'object';
+};
 export const log = logger;

@@ -12,38 +12,40 @@
  */
 
 export interface UserSettingKeyValue {
-    [key: string]: string
+  [key: string]: string;
 }
 
 export interface User {
-    id?: string;
-    profileId: number;
-    displayName?: string;
-    givenName?: string;
-    familyName?: string;
-    gender?: string;
-    email: string;
-    verified?: boolean;
-    profilePhoto?: string;
-    locale?: string;
-    token: Token;
-    settings?: Array<setting>;
-    userSettings?: UserSettingKeyValue;
+  id?: string;
+  profileId: number;
+  displayName?: string;
+  givenName?: string;
+  familyName?: string;
+  gender?: string;
+  email: string;
+  verified?: boolean;
+  profilePhoto?: string;
+  locale?: string;
+  token: Token;
+  settings?: Array<setting>;
+  userSettings?: UserSettingKeyValue;
 }
 
 interface setting {
-    agentId: string;
-    params: Array<parameter>;
+  agentId: string;
+  params: Array<parameter>;
 }
+
 interface parameter {
-    key: string;
-    value: string | number | boolean;
+  key: string;
+  value: string | number | boolean;
 }
+
 export interface Token {
-    access: string;
-    expiry: Date;
-    refresh?: string;
-    provider?: string;
-    scope?: Array<string>;
-    type?: string;
+  access: string;
+  expiry: Date;
+  refresh?: string;
+  provider?: string;
+  scope?: Array<string>;
+  type?: string;
 }

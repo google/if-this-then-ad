@@ -20,75 +20,76 @@ import { Collection } from '../models/fire-store-entity';
 const usersCollection = Collections.get(Collection.USERS);
 const userRepo = new Repository<User>(usersCollection);
 
-//TODO: add exception handling
+// TODO: add exception handling
 //      input data validation
 export const listAccounts = async (req: Request, res: Response) => {
-    try {
-        const userData = await userRepo.list();
-        return res.json(userData);
-    } catch (e) {
-        log.debug(e);
-        return res.status(500).send('Failed to fetch account list');
-    }
+  try {
+    const userData = await userRepo.list();
+    return res.json(userData);
+  } catch (e) {
+    log.debug(e);
+    return res.status(500).send('Failed to fetch account list');
+  }
 };
 
 export const create = async (req: Request, res: Response) => {
-    // TODO: implement data validation.
-    const user: User = { ...req.body };
+  // TODO: implement data validation.
+  const user: User = { ...req.body };
 
-    const result = await userRepo.save(user);
+  const result = await userRepo.save(user);
 
-    return res.json(result);
+  return res.json(result);
 };
 
 export const get = async (req: Request, res: Response) => {
-    const userData = await userRepo.get(req.params.id);
+  const userData = await userRepo.get(req.params.id);
 
-    return res.json(userData);
+  return res.json(userData);
 };
 
 /**
  * Updates user object.
- * @param req :id
- * @param res Updated user object
+ * @param {Request} req :id
+ * @param {Response} res Updated user object
  */
 export const update = async (req: Request, res: Response) => {
-    try {
-        const userId = req.params.id;
-        const user: User = { ...req.body };
-        await userRepo.update(userId, user);
-        return res.sendStatus(200);
-    } catch (e) {
-        log.error(e);
-        return res.sendStatus(500);
-    }
+  try {
+    const userId = req.params.id;
+    const user: User = { ...req.body };
+    await userRepo.update(userId, user);
+    return res.sendStatus(200);
+  } catch (e) {
+    log.error(e);
+    return res.sendStatus(500);
+  }
 };
 
 export const updateSettings = async (req: Request, res: Response) => {
-    try {
-        const user = (await userRepo.get(req.params.userId)) as User;
-        user.userSettings = req.body;
-        await userRepo.update(req.params.userId, user);
-
-    } catch (e) {
-        log.error(e);
-        return res.status(500).json({ error: 'Error occurred while updating user settings' });
-    }
-    return res.status(200).json({ status: 'ok' });
+  try {
+    const user = (await userRepo.get(req.params.userId)) as User;
+    user.userSettings = req.body;
+    await userRepo.update(req.params.userId, user);
+  } catch (e) {
+    log.error(e);
+    return res
+      .status(500)
+      .json({ error: 'Error occurred while updating user settings' });
+  }
+  return res.status(200).json({ status: 'ok' });
 };
 
 export const remove = async (req: Request, res: Response) => {
-    const id = req.params.id;
-    log.debug(`Deleting document ${id}`);
-    await userRepo.delete(id);
-    return res.json({ status: 'done' });
+  const id = req.params.id;
+  log.debug(`Deleting document ${id}`);
+  await userRepo.delete(id);
+  return res.json({ status: 'done' });
 };
 
 export const getBy = async (req: Request, res: Response) => {
-    const fieldName = req.query.fieldName! as string;
-    const fieldValue: string = req.query.fieldValue! as string;
+  const fieldName = req.query.fieldName! as string;
+  const fieldValue: string = req.query.fieldValue! as string;
 
-    const data = await userRepo.getBy(fieldName, fieldValue);
+  const data = await userRepo.getBy(fieldName, fieldValue);
 
-    return res.json(data);
+  return res.json(data);
 };

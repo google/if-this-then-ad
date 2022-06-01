@@ -11,48 +11,62 @@
     limitations under the License.
  */
 
-import { StringMappingType } from 'typescript';
 import { ApiCallParams } from './interfaces';
 
 export interface DV360Entity {
-    apiConfig: ApiCallParams;
-    listName: string;
+  apiConfig: ApiCallParams;
+  listName: string;
 }
 
+/**
+ * DV360 Partner.
+ */
 export class Partner implements DV360Entity {
-    apiConfig = {
-        url: '/partners',
-    };
-    listName = 'partners';
+  apiConfig = {
+    url: '/partners',
+  };
+  listName = 'partners';
 }
 
+/**
+ * DV360 Advertiser.
+ */
 export class Advertiser implements DV360Entity {
-    apiConfig = {
-        url: '/advertisers',
-        params: {
-            partnerId: '{partnerId}',
-        },
-    };
-    listName = 'advertisers';
+  apiConfig = {
+    url: '/advertisers',
+    params: {
+      partnerId: '{partnerId}',
+    },
+  };
+  listName = 'advertisers';
 }
 
+/**
+ * DV360 Campaign.
+ */
 export class Campaign implements DV360Entity {
-    apiConfig = {
-        url: '/advertisers/{advertiserId}/campaigns',
-    };
-    listName = 'campaigns';
+  apiConfig = {
+    url: '/advertisers/{advertiserId}/campaigns',
+  };
+  listName = 'campaigns';
 }
 
+/**
+ * DV360 Insertion Order.
+ */
 export class InsertionOrder implements DV360Entity {
-    apiConfig = {
-        url: '/advertisers/{advertiserId}/insertionOrders',
-    };
-    listName = 'insertionOrders';
+  apiConfig = {
+    url: '/advertisers/{advertiserId}/insertionOrders',
+  };
+  listName = 'insertionOrders';
 }
 
+/**
+ * DV360 Line Item.
+ */
 export class LineItem implements DV360Entity {
-    apiConfig = {
-        url: '/advertisers/{advertiserId}/lineItems',
-    };
-    listName = 'lineItems';
+  apiConfig = {
+    url: '/advertisers/{advertiserId}/lineItems',
+  };
+  listName = 'lineItems';
 }

@@ -12,14 +12,14 @@
  */
 
 import { Request, Response } from 'express';
-import ruleengine from '@iftta/rules-engine';
 
 /**
  * Handler for the incoming messages to the rules engine
  * originating from the pubsub push subscription.
- * @param req
- * @param res
+ *
+ * @param {Request} req
+ * @param {Response} res
  */
 export const messageHandler = async (req: Request, res: Response) => {
-    //ruleengine.processMessage()
+  // ruleengine.processMessage()
 };

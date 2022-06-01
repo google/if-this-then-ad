@@ -11,70 +11,69 @@
     limitations under the License.
  */
 
-import {Request, Response} from 'express';
+import { Request, Response } from 'express';
 
+/**
+ * Controller for debugging.
+ */
 class SomeController {
-    /**
-     * Hello route
-     * @param {Request} req
-     * @param {Response}res
-     */
+  /**
+   * Fetch dummy data.
+   *
+   * @param {Request} req
+   * @param {Response} res
+   */
+  public async fetch(req: Request, res: Response) {
+    console.log(req.params.entityType);
+    if (req.params.entityType === 'partner') {
+      const entities = [
+        {
+          name: '! AC2 Testing Partner',
+          partnerId: '2015636',
+          advertiserId: null,
+          insertionOrderId: null,
+          lineItemId: null,
+          entityStatus: 'ACTIVE',
+        },
+      ];
 
-    public async hello(req: Request, res: Response) {
-        res.send('Some Controller');
+      res.json(entities);
+    } else if (req.params.entityType === 'advertiser') {
+      const entities = [
+        {
+          name: 'My Advertiser 1',
+          partnerId: '2015636',
+          advertiserId: '123',
+          insertionOrderId: null,
+          lineItemId: null,
+          entityStatus: 'ACTIVE',
+        },
+        {
+          name: 'My Advertiser 2',
+          partnerId: '2015636',
+          advertiserId: '234',
+          insertionOrderId: null,
+          lineItemId: null,
+          entityStatus: 'ACTIVE',
+        },
+      ];
+
+      res.json(entities);
+    } else {
+      const entities = [
+        {
+          name: 'My Insertion Order 1',
+          partnerId: '2015636',
+          advertiserId: '123',
+          insertionOrderId: '135',
+          lineItemId: null,
+          entityStatus: 'ACTIVE',
+        },
+      ];
+
+      res.json(entities);
     }
-
-    public async fetch(req: Request, res: Response) {
-        console.log(req.params.entityType);
-        if (req.params.entityType === 'partner') {
-            const entities = [
-                {
-                    name: '! AC2 Testing Partner',
-                    partnerId: '2015636',
-                    advertiserId: null,
-                    insertionOrderId: null,
-                    lineItemId: null,
-                    entityStatus: 'ACTIVE',
-                },
-            ];
-
-            res.json(entities);
-        } else if (req.params.entityType === 'advertiser') {
-            const entities = [
-                {
-                    name: 'My Advertiser 1',
-                    partnerId: '2015636',
-                    advertiserId: '123',
-                    insertionOrderId: null,
-                    lineItemId: null,
-                    entityStatus: 'ACTIVE',
-                },
-                {
-                    name: 'My Advertiser 2',
-                    partnerId: '2015636',
-                    advertiserId: '234',
-                    insertionOrderId: null,
-                    lineItemId: null,
-                    entityStatus: 'ACTIVE',
-                },
-            ];
-
-            res.json(entities);
-        } else {
-            const entities = [
-                {
-                    name: 'My Insertion Order 1',
-                    partnerId: '2015636',
-                    advertiserId: '123',
-                    insertionOrderId: '135',
-                    lineItemId: null,
-                    entityStatus: 'ACTIVE',
-                },
-            ];
-
-            res.json(entities);
-        }
-    }
+  }
 }
 
 export default new SomeController();

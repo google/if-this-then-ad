@@ -11,12 +11,12 @@
     limitations under the License.
  */
 
-import {log, date} from '@iftta/util';
-import {Application, NextFunction, Request, Response} from 'express';
+import { log, date } from '@iftta/util';
+import { Application, NextFunction, Request, Response } from 'express';
 import passport from 'passport';
 import GoogleStrategy from '../auth/google-strategy';
-import {Collection} from '../models/fire-store-entity';
-import {User} from '../models/user';
+import { Collection } from '../models/fire-store-entity';
+import { User } from '../models/user';
 import Collections from '../services/collection-factory';
 import Repository from '../services/repository-service';
 
@@ -26,90 +26,95 @@ const userRepo = new Repository<User>(usersCollection);
 /**
  * Init passport.
  *
- * @param { Application } app
- * @return {any}
+ * @param {Application} app
+ * @returns {any}
  */
-export const init = (app: Application): any => {
-    app = app.use(passport.initialize());
-    app = app.use(passport.session());
+export const init = (app: Application) => {
+  app = app.use(passport.initialize());
+  app = app.use(passport.session());
 
-    passport.serializeUser(function (user, done) {
-        done(null, user);
-    });
+  passport.serializeUser(function (user, done) {
+    done(null, user);
+  });
 
-    passport.deserializeUser<any, any>((user, done) => {
-        // puts the user object into req.user
-        // NOTE: if session.secure = true and you are not on SSL
-        // everything fails silently and user isnt set
-        // and this method isnt getting called
-        // https://stackoverflow.com/questions/11277779/passportjs-deserializeuser-never-called/23119369#23119369
+  passport.deserializeUser<any, any>((user, done) => {
+    // puts the user object into req.user
+    // NOTE: if session.secure = true and you are not on SSL
+    // everything fails silently and user isnt set
+    // and this method isnt getting called
+    // https://stackoverflow.com/questions/11277779/passportjs-deserializeuser-never-called/23119369#23119369
 
-        done(null, user);
-    });
+    done(null, user);
+  });
 
-    GoogleStrategy.initialise(passport);
-    log.info('Initialised Passport with Google strategy');
-    return app;
+  GoogleStrategy.initialise(passport);
+  log.info('Initialised Passport with Google strategy');
+  return app;
 };
 
 /**
  * Checks if request is authenticated.
  *
- * @param { Request } req
- * @param { Response } res
- * @param { NextFunction } next
- * @return { any }
+ * @param {Request} req
+ * @param {Response} res
+ * @param {NextFunction} next
+ * @returns {any}
  */
-export const isAuthenticated = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
-    const authorizationHeader = req.headers.authorization || '';
-    const accessToken = _extractAccessToken(authorizationHeader);
-    // Allowing clients to authenticate via authorization headers.
-    // at the end check if the cookies are valid and let the request through.
-    log.debug(accessToken);
+export const isAuthenticated = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<any> => {
+  const authorizationHeader = req.headers.authorization || '';
+  const accessToken = _extractAccessToken(authorizationHeader);
+  // Allowing clients to authenticate via authorization headers.
+  // at the end check if the cookies are valid and let the request through.
+  log.debug(accessToken);
 
-    if (process.env.NODE_ENV == 'production') {
-        if (req.session['accessTokenIsValid']) {
-            return next();
-        }
+  if (process.env.NODE_ENV == 'production') {
+    if (req.session['accessTokenIsValid']) {
+      return next();
     }
-    
-    try {
-        const tokenResult = await _validateAccessToken(accessToken!, req);
-        log.debug('Validity of the submitted token ' + tokenResult);
-        req.session['accessTokenIsValid'] = tokenResult;
-        if (tokenResult) {
-            log.debug(`Token is valid ${tokenResult}`);
-            return next();
-        }
+  }
 
-        // finally check if user object
-        // was set as part of the cookie
-        if (req.isAuthenticated()) {
-            return next();
-        }
-
-        log.debug('failed auth');
-        return next('Failed auth');
-    } catch (err) {
-        return next(err);
+  try {
+    const tokenResult = await _validateAccessToken(accessToken!, req);
+    log.debug('Validity of the submitted token ' + tokenResult);
+    req.session['accessTokenIsValid'] = tokenResult;
+    if (tokenResult) {
+      log.debug(`Token is valid ${tokenResult}`);
+      return next();
     }
+
+    // finally check if user object
+    // was set as part of the cookie
+    if (req.isAuthenticated()) {
+      return next();
+    }
+
+    log.debug('failed auth');
+    return next('Failed auth');
+  } catch (err) {
+    return next(err);
+  }
 };
 
 /**
  * Checks if request is authorized.
- * @param { Request } req
- * @param { Response } res
- * @param { NextFunction } next
- * @return { any }
+ *
+ * @param {Request} req
+ * @param {Response} res
+ * @param {NextFunction} next
+ * @returns {any}
  */
 export const isAuthorized = (
-    req: Request,
-    res: Response,
-    next: NextFunction
+  req: Request,
+  res: Response,
+  next: NextFunction
 ): any => {
-    // TODO: check for existence of the token
-    // otherwise redirect to /api/auth/google
-    return true;
+  // TODO: check for existence of the token
+  // otherwise redirect to /api/auth/google
+  return true;
 };
 
 /**
@@ -119,39 +124,39 @@ export const isAuthorized = (
  * @returns {string}
  */
 const _extractAccessToken = (authHeader: string): string | undefined => {
-    const headerParts = authHeader.split(' ');
+  const headerParts = authHeader.split(' ');
 
-    if (headerParts.length == 2) {
-        return headerParts[1];
-    }
-    return undefined;
+  if (headerParts.length == 2) {
+    return headerParts[1];
+  }
+  return undefined;
 };
 
 /**
  * Check access token validity.
  * adds user into request object
  *
- * @param { string } accessToken
- * @returns { boolean }
+ * @param {string} accessToken
+ * @param {Request} req
+ * @returns {boolean}
  */
-const _validateAccessToken = async (accessToken: string, req): Promise<boolean> => {
-    try {
-        if(!accessToken == undefined){
-            const result: User[] = await userRepo.getBy(
-                'token.access',
-                accessToken
-            );
-            if (result.length > 0) {
-                // ensure that the token isnt expired.
-                const user: User = result[0];
-                req.user = user; 
-                return date.isFuture(user.token.expiry);
-            }
-        }
-
-    } catch (err) {
-        log.error(err);
-        return Promise.reject(err);
+const _validateAccessToken = async (
+  accessToken: string,
+  req
+): Promise<boolean> => {
+  try {
+    if (!accessToken == undefined) {
+      const result: User[] = await userRepo.getBy('token.access', accessToken);
+      if (result.length > 0) {
+        // ensure that the token isnt expired.
+        const user: User = result[0];
+        req.user = user;
+        return date.isFuture(user.token.expiry);
+      }
     }
-    return false;
+  } catch (err) {
+    log.error(err);
+    return Promise.reject(err);
+  }
+  return false;
 };

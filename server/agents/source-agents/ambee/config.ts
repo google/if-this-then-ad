@@ -11,17 +11,17 @@
     limitations under the License.
  */
 
-import {Configuration} from './interfaces';
+import { Configuration } from './interfaces';
 
 export const config: Configuration = {
-    id: 'ambee',
-    name: 'Air Quality & Pollen',
-    baseUrl: {
-        pollenRiskLevel:
-            'https://api.ambeedata.com/latest/pollen/by-place?place={{location}}',
-        airQualityLevel:
-            'https://api.ambeedata.com/latest/by-city?city={{location}}',
-    },
-    apiKey: '',
-    jobOwner: '',
+  id: 'ambee',
+  name: 'Air Quality & Pollen',
+  baseUrl: {
+    pollenRiskLevel:
+      'https://api.ambeedata.com/latest/pollen/by-place?place={{location}}',
+    airQualityLevel:
+      'https://api.ambeedata.com/latest/by-city?city={{location}}',
+  },
+  apiKey: '',
+  jobOwner: '',
 };

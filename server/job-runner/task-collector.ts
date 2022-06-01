@@ -16,51 +16,59 @@ import { AgentTask, AgentResult, RuleResult } from './interfaces';
 import TaskConfiguration from './task-configuration';
 import { Token } from './../models/user';
 
+/**
+ * Task Collector class.
+ */
 export default class TaskCollector {
-    private tasks: Array<AgentTask> = [];
+  private tasks: Array<AgentTask> = [];
 
-    /**
-     * Creates a Task object to be passed on to Target Agent execution.
-     * @param agentResult Data from Source Agent request
-     * @param ruleResults Rule evaluation Results for agentResults
-     */
-    public async put(agentResult: AgentResult, ruleResults: Array<RuleResult>) {
-        let token: Token|undefined;
-        try {
-            // new token
-            token = await TaskConfiguration.refreshTokensForUser(agentResult.jobOwner);
-        } catch (e) {
-            log.error(['Could not refresh the token.', e as string]);
-            return;
-        }
-
-        // target
-        for (let rr of ruleResults) {
-            for (let t of rr.targets) {
-                // make one task per target.
-                const target = {
-                    ruleId: rr.ruleId,
-                    agentId: t.agentId,
-                    result: rr.result,
-                    actions: t.actions,
-                };
-
-                const task: AgentTask = {
-                    token: {
-                        auth: token.access,
-                    },
-                    target: target,
-                    ownerId: agentResult.jobOwner
-                };
-                this.tasks.push(task);
-            }
-        }
+  /**
+   * Create a Task object to be passed on to Target Agent execution.
+   *
+   * @param {AgentResult} agentResult Data from Source Agent request
+   * @param {Array<RuleResult>} ruleResults Rule evaluation Results for agentResults
+   */
+  public async put(agentResult: AgentResult, ruleResults: Array<RuleResult>) {
+    let token: Token | undefined;
+    try {
+      // new token
+      token = await TaskConfiguration.refreshTokensForUser(
+        agentResult.jobOwner
+      );
+    } catch (e) {
+      log.error(['Could not refresh the token.', e as string]);
+      return;
     }
-    /**
-     * Returns an array of collected Agent tasks
-     * @returns {Array<AgentTask} tasks
-     */
-    public get(): Array<AgentTask> {
-        return this.tasks;
+
+    // Target
+    for (const rr of ruleResults) {
+      for (const t of rr.targets) {
+        // Make one task per target.
+        const target = {
+          ruleId: rr.ruleId,
+          agentId: t.agentId,
+          result: rr.result,
+          actions: t.actions,
+        };
+
+        const task: AgentTask = {
+          token: {
+            auth: token.access,
+          },
+          target: target,
+          ownerId: agentResult.jobOwner,
+        };
+        this.tasks.push(task);
+      }
     }
+  }
+
+  /**
+   * Return an array of collected Agent tasks.
+   *
+   * @returns {Array<AgentTask>} tasks
+   */
+  public get(): Array<AgentTask> {
+    return this.tasks;
+  }
 }

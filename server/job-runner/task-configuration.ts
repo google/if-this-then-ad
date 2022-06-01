@@ -22,110 +22,158 @@ import { UserSettingKeyValue } from './interfaces';
 const usersCollection = Collections.get(Collection.USERS);
 const userRepository = new Repository<User>(usersCollection);
 
+/**
+ * Task Configuration class.
+ */
 class TaskConfiguration {
-    private tokenUrl = '';
-    private repo: Repository<User>;
+  private tokenUrl = '';
+  private repo: Repository<User>;
 
-    constructor(tokenEndpoint: string, repository: Repository<User>) {
-        this.tokenUrl = tokenEndpoint;
-        this.repo = repository;
+  /**
+   * Constructor.
+   *
+   * @param {string} tokenEndpoint
+   * @param {Repository<User>} repository
+   */
+  constructor(tokenEndpoint: string, repository: Repository<User>) {
+    this.tokenUrl = tokenEndpoint;
+    this.repo = repository;
+  }
+
+  /**
+   * Get new auth token.
+   *
+   * @param {string} refreshToken
+   * @returns {Promise<Token>}
+   */
+  public async getNewAuthToken(refreshToken: string): Promise<Token> {
+    try {
+      log.debug(`Exchanging Refresh token  ${refreshToken} for Auth Token`);
+      const grantType = 'refresh_token';
+      const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
+      const clientId = process.env.GOOGLE_CLIENT_ID;
+
+      const payload = {
+        client_id: clientId,
+        client_secret: clientSecret,
+        grant_type: grantType,
+        refresh_token: refreshToken,
+      };
+
+      const request = await axios.post(this.tokenUrl, payload);
+
+      if (request.status == 200) {
+        const token: Token = {
+          access: request.data.access_token,
+          expiry: date.add(Date.now(), {
+            seconds: request.data.expires_in,
+          }),
+          refresh: refreshToken,
+          type: request.data.token_type,
+        };
+
+        log.info(`Obtained new access Token ${token.access}`);
+        log.info(`Token expires in ${request.data.expires_in}`);
+
+        log.debug(token);
+        return token;
+      }
+    } catch (err) {
+      log.error(err);
+      return Promise.reject(err);
     }
 
-    public async getNewAuthToken(refreshToken: string): Promise<Token> {
-        try {
-            log.debug(`Exchanging Refresh token  ${refreshToken} for Auth Token`);
-            const grantType = 'refresh_token';
-            const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
-            const clientId = process.env.GOOGLE_CLIENT_ID;
-
-            const payload = {
-                client_id: clientId,
-                client_secret: clientSecret,
-                grant_type: grantType,
-                refresh_token: refreshToken,
-            };
-
-            const request = await axios.post(this.tokenUrl, payload);
-
-            if (request.status == 200) {
-                const token: Token = {
-                    access: request.data.access_token,
-                    expiry: date.add(Date.now(), { seconds: request.data.expires_in }),
-                    refresh: refreshToken,
-                    type: request.data.token_type,
-                };
-
-                log.info(`Obtained new access Token ${token.access}`);
-                log.info(`Token expires in ${request.data.expires_in}`);
-
-                log.debug(token);
-                return token;
-            }
-        } catch (err) {
-            log.error(err);
-            return Promise.reject(err);
-        }
-        return Promise.reject('Couldnt obtain token, check logs for errors');
+    return Promise.reject(
+      new Error('Could not obtain token, check logs for errors')
+    );
+  }
+  /**
+   * Reissues a new token for the user, upon presentation of the old token.
+   *
+   * @param {string} userId
+   * @param {string} accessToken
+   */
+  public async reissueAuthTokenForUser(
+    userId: string,
+    accessToken: string
+  ): Promise<Token> {
+    if (!userId && !accessToken) {
+      return Promise.reject(
+        new Error(
+          'Both userId and expired access Token are required for renewal'
+        )
+      );
     }
-    /**
-     * Reissues a new token for the user, upon presentation of the old token
-     * @param userId
-     * @param accessToken
-     */
-    public async reissueAuthTokenForUser(userId: string, accessToken: string): Promise<Token> {
-        if (!userId && !accessToken) {
-            return Promise.reject('Both userId and expired access Token are required for renewal');
-        }
 
-        try {
-            const user: User = (await this.repo.get(userId)) as User;
-            if (user.token.access == accessToken) {
-                const token = await this.refreshTokensForUser(userId);
-                delete token.refresh;
-                return token;
-            }
-            return Promise.reject('Refresh request denied');
-        } catch (e) {
-            log.error(e);
-            return Promise.reject(e);
-        }
+    try {
+      const user: User = (await this.repo.get(userId)) as User;
+      if (user.token.access == accessToken) {
+        const token = await this.refreshTokensForUser(userId);
+        delete token.refresh;
+        return token;
+      }
+      return Promise.reject(new Error('Refresh request denied'));
+    } catch (e) {
+      log.error(e);
+      return Promise.reject(e);
     }
-    public async refreshTokensForUser(userId: string): Promise<Token> {
-        try {
-            const user: User = (await this.repo.get(userId)) as User;
+  }
 
-            if ((user != null || user != 'undefined') && date.isFuture(user.token.expiry)) {
-                log.info(`Access token for user ${userId} is still valid`);
-                return user.token;
-            }
-            log.info(`Noticed expired access token for user ${userId} , refreshing...`);
-            const refreshToken: string = user.token.refresh as string;
-            const newToken: Token = await this.getNewAuthToken(refreshToken);
-            user.token.access = newToken.access;
-            user.token.expiry = newToken.expiry;
-            user.token.scope = newToken.scope;
+  /**
+   * Refresh tokens for user.
+   *
+   * @param {string} userId
+   * @returns {Promise<Token>}
+   */
+  public async refreshTokensForUser(userId: string): Promise<Token> {
+    try {
+      const user: User = (await this.repo.get(userId)) as User;
 
-            await this.repo.update(userId, user);
+      if (
+        (user != null || user != 'undefined') &&
+        date.isFuture(user.token.expiry)
+      ) {
+        log.info(`Access token for user ${userId} is still valid`);
+        return user.token;
+      }
+      log.info(
+        `Noticed expired access token for user ${userId} , refreshing...`
+      );
+      const refreshToken: string = user.token.refresh as string;
+      const newToken: Token = await this.getNewAuthToken(refreshToken);
+      user.token.access = newToken.access;
+      user.token.expiry = newToken.expiry;
+      user.token.scope = newToken.scope;
 
-            return newToken;
-        } catch (err) {
-            log.error(['TaskConfiguration:refreshTokensForUser:Error', err as string]);
-            return Promise.reject(err);
-        }
+      await this.repo.update(userId, user);
+
+      return newToken;
+    } catch (err) {
+      log.error([
+        'TaskConfiguration:refreshTokensForUser:Error',
+        err as string,
+      ]);
+      return Promise.reject(err);
     }
-    /**
-     * Gets settings e.g api keys for use with the agent.
-     * @param {string} userId
-     * @param {string} agentId
-     */
-    public async getUserSettings(userId: string): Promise<UserSettingKeyValue | undefined> {
-        try {
-            const user: User = (await this.repo.get(userId)) as User;
-            return user?.userSettings;
-        } catch (err) {
-            return Promise.reject(err);
-        }
+  }
+  /**
+   * Gets settings e.g api keys for use with the agent.
+   * @param {string} userId
+   * @param {string} agentId
+   */
+  public async getUserSettings(
+    userId: string
+  ): Promise<UserSettingKeyValue | undefined> {
+    try {
+      const user: User = (await this.repo.get(userId)) as User;
+      return user?.userSettings;
+    } catch (err) {
+      return Promise.reject(err);
     }
+  }
 }
 
-export default new TaskConfiguration('https://oauth2.googleapis.com/token', userRepository);
+export default new TaskConfiguration(
+  'https://oauth2.googleapis.com/token',
+  userRepository
+);

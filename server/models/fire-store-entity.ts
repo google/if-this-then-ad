@@ -11,26 +11,26 @@
     limitations under the License.
  */
 export interface FirestoreCollection {
-    name: string;
-    db: any;
+  name: string;
+  db: any;
 }
 
 const resolveCollectionName = (collection): string => {
-    let prefix = '';
-    if ('DEMO_ENV_NAME' in process.env && process.env.DEMO_ENV_NAME) {
-        console.log(`Demo environment name ${process.env.DEMO_ENV_NAME}`);
-        prefix = process.env.DEMO_ENV_NAME.replace('/', '-') + ':';
-    }
-    return prefix + collection;
-}
+  let prefix = '';
+  if ('DEMO_ENV_NAME' in process.env && process.env.DEMO_ENV_NAME) {
+    console.log(`Demo environment name ${process.env.DEMO_ENV_NAME}`);
+    prefix = process.env.DEMO_ENV_NAME.replace('/', '-') + ':';
+  }
+  return prefix + collection;
+};
 
 /**
  * Allowed collection types for use with the
  * repository
  */
 export const Collection = {
-    USERS: resolveCollectionName('users'),
-    RULES: resolveCollectionName('rules'),
-    JOBS: resolveCollectionName('jobs'),
-    SESSIONS: resolveCollectionName('sessions'),
-}
+  USERS: resolveCollectionName('users'),
+  RULES: resolveCollectionName('rules'),
+  JOBS: resolveCollectionName('jobs'),
+  SESSIONS: resolveCollectionName('sessions'),
+};
