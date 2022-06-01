@@ -30,8 +30,9 @@ interface AdGroup {
 export class GoogleAdsSelectorComponent implements AfterViewInit {
   adGroupEnabled = faCircle;
   adGroupDisabled = faCirclePause;
+  isLoading = true;
   adGroups: AdGroup[] = [];
-  displayedColumns: string[] = ['id', 'name', 'campaignName', 'type', 'status'];
+  displayedColumns: string[] = ['status', 'name', 'campaignName', 'type', 'id', ];
   selectedRows = new Set<AdGroup>();
   dataSource = new MatTableDataSource<any>(this.adGroups);
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -111,6 +112,7 @@ export class GoogleAdsSelectorComponent implements AfterViewInit {
         this.adGroups = adGroups;
         this.dataSource.data = this.adGroups;
         this.dataSource.paginator = this.paginator;
+        this.isLoading = false;
       });
   }
 }
