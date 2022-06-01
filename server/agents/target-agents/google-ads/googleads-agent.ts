@@ -104,8 +104,7 @@ export default class GoogleAdsAgent implements IAgent {
     public async execute(task: AgentTask): Promise<Array<ActionResult>> {
         const result: Array<ActionResult> = [];
         for (let action of task.target.actions) {
-            log.debug('ads.execute task');
-            log.debug(task);
+            log.debug(['ads.execute task', task]);
 
             let instanceOptions = {} as InstanceOptions;
             action.params.forEach((p) => {
@@ -114,10 +113,10 @@ export default class GoogleAdsAgent implements IAgent {
 
             try {
                 let googleAds = new GoogleAdsClient(
-                    this.getRequiredUserSetting(task, 'customerAccountId'),
-                    this.getRequiredUserSetting(task, 'managerAccountId'),
+                    this.getRequiredUserSetting(task, 'GOOGLEADS_ACCOUNT_ID'),
+                    this.getRequiredUserSetting(task, 'GOOGLEADS_MANAGER_ACCOUNT_ID'),
                     task.token.auth,
-                    this.getRequiredUserSetting(task, 'developerToken')
+                    this.getRequiredUserSetting(task, 'GOOGLEADS_DEV_TOKEN')
                 );
                 let shouldBeActive: boolean = action.type == EntityActions.ACTIVATE && task.target.result as boolean;
                 await googleAds.updateAdGroup(instanceOptions.entityId!, shouldBeActive);

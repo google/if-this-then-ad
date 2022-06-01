@@ -118,10 +118,10 @@ class TaskConfiguration {
      * @param {string} userId
      * @param {string} agentId
      */
-    public async getUserSettings(userId: string): Promise<UserSettingKeyValue | undefined> {
+    public async getUserSettings(userId: string): Promise<UserSettingKeyValue> {
         try {
             const user: User = (await this.repo.get(userId)) as User;
-            return user?.userSettings;
+            return user?.userSettings as UserSettingKeyValue;
         } catch (err) {
             return Promise.reject(err);
         }

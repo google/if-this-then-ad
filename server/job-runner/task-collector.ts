@@ -12,7 +12,7 @@
  */
 
 import { log } from '@iftta/util';
-import { AgentTask, AgentResult, RuleResult } from './interfaces';
+import { AgentTask, AgentResult, RuleResult, UserSettingKeyValue } from './interfaces';
 import TaskConfiguration from './task-configuration';
 import { Token } from './../models/user';
 
@@ -25,12 +25,16 @@ export default class TaskCollector {
      * @param ruleResults Rule evaluation Results for agentResults
      */
     public async put(agentResult: AgentResult, ruleResults: Array<RuleResult>) {
-        let token: Token|undefined;
+        const ownerId = agentResult.jobOwner;
+
+        let token: Token|undefined, 
+            ownerSettings: UserSettingKeyValue;
         try {
             // new token
-            token = await TaskConfiguration.refreshTokensForUser(agentResult.jobOwner);
+            token = await TaskConfiguration.refreshTokensForUser(ownerId);
+            ownerSettings = await TaskConfiguration.getUserSettings(ownerId);
         } catch (e) {
-            log.error(['Could not refresh the token.', e as string]);
+            log.error(['Could not configure the task.', e as string]);
             return;
         }
 
@@ -45,14 +49,14 @@ export default class TaskCollector {
                     actions: t.actions,
                 };
 
-                const task: AgentTask = {
+                this.tasks.push({
                     token: {
                         auth: token.access,
                     },
-                    target: target,
-                    ownerId: agentResult.jobOwner
-                };
-                this.tasks.push(task);
+                    ownerSettings,
+                    target,
+                    ownerId, 
+                });
             }
         }
     }

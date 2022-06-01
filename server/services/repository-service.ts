@@ -93,7 +93,11 @@ class RepositoryService<T> {
     }
 
     async get(id: string): Promise<T | undefined> {
-        log.debug('Repository:get');
+        log.debug(['Repository:get', id]);
+        if (! id) {
+            throw new Error('Document id cannot be empty');
+        }
+
         try {
             const docRef = this.db
                 .collection(this.fireStoreCollection.name)
