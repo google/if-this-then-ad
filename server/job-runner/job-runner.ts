@@ -131,6 +131,9 @@ class JobRunner {
             try {
                 yield await agent.execute(job);
             } catch (e) {
+                this.updateRuleStatusInDB(
+                    job.rules[0], false, new Date(), (e as Error).message
+                );
                 log.error(e);
             }
         }
@@ -271,19 +274,47 @@ class JobRunner {
      */
     private async updateRuleRunStatus(taskExecutionResults: Array<ActionResult>) {
         for (let actionResult of taskExecutionResults) {
-            const rule = await this.rulesRepository.get(actionResult.ruleId)!;
+            const success = actionResult.success ? actionResult.success : false;
+            const message = actionResult.error 
+                ? actionResult.error 
+                : `New status: ${actionResult.entityStatus}`;
+            
+            this.updateRuleStatusInDB(
+                actionResult.ruleId,
+                success,
+                actionResult.timestamp,
+                message
+            );
+
+            log.debug(
+                `Execution: Rule ${actionResult.ruleId} `
+                + `success: ${success}, message: ${message}`
+            );
+        }
+    }
+
+    /**
+     * Updates the rule status in DB
+     * 
+     * @param ruleId 
+     * @param success 
+     * @param lastExecution 
+     * @param message 
+     */
+    private async updateRuleStatusInDB(
+        ruleId: string, 
+        success: boolean,
+        lastExecution: Date, 
+        message: string
+    ) {
+        try {
+            const rule = await this.rulesRepository.get(ruleId);
             if (rule) {
-                const status = {
-                    success: actionResult.success ? actionResult.success : false,
-                    lastExecution: actionResult.timestamp,
-                    message: actionResult.error 
-                        ? actionResult.error 
-                        : `New status: ${actionResult.entityStatus}`
-                }
-                rule.status = status;
-                this.rulesRepository.update(rule.id!, rule);
-                log.debug(`Execution : Rule ${rule.id} success: ${status.success}`, status);
+                rule.status = {success, lastExecution, message};
+                this.rulesRepository.update(ruleId, rule);
             }
+        } catch (e) {
+            log.error(e);
         }
     }
 }
