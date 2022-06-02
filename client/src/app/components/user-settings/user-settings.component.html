@@ -7,31 +7,31 @@
 </div>
 <form [formGroup]="userSettings">
   <mat-accordion class="user-settings-headers-align" multi>
-    <mat-expansion-panel 
-      *ngFor="let setting of settings" 
+    <mat-expansion-panel
+      *ngFor="let setting of settings"
       [expanded]="setting?.expanded"
       #userSettings
     >
-      <mat-progress-bar 
+      <mat-progress-bar
         mode="indeterminate"
         *ngIf="savingUserSettings"
       ></mat-progress-bar>
       <mat-expansion-panel-header>
         <mat-panel-title>
-          {{setting.title}}
+          {{ setting.title }}
         </mat-panel-title>
         <mat-panel-description>
-          {{setting.description}}
+          {{ setting.description }}
         </mat-panel-description>
       </mat-expansion-panel-header>
 
       <mat-form-field appearance="fill">
-        <mat-label>{{setting.field}}</mat-label>
-        <input 
+        <mat-label>{{ setting.field }}</mat-label>
+        <input
           matInput
-          [required]="!! setting?.expanded"
+          [required]="!!setting?.expanded"
           formControlName="{{ setting.settingName }}"
-        >
+        />
         <mat-hint *ngIf="setting?.expanded">
           This setting is <strong>required</strong>.
         </mat-hint>

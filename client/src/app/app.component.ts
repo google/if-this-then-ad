@@ -17,7 +17,7 @@ import {
   faList,
   faSquarePlus,
   faGear,
-  faMessage
+  faMessage,
 } from '@fortawesome/free-solid-svg-icons';
 
 import { store } from 'src/app/store';

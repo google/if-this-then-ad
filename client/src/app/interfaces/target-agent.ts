@@ -22,6 +22,6 @@ export interface TargetAgent {
 }
 
 export interface AgentParams {
-  name: string,
-  settingName: string,
+  name: string;
+  settingName: string;
 }

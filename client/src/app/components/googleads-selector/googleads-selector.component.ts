@@ -24,8 +24,9 @@ interface AdGroup {
   templateUrl: './googleads-selector.component.html',
   styleUrls: ['./googleads-selector.component.scss'],
 })
+
 /**
- *  Google ad groups selector component
+ * Google ad groups selector component.
  */
 export class GoogleAdsSelectorComponent implements AfterViewInit {
   adGroupEnabled = faCircle;
@@ -35,8 +36,10 @@ export class GoogleAdsSelectorComponent implements AfterViewInit {
   selectedRows = new Set<AdGroup>();
   dataSource = new MatTableDataSource<any>(this.adGroups);
   @ViewChild(MatPaginator) paginator!: MatPaginator;
+
   /**
-   * Constructor: Http client gets injected
+   * Constructor: Http client gets injected.
+   *
    * @param {HttpClient} http Http client
    */
   constructor(private http: HttpClient) {}
@@ -54,7 +57,8 @@ export class GoogleAdsSelectorComponent implements AfterViewInit {
   }
 
   /**
-   * Handles select row click event
+   * Handles select row click event.
+   *
    * @param {AdGroup} r clicked row
    */
   selectRow(r: AdGroup) {
@@ -75,7 +79,8 @@ export class GoogleAdsSelectorComponent implements AfterViewInit {
   }
 
   /**
-   * Transforms user selection into a TargetAgent object
+   * Transforms user selection into a TargetAgent object.
+   *
    * @param { Set<AdGroup> } userSelection
    * @returns { TargetAgent } TargetAgent Object
    */
@@ -98,8 +103,9 @@ export class GoogleAdsSelectorComponent implements AfterViewInit {
       actions: actions,
     };
   }
+
   /**
-   * Fetch Google Ads account data
+   * Fetch Google Ads account data.
    */
   private fetchAccountData() {
     this.http

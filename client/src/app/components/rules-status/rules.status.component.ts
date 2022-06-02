@@ -25,7 +25,7 @@ import { User } from 'src/app/models/user.model';
 import {
   faTriangleExclamation,
   faCircleCheck,
-  faQuestion
+  faQuestion,
 } from '@fortawesome/free-solid-svg-icons';
 
 @Component({

@@ -11,8 +11,9 @@ import { environment } from 'src/environments/environment';
   templateUrl: './dash.component.html',
   styleUrls: ['./dash.component.scss'],
 })
+
 /**
- * Dash Component
+ * Dash Component.
  */
 export class DashComponent implements OnInit {
   displayName: string;
@@ -22,14 +23,16 @@ export class DashComponent implements OnInit {
   inactiveRules: number = 0;
   errorRules: number = 0;
   adsManaged: number = 420;
-  /**
-   * Constructor
-   * @param {AuthService} authService AuthService
-   */
-  constructor(private authService: AuthService, private http: HttpClient) { }
 
   /**
-   * Init
+   * Constructor.
+   *
+   * @param {AuthService} authService AuthService
+   */
+  constructor(private authService: AuthService, private http: HttpClient) {}
+
+  /**
+   * Init.
    */
   ngOnInit(): void {
     this.displayName = this.authService.currentUser?.displayName!;
@@ -37,7 +40,7 @@ export class DashComponent implements OnInit {
     this.loadRules();
   }
 
-  // TODO: centralise all data fetching into one service 
+  // TODO: centralise all data fetching into one service
   // use caching to prevent hitting the api unnecessarily.
   /**
    * Fetch all rules for logged in user.
@@ -53,11 +56,12 @@ export class DashComponent implements OnInit {
   }
 
   /**
-   * Calculates statics to display on the dashboard
+   * Calculates statics to display on the dashboard.
+   *
    * @param {Rule[]} rules
    */
   calculateStats(rules: Rule[]) {
-    rules.forEach(r => {
+    rules.forEach((r) => {
       this.activeRules += 1;
       if (!r.status?.success) {
         this.errorRules += 1;

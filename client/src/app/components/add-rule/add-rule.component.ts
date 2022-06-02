@@ -11,7 +11,6 @@
     limitations under the License.
  */
 
-
 import { Component, OnInit, ViewChild, Inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
@@ -57,7 +56,6 @@ export class AddRuleComponent implements OnInit {
   executionIntervals: any[] = [
     { key: 30, value: '30 min' },
     { key: 60, value: '60 min' },
-    { key: 120, value: '2 hrs' },
     { key: 240, value: '4 hrs' },
     { key: 480, value: '8 hrs' },
     { key: 720, value: '12 hrs' },
@@ -167,11 +165,17 @@ export class AddRuleComponent implements OnInit {
    */
   loadAgents() {
     this.http
-      .get<Array<SourceAgent|TargetAgent>>(`${environment.apiUrl}/agents/metadata`)
-      .pipe(map((res: Array<SourceAgent|TargetAgent>) => res))
+      .get<Array<SourceAgent | TargetAgent>>(
+        `${environment.apiUrl}/agents/metadata`
+      )
+      .pipe(map((res: Array<SourceAgent | TargetAgent>) => res))
       .subscribe((result) => {
-        this.sources = result.filter((agent) => agent.type === 'source-agent') as SourceAgent[];
-        this.targets = result.filter((agent) => agent.type === 'target-agent') as TargetAgent[];
+        this.sources = result.filter(
+          (agent) => agent.type === 'source-agent'
+        ) as SourceAgent[];
+        this.targets = result.filter(
+          (agent) => agent.type === 'target-agent'
+        ) as TargetAgent[];
       });
   }
 
@@ -214,7 +218,6 @@ export class AddRuleComponent implements OnInit {
    * @param {DataPoint} val
    */
   onDataPointChange(val: DataPoint) {
-
     // Store data point
     this.currentRule.condition.dataPoint = val.dataPoint;
     this.currentRule.condition.name = val.name;
@@ -262,7 +265,7 @@ export class AddRuleComponent implements OnInit {
    */
   private checkUserSettingsForAgent(params: Array<SourceAgentSettingsParam>) {
     const missingSettings: Array<SourceAgentSettingsParam> = params.filter(
-      p => this.isMissing(p.settingName)
+      (p) => this.isMissing(p.settingName)
     );
 
     if (missingSettings.length) {
@@ -304,7 +307,7 @@ export class MissingSettingsDialogComponent {
   constructor(
     @Inject(MAT_DIALOG_DATA) public settings: Array<SourceAgentSettingsParam>,
     private router: Router
-  ) { }
+  ) {}
 
   /**
    * Navigate to user settings

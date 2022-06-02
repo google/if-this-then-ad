@@ -37,5 +37,5 @@ export class User {
 }
 
 export interface UserSettingKeyValue {
-  [key: string]: string
+  [key: string]: string;
 }

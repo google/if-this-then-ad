@@ -106,4 +106,4 @@ import { StringReplacePipe } from './pipes/string-replace.pipe';
   bootstrap: [AppComponent],
 })
 // eslint-disable-next-line require-jsdoc
-export class AppModule { }
+export class AppModule {}

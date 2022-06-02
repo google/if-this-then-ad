@@ -15,5 +15,5 @@ export interface DataPoint {
   dataPoint: string;
   name: string;
   dataType: string;
-  enum?: Array<string>
+  enum?: Array<string>;
 }

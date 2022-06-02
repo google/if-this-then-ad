@@ -1,10 +1,18 @@
-import { 
-  Component, Input, Output, EventEmitter, HostBinding,
-  Optional, Self, ViewChild, ElementRef, Inject,
+import {
+  Component,
+  Input,
+  Output,
+  EventEmitter,
+  HostBinding,
+  Optional,
+  Self,
+  ViewChild,
+  ElementRef,
+  Inject,
 } from '@angular/core';
 import { FormGroup, NgControl, FormBuilder } from '@angular/forms';
 import { MatFormFieldControl } from '@angular/material/form-field';
-import { Subject } from "rxjs";
+import { Subject } from 'rxjs';
 import { coerceBooleanProperty } from '@angular/cdk/coercion';
 import { HttpClient } from '@angular/common/http';
 import { DOCUMENT } from '@angular/common';
@@ -17,16 +25,22 @@ declare const google: any;
   selector: 'app-location-auto-complete',
   templateUrl: './location-auto-complete.component.html',
   styleUrls: ['./location-auto-complete.component.scss'],
-  providers: [{provide: MatFormFieldControl, useExisting: LocationAutoComplete}]
+  providers: [
+    { provide: MatFormFieldControl, useExisting: LocationAutoComplete },
+  ],
 })
+
+/**
+ * Location auto completion component.
+ */
 export class LocationAutoComplete implements MatFormFieldControl<string> {
-  @Input() dataPoint: string|undefined;
+  @Input() dataPoint: string | undefined;
   @Input() value: string;
   @ViewChild('geoInput') geoInput: ElementRef;
 
-  targetLocationValue: string|number|undefined = '';
+  targetLocationValue: string | number | undefined = '';
   @Output() targetLocationChange = new EventEmitter<string>();
-  
+
   geoForm: FormGroup;
   static scriptIsLoaded = false;
 
@@ -36,21 +50,58 @@ export class LocationAutoComplete implements MatFormFieldControl<string> {
   private _required = false;
   focused = false;
   touched = false;
-  
+
   controlType = 'location-auto-complete';
   static nextId = 0;
   @HostBinding() id = `${this.controlType}-${LocationAutoComplete.nextId++}`;
   stateChanges = new Subject<void>();
 
+  /**
+   * Constructor.
+   *
+   * @param {FormBuilder} fb
+   * @param {NgControl} ngControl
+   * @param {HttpClient} http
+   * @param {AuthService} authService
+   * @param {Document} document
+   */
+  constructor(
+    fb: FormBuilder,
+    @Optional() @Self() public ngControl: NgControl,
+    private http: HttpClient,
+    private authService: AuthService,
+    @Inject(DOCUMENT) private document: Document
+  ) {
+    this.geoForm = fb.group({
+      targetLocation: '',
+    });
+  }
+
+  /**
+   * Get placeholder.
+   *
+   * @returns {string}
+   */
   @Input()
   get placeholder() {
     return this._placeholder;
   }
-  set placeholder(plh) {
+
+  /**
+   * Set placeholder.
+   *
+   * @param {string} plh
+   */
+  set placeholder(plh: string) {
     this._placeholder = plh;
     this.stateChanges.next();
   }
 
+  /**
+   * Focus in handler.
+   *
+   * @param {FocusEvent} event
+   */
   onFocusIn(event: FocusEvent) {
     if (!this.focused) {
       this.focused = true;
@@ -58,75 +109,125 @@ export class LocationAutoComplete implements MatFormFieldControl<string> {
     }
   }
 
+  /**
+   * Focus out handler.
+   *
+   * @param {FocusEvent} event
+   */
   onFocusOut(event: FocusEvent) {
     this.touched = true;
     this.focused = false;
     this.stateChanges.next();
   }
 
+  /**
+   * Check for empty geo input.
+   *
+   * @returns {boolean}
+   */
   get empty() {
     return !this.geoInput?.nativeElement.value;
   }
 
+  /**
+   * Check for floating label.
+   *
+   * @returns {boolean}
+   */
   @HostBinding('class.floating')
   get shouldLabelFloat() {
     return this.focused || !this.empty;
   }
 
+  /**
+   * Get required.
+   *
+   * @returns {string}
+   */
   @Input()
   get required() {
     return this._required;
   }
+
+  /**
+   * Set required.
+   *
+   * @param {boolean} req
+   */
   set required(req) {
     this._required = coerceBooleanProperty(req);
     this.stateChanges.next();
   }
 
+  /**
+   * Get disabled.
+   *
+   * @returns {boolean}
+   */
   @Input()
-  get disabled(): boolean { 
-    return this._disabled; 
+  get disabled(): boolean {
+    return this._disabled;
   }
+
+  /**
+   * Set disabled.
+   *
+   * @param {boolean} value
+   */
   set disabled(value: boolean) {
     this._disabled = coerceBooleanProperty(value);
     this.stateChanges.next();
   }
 
+  /**
+   * Get error state
+   */
   get errorState(): boolean {
     return !this.geoInput?.nativeElement.value && this.touched;
   }
 
-  setDescribedByIds(ids: string[]) {}
+  /**
+   * Set described by IDs.
+   */
+  setDescribedByIds() {}
 
-  onContainerClick(event: MouseEvent) {}
+  /**
+   * Container click handler.
+   */
+  onContainerClick() {}
   // END: Implementing the MatFormFieldControl interface
 
-  constructor(
-    fb: FormBuilder, 
-    @Optional() @Self() public ngControl: NgControl,
-    private http: HttpClient,
-    private authService: AuthService,
-    @Inject(DOCUMENT) private document: Document
-  ) {
-    this.geoForm = fb.group({
-      'targetLocation': '',
-    });
-  }
-
+  /**
+   * Get target location.
+   *
+   * @returns {string|number|undefined}
+   */
   @Input()
   get targetLocation() {
     return this.targetLocationValue;
   }
 
-  set targetLocation(value) {
+  /**
+   * Set target location value.
+   *
+   * @param {string|number|undefined} value
+   */
+  set targetLocation(value: string | number | undefined) {
     this.targetLocationValue = value;
     this.targetLocationChange.emit(this.targetLocationValue as string);
     this.stateChanges.next();
   }
 
+  /**
+   * After view init.
+   */
   ngAfterViewInit(): void {
     this.initGeoSearch();
   }
 
+  /**
+   * Init geo search.
+   */
   private async initGeoSearch() {
     const apiKey = this.authService.getUserSetting('GOOGLEMAPS_API_KEY');
     if (apiKey) {
@@ -137,41 +238,54 @@ export class LocationAutoComplete implements MatFormFieldControl<string> {
     }
   }
 
-  private getScriptOnce(url: string, onLoad: Function) {
+  /**
+   * Load script.
+   *
+   * @param {string} url
+   * @param {Function} callback
+   */
+  private getScriptOnce(url: string, callback: Function) {
     if (LocationAutoComplete.scriptIsLoaded) {
-      onLoad();
+      callback();
     } else {
       const script = this.document.createElement('script');
       script.innerHTML = '';
       script.src = url;
       script.async = true;
       script.defer = true;
-      script.onload = () => { onLoad(); };
+      script.onload = () => {
+        callback();
+      };
       this.document.head.appendChild(script);
 
       LocationAutoComplete.scriptIsLoaded = true;
     }
   }
 
+  /**
+   * Set geo listener.
+   */
   private setGeoListener() {
-      const currentInput = this.geoInput.nativeElement;
-      const autocomplete = new google.maps.places.Autocomplete(currentInput);
+    const currentInput = this.geoInput.nativeElement;
+    const autocomplete = new google.maps.places.Autocomplete(currentInput);
 
-      autocomplete.setFields([
-        "address_components",
-        "name"
-      ]);
+    autocomplete.setFields(['address_components', 'name']);
 
-      autocomplete.addListener('place_changed', () => {
-        const place = autocomplete.getPlace();
-        const currentAddress = this.getFormatedAddress(place);
+    autocomplete.addListener('place_changed', () => {
+      const place = autocomplete.getPlace();
+      const currentAddress = this.getFormattedAddress(place);
 
-        currentInput.value = currentAddress;
-        this.targetLocation = currentAddress;
-      });
+      currentInput.value = currentAddress;
+      this.targetLocation = currentAddress;
+    });
   }
 
-  private getFormatedAddress(place: any): string {
+  /**
+   * Get formatted address
+   * @param {any} place
+   * @returns {string}
+   */
+  private getFormattedAddress(place: any): string {
     let locality = '';
     let country = '';
     for (const component of place.address_components) {
@@ -186,21 +300,34 @@ export class LocationAutoComplete implements MatFormFieldControl<string> {
       }
     }
 
-    return (locality ? `${locality}, `: '') + country;
+    return (locality ? `${locality}, ` : '') + country;
   }
 
+  /**
+   * Check if iterable.
+   *
+   * @param {any} a
+   * @returns {boolean}
+   */
   private isIterable(a: any) {
     return a != null && Symbol.iterator in Object(a);
   }
 
+  /**
+   * Get API key from user settings.
+   *
+   * @param {string} name
+   * @returns {any}
+   */
   private getApiKey(name: string) {
     const settings = (this.authService as any)?.currentUser.settings;
     if (this.isIterable(settings)) {
+      // eslint-disable-next-line guard-for-in
       for (const s in settings) {
         const param = settings[s]?.params;
         if (this.isIterable(param)) {
           for (const p in param) {
-            if (('key' in (param[p] as Object)) && name == param[p].key ) {
+            if ('key' in (param[p] as Object) && name == param[p].key) {
               return param[p].value;
             }
           }

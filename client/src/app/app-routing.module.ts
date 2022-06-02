@@ -64,4 +64,4 @@ const routes: Routes = [
   exports: [RouterModule],
 })
 // eslint-disable-next-line require-jsdoc
-export class AppRoutingModule { }
+export class AppRoutingModule {}

@@ -42,6 +42,9 @@ export class AuthService {
     this.getUserFromLocalStorage();
   }
 
+  /**
+   * Get user from local storage.
+   */
   getUserFromLocalStorage() {
     if (localStorage.getItem('user')) {
       this.currentUser = User.fromJSON(localStorage.getItem('user'));
@@ -116,20 +119,31 @@ export class AuthService {
     this.user = this.currentUser;
   }
 
-  getUserSetting(s: string) {
+  /**
+   * Get user setting.
+   *
+   * @param {string} setting
+   * @returns {string|number}
+   */
+  getUserSetting(setting: string) {
     this.getUserFromLocalStorage();
 
-    return this.currentUser 
-      && this.currentUser.userSettings
-      && (s in this.currentUser.userSettings)
-        ? this.currentUser.userSettings[s] as string
-        : '';
+    return this.currentUser &&
+      this.currentUser.userSettings &&
+      setting in this.currentUser.userSettings
+      ? (this.currentUser.userSettings[setting] as string)
+      : '';
   }
 
+  /**
+   * Set user settings.
+   *
+   * @param {UserSettingKeyValue} userSettings
+   */
   setUserSettings(userSettings: UserSettingKeyValue) {
     if (this.currentUser && this.currentUser.userSettings) {
-        this.currentUser.userSettings = userSettings;
-        this.user = this.currentUser;
+      this.currentUser.userSettings = userSettings;
+      this.user = this.currentUser;
     }
   }
 }
