@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
     Copyright 2022 Google LLC
     Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,7 +29,7 @@ const userRepo = new Repository<User>(usersCollection);
  * @param {Application} app
  * @returns {any}
  */
-export const init = (app: Application) => {
+export const init = (app: Application): any => {
   app = app.use(passport.initialize());
   app = app.use(passport.session());
 
@@ -135,7 +134,7 @@ const _extractAccessToken = (authHeader: string): string | undefined => {
 
 /**
  * Check access token validity.
- * adds user into request object
+ * Add user into request object
  *
  * @param {string} accessToken
  * @param {Request} req
@@ -146,8 +145,9 @@ const _validateAccessToken = async (
   req
 ): Promise<boolean> => {
   try {
-    if (!accessToken == undefined) {
+    if (accessToken != undefined) {
       const result: User[] = await userRepo.getBy('token.access', accessToken);
+
       if (result.length > 0) {
         // ensure that the token isnt expired.
         const user: User = result[0];

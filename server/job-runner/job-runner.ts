@@ -43,10 +43,10 @@ const jobsRepo = new Repository<Job>(jobsCollection);
 const rulesRepo = new Repository<Rule>(rulesCollection);
 
 /**
- * Job Runner class
+ * Job Runner.
  */
 class JobRunner {
-  client;
+  client: any;
 
   /**
    * Constructor.
@@ -56,7 +56,7 @@ class JobRunner {
    * @param {Repository<Rule>} rulesRepository
    */
   constructor(
-    client,
+    client: any,
     private jobsRepository: Repository<Job>,
     private rulesRepository: Repository<Rule>
   ) {
@@ -161,9 +161,7 @@ class JobRunner {
       'googleads-agent': googleAdsAgent,
     };
   }
-
   /**
-   * Run jobs.
    *
    * @param {Job[]}jobs Runs all jobs
    * @returns {AgentResult} AgentResult generator use .next() to get values out of it.
@@ -181,6 +179,12 @@ class JobRunner {
       try {
         yield await agent.execute(job);
       } catch (e) {
+        this.updateRuleStatusInDB(
+          job.rules[0],
+          false,
+          new Date(),
+          (e as Error).message
+        );
         log.error(e);
       }
     }
@@ -255,26 +259,7 @@ class JobRunner {
       job.ownerSettings = await TaskConfiguration.getUserSettings(userId);
       jobsWithSettings.push(job);
     }
-
     return jobsWithSettings;
-  }
-
-  /**
-   * Get user settings for tasks.
-   *
-   * @param {AgentTask[]} tasks
-   * @returns {AgentTask[]}
-   */
-  private async getUserSettingsForTasks(tasks: AgentTask[]) {
-    const tasksWithSettings: AgentTask[] = [];
-
-    for (const task of tasks) {
-      const userId = task.ownerId!;
-      task.ownerSettings = await TaskConfiguration.getUserSettings(userId);
-      tasksWithSettings.push(task);
-    }
-
-    return tasksWithSettings;
   }
 
   /**
@@ -355,6 +340,7 @@ class JobRunner {
   private async processTasks(tasks: Array<AgentTask>) {
     const agents = this.listTargetAgents();
     log.debug(`job-runner:processTasks: #of tasks ${tasks.length}`);
+
     Promise.all(
       tasks.map(async (task) => {
         const targetAgent = agents[task.target.agentId];
@@ -373,23 +359,47 @@ class JobRunner {
    */
   private async updateRuleRunStatus(taskExecutionResults: Array<ActionResult>) {
     for (const actionResult of taskExecutionResults) {
-      const rule = await this.rulesRepository.get(actionResult.ruleId)!;
+      const success = actionResult.success ? actionResult.success : false;
+      const message = actionResult.error
+        ? actionResult.error
+        : `New status: ${actionResult.entityStatus}`;
 
+      this.updateRuleStatusInDB(
+        actionResult.ruleId,
+        success,
+        actionResult.timestamp,
+        message
+      );
+
+      log.debug(
+        `Execution: Rule ${actionResult.ruleId} ` +
+          `success: ${success}, message: ${message}`
+      );
+    }
+  }
+
+  /**
+   * Update rule status in DB.
+   *
+   * @param {string} ruleId
+   * @param {boolean} success
+   * @param {Date} lastExecution
+   * @param {string} message
+   */
+  private async updateRuleStatusInDB(
+    ruleId: string,
+    success: boolean,
+    lastExecution: Date,
+    message: string
+  ) {
+    try {
+      const rule = await this.rulesRepository.get(ruleId);
       if (rule) {
-        const status = {
-          success: actionResult.success ? actionResult.success : false,
-          lastExecution: actionResult.timestamp,
-          message: actionResult.error
-            ? actionResult.error
-            : `${actionResult.displayName} : ${actionResult.entityStatus}`,
-        };
-        rule.status = status;
-        this.rulesRepository.update(rule.id!, rule);
-        log.debug(
-          `Execution : Rule ${rule.id} success: ${status.success}`,
-          status
-        );
+        rule.status = { success, lastExecution, message };
+        this.rulesRepository.update(ruleId, rule);
       }
+    } catch (e) {
+      log.error(e);
     }
   }
 }

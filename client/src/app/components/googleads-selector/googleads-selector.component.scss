@@ -20,13 +20,20 @@
 .mat-row:hover .mat-cell {
   border-color: #6e79b4;
 }
+
 .adgroup-enabled {
   color: yellowgreen;
 }
+
 .adgroup-paused {
   color: dimgrey;
 }
+
 .mat-column-status {
   font-size: large;
   text-align: center;
+}
+
+.refresh fa-icon {
+  margin-left: 15px;
 }

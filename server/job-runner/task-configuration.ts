@@ -23,7 +23,7 @@ const usersCollection = Collections.get(Collection.USERS);
 const userRepository = new Repository<User>(usersCollection);
 
 /**
- * Task Configuration class.
+ * Task Configuration.
  */
 class TaskConfiguration {
   private tokenUrl = '';
@@ -65,9 +65,7 @@ class TaskConfiguration {
       if (request.status == 200) {
         const token: Token = {
           access: request.data.access_token,
-          expiry: date.add(Date.now(), {
-            seconds: request.data.expires_in,
-          }),
+          expiry: date.add(Date.now(), { seconds: request.data.expires_in }),
           refresh: refreshToken,
           type: request.data.token_type,
         };
@@ -82,11 +80,11 @@ class TaskConfiguration {
       log.error(err);
       return Promise.reject(err);
     }
-
     return Promise.reject(
       new Error('Could not obtain token, check logs for errors')
     );
   }
+
   /**
    * Reissues a new token for the user, upon presentation of the old token.
    *
@@ -156,17 +154,16 @@ class TaskConfiguration {
       return Promise.reject(err);
     }
   }
+
   /**
    * Gets settings e.g api keys for use with the agent.
    * @param {string} userId
    * @param {string} agentId
    */
-  public async getUserSettings(
-    userId: string
-  ): Promise<UserSettingKeyValue | undefined> {
+  public async getUserSettings(userId: string): Promise<UserSettingKeyValue> {
     try {
       const user: User = (await this.repo.get(userId)) as User;
-      return user?.userSettings;
+      return user?.userSettings as UserSettingKeyValue;
     } catch (err) {
       return Promise.reject(err);
     }

@@ -2,7 +2,7 @@ node_modules/
 */dist/*
 dist
 notes.txt
-.env
+.env*
 public
 !public/.gitkeep
 .DS_Store

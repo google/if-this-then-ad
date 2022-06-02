@@ -20,15 +20,22 @@ import { log } from '@iftta/util';
 const rulesCollection = Collections.get(Collection.RULES);
 const repo = new Repository<Rule>(rulesCollection);
 
+/**
+ * Rules Processor.
+ */
 export class RulesProcessor {
+  /**
+   * Process agent result.
+   *
+   * @param {AgentResult} result
+   * @returns {Promise<Array<RuleResult>>}
+   */
   public async processAgentResult(
     result: AgentResult
   ): Promise<Array<RuleResult>> {
     const rules = await this.getValidRulesForAgent(result);
     return this.evaluateRulesAgainstResult(rules, result);
   }
-
-  // get rules matching the agentId from firestore
 
   /**
    * Fetch all rules for an agent.
@@ -51,8 +58,8 @@ export class RulesProcessor {
   }
 
   /**
-   * Evaluates each rule against the results coming in from the
-   * source agent, and returns a RuleEvaluation Object.
+   * Evaluate each rule against the results coming in from the
+   * source agent, and return a RuleEvaluation Object.
    *
    * @param {Array<Rule>} rules
    * @param {AgentResult} result
@@ -94,7 +101,10 @@ export class RulesProcessor {
     }
 
     if (rule.condition.comparator == COMPARATORS.equals) {
-      return dpResult == rule.condition.value;
+      return (
+        dpResult ==
+        this.convertToType(rule.condition.value, rule.condition.dataType)
+      );
     }
 
     if (rule.condition.comparator == COMPARATORS.greater) {
@@ -106,5 +116,20 @@ export class RulesProcessor {
     }
 
     return false;
+  }
+
+  /**
+   * Make sure a 'boolean' string becomes a proper boolean.
+   *
+   * @param {any} v
+   * @param {string | undefined} t
+   * @returns {any}
+   */
+  private convertToType(v: any, t: string | undefined) {
+    if ('boolean' === t) {
+      return 'true' === v ? true : false;
+    }
+
+    return v;
   }
 }

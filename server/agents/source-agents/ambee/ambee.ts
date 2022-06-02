@@ -124,8 +124,9 @@ export default class AmbeeAgent implements IAgent {
       log.debug(`${this.agentId} :run: client response`);
       log.debug(agentResponse);
       return Promise.resolve(agentResponse);
-    } catch (err) {
-      log.error(err as string);
+    } catch (e) {
+      log.error(e as string);
+      return Promise.reject(e);
     }
 
     return {
@@ -235,7 +236,7 @@ export default class AmbeeAgent implements IAgent {
       }
     }
 
-    throw new Error('getHeighestLevel: something went wrong');
+    throw new Error('getHighestLevel: something went wrong');
   }
 
   /**
@@ -254,18 +255,22 @@ export default class AmbeeAgent implements IAgent {
       return Promise.reject(errorMessage);
     }
 
-    const res = await this.run(jobOptions);
+    try {
+      const res = await this.run(jobOptions);
 
-    res.data.agentId = jobOptions.id;
-    res.data.agentName = jobOptions.name;
-    res.data.targetLocation = jobOptions.targetLocation;
-    res.jobId = jobOptions.jobId as string;
-    res.jobOwner = job.owner;
+      res.data.agentId = jobOptions.id;
+      res.data.agentName = jobOptions.name;
+      res.data.targetLocation = jobOptions.targetLocation;
+      res.jobId = jobOptions.jobId as string;
+      res.jobOwner = job.owner;
 
-    const agentResult = this.transform(res);
+      const agentResult = this.transform(res);
 
-    if (agentResult !== undefined) {
-      return Promise.resolve(agentResult);
+      if (agentResult !== undefined) {
+        return Promise.resolve(agentResult);
+      }
+    } catch (e) {
+      return Promise.reject(e);
     }
 
     const errorMessage = `Execution of Job ${job.id} failed, Agent ${job.agentId}, Query ${job.query}`;

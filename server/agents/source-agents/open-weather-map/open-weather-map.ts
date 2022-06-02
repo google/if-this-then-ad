@@ -29,8 +29,8 @@ import { log } from '@iftta/util';
  * OpenWeatherMap agent.
  */
 class OpenWeatherMap implements IAgent {
-  public agentId = 'open-weather-map';
-  public name = 'Weather';
+  public agentId: string = 'open-weather-map';
+  public name: string = 'Weather';
 
   /**
    * Create API client.
@@ -93,8 +93,11 @@ class OpenWeatherMap implements IAgent {
       log.debug(`${this.agentId} :run: client response`);
       log.debug(agentResponse);
       return Promise.resolve(agentResponse);
-    } catch (err) {
-      log.error(JSON.stringify(err));
+    } catch (e) {
+      log.error(JSON.stringify(e));
+      throw new Error(
+        `Fetching weather data is failed: ${(e as Error).message}`
+      );
     }
 
     return {
@@ -112,8 +115,8 @@ class OpenWeatherMap implements IAgent {
    */
   private transform(weatherData: AgentResponse): AgentResult | undefined {
     const data = weatherData.data;
-    log.info('Transforming weather data');
-    log.info(data);
+    log.info(['Transforming weather data', data]);
+
     try {
       const code = data.weather[0]?.id;
 
@@ -134,6 +137,7 @@ class OpenWeatherMap implements IAgent {
         },
         timestamp: new Date(),
       };
+
       return weatherResult;
     } catch (e) {
       log.error(e);
@@ -185,18 +189,22 @@ class OpenWeatherMap implements IAgent {
       return Promise.reject(errorMessage);
     }
 
-    const res = await this.run(jobOptions);
+    try {
+      const res = await this.run(jobOptions);
 
-    res.data.agentId = jobOptions.id;
-    res.data.agentName = jobOptions.name;
-    res.data.targetLocation = jobOptions.targetLocation;
-    res.jobId = jobOptions.jobId as string;
+      res.data.agentId = jobOptions.id;
+      res.data.agentName = jobOptions.name;
+      res.data.targetLocation = jobOptions.targetLocation;
+      res.jobId = jobOptions.jobId as string;
 
-    const agentResult = this.transform(res);
-
-    if (agentResult !== undefined) {
-      return Promise.resolve(agentResult);
+      const agentResult = this.transform(res);
+      if (agentResult !== undefined) {
+        return Promise.resolve(agentResult);
+      }
+    } catch (e) {
+      return Promise.reject(e);
     }
+
     const errorMessage = `Execution of Job ${job.id} failed, Agent ${job.agentId}, Query ${job.query}`;
     return Promise.reject(errorMessage);
   }

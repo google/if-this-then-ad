@@ -16,15 +16,14 @@ import { log } from '@iftta/util';
 /**
  * Class GoogleAdsAgent
  *
- * Enable use of Google Ads entities as targets for rules.
+ * Enables use of Google Ads entities as targets for rules.
  */
 export default class GoogleAdsAgent implements IAgent {
   public agentId = config.id;
   public name = config.name;
 
   /**
-   * Describe agent capabilities and return types.
-   *
+   * Describes agent capabilities and return types.
    * @returns {Promise<AgentMetadata>} - Agent Metadata
    */
   public async getAgentMetadata(): Promise<AgentMetadata> {
@@ -82,8 +81,7 @@ export default class GoogleAdsAgent implements IAgent {
     return Promise.resolve(metadata);
   }
   /**
-   * Get user settings from the provided task.
-   *
+   * Gets user settings from the provided task
    * @param { AgentTask } task
    * @param { string } settingName
    * @returns { string } Setting value
@@ -99,14 +97,13 @@ export default class GoogleAdsAgent implements IAgent {
   /**
    * Execute all of a task's actions on Google Ads.
    *
-   * @param {AgentTask} task - the task to execute
-   * @returns {Array<ActionResult>} - results of all the task's actions
+   * @param {AgentTask} task - The task to execute
+   * @returns {Array<ActionResult>} - Tesults of all the task's actions
    */
   public async execute(task: AgentTask): Promise<Array<ActionResult>> {
     const result: Array<ActionResult> = [];
     for (const action of task.target.actions) {
-      log.debug('ads.execute task');
-      log.debug(task);
+      log.debug(['ads.execute task', task]);
 
       const instanceOptions = {} as InstanceOptions;
       action.params.forEach((p) => {
@@ -115,10 +112,10 @@ export default class GoogleAdsAgent implements IAgent {
 
       try {
         const googleAds = new GoogleAdsClient(
-          this.getRequiredUserSetting(task, 'customerAccountId'),
-          this.getRequiredUserSetting(task, 'managerAccountId'),
+          this.getRequiredUserSetting(task, 'GOOGLEADS_ACCOUNT_ID'),
+          this.getRequiredUserSetting(task, 'GOOGLEADS_MANAGER_ACCOUNT_ID'),
           task.token.auth,
-          this.getRequiredUserSetting(task, 'developerToken')
+          this.getRequiredUserSetting(task, 'GOOGLEADS_DEV_TOKEN')
         );
         const shouldBeActive: boolean =
           action.type == EntityActions.ACTIVATE &&

@@ -16,10 +16,10 @@ import { FirestoreCollection } from '../models/fire-store-entity';
 import { QueryDocumentSnapshot } from '@google-cloud/firestore';
 
 /**
- * Repository Service class.
+ * Repository Service.
  */
 class RepositoryService<T> {
-  db;
+  db: any;
   fireStoreCollection: FirestoreCollection;
 
   /**
@@ -47,7 +47,7 @@ class RepositoryService<T> {
           // detect the timestamp object
           if (isObject(data[field])) {
             if (Object.keys(data[field]).includes('_seconds')) {
-              log.debug(`Converting field : ${field} to Date`);
+              log.debug(`Converting field : ${field}  to Date`);
               // convert to JS Date so that we dont have to deal wtih Timestamp object
               data[field] = data[field].toDate();
             }
@@ -120,7 +120,11 @@ class RepositoryService<T> {
    * @returns {Promise<T | undefined>}
    */
   async get(id: string): Promise<T | undefined> {
-    log.debug('Repository:get');
+    log.debug(['Repository:get', id]);
+    if (!id) {
+      throw new Error('Document id cannot be empty');
+    }
+
     try {
       const docRef = this.db
         .collection(this.fireStoreCollection.name)
@@ -148,7 +152,10 @@ class RepositoryService<T> {
    * @param {string | number | boolean} fieldValue
    * @returns {Promise<T[]>}
    */
-  async getBy(fieldName, fieldValue: string | number | boolean): Promise<T[]> {
+  async getBy(
+    fieldName: any,
+    fieldValue: string | number | boolean
+  ): Promise<T[]> {
     log.debug('Repository:getBy');
     const data: Array<T> = [];
     try {
@@ -217,7 +224,8 @@ class RepositoryService<T> {
   }
 
   /**
-   * Returns all documents containing search term in the field of type array
+   * Returns all documents containing search term in the field of type array.
+   *
    * @param {string} fieldName Field to search
    * @param {string} searchValue Value to look for
    */
