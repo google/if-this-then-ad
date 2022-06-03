@@ -18,9 +18,9 @@ import TaskConfiguration from './task-configuration';
  * Starts execution of all available jobs
  */
 export const execute = async () => {
-    await JobRunner.runAll();
+  await JobRunner.runAll();
 };
 
 export const refreshToken = async (userId: string, accessToken: string) => {
-    return await TaskConfiguration.reissueAuthTokenForUser(userId, accessToken);
+  return await TaskConfiguration.reissueAuthTokenForUser(userId, accessToken);
 };

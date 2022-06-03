@@ -16,56 +16,58 @@ import winston from 'winston';
 import { LoggingWinston } from '@google-cloud/logging-winston';
 const { format, transports } = winston;
 
-const logFormat = format.printf((info) => `${info.timestamp} ${info.level} ${info.message} `);
+const logFormat = format.printf(
+  (info) => `${info.timestamp} ${info.level} ${info.message} `
+);
 
 const getTransportsForEnv = () => {
-    const env = process.env.NODE_ENV;
-    if (env === 'production') {
-        // for Prod add stackdriver logging
-        const loggingWinston = new LoggingWinston();
-        return [
-            new transports.Console({
-                format: format.combine(
-                    format.timestamp({
-                        format: 'YYYY-MM-DD HH:mm:ss',
-                    }),
-                    format.json(),
-                ),
-            }),
-            loggingWinston,
-        ];
-    }
-    // for all other envs
+  const env = process.env.NODE_ENV;
+  if (env === 'production') {
+    // for Prod add stackdriver logging
+    const loggingWinston = new LoggingWinston();
     return [
-        new transports.Console({
-            format: format.combine(
-                format.colorize({ message: true, level: true }),
-                format.timestamp({
-                    format: 'YYYY-MM-DD HH:mm:ss',
-                }),
-                logFormat,
-            ),
-        }),
+      new transports.Console({
+        format: format.combine(
+          format.timestamp({
+            format: 'YYYY-MM-DD HH:mm:ss',
+          }),
+          format.json()
+        ),
+      }),
+      loggingWinston,
     ];
+  }
+  // for all other envs
+  return [
+    new transports.Console({
+      format: format.combine(
+        format.colorize({ message: true, level: true }),
+        format.timestamp({
+          format: 'YYYY-MM-DD HH:mm:ss',
+        }),
+        logFormat
+      ),
+    }),
+  ];
 };
 
 const getLogLevel = (): string => {
-    // when Log level is set override environment settings
-    if (typeof process.env.LOG_LEVEL != 'undefined') {
-        let level = process.env.LOG_LEVEL.toLowerCase();
-        return level;
-    }
-    if (process.env.NODE_ENV == 'production') {
-        return 'info';
-    }
-    return 'debug';
+  // when Log level is set override environment settings
+  if (typeof process.env.LOG_LEVEL != 'undefined') {
+    return process.env.LOG_LEVEL.toLowerCase();
+  }
+  if (process.env.NODE_ENV == 'production') {
+    return 'info';
+  }
+  return 'debug';
 };
+
 export const logger = winston.createLogger({
-    level: getLogLevel(),
-    format: format.combine(
-        format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
-        format.metadata({ fillExcept: ['message', 'level', 'timestamp'] }),
-    ),
-    transports: getTransportsForEnv(),
-    exitOnError: false,
+  level: getLogLevel(),
+  format: format.combine(
+    format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+    format.metadata({ fillExcept: ['message', 'level', 'timestamp'] })
+  ),
+  transports: getTransportsForEnv(),
+  exitOnError: false,
 });

@@ -82,7 +82,7 @@ export class DynamicDatabase {
    * @returns {Promise<EntityNode[] | undefined>}
    */
   getChildren(node: EntityNode): Promise<EntityNode[] | undefined> {
-    const agent = 'dv360-agent';
+    const agent = 'dv360-dev';
     const method = 'list';
     let childEntityType = 'partner';
     const params = {

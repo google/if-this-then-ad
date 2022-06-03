@@ -12,60 +12,57 @@
  */
 
 export interface AgentResult {
-    agentId: string;
-    jobId: string;
-    agentName: string;
-    data: any;
-    timestamp: Date;
+  agentId: string;
+  jobId: string;
+  agentName: string;
+  data: any;
+  timestamp: Date;
 }
 
 export enum COMPARATORS {
-    equals = 'eq',
-    greater = 'gt',
-    less = 'lt',
+  equals = 'eq',
+  greater = 'gt',
+  less = 'lt',
 }
 
 export interface Rule {
+  id: string;
+  name: string;
+  owner: string;
+  source: {
     id: string;
     name: string;
-    owner: string;
-    source: {
-        id: string;
-        name: string;
-    };
-    condition: {
-        name: string;
-        dataPoint: string;
-        comparator:
-            | COMPARATORS.equals
-            | COMPARATORS.greater
-            | COMPARATORS.less;
-        value: string | number | boolean;
-        dataType?: string;
-    };
-    executionInterval: number;
-    jobId: string;
-    targets?: Array<TargetAgent>;
+  };
+  condition: {
+    name: string;
+    dataPoint: string;
+    comparator: COMPARATORS.equals | COMPARATORS.greater | COMPARATORS.less;
+    value: string | number | boolean;
+    dataType?: string;
+  };
+  executionInterval: number;
+  jobId: string;
+  targets?: Array<TargetAgent>;
 }
 
 export interface RuleResult {
-    ruleId: string;
-    result: boolean | number;
-    targets: Array<TargetAgent>;
+  ruleId: string;
+  result: boolean | number;
+  targets: Array<TargetAgent>;
 }
 
 interface Parameter {
-    key: string;
-    value: string | number | boolean;
+  key: string;
+  value: string | number | boolean;
 }
 
 interface Action {
-    id?: string;
-    type: string;
-    params: Array<Parameter>;
+  id?: string;
+  type: string;
+  params: Array<Parameter>;
 }
 
 export interface TargetAgent {
-    agentId: string;
-    actions: Array<Action>;
+  agentId: string;
+  actions: Array<Action>;
 }

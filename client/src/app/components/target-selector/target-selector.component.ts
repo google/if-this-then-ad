@@ -165,7 +165,6 @@ export class TargetSelectorComponent {
    * Publish selection change to store.
    */
   publishSelectionChange() {
-
     store.addTarget(this.entityToTargetAgent(this.checklistSelection.selected));
 
     // Update save requirements

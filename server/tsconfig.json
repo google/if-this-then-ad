@@ -1,33 +1,35 @@
 {
-    "compilerOptions": {
-        /* Language and Environment */
-        "target": "es2016" /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */,
-        /* Modules */
-        "module": "commonjs" /* Specify what module code is generated. */,
-        "outDir": "dist" /* Specify an output folder for all emitted files. */,
-        "esModuleInterop": true /* Emit additional JavaScript to ease support for importing CommonJS modules. This enables `allowSyntheticDefaultImports` for type compatibility. */,
-        "forceConsistentCasingInFileNames": true /* Ensure that casing is correct in imports. */,
-        /* Type Checking */
-        "strict": true /* Enable all strict type-checking options. */,
-        "skipLibCheck": true /* Skip type checking all .d.ts files. */,
-        "allowSyntheticDefaultImports": true,
-        "sourceMap": true,
-        "noImplicitReturns": true,
-        "noImplicitThis": true,
-        "noImplicitAny": false,
-        "strictNullChecks": true,
-        "rootDir": "./",
-        "composite": true,
-        "resolveJsonModule": true,
-        "baseUrl": ".",
-        "paths": {
-            "@iftta/open-weather-map-agent": ["./agents/source-agents/open-weather-map"],
-            "@iftta/ambee-agent": ["./agents/source-agents/ambee"],
-            "@iftta/dv360-ads": ["./agents/target-agents/dv360-ads"],
-            "@iftta/google-ads": ["./agents/target-agents/google-ads"],
-            "@iftta/job-runner": ["./job-runner"],
-            "@iftta/rules-engine": ["./packages/rule-engine"],
-            "@iftta/util": ["./util"]
-        }
+  "compilerOptions": {
+    /* Language and Environment */
+    "target": "es2016" /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */,
+    /* Modules */
+    "module": "commonjs" /* Specify what module code is generated. */,
+    "outDir": "dist" /* Specify an output folder for all emitted files. */,
+    "esModuleInterop": true /* Emit additional JavaScript to ease support for importing CommonJS modules. This enables `allowSyntheticDefaultImports` for type compatibility. */,
+    "forceConsistentCasingInFileNames": true /* Ensure that casing is correct in imports. */,
+    /* Type Checking */
+    "strict": true /* Enable all strict type-checking options. */,
+    "skipLibCheck": true /* Skip type checking all .d.ts files. */,
+    "allowSyntheticDefaultImports": true,
+    "sourceMap": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noImplicitAny": false,
+    "strictNullChecks": true,
+    "rootDir": "./",
+    "composite": true,
+    "resolveJsonModule": true,
+    "baseUrl": ".",
+    "paths": {
+      "@iftta/open-weather-map-agent": [
+        "./agents/source-agents/open-weather-map"
+      ],
+      "@iftta/ambee-agent": ["./agents/source-agents/ambee"],
+      "@iftta/dv360-ads": ["./agents/target-agents/dv360-ads"],
+      "@iftta/google-ads": ["./agents/target-agents/google-ads"],
+      "@iftta/job-runner": ["./job-runner"],
+      "@iftta/rules-engine": ["./packages/rule-engine"],
+      "@iftta/util": ["./util"]
     }
+  }
 }

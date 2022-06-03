@@ -12,212 +12,304 @@
  */
 
 import {
-    httpMethods,
-    InstanceOptions,
-    EntityType,
-    EntityStatus,
-    ApiCallParams,
+  httpMethods,
+  InstanceOptions,
+  EntityType,
+  EntityStatus,
+  ApiCallParams,
 } from './interfaces';
-import { DV360Entity, InsertionOrder, LineItem, Campaign, Advertiser, Partner } from './models';
+import {
+  DV360Entity,
+  InsertionOrder,
+  LineItem,
+  Campaign,
+  Advertiser,
+  Partner,
+} from './models';
 import axios, { AxiosRequestConfig, Method } from 'axios';
 import { config } from './config';
 
+/**
+ * Entity Manager.
+ */
 export default class EntityManager<T extends DV360Entity> {
-    // Static method for instantiation
-    public static getInstance(config: InstanceOptions, token: string, params = {}) {
-        if (
-            EntityType.insertionOrder == config.entityType ||
-            EntityType.lineItem == config.entityType
-        ) {
-            if (params['advertiserId'] && !config.parentId) {
-                config.parentId = parseInt(params['advertiserId']);
-            }
-
-            if (!config.parentId) {
-                throw new Error(
-                    `For entity type ${config.entityType} you need to specify advertiserId`,
-                );
-            }
-        } else if (EntityType.advertiser == config.entityType) {
-            if (params['partnerId'] && !config.parentId) {
-                config.parentId = parseInt(params['partnerId']);
-            }
-
-            if (!config.parentId) {
-                throw new Error(
-                    `For entity type ${config.entityType} you need to specify partnerId`,
-                );
-            }
-        }
-
-        switch (config.entityType) {
-            case EntityType.insertionOrder:
-                return new EntityManager<InsertionOrder>(
-                    InsertionOrder,
-                    config?.parentId as number,
-                    config?.entityId as number,
-                    token,
-                );
-
-            case EntityType.lineItem:
-                return new EntityManager<LineItem>(
-                    LineItem,
-                    config?.parentId as number,
-                    config?.entityId as number,
-                    token,
-                );
-
-            case EntityType.campaign:
-                return new EntityManager<Campaign>(
-                    Campaign,
-                    config?.parentId as number,
-                    config?.entityId as number,
-                    token,
-                );
-
-            case EntityType.advertiser:
-                return new EntityManager<Advertiser>(
-                    Advertiser,
-                    config?.parentId as number,
-                    config?.entityId as number,
-                    token,
-                );
-
-            case EntityType.partner:
-                return new EntityManager<Partner>(
-                    Partner,
-                    config?.parentId as number,
-                    config?.entityId as number,
-                    token,
-                );
-
-            default:
-                throw new Error(`Entity type ${config.entityType} is not supported`);
-        }
-    }
-
-    // Class definition
-    private object: T;
-
-    constructor(
-        private objectType: new () => T,
-        private parentId: number,
-        private entityId: number,
-        private token: string,
+  /**
+   * Static method for instantiation.
+   *
+   * @param {InstanceOptions} config
+   * @param {string} token
+   * @param {Object} params
+   * @returns {EntityManager<any>}
+   */
+  public static getInstance(
+    config: InstanceOptions,
+    token: string,
+    params = {}
+  ) {
+    if (
+      EntityType.insertionOrder == config.entityType ||
+      EntityType.lineItem == config.entityType
     ) {
-        if (!token) {
-            throw new Error('"token" cannot be empty');
-        }
+      if (params['advertiserId'] && !config.parentId) {
+        config.parentId = parseInt(params['advertiserId']);
+      }
 
-        this.object = new objectType();
+      if (!config.parentId) {
+        throw new Error(
+          `For entity type ${config.entityType} you need to specify advertiserId`
+        );
+      }
+    } else if (EntityType.advertiser == config.entityType) {
+      if (params['partnerId'] && !config.parentId) {
+        config.parentId = parseInt(params['partnerId']);
+      }
+
+      if (!config.parentId) {
+        throw new Error(
+          `For entity type ${config.entityType} you need to specify partnerId`
+        );
+      }
     }
 
-    private async apiCall(options: AxiosRequestConfig, httpMethod: Method = 'GET') {
-        options.headers = {
-            Authorization: `Bearer ${this.token}`,
-            'Content-Type': 'application/json',
-        };
-        options.method = httpMethod;
+    switch (config.entityType) {
+      case EntityType.insertionOrder:
+        return new EntityManager<InsertionOrder>(
+          InsertionOrder,
+          config?.parentId as number,
+          config?.entityId as number,
+          token
+        );
 
-        // Add DV360 API error description to log
-        try {
-            const res = await axios(options);
-            return res.data;
-        } catch (e) {
-            console.log('DV360 ERROR:', (e as any).response.data);
-            throw e;
-        }
+      case EntityType.lineItem:
+        return new EntityManager<LineItem>(
+          LineItem,
+          config?.parentId as number,
+          config?.entityId as number,
+          token
+        );
+
+      case EntityType.campaign:
+        return new EntityManager<Campaign>(
+          Campaign,
+          config?.parentId as number,
+          config?.entityId as number,
+          token
+        );
+
+      case EntityType.advertiser:
+        return new EntityManager<Advertiser>(
+          Advertiser,
+          config?.parentId as number,
+          config?.entityId as number,
+          token
+        );
+
+      case EntityType.partner:
+        return new EntityManager<Partner>(
+          Partner,
+          config?.parentId as number,
+          config?.entityId as number,
+          token
+        );
+
+      default:
+        throw new Error(`Entity type ${config.entityType} is not supported`);
+    }
+  }
+
+  // Class definition
+  private object: T;
+
+  /**
+   * Constructor.
+   *
+   * @param {any} objectType
+   * @param {number} parentId
+   * @param {number} entityId
+   * @param {string} token
+   */
+  constructor(
+    private objectType: new () => T,
+    private parentId: number,
+    private entityId: number,
+    private token: string
+  ) {
+    if (!token) {
+      throw new Error('"token" cannot be empty');
     }
 
-    private parseTemplateString(s: string): string {
-        return s
-            .replace('{parentId}', this.parentId?.toString())
-            .replace('{partnerId}', this.parentId?.toString())
-            .replace('{advertiserId}', this.parentId?.toString())
-            .replace('{entityId}', this.entityId?.toString());
+    this.object = new objectType();
+  }
+
+  /**
+   * API call.
+   *
+   * @param {AxiosRequestConfig} options
+   * @param {Method} httpMethod
+   * @returns {any}
+   */
+  private async apiCall(
+    options: AxiosRequestConfig,
+    httpMethod: Method = 'GET'
+  ) {
+    options.headers = {
+      Authorization: `Bearer ${this.token}`,
+      'Content-Type': 'application/json',
+    };
+    options.method = httpMethod;
+
+    // Add DV360 API error description to log
+    try {
+      const res = await axios(options);
+      return res.data;
+    } catch (e) {
+      console.log('DV360 ERROR:', (e as any).response.data);
+      throw e;
+    }
+  }
+
+  /**
+   * Parse template string.
+   *
+   * @param {string} s
+   * @returns {string}
+   */
+  private parseTemplateString(s: string): string {
+    return s
+      .replace('{parentId}', this.parentId?.toString())
+      .replace('{partnerId}', this.parentId?.toString())
+      .replace('{advertiserId}', this.parentId?.toString())
+      .replace('{entityId}', this.entityId?.toString());
+  }
+
+  /**
+   * Parse template object.
+   *
+   * @param {Object} o
+   * @returns {Object}
+   */
+  private parseTemplateObject(o: Object | undefined): Object {
+    const result = {};
+    // eslint-disable-next-line guard-for-in
+    for (const key in o) {
+      result[key] = this.parseTemplateString(o[key]);
     }
 
-    private parseTemplateObject(o: Object | undefined): Object {
-        const result = {};
-        for (const key in o) {
-            result[key] = this.parseTemplateString(o[key]);
-        }
+    return result;
+  }
 
-        return result;
+  /**
+   * Get API call parameters.
+   *
+   * @param {ApiCallParams} p
+   * @returns {ApiCallParams}
+   */
+  private getApiCallParams(p: ApiCallParams): ApiCallParams {
+    return {
+      url: config.baseUrl + this.parseTemplateString(p.url),
+      params: this.parseTemplateObject(p?.params),
+    };
+  }
+
+  /**
+   * Patch.
+   *
+   * @param {AxiosRequestConfig} options
+   * @returns {any}
+   */
+  private async patch(options: AxiosRequestConfig) {
+    return await this.apiCall(options, httpMethods.PATCH);
+  }
+
+  /**
+   * Change status.
+   *
+   * @param {EntityStatus} es
+   * @returns {any}
+   */
+  private async changeStatus(es: EntityStatus) {
+    if (!this.entityId) {
+      throw new Error('entityId must be set');
     }
 
-    private getApiCallParams(p: ApiCallParams): ApiCallParams {
-        return {
-            url: config.baseUrl + this.parseTemplateString(p.url),
-            params: this.parseTemplateObject(p?.params),
-        };
+    const apiCallParams = this.getApiCallParams(this.object.apiConfig);
+
+    apiCallParams.url += `/${this.entityId}`;
+    apiCallParams['data'] = { entityStatus: es };
+    if (apiCallParams.params) {
+      apiCallParams.params['updateMask'] = 'entityStatus';
+    } else {
+      apiCallParams.params = { updateMask: 'entityStatus' };
     }
 
-    private async patch(options: AxiosRequestConfig) {
-        return await this.apiCall(options, httpMethods.PATCH);
+    return await this.patch(apiCallParams);
+  }
+
+  /**
+   * Activate.
+   *
+   * @returns {any}
+   */
+  public async activate() {
+    return await this.changeStatus(EntityStatus.ACTIVE);
+  }
+
+  /**
+   * Pause.
+   *
+   * @returns {any}
+   */
+  public async pause() {
+    return await this.changeStatus(EntityStatus.PAUSED);
+  }
+
+  /**
+   * List.
+   *
+   * @param {Object} params
+   * @param {boolean} getOnlyActive
+   * @param {boolean} onlyFirstPage
+   * @returns {Object[]}
+   */
+  public async list(
+    params: Object,
+    getOnlyActive = false,
+    onlyFirstPage = false
+  ) {
+    const apiCallParams = this.getApiCallParams(this.object.apiConfig);
+    if (!apiCallParams['params']) {
+      apiCallParams['params'] = {};
     }
 
-    // Status change methods
-    private async changeStatus(es: EntityStatus) {
-        if (!this.entityId) {
-            throw new Error('entityId must be set');
-        }
-
-        const apiCallParams = this.getApiCallParams(this.object.apiConfig);
-
-        apiCallParams.url += `/${this.entityId}`;
-        apiCallParams['data'] = { entityStatus: es };
-        if (apiCallParams.params) {
-            apiCallParams.params['updateMask'] = 'entityStatus';
-        } else {
-            apiCallParams.params = { updateMask: 'entityStatus' };
-        }
-
-        return await this.patch(apiCallParams);
+    const filters: string[] = [];
+    if (params['insertionOrderId']) {
+      filters.push(`insertionOrderId=${parseInt(params['insertionOrderId'])}`);
     }
 
-    public async activate() {
-        return await this.changeStatus(EntityStatus.ACTIVE);
+    if (getOnlyActive || params['entityStatus']) {
+      filters.push(
+        `entityStatus=${params['entityStatus'] || 'ENTITY_STATUS_ACTIVE'}`
+      );
     }
 
-    public async pause() {
-        return await this.changeStatus(EntityStatus.PAUSED);
+    if (filters.length) {
+      apiCallParams['params']['filter'] = filters.join(' AND ');
     }
 
-    // List method
-    public async list(params: Object, getOnlyActive = false, onlyFirstPage = false) {
-        const apiCallParams = this.getApiCallParams(this.object.apiConfig);
-        if (!apiCallParams['params']) {
-            apiCallParams['params'] = {};
-        }
+    let result: Object[] = [];
+    let nextPageToken = '';
+    do {
+      apiCallParams['params']['pageToken'] = nextPageToken;
+      const tmpResult = await this.apiCall(apiCallParams);
 
-        const filters: string[] = [];
-        if (params['insertionOrderId']) {
-            filters.push(`insertionOrderId=${parseInt(params['insertionOrderId'])}`);
-        }
+      if (!tmpResult || !(this.object.listName in tmpResult)) {
+        break;
+      }
 
-        if (getOnlyActive || params['entityStatus']) {
-            filters.push(`entityStatus=${params['entityStatus'] || 'ENTITY_STATUS_ACTIVE'}`);
-        }
+      result = [...result, ...tmpResult[this.object.listName]];
+      nextPageToken = tmpResult['nextPageToken'];
+    } while (nextPageToken && !onlyFirstPage);
 
-        if (filters.length) {
-            apiCallParams['params']['filter'] = filters.join(' AND ');
-        }
-
-        let result: Object[] = [];
-        let nextPageToken = '';
-        do {
-            apiCallParams['params']['pageToken'] = nextPageToken;
-            const tmpResult = await this.apiCall(apiCallParams);
-
-            if (!tmpResult || !(this.object.listName in tmpResult)) {
-                break;
-            }
-
-            result = [...result, ...tmpResult[this.object.listName]];
-            nextPageToken = tmpResult['nextPageToken'];
-        } while (nextPageToken && !onlyFirstPage);
-
-        return result;
-    }
+    return result;
+  }
 }

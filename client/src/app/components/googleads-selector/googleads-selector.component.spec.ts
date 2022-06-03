@@ -8,9 +8,8 @@ describe('GoogleAdsSelectorComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ GoogleAdsSelectorComponent ]
-    })
-    .compileComponents();
+      declarations: [GoogleAdsSelectorComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

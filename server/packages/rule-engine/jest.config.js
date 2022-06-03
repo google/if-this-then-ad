@@ -13,9 +13,9 @@
 
 /** @type {import('ts-jest/dist/types').InitialOptionsTsJest} */
 module.exports = {
-    preset: 'ts-jest',
-    testEnvironment: 'node',
-    moduleNameMapper: {
-        "@iftta/util": "<rootDir>/../../util"
-    }
+  preset: 'ts-jest',
+  testEnvironment: 'node',
+  moduleNameMapper: {
+    '@iftta/util': '<rootDir>/../../util',
+  },
 };

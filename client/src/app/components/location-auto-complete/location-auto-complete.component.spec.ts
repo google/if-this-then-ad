@@ -8,9 +8,8 @@ describe('InputGeoComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ LocationAutoComplete ]
-    })
-    .compileComponents();
+      declarations: [LocationAutoComplete],
+    }).compileComponents();
   });
 
   beforeEach(() => {

@@ -25,13 +25,17 @@ interface UserSetting {
 @Component({
   selector: 'app-user-settings',
   templateUrl: './user-settings.component.html',
-  styleUrls: ['./user-settings.component.scss']
+  styleUrls: ['./user-settings.component.scss'],
 })
+
+/**
+ * User Settings Component.
+ */
 export class UserSettingsComponent {
-  user: User|null;
+  user: User | null;
 
   @ViewChild(MatAccordion) accordion: MatAccordion;
-  
+
   public savingUserSettings = false;
   public userSettings: FormGroup;
   private requiredSettings: Array<string> = [];
@@ -74,6 +78,16 @@ export class UserSettingsComponent {
     },
   ];
 
+  /**
+   * Constructor.
+   *
+   * @param {ActivatedRoute} route
+   * @param {Location} location
+   * @param {HttpClient} http
+   * @param {AuthService} authService
+   * @param {FormBuilder} formBuilder
+   * @param {MatSnackBar} message
+   */
   constructor(
     private route: ActivatedRoute,
     private location: Location,
@@ -82,30 +96,31 @@ export class UserSettingsComponent {
     private formBuilder: FormBuilder,
     private message: MatSnackBar
   ) {
-    this.route.fragment.subscribe(f => {
+    this.route.fragment.subscribe((f) => {
       if (f) {
         this.requiredSettings = (f as string).split(',');
       }
     });
 
-    this.settings = this.settings.map(v => {
-      return { 
+    this.settings = this.settings.map((v) => {
+      return {
         ...v,
         expanded: this.requiredSettings.includes(v.settingName),
-      } 
+      };
     });
 
-    const group: {[key: string]: Array<any>} = {};
-    for (let s of this.settings) {
-      group[s.settingName] = [];
+    const group: { [key: string]: Array<any> } = {};
+    for (const setting of this.settings) {
+      group[setting.settingName] = [];
     }
 
     this.userSettings = this.formBuilder.group(group);
     if (this.authService?.currentUser?.userSettings) {
       const filteredUserSettings: UserSettingKeyValue = {};
-      for (let s in this.authService?.currentUser?.userSettings) {
-        if (Object.keys(group).includes(s)) {
-          filteredUserSettings[s] = this.authService?.currentUser?.userSettings[s];
+      for (const setting in this.authService?.currentUser?.userSettings) {
+        if (Object.keys(group).includes(setting)) {
+          filteredUserSettings[setting] =
+            this.authService?.currentUser?.userSettings[setting];
         }
       }
 
@@ -113,6 +128,9 @@ export class UserSettingsComponent {
     }
   }
 
+  /**
+   * Init.
+   */
   ngOnInit(): void {
     this.userSettings.valueChanges
       .pipe(
@@ -120,15 +138,23 @@ export class UserSettingsComponent {
         switchMap((value) => of(value))
       )
       .subscribe((value: UserSettingKeyValue) => {
-        this.showSavedStatus('Saving...', true)
+        this.showSavedStatus('Saving...', true);
         this.save(value);
       });
   }
 
+  /**
+   * Move back in browser history.
+   */
   back() {
     this.location.back();
   }
 
+  /**
+   * Save user settings.
+   *
+   * @param {UserSettingKeyValue} value
+   */
   save(value: UserSettingKeyValue) {
     this.http
       .post(
@@ -136,19 +162,25 @@ export class UserSettingsComponent {
         value
       )
       .subscribe({
-        next: _ => {
+        next: (_) => {
           this.authService.setUserSettings(value);
           this.showSavedStatus('Saved');
         },
-        error: _ => {
-          console.log("Error saving user settings", _);
+        error: (_) => {
+          console.log('Error saving user settings', _);
           this.showSavedStatus('Error');
-        }
+        },
       });
   }
 
+  /**
+   * Show saved status.
+   *
+   * @param {string} message
+   * @param {boolean} saving
+   */
   showSavedStatus(message: string, saving: boolean = false) {
-      this.savingUserSettings = saving;
-      this.message.open(message, 'Dismiss', {duration: 5000});
+    this.savingUserSettings = saving;
+    this.message.open(message, 'Dismiss', { duration: 5000 });
   }
 }

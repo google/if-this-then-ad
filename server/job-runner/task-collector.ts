@@ -12,59 +12,71 @@
  */
 
 import { log } from '@iftta/util';
-import { AgentTask, AgentResult, RuleResult, UserSettingKeyValue } from './interfaces';
+import {
+  AgentTask,
+  AgentResult,
+  RuleResult,
+  UserSettingKeyValue,
+} from './interfaces';
 import TaskConfiguration from './task-configuration';
 import { Token } from './../models/user';
 
+/**
+ * Task Collector.
+ */
 export default class TaskCollector {
-    private tasks: Array<AgentTask> = [];
+  private tasks: Array<AgentTask> = [];
 
-    /**
-     * Creates a Task object to be passed on to Target Agent execution.
-     * @param agentResult Data from Source Agent request
-     * @param ruleResults Rule evaluation Results for agentResults
-     */
-    public async put(agentResult: AgentResult, ruleResults: Array<RuleResult>) {
-        const ownerId = agentResult.jobOwner;
+  /**
+   * Create a Task object to be passed on to Target Agent execution.
+   *
+   * @param {AgentResult} agentResult Data from Source Agent request
+   * @param {Array<RuleResult>} ruleResults Rule evaluation Results for agentResults
+   */
+  public async put(agentResult: AgentResult, ruleResults: Array<RuleResult>) {
+    const ownerId = agentResult.jobOwner;
 
-        let token: Token|undefined, 
-            ownerSettings: UserSettingKeyValue;
-        try {
-            // new token
-            token = await TaskConfiguration.refreshTokensForUser(ownerId);
-            ownerSettings = await TaskConfiguration.getUserSettings(ownerId);
-        } catch (e) {
-            log.error(['Could not configure the task.', e as string]);
-            return;
-        }
+    let token: Token | undefined;
+    let ownerSettings: UserSettingKeyValue;
 
-        // target
-        for (let rr of ruleResults) {
-            for (let t of rr.targets) {
-                // make one task per target.
-                const target = {
-                    ruleId: rr.ruleId,
-                    agentId: t.agentId,
-                    result: rr.result,
-                    actions: t.actions,
-                };
-
-                this.tasks.push({
-                    token: {
-                        auth: token.access,
-                    },
-                    ownerSettings,
-                    target,
-                    ownerId, 
-                });
-            }
-        }
+    try {
+      // New token
+      token = await TaskConfiguration.refreshTokensForUser(ownerId);
+      ownerSettings = await TaskConfiguration.getUserSettings(ownerId);
+    } catch (e) {
+      log.error(['Could not configure the task.', e as string]);
+      return;
     }
-    /**
-     * Returns an array of collected Agent tasks
-     * @returns {Array<AgentTask} tasks
-     */
-    public get(): Array<AgentTask> {
-        return this.tasks;
+
+    // Target
+    for (const rr of ruleResults) {
+      for (const t of rr.targets) {
+        // make one task per target.
+        const target = {
+          ruleId: rr.ruleId,
+          agentId: t.agentId,
+          result: rr.result,
+          actions: t.actions,
+        };
+
+        this.tasks.push({
+          token: {
+            auth: token.access,
+          },
+          ownerSettings,
+          target,
+          ownerId,
+        });
+      }
     }
+  }
+
+  /**
+   * Return an array of collected Agent tasks.
+   *
+   * @returns {Array<AgentTask>} tasks
+   */
+  public get(): Array<AgentTask> {
+    return this.tasks;
+  }
 }

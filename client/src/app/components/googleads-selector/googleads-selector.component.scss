@@ -1,36 +1,39 @@
-.ads-table>table {
-    width: 100%;
+.ads-table > table {
+  width: 100%;
 }
 
 .selected-rows {
-    background-color: #6e79b455;
+  background-color: #6e79b455;
 }
 
 .mat-row .mat-cell {
-    border-bottom: 1px solid transparent;
-    border-top: 1px solid transparent;
-    cursor: pointer;
+  border-bottom: 1px solid transparent;
+  border-top: 1px solid transparent;
+  cursor: pointer;
 }
 
 .mat-header-cell {
-    font-size: large;
-    color: #6e79b4;
+  font-size: large;
+  color: #6e79b4;
 }
 
 .mat-row:hover .mat-cell {
-    border-color: #6e79b4;
+  border-color: #6e79b4;
 }
+
 .adgroup-enabled {
-    color: yellowgreen;
+  color: yellowgreen;
 }
+
 .adgroup-paused {
-    color:dimgrey
+  color: dimgrey;
 }
+
 .mat-column-status {
-    font-size: large;
-    text-align: center;
+  font-size: large;
+  text-align: center;
 }
 
 .refresh fa-icon {
-    margin-left: 15px;
+  margin-left: 15px;
 }

@@ -11,15 +11,24 @@
     limitations under the License.
  */
 
-import { add, isAfter, isBefore, isValid, isFuture, isPast, parse, parseISO } from 'date-fns';
+import {
+  add,
+  isAfter,
+  isBefore,
+  isValid,
+  isFuture,
+  isPast,
+  parse,
+  parseISO,
+} from 'date-fns';
 
 export const date = {
-    add,
-    isAfter,
-    isBefore,
-    isValid,
-    isFuture,
-    isPast,
-    parse,
-    parseISO,
+  add,
+  isAfter,
+  isBefore,
+  isValid,
+  isFuture,
+  isPast,
+  parse,
+  parseISO,
 };

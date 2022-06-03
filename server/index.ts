@@ -20,8 +20,8 @@ import { log } from '@iftta/util';
  */
 const port = app.get('PORT');
 const server = app.listen(port, () => {
-    log.info(`Server listening on port ${port}`);
-    log.info('ctrl + C to kill it');
+  log.info(`Server listening on port ${port}`);
+  log.info('ctrl + C to kill it');
 });
 
 export default server;

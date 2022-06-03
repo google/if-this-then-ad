@@ -13,174 +13,228 @@
 
 import EntityManager from './entity-manager';
 import {
-    AgentTask,
-    Action,
-    ActionResult,
-    EntityActions,
-    InstanceOptions,
-    IAgent,
-    AgentType,
-    AgentMetadata,
-    EntityType,
-    httpMethods,
-    RuleResultValue,
-    Parameter,
+  AgentTask,
+  Action,
+  ActionResult,
+  EntityActions,
+  InstanceOptions,
+  IAgent,
+  AgentType,
+  AgentMetadata,
+  EntityType,
+  httpMethods,
+  RuleResultValue,
+  Parameter,
 } from './interfaces';
 import { config } from './config';
 
+/**
+ * DV360 agent.
+ */
 export default class DV360Agent implements IAgent {
-    public agentId = config.id;
-    public name = config.name;
+  public agentId = config.id;
+  public name = config.name;
 
-    private transform(task: AgentTask, data: any, error: any = null): ActionResult {
-        return {
-            ruleId: task.target.ruleId,
-            agentId: config.id,
-            displayName: data?.displayName,
-            entityStatus: data?.entityStatus,
-            timestamp: new Date(),
-            success: error ? false : true,
-            error: error?.message,
-        };
+  /**
+   * Transform.
+   *
+   * @param {AgentTask} task
+   * @param {any} data
+   * @param {any} error
+   * @returns {ActionResult}
+   */
+  private transform(task: AgentTask, data, error?): ActionResult {
+    return {
+      ruleId: task.target.ruleId,
+      agentId: config.id,
+      displayName: data?.displayName,
+      entityStatus: data?.entityStatus,
+      timestamp: new Date(),
+      success: error ? false : true,
+      error: error?.message,
+    };
+  }
+
+  /**
+   * Convert to instance options.
+   *
+   * @param {Array<Parameter>} a
+   * @returns {InstanceOptions}
+   */
+  private toInstanceOptions(a: Array<Parameter>): InstanceOptions {
+    const o = {};
+    a.forEach((p) => {
+      o[p.key] = p.value;
+    });
+    if (!o['entityType']) {
+      throw Error('entityType cannot be empty');
     }
 
-    private toInstanceOptions(a: Array<Parameter>): InstanceOptions {
-        const o: Object = {};
-        a.forEach((p) => {
-            o[p.key] = p.value;
-        });
-        if (!o['entityType']) {
-            throw Error('entityType cannot be empty');
-        }
+    return o as InstanceOptions;
+  }
 
-        return o as InstanceOptions;
+  /**
+   * Execute action.
+   *
+   * @param {Action} action
+   * @param {RuleResultValue} result
+   * @param {string} token
+   * @returns {any}
+   */
+  private async executeAction(
+    action: Action,
+    result: RuleResultValue,
+    token: string
+  ) {
+    const instanceOptions = this.toInstanceOptions(action.params);
+    const entity = EntityManager.getInstance(instanceOptions, token);
+
+    switch (action.type) {
+      case EntityActions.ACTIVATE:
+        return await (result ? entity.activate() : entity.pause());
+
+      case EntityActions.PAUSE:
+        return await (result ? entity.pause() : entity.activate());
+
+      default:
+        throw Error(
+          `Not supported entity action method: ${instanceOptions.action}`
+        );
+    }
+  }
+
+  /**
+   * Execute.
+   *
+   * @param {AgentTask} task
+   * @returns {Array<ActionResult>}
+   */
+  public async execute(task: AgentTask) {
+    const result: Array<ActionResult> = [];
+    for (const action of task.target.actions) {
+      try {
+        const data = await this.executeAction(
+          action,
+          task.target.result,
+          task.token.auth
+        );
+        result.push(this.transform(task, data));
+      } catch (err) {
+        result.push(this.transform(task, {}, err));
+      }
     }
 
-    private async executeAction(action: Action, result: RuleResultValue, token: string) {
-        const instanceOptions = this.toInstanceOptions(action.params);
-        const entity = EntityManager.getInstance(instanceOptions, token);
+    return result;
+  }
 
-        switch (action.type) {
-            case EntityActions.ACTIVATE:
-                return await (result ? entity.activate() : entity.pause());
-                break;
+  /**
+   * Get agent metadata for UI.
+   *
+   * @returns {Promise<AgentMetadata>}
+   */
+  public async getAgentMetadata(): Promise<AgentMetadata> {
+    // TODO decide if we should store this metadata as json
+    // and simply serve that to the caller.
 
-            case EntityActions.PAUSE:
-                return await (result ? entity.pause() : entity.activate());
-                break;
+    const meta: AgentMetadata = {
+      id: config.id,
+      name: config.name,
+      type: AgentType.TARGET,
+      arguments: ['advertiserId', 'entityId', 'entityType'],
+      api: [
+        {
+          dataPoint: 'partnerId',
+          list: {
+            url: `/api/agents/${config.id}/list/partner`,
+            method: httpMethods.GET,
+          },
+        },
+        {
+          dataPoint: 'advertiserId',
+          list: {
+            url: `/api/agents/${config.id}/list/advertiser`,
+            method: httpMethods.GET,
+            params: {
+              partnerId: typeof Number(),
+            },
+          },
+        },
+        {
+          dataPoint: 'insertionOrderId',
+          list: {
+            url: `/api/agents/${config.id}/list/insertionOrder`,
+            method: httpMethods.GET,
+            params: {
+              partnerId: typeof Number(),
+              advertiserId: typeof Number(),
+            },
+          },
+        },
+        {
+          dataPoint: 'lineItemId',
+          list: {
+            url: `/api/agents/${config.id}/list/lineItem`,
+            method: httpMethods.GET,
+            params: {
+              partnerId: typeof Number(),
+              advertiserId: typeof Number(),
+              insertionOrderId: typeof Number(),
+            },
+          },
+        },
+      ],
+      dataPoints: [
+        {
+          id: 'advertiserId',
+          displayName: 'Advertiser',
+          dataType: typeof Number(),
+        },
+        {
+          id: 'entityId',
+          displayName: 'Entity',
+          dataType: typeof Number(),
+        },
+        {
+          id: 'entityType',
+          displayName: 'Entity Type',
+          dataType: `${EntityType.insertionOrder}|${EntityType.lineItem}`,
+        },
+      ],
+    };
 
-            default:
-                throw Error(`Not supported entity action method: ${instanceOptions.action}`);
-        }
+    return Promise.resolve(meta);
+  }
+
+  /**
+   * Query DV360 entities for the UI.
+   *
+   * @param {string} token
+   * @param {EntityType} entityType
+   * @param {Object} params
+   * @returns {Object[]}
+   */
+  public async getEntityList(
+    token: string,
+    entityType: EntityType,
+    params: Object
+  ) {
+    if (!entityType || !Object.values(EntityType).includes(entityType)) {
+      throw new Error(`${entityType} is not a known entity type`);
     }
 
-    public async execute(task: AgentTask) {
-        const result: Array<ActionResult> = [];
-        for (const action of task.target.actions) {
-            try {
-                const data = await this.executeAction(action, task.target.result, task.token.auth);
-                result.push(this.transform(task, data));
-            } catch (err) {
-                result.push(this.transform(task, {}, err));
-            }
-        }
+    const instance = EntityManager.getInstance({ entityType }, token, params);
+    const result: Object[] = [];
+    (await instance.list(params)).forEach((o: any) => {
+      result.push({
+        name: o?.displayName,
+        partnerId: o?.partnerId || params['partnerId'],
+        advertiserId: o?.advertiserId || params['advertiserId'],
+        insertionOrderId: o?.insertionOrderId || params['insertionOrderId'],
+        lineItemId: o?.lineItemId,
+        entityStatus: o?.entityStatus,
+      });
+    });
 
-        return result;
-    }
-
-    // Metadata for UI
-    public async getAgentMetadata(): Promise<AgentMetadata> {
-        // TODO decide if we should store this metadata as json
-        // and simply serve that to the caller.
-
-        const meta: AgentMetadata = {
-            id: config.id,
-            name: config.name,
-            type: AgentType.TARGET,
-            arguments: ['advertiserId', 'entityId', 'entityType'],
-            api: [
-                {
-                    dataPoint: 'partnerId',
-                    list: {
-                        url: `/api/agents/${config.id}/list/partner`,
-                        method: httpMethods.GET,
-                    },
-                },
-                {
-                    dataPoint: 'advertiserId',
-                    list: {
-                        url: `/api/agents/${config.id}/list/advertiser`,
-                        method: httpMethods.GET,
-                        params: {
-                            partnerId: typeof Number(),
-                        },
-                    },
-                },
-                {
-                    dataPoint: 'insertionOrderId',
-                    list: {
-                        url: `/api/agents/${config.id}/list/insertionOrder`,
-                        method: httpMethods.GET,
-                        params: {
-                            partnerId: typeof Number(),
-                            advertiserId: typeof Number(),
-                        },
-                    },
-                },
-                {
-                    dataPoint: 'lineItemId',
-                    list: {
-                        url: `/api/agents/${config.id}/list/lineItem`,
-                        method: httpMethods.GET,
-                        params: {
-                            partnerId: typeof Number(),
-                            advertiserId: typeof Number(),
-                            insertionOrderId: typeof Number(),
-                        },
-                    },
-                },
-            ],
-            dataPoints: [
-                {
-                    id: 'advertiserId',
-                    displayName: 'Advertiser',
-                    dataType: typeof Number(),
-                },
-                {
-                    id: 'entityId',
-                    displayName: 'Entity',
-                    dataType: typeof Number(),
-                },
-                {
-                    id: 'entityType',
-                    displayName: 'Entity Type',
-                    dataType: `${EntityType.insertionOrder}|${EntityType.lineItem}`,
-                },
-            ],
-        };
-
-        return Promise.resolve(meta);
-    }
-
-    // Query DV360 entities for the UI
-    public async getEntityList(token: string, entityType: EntityType, params: Object) {
-        if (!entityType || !Object.values(EntityType).includes(entityType)) {
-            throw new Error(`${entityType} is not a known entity type`);
-        }
-
-        const instance = EntityManager.getInstance({ entityType }, token, params);
-        const result: any[] = [];
-        (await instance.list(params)).forEach((o: any) => {
-            result.push({
-                name: o?.displayName,
-                partnerId: o?.partnerId || params['partnerId'],
-                advertiserId: o?.advertiserId || params['advertiserId'],
-                insertionOrderId: o?.insertionOrderId || params['insertionOrderId'],
-                lineItemId: o?.lineItemId,
-                entityStatus: o?.entityStatus,
-            });
-        });
-
-        return result;
-    }
+    return result;
+  }
 }

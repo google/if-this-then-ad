@@ -7,9 +7,9 @@ import { MatTableDataSource } from '@angular/material/table';
 import { store } from 'src/app/store';
 import { TargetAgent } from '../../interfaces/target-agent';
 import { TargetAgentAction } from 'src/app/interfaces/target-agent-action';
-import { 
-  faCircle, 
-  faCirclePause, 
+import {
+  faCircle,
+  faCirclePause,
   faRefresh,
 } from '@fortawesome/free-solid-svg-icons';
 
@@ -28,6 +28,7 @@ interface AdGroup {
   templateUrl: './googleads-selector.component.html',
   styleUrls: ['./googleads-selector.component.scss'],
 })
+
 /**
  *  Google ad groups selector component
  */
@@ -37,12 +38,14 @@ export class GoogleAdsSelectorComponent implements AfterViewInit {
   faRefresh = faRefresh;
   isLoading = true;
   adGroups: AdGroup[] = [];
-  displayedColumns: string[] = ['status', 'name', 'campaignName', 'type', 'id', ];
+  displayedColumns: string[] = ['status', 'name', 'campaignName', 'type', 'id'];
   selectedRows = new Set<AdGroup>();
   dataSource = new MatTableDataSource<any>(this.adGroups);
   @ViewChild(MatPaginator) paginator!: MatPaginator;
+
   /**
-   * Constructor: Http client gets injected
+   * Constructor: Http client gets injected.
+   *
    * @param {HttpClient} http Http client
    */
   constructor(private http: HttpClient) {}
@@ -60,8 +63,9 @@ export class GoogleAdsSelectorComponent implements AfterViewInit {
   }
 
   /**
-   * Handles select row click event
-   * @param {AdGroup} r clicked row
+   * Handle select row click event.
+   *
+   * @param {AdGroup} r Clicked row
    */
   selectRow(r: AdGroup) {
     if (this.selectedRows.has(r)) {
@@ -81,9 +85,10 @@ export class GoogleAdsSelectorComponent implements AfterViewInit {
   }
 
   /**
-   * Transforms user selection into a TargetAgent object
-   * @param { Set<AdGroup> } userSelection
-   * @returns { TargetAgent } TargetAgent Object
+   * Transform user selection into a TargetAgent object.
+   *
+   * @param {Set<AdGroup>} userSelection
+   * @returns {TargetAgent} TargetAgent Object
    */
   private transformToActions(userSelection: Set<AdGroup>): TargetAgent {
     const actions: TargetAgentAction[] = [];
@@ -105,13 +110,16 @@ export class GoogleAdsSelectorComponent implements AfterViewInit {
     };
   }
 
+  /**
+   * Refresh ad groups.
+   */
   refreshAdGroups() {
     this.isLoading = true;
     this.fetchAccountData();
   }
 
   /**
-   * Fetch Google Ads account data
+   * Fetch Google Ads account data.
    */
   private fetchAccountData() {
     this.http

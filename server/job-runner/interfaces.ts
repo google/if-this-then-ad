@@ -17,123 +17,120 @@
  */
 
 export interface Job {
-    id?: string;
-    agentId: string;
-    owner: string;
-    executionInterval: number;
-    lastExecution?: Date | number;
-    ownerSettings?: Object;
-    query?: {
-        dataPoint: string;
-        value: string | number | boolean;
-    };
-    rules: Array<string>;
+  id?: string;
+  agentId: string;
+  owner: string;
+  executionInterval: number;
+  lastExecution?: Date | number;
+  ownerSettings?: unknown;
+  query?: {
+    dataPoint: string;
+    value: string | number | boolean;
+  };
+  rules: Array<string>;
 }
 
 export interface setting {
-    agentId: string;
-    params: Array<parameter>;
+  agentId: string;
+  params: Array<parameter>;
 }
 interface parameter {
-    key: string;
-    value: string | number | boolean;
+  key: string;
+  value: string | number | boolean;
 }
 
 export interface ExecutionTime {
-    jobId: string;
-    lastExecution: Date;
+  jobId: string;
+  lastExecution: Date;
 }
 
 export interface UserSettingKeyValue {
-    [key: string]: string
+  [key: string]: string;
 }
 
 export interface AgentTask {
-    token: {
-        auth: string;
-    };
-    target: {
-        ruleId: string;
-        agentId: string;
-        result: boolean | number;
-        actions: Array<Action>;
-    };
-    ownerId?: string;
-    ownerSettings?: UserSettingKeyValue;
+  token: {
+    auth: string;
+  };
+  target: {
+    ruleId: string;
+    agentId: string;
+    result: boolean | number;
+    actions: Array<Action>;
+  };
+  ownerId?: string;
+  ownerSettings?: UserSettingKeyValue;
 }
 export interface AgentResult {
-    agentId: string;
-    jobId: string;
-    jobOwner: string;
-    agentName: string;
-    data: any;
-    timestamp: Date;
+  agentId: string;
+  jobId: string;
+  jobOwner: string;
+  agentName: string;
+  data;
+  timestamp: Date;
 }
 export interface RuleResult {
-    ruleId: string;
-    result: boolean | number;
-    targets: Array<TargetAgent>;
+  ruleId: string;
+  result: boolean | number;
+  targets: Array<TargetAgent>;
 }
 
 export interface TargetAgent {
-    agentId: string;
-    actions: Array<Action>;
+  agentId: string;
+  actions: Array<Action>;
 }
 
 interface Action {
-    id?: string;
-    type: string;
-    params: Array<Parameter>;
+  id?: string;
+  type: string;
+  params: Array<Parameter>;
 }
 interface Parameter {
-    key: string;
-    value: string | number | boolean;
+  key: string;
+  value: string | number | boolean;
 }
 
 export interface ActionResult {
-    ruleId: string;
-    agentId: string;
-    displayName: string;
-    entityStatus: string;
-    timestamp: Date;
-    success: boolean;
-    error: string;
+  ruleId: string;
+  agentId: string;
+  displayName: string;
+  entityStatus: string;
+  timestamp: Date;
+  success: boolean;
+  error: string;
 }
 export interface Rule {
-    id?: string;
-    jobId?: string;
-    name: string;
-    owner: string;
-    source: Agent;
-    condition: Condition;
-    executionInterval: number;
-    targets?: Array<TargetAgent>;
-    status?: {
-        success: boolean,
-        lastExecution: Date;
-        message: string;
-    }
+  id?: string;
+  jobId?: string;
+  name: string;
+  owner: string;
+  source: Agent;
+  condition: Condition;
+  executionInterval: number;
+  targets?: Array<TargetAgent>;
+  status?: {
+    success: boolean;
+    lastExecution: Date;
+    message: string;
+  };
 }
 
 export interface Condition {
-    dataPoint: string;
-    comparator:
-    | COMPARATORS.equals
-    | COMPARATORS.greater
-    | COMPARATORS.less;
-    value: string | number | boolean;
+  dataPoint: string;
+  comparator: COMPARATORS.equals | COMPARATORS.greater | COMPARATORS.less;
+  value: string | number | boolean;
 }
 
 export interface Agent {
-    id: string;
-    params: {
-        dataPoint: string;
-        value: string | number | boolean;
-    };
+  id: string;
+  params: {
+    dataPoint: string;
+    value: string | number | boolean;
+  };
 }
 
 export enum COMPARATORS {
-    equals = 'eq',
-    greater = 'gt',
-    less = 'lt',
+  equals = 'eq',
+  greater = 'gt',
+  less = 'lt',
 }

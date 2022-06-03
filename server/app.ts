@@ -17,7 +17,7 @@ import { log } from '@iftta/util';
 
 const envConfig = env.config();
 if (envConfig.error || envConfig.parsed == null) {
-    log.error('Error loading configuration from .env file');
+  log.error('Error loading configuration from .env file');
 }
 
 import express from 'express';
@@ -45,13 +45,13 @@ app.set('PORT', PORT);
 
 // Explicitly setting CORS options
 app.use(
-    cors({
-        origin: true,
-        credentials: true,
-        methods: ['GET', 'POST', 'PATCH', 'DELETE', 'PUT', 'HEAD', 'OPTIONS'],
-        preflightContinue: true,
-        optionsSuccessStatus: 204,
-    }),
+  cors({
+    origin: true,
+    credentials: true,
+    methods: ['GET', 'POST', 'PATCH', 'DELETE', 'PUT', 'HEAD', 'OPTIONS'],
+    preflightContinue: true,
+    optionsSuccessStatus: 204,
+  })
 );
 // Static assets & Frontend files
 app.use(express.static(path.join(__dirname, './public')));
@@ -69,59 +69,60 @@ const cookieExpiresOn = new Date(now + interval);
 log.debug(`Cookie expires on: ${cookieExpiresOn}`);
 
 app.use(
-    session({
-        store: new FirestoreStore({
-            dataset: new Firestore(),
-            kind: Collection.SESSIONS,
-        }),
-        secret: process.env.SESSION_SECRET || 's9hp0VtUkd$FJM$T91lB',
-        cookie: {
-            secure: false,
-            expires: cookieExpiresOn,
-        },
-        resave: false,
-        saveUninitialized: true,
+  session({
+    store: new FirestoreStore({
+      dataset: new Firestore(),
+      kind: Collection.SESSIONS,
     }),
+    secret: process.env.SESSION_SECRET || 's9hp0VtUkd$FJM$T91lB',
+    cookie: {
+      secure: false,
+      expires: cookieExpiresOn,
+    },
+    resave: false,
+    saveUninitialized: true,
+  })
 );
 
-export const requestLogger = (req: Request, res: Response, next: NextFunction) => {
-    const message = ` Url:${req.url} 
+export const requestLogger = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const message = ` Url:${req.url} 
                       Method: ${req.method}
                       Params: ${JSON.stringify(req.params, null, 2)} 
                       Body: ${JSON.stringify(req.body, null, 2)}`;
-    log.debug(message);
-    next();
+  log.debug(message);
+  next();
 };
 
 app.use(requestLogger);
 
-// prevent app from crashing if some oauthcallback env variable is not set.
+// Prevent app from crashing if some oauthcallback env variable is not set.
 try {
-    app = PassportSetup.init(app);
+  app = PassportSetup.init(app);
 } catch (err) {
-    log.error(err);
+  log.error(err);
 }
 
 app.use('/', router);
 
-
 /**
- * Last layer to handle errors thrown by API, prevents some routes 
- * to throw 500 errors which are caused by missing auth token. 
- * @param { string } err Error message
- * @param { Request } req Request 
- * @param { Resonse }res Response
- * @param { NextFunction } next Next 
- * @returns Response
+ * Last layer to handle errors thrown by API, prevents some routes
+ * to throw 500 errors which are caused by missing auth token.
+ *
+ * @param {string} err Error message
+ * @param {Request} req Request
+ * @param {Resonse} res Response
+ * @returns {Response}
  */
-const errorHandler = (err: string, req: Request, res: Response, next: NextFunction) => {
-
-    if (err == 'Failed auth') {
-        return res.status(401).json({ 'error': err });
-    }
-    return res.status(500);
-}
-
+const errorHandler = (err: string, req: Request, res: Response) => {
+  if (err == 'Failed auth') {
+    return res.status(401).json({ error: err });
+  }
+  return res.status(500);
+};
 
 app.use(errorHandler);
 
