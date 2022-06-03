@@ -19,7 +19,6 @@ import * as AgentsController from '../controllers/agents-controller';
 import * as RulesController from '../controllers/rules-controller';
 import * as JobController from '../controllers/jobs-controller';
 
-import someController from '../controllers/some';
 import * as pass from '../config/passport-setup';
 import passport from 'passport';
 import path from 'path';
@@ -107,9 +106,6 @@ router.delete(
 
 // Job runner trigger endpoint
 router.get('/api/jobs/execute', JobController.executeJobs);
-
-// TODO: Debug Endpoint
-router.get('/api/agents/dv360-dev/list/:entityType', someController.fetch);
 
 router.get(
   '/api/agents/metadata',

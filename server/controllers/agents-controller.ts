@@ -66,6 +66,7 @@ export const getAgentEntityList = async (req: Request, res: Response) => {
   let customerAccountId = '';
 
   try {
+    // TODO: Move auth/user settings to the separate module
     let token: Token;
     const accessToken = req.headers.authorization?.split(' ')[1];
     log.debug(
