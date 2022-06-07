@@ -152,7 +152,8 @@ export class DynamicDatabase {
     child.level = parent.level + 1;
     child.type = this.getEntityType(child);
     child.selectable = !!(child.insertionOrderId || child.lineItemId);
-    child.expandable = child.lineItemId === null;
+    child.expandable = !child.lineItemId;
+
     return child;
   }
 
