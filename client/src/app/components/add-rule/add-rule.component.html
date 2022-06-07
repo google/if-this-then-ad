@@ -96,10 +96,10 @@
               name="rule-interval"
             >
               <mat-option
-                *ngFor="let i of this.executionIntervals"
-                value="{{ i.key }}"
+                *ngFor="let interval of myExecutionIntervals"
+                value="{{ interval }}"
               >
-                {{ i.value }}
+                {{ formatInterval(interval) }}
               </mat-option>
             </mat-select>
           </mat-form-field>

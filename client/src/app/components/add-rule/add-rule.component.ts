@@ -53,6 +53,8 @@ export class AddRuleComponent implements OnInit {
     { key: 'eq', value: 'equals' },
   ];
 
+  myExecutionIntervals: number[] = [30, 60, 240, 480, 720, 1440];
+
   executionIntervals: any[] = [
     { key: 30, value: '30 min' },
     { key: 60, value: '60 min' },
@@ -288,6 +290,20 @@ export class AddRuleComponent implements OnInit {
     missingSettings: Array<SourceAgentSettingsParam>
   ) {
     this.dialog.open(MissingSettingsDialogComponent, { data: missingSettings });
+  }
+
+  /**
+   * Format interval to 'min' and 'hrs' respectively.
+   *
+   * @param {number} minutes
+   * @returns {string}
+   */
+  formatInterval(minutes: number) {
+    if (minutes <= 60) {
+      return `${minutes} min`;
+    } else {
+      return `${minutes / 60} hrs`;
+    }
   }
 }
 

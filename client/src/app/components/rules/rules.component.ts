@@ -116,4 +116,18 @@ export class RulesComponent implements AfterViewInit {
         this.loadRules();
       });
   }
+
+  /**
+   * Format interval to 'min' and 'hrs' respectively.
+   *
+   * @param {number} minutes
+   * @returns {string}
+   */
+  formatInterval(minutes: number) {
+    if (minutes <= 60) {
+      return `${minutes} min`;
+    } else {
+      return `${minutes / 60} hrs`;
+    }
+  }
 }
