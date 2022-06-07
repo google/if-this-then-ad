@@ -32,7 +32,12 @@ export class User {
    * @returns {User}
    */
   static fromJSON(input: any): User {
-    return Object.assign(new User(), JSON.parse(input));
+    try {
+      return Object.assign(new User(), JSON.parse(input));
+    } catch (e) {
+      console.log(e);
+      throw new Error('Error parsing the user object.');
+    }
   }
 }
 
