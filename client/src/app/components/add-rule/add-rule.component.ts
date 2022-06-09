@@ -53,14 +53,7 @@ export class AddRuleComponent implements OnInit {
     { key: 'eq', value: 'equals' },
   ];
 
-  executionIntervals: any[] = [
-    { key: 30, value: '30 min' },
-    { key: 60, value: '60 min' },
-    { key: 240, value: '4 hrs' },
-    { key: 480, value: '8 hrs' },
-    { key: 720, value: '12 hrs' },
-    { key: 1440, value: '24 hrs' },
-  ];
+  executionIntervals: number[] = [30, 60, 240, 480, 720, 1440];
   dataPointListValues?: string[] = [];
   lockEquals: boolean = false;
   targetAgent: string;

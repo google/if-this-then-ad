@@ -56,6 +56,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { GoogleAdsSelectorComponent } from './components/googleads-selector/googleads-selector.component';
 import { DashComponent } from './components/dash/dash.component';
 import { StringReplacePipe } from './pipes/string-replace.pipe';
+import { IntervalFormatPipe } from './interval-format.pipe';
 
 @NgModule({
   declarations: [
@@ -73,6 +74,7 @@ import { StringReplacePipe } from './pipes/string-replace.pipe';
     GoogleAdsSelectorComponent,
     DashComponent,
     StringReplacePipe,
+    IntervalFormatPipe,
   ],
   imports: [
     BrowserModule,
