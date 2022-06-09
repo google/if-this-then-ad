@@ -99,30 +99,37 @@ export class DynamicDatabase {
       childEntityType = 'advertiser';
     }
 
+    // Build request URL
+    const url = `agents/${agent}/${method}/${childEntityType}`;
+
+    // Build cache key
+    const hash = btoa(`${url}-${JSON.stringify(params)}`);
+
+    // Fetch children from cache if available
+    if (localStorage.getItem(hash)) {
+      return new Promise((resolve) => {
+        const children = JSON.parse(localStorage.getItem(hash)!);
+        resolve(children);
+      });
+    }
+
+    // Fetch children from server
     return new Promise((resolve, reject) => {
       this.http
-        .get<Array<EntityNode>>(
-          `${environment.apiUrl}/agents/${agent}/${method}/${childEntityType}`,
-          {
-            params,
-          }
-        )
+        .get<Array<EntityNode>>(`${environment.apiUrl}/${url}`, {
+          params,
+        })
         .pipe(
           map((data) => {
             return data.map((entity) => {
-              const child = EntityNode.fromJSON(entity);
-              child.id = this.getEntityId(child);
-              child.level = node.level + 1;
-              child.type = this.getEntityType(child);
-              child.selectable = !!(child.insertionOrderId || child.lineItemId);
-              child.expandable = childEntityType != 'lineItem';
-
-              return child;
+              return this.parseEntity(entity, node);
             });
           })
         )
         .subscribe({
           next: (result) => {
+            // Store children in cache
+            localStorage.setItem(hash, JSON.stringify(result));
             resolve(result);
           },
           error: (err) => {
@@ -130,6 +137,24 @@ export class DynamicDatabase {
           },
         });
     });
+  }
+
+  /**
+   * Parse entity from JSON to proper model.
+   *
+   * @param {object} entity
+   * @param {EntityNode} parent
+   * @returns {EntityNode}
+   */
+  parseEntity(entity: object, parent: EntityNode) {
+    const child = EntityNode.fromJSON(entity);
+    child.id = this.getEntityId(child);
+    child.level = parent.level + 1;
+    child.type = this.getEntityType(child);
+    child.selectable = !!(child.insertionOrderId || child.lineItemId);
+    child.expandable = !child.lineItemId;
+
+    return child;
   }
 
   /**
