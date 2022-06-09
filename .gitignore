@@ -6,3 +6,4 @@ notes.txt
 public
 !public/.gitkeep
 .DS_Store
+credentials.json
