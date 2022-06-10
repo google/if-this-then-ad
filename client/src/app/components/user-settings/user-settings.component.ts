@@ -130,11 +130,10 @@ export class UserSettingsComponent {
     this.userSettings = this.formBuilder.group(group);
     if (this.authService?.currentUser?.userSettings) {
       const filteredUserSettings: UserSettingKeyValue = {};
-      for (const setting in this.authService?.currentUser?.userSettings) {
-        if (Object.keys(group).includes(setting)) {
-          filteredUserSettings[setting] =
-            this.authService?.currentUser?.userSettings[setting];
-        }
+      for (const setting of this.settings) {
+        filteredUserSettings[setting.settingName] =
+          this.authService?.currentUser?.userSettings[setting.settingName] ||
+          '';
       }
 
       this.userSettings.setValue(filteredUserSettings);

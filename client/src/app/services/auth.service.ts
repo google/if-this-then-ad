@@ -141,7 +141,7 @@ export class AuthService {
    * @param {UserSettingKeyValue} userSettings
    */
   setUserSettings(userSettings: UserSettingKeyValue) {
-    if (this.currentUser && this.currentUser.userSettings) {
+    if (this.currentUser) {
       this.currentUser.userSettings = userSettings;
       this.user = this.currentUser;
     }
