@@ -33,7 +33,7 @@ On the marketing activation side we support the following platforms:
 
 ## The Problem that we solve
 * Advertisers want to show their ads as targeted as possible to reach the right audience at the right time
-* Managing ad campaigns in response to real-time events like weather, pollen data or air quality can be challenging to impossible (just imagine, manually switching hundreds of ad groups on a daily basis... it is really time consuming and an error pron)
+* Managing ad campaigns in response to real-time events like weather, pollen data or air quality can be challenging to impossible (just imagine, manually switching hundreds of ad groups on a daily basis... it is really time consuming and an error-prone)
 
 Our tool will do this for you automatically!
 
@@ -43,13 +43,13 @@ Basically all advertisers can benefit from this solution and especially those th
 Some examples to ignite the imagination (based on our experience):
 * Hot beverages can be advertised during the colder weather and cold beverages during the warm weather
 * An ice cream company can show ads when it’s hot
-* Insurance companies can show ads when there’s a storm or a floating
+* Insurance companies can show ads when there’s a storm or a flood
 * A hardware store might show ads for snow shovels when it snowed
 * Healthcare companies can advertise based on the pollen index and/or the air quality
 
 ## Benefits you get
 * Ads will reach their audience at the right time under the right circumstances
-* Advertisers can automate their campaign management in response to real time events
+* Advertisers can automate their campaign management in response to real-time events
 * Personalized ads and WOW effect on the end user side (since the user will see the right ad at the right time)
 
 ## Setup
@@ -88,7 +88,7 @@ The installation below is partly automated, this means that you will need to do 
 
 ## Reporting bugs / feature requests
 
-We love to hear your feedback! Please [create an issue](https://github.com/google/if-this-then-ad/issues/new) directly on GitHub  (try be very **specific** describing your question/bug/feature).
+We love to hear your feedback! Please [create an issue](https://github.com/google/if-this-then-ad/issues/new) directly on GitHub. Please be **specific** describing your question/bug/feature.
 
 ## Development
 
