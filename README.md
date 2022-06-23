@@ -86,6 +86,10 @@ The installation below is partly automated, this means that you will need to do 
 
 1. Ignore any other prompts, which will get auto-populated
 
+## Reporting bugs / feature requests
+
+We love to hear your feedback! Please [create an issue](https://github.com/google/if-this-then-ad/issues/new) directly on GitHub  (try be very **specific** describing your question/bug/feature).
+
 ## Development
 
 ### Git: Pre commit
