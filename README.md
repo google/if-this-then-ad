@@ -56,3 +56,4 @@ To run all checks manually you can execute the following code from the project r
 - For server: `cd server; npm run pre-commit`.
 - For client: `cd client; npm run pre-commit`.
 
+
