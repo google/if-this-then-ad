@@ -43,6 +43,17 @@
         <span class="sidenav-label">Settings</span>
       </a>
     </mat-nav-list>
+    <mat-nav-list>
+      <a 
+        mat-list-item 
+        href="https://github.com/google/if-this-then-ad/issues/new"
+        target="_blank"
+        (click)="sidenav.close()"
+      >
+        <fa-icon [icon]="faBug"></fa-icon>
+        <span class="sidenav-label">Report a bug</span>
+      </a>
+    </mat-nav-list>
   </mat-sidenav>
 
   <mat-sidenav-content>

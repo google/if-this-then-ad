@@ -18,6 +18,7 @@ import {
   faSquarePlus,
   faGear,
   faMessage,
+  faBug,
 } from '@fortawesome/free-solid-svg-icons';
 
 import { store } from 'src/app/store';
@@ -35,6 +36,7 @@ export class AppComponent {
   faSquarePlus = faSquarePlus;
   faGear = faGear;
   faMessage = faMessage;
+  faBug = faBug;
   title = 'IFTTA';
 
   @ViewChild('sidenav') sidenav: any;

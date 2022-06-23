@@ -11,13 +11,54 @@
     limitations under the License.
  -->
 
-# If This Then Ad
+# If This Then Ad (IFTTA)
 
 [![build](https://img.shields.io/badge/build-passing-brightgreen?style=flat&logo=github)](https://github.com/google/if-this-then-ad)
 [![GitHub tag (latest SemVer)](https://img.shields.io/github/v/tag/google/if-this-then-ad?label=release&logo=github)](https://github.com/google/if-this-then-ad)
 [![GitHub last commit](https://img.shields.io/github/last-commit/google/if-this-then-ad)](https://github.com/google/if-this-then-ad/commits)
 
+[![If This Then Ad (IFFTA)](imgs/demo-video.png)](http://www.youtube.com/watch?v=fPu-4EmKyjk "If This Then Ad (IFFTA)")
+YouTube Link: [youtu.be/fPu-4EmKyjk](https://youtu.be/fPu-4EmKyjk).
+
+IFTTA is a game changer in the **rule based marketing**. With our tool you can run marketing campaigns based on real world events.
+We already support the following data sources:
+* Weather (based on [OpenWeatherMaps API](https://openweathermap.org/)). The Weather conditions that you already can use: temperature, wind speed, cloudiness, rain, snow, thunderstorm.
+* Pollen and Air Quality ([Ambee API](https://www.getambee.com/)).
+
+On the marketing activation side we support the following platforms:
+* [DV360](https://marketingplatform.google.com/intl/de/about/display-video-360/) (via the [DV360 API](https://developers.google.com/display-video/api/reference/rest))
+* [Google Ads](https://ads.google.com/) (via the [Ads API](https://developers.google.com/google-ads/api/docs/release-notes))
+
+*Keywords: Weather Based Marketing, External Signal Based Marketing, Pollen Based Marketing, AirQuality Based Marketing.*
+
+## The Problem that we solve
+* Advertisers want to show their ads as targeted as possible to reach the right audience at the right time
+* Managing ad campaigns in response to real-time events like weather, pollen data or air quality can be challenging to impossible (just imagine, manually switching hundreds of ad groups on a daily basis... it is really time consuming and an error-prone)
+
+Our tool will do this for you automatically!
+
+## Is IFTTA for you?
+Basically all advertisers can benefit from this solution and especially those that clearly see a correlation between the real world factors (e.g. weather) and sales (or other marketing KPIs).
+
+Some examples to ignite the imagination (based on our experience):
+* Hot beverages can be advertised during the colder weather and cold beverages during the warm weather
+* An ice cream company can show ads when it’s hot
+* Insurance companies can show ads when there’s a storm or a flood
+* A hardware store might show ads for snow shovels when it snowed
+* Healthcare companies can advertise based on the pollen index and/or the air quality
+
+## Benefits you get
+* Ads will reach their audience at the right time under the right circumstances
+* Advertisers can automate their campaign management in response to real-time events
+* Personalized ads and WOW effect on the end user side (since the user will see the right ad at the right time)
+
 ## Setup
+### Prerequisities
+Basic Google Cloud knowledge and a Google Cloud project with [enabled billing](https://cloud.google.com/billing/docs/how-to/modify-project) are required.
+
+### Step-by-step guide
+With the following simple steps you can install IFTTA on your [Google Cloud](https://cloud.google.com/resource-manager/docs/creating-managing-projects) project.
+The installation below is partly automated, this means that you will need to do some manual steps at the beginning and at the end the installation script (the big blue button below) will do the rest.
 
 1. Create an [OAuth Consent Screen](https://console.cloud.google.com/apis/credentials/consent)
 
@@ -45,6 +86,10 @@
 
 1. Ignore any other prompts, which will get auto-populated
 
+## Reporting bugs / feature requests
+
+We love to hear your feedback! Please [create an issue](https://github.com/google/if-this-then-ad/issues/new) directly on GitHub. Please be **specific** describing your question/bug/feature.
+
 ## Development
 
 ### Git: Pre commit
@@ -56,3 +101,6 @@ To run all checks manually you can execute the following code from the project r
 - For server: `cd server; npm run pre-commit`.
 - For client: `cd client; npm run pre-commit`.
 
+# Did you like our tool?
+You can start contributing by sending pull requests right now!
+Also you can give us a star on our [GitHub page](https://github.com/google/if-this-then-ad) ;-)
