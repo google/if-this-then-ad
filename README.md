@@ -17,10 +17,10 @@
 [![GitHub tag (latest SemVer)](https://img.shields.io/github/v/tag/google/if-this-then-ad?label=release&logo=github)](https://github.com/google/if-this-then-ad)
 [![GitHub last commit](https://img.shields.io/github/last-commit/google/if-this-then-ad)](https://github.com/google/if-this-then-ad/commits)
 
-[![If This Then Ad (IFFTA)](imgs/demo-video.png)](http://www.youtube.com/watch?v=fPu-4EmKyjk "If This Then Ad (IFFTA)")
-YouTube Link: [youtu.be/fPu-4EmKyjk](https://youtu.be/fPu-4EmKyjk).
+[![If This Then Ad (IFFTA)](imgs/demo-video.png)](http://www.youtube.com/watch?v=ugklLFbij-A "If This Then Ad (IFFTA)")
+YouTube Link: [youtu.be/ugklLFbij-A](https://youtu.be/ugklLFbij-A).
 
-IFTTA is a game changer in the **rule based marketing**. With our tool you can run marketing campaigns based on real world events.
+IFTTA is a game changer in **rule-based marketing**. With our tool you can run marketing campaigns based on real world events.
 We already support the following data sources:
 * Weather (based on [OpenWeatherMaps API](https://openweathermap.org/)). The Weather conditions that you already can use: temperature, wind speed, cloudiness, rain, snow, thunderstorm.
 * Pollen and Air Quality ([Ambee API](https://www.getambee.com/)).
@@ -29,7 +29,7 @@ On the marketing activation side we support the following platforms:
 * [DV360](https://marketingplatform.google.com/intl/de/about/display-video-360/) (via the [DV360 API](https://developers.google.com/display-video/api/reference/rest))
 * [Google Ads](https://ads.google.com/) (via the [Ads API](https://developers.google.com/google-ads/api/docs/release-notes))
 
-*Keywords: Weather Based Marketing, External Signal Based Marketing, Pollen Based Marketing, AirQuality Based Marketing.*
+*Keywords: Weather Based Marketing, External Signal Based Marketing, Pollen Based Marketing, AirQuality Based Marketing, Rule-based Marketing.*
 
 ## The Problem that we solve
 * Advertisers want to show their ads as targeted as possible to reach the right audience at the right time
