@@ -21,17 +21,21 @@ import { AuthGuard } from './services/auth.guard';
 import { UserSettingsComponent } from './components/user-settings/user-settings.component';
 import { RulesComponent } from './components/rules/rules.component';
 import { RulesStatusComponent } from './components/rules-status/rules.status.component';
-import { DashComponent } from './components/dash/dash.component';
 
 const routes: Routes = [
   {
-    path: 'new-rule',
+    path: 'rules/new',
     component: AddRuleComponent,
     canActivate: [AuthGuard],
   },
   {
-    path: 'list-rules',
+    path: 'rules/list',
     component: RulesComponent,
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'rules/status',
+    component: RulesStatusComponent,
     canActivate: [AuthGuard],
   },
   {
@@ -48,14 +52,9 @@ const routes: Routes = [
     canActivate: [AuthGuard],
   },
   {
-    path: 'rules-status',
-    component: RulesStatusComponent,
-    canActivate: [AuthGuard],
-  },
-  {
     path: '',
-    component: DashComponent,
-    canActivate: [AuthGuard],
+    redirectTo: '/rules/list',
+    pathMatch: 'full',
   },
 ];
 
