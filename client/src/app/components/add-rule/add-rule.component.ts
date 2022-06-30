@@ -250,7 +250,7 @@ export class AddRuleComponent implements OnInit {
     this.sourceForm.resetForm();
     this.executionIntervalForm.resetForm();
 
-    this.router.navigate(['/list-rules']);
+    this.router.navigate(['/rules/list']);
   }
   /**
    *  Checks user Settings

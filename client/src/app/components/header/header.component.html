@@ -28,8 +28,8 @@
   <ng-container *ngIf="authService.isLoggedIn && user">
     <!-- Menu links -->
     <div class="menu-links">
-      <a mat-button [routerLink]="'/new-rule'">Create Rule</a>
-      <a mat-button [routerLink]="'/list-rules'">All Rules</a>
+      <a mat-button [routerLink]="'/rules/new'">Create Rule</a>
+      <a mat-button [routerLink]="'/rules/list'">All Rules</a>
     </div>
     <!-- Header buttons -->
     <button
