@@ -50,3 +50,4 @@ for FILE in $FILES_LIST; do
     fi
 done
 echo "License header added to $FILE_COUNT file(s)."
+exit $FILE_COUNT

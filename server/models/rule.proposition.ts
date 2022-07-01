@@ -23,9 +23,9 @@ export enum LogicalOperation {
 }
 
 export interface SourceAndCondition {
-  source: SourceAgent,
-  condition: Condition,
-  logicalOperation?: LogicalOperation,
+  source: SourceAgent;
+  condition: Condition;
+  logicalOperation?: LogicalOperation;
 }
 
 export interface Rule {
@@ -34,7 +34,7 @@ export interface Rule {
   name: string;
   owner: string;
   executionInterval: number;
-  sourcesAndConditions: Array<SourceAndCondition>,
+  sourcesAndConditions: Array<SourceAndCondition>;
   targets?: Array<TargetAgent>;
   status?: {
     success: boolean;
@@ -51,7 +51,8 @@ export interface Condition {
 
 export interface SourceAgent {
   id: string;
-  params: Array<{ // Adjusted according to the structure in the firestore
+  params: Array<{
+    // Adjusted according to the structure in the firestore
     dataPoint: string;
     value: string | number | boolean;
   }>;

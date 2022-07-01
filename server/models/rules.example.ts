@@ -1,4 +1,3 @@
-import { sourcerepo } from 'googleapis/build/src/apis/sourcerepo';
 /**
     Copyright 2022 Google LLC
     Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,11 +11,7 @@ import { sourcerepo } from 'googleapis/build/src/apis/sourcerepo';
     limitations under the License.
  */
 
-import { 
-    Rule, 
-    COMPARATORS,
-    LogicalOperation, 
-} from './rule.proposition';
+import { Rule, COMPARATORS, LogicalOperation } from './rule.proposition';
 
 /**
  * New Rule design example. Scenario: For Hamburg activate an ad if it's warm (temp > 10°C)
@@ -25,77 +20,81 @@ import {
  * - pollen level = "High"
  */
 const ruleDesign: Rule = {
-    name: 'test-rule',
-    owner: 'XyTS82SaaT',
-    executionInterval: 60,
-    sourcesAndConditions: [
-        // First: Weather Source
-        {
-            source: {
-                id: 'open-weather-map',
-                params: [
-                    {
-                        dataPoint: 'targetLocation',
-                        value: 'Hamburg, Gemany',
-                    },
-                ]
-            },
-            condition: {
-                dataPoint: 'temperature',
-                comparator: COMPARATORS.greater,
-                value: 10,
-            },
-            // Note an empty "logicalOperation", since this is the first suorce in the list
-        },
-        // Second: Pollen Source
-        {
-            source: {
-                id: 'ambee',
-                params: [
-                    {
-                        dataPoint: 'targetLocation',
-                        value: 'Hamburg, Gemany',
-                    },
-                ]
-            },
-            condition: {
-                dataPoint: 'pollenRiskLevel',
-                comparator: COMPARATORS.equals,
-                value: 'High',
-            },
-            // Note "logicalOperation" is not empty, since we combine this 
-            //  condition with the previouse one with the logical AND
-            logicalOperation: LogicalOperation.AND,
-        },
-    ]
+  name: 'test-rule',
+  owner: 'XyTS82SaaT',
+  executionInterval: 60,
+  sourcesAndConditions: [
+    // First: Weather Source
+    {
+      source: {
+        id: 'open-weather-map',
+        params: [
+          {
+            dataPoint: 'targetLocation',
+            value: 'Hamburg, Gemany',
+          },
+        ],
+      },
+      condition: {
+        dataPoint: 'temperature',
+        comparator: COMPARATORS.greater,
+        value: 10,
+      },
+      // Note an empty "logicalOperation", since this is the first suorce in the list
+    },
+    // Second: Pollen Source
+    {
+      source: {
+        id: 'ambee',
+        params: [
+          {
+            dataPoint: 'targetLocation',
+            value: 'Hamburg, Gemany',
+          },
+        ],
+      },
+      condition: {
+        dataPoint: 'pollenRiskLevel',
+        comparator: COMPARATORS.equals,
+        value: 'High',
+      },
+      // Note "logicalOperation" is not empty, since we combine this
+      //  condition with the previouse one with the logical AND
+      logicalOperation: LogicalOperation.AND,
+    },
+  ],
 };
 
-function logicalOperation(operation: LogicalOperation, v1: boolean, v2: boolean) {
-    switch (operation) {
-        case LogicalOperation.AND:
-            return v1 && v2;
+function logicalOperation(
+  operation: LogicalOperation,
+  v1: boolean,
+  v2: boolean
+) {
+  switch (operation) {
+    case LogicalOperation.AND:
+      return v1 && v2;
 
-        case LogicalOperation.OR:
-            return v1 || v2;
-    }
+    case LogicalOperation.OR:
+      return v1 || v2;
+  }
 
-    throw new Error('Not supported operation');
+  throw new Error('Not supported operation');
 }
 
 // On the evaluation stage:
 let sourceAgentResults: Array<boolean> = [];
 //sourceAgentResults = ...getResults(ruleDesign.sourcesAndConditions);
 let finalEvaluationValue = false;
-for (let i=0; i<ruleDesign.sourcesAndConditions.length; i++) {
-    if (ruleDesign.sourcesAndConditions[i].logicalOperation) {
-        finalEvaluationValue = logicalOperation(
-            ruleDesign.sourcesAndConditions[i].logicalOperation!,
-            finalEvaluationValue,
-            sourceAgentResults[i],
-        );
-    } else {
-        finalEvaluationValue = sourceAgentResults[i];
-    }
+for (let i = 0; i < ruleDesign.sourcesAndConditions.length; i++) {
+  if (ruleDesign.sourcesAndConditions[i].logicalOperation) {
+    finalEvaluationValue = logicalOperation(
+      ruleDesign.sourcesAndConditions[i].logicalOperation!,
+      finalEvaluationValue,
+      sourceAgentResults[i]
+    );
+  } else {
+    finalEvaluationValue = sourceAgentResults[i];
+  }
 }
 
 // The 'finalEvaluationValue' should be returned in the JobRunner:runJobs
