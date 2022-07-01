@@ -48,6 +48,7 @@ export class RulesComponent implements AfterViewInit {
     'value',
     'interval',
     'lastExecution',
+    'message',
     'actions',
   ];
   dataSource = new MatTableDataSource<any>(this.rules);
