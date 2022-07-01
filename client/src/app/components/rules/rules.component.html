@@ -19,7 +19,7 @@
       <th mat-header-cell *matHeaderCellDef>Status</th>
       <td
         mat-cell *matCellDef="let rule"
-        matTooltip="Status from the last run: {{ rule?.status.message }}"
+        matTooltip="Status from the last run: '{{ rule?.status.message }}'"
       >
         <fa-icon
           *ngIf="rule.status && !rule.status?.success"
