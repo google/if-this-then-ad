@@ -38,6 +38,7 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatCardModule } from '@angular/material/card';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 import {
   AddRuleComponent,
@@ -102,6 +103,7 @@ import { IntervalFormatPipe } from './interval-format.pipe';
     MatListModule,
     MatRadioModule,
     MatCardModule,
+    MatTooltipModule,
     FontAwesomeModule,
   ],
   providers: [httpInterceptorProviders],
