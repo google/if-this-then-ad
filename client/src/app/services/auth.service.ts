@@ -17,8 +17,16 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { environment } from 'src/environments/environment';
 
 import { User, UserSettingKeyValue } from 'src/app/models/user.model';
-import { BehaviorSubject } from 'rxjs';
+import {
+  BehaviorSubject,
+  catchError,
+  Observable,
+  retry,
+  tap,
+  throwError,
+} from 'rxjs';
 import { Token } from '../interfaces/token';
+import { HttpClient } from '@angular/common/http';
 @Injectable({
   providedIn: 'root',
 })
@@ -38,7 +46,11 @@ export class AuthService {
    * @param {ActivatedRoute} route
    * @param {Router} router
    */
-  constructor(private route: ActivatedRoute, private router: Router) {
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private http: HttpClient
+  ) {
     this.getUserFromLocalStorage();
   }
 
@@ -145,5 +157,27 @@ export class AuthService {
       this.currentUser.userSettings = userSettings;
       this.user = this.currentUser;
     }
+  }
+
+  /**
+   * Request access token refresh from the server.
+   * @returns {Observable<any>}
+   */
+  refreshAccessToken(maxRetries = 2): Observable<Token> {
+    const user: User = this.currentUser!;
+    const token = this.accessToken;
+    const userId = user.id;
+    const data = { userId, token };
+
+    return this.http
+      .post<Token>(`${environment.apiUrl}/auth/refresh`, data)
+      .pipe(
+        retry(maxRetries),
+        catchError((err) => {
+          this.logout();
+          return throwError(() => err);
+        }),
+        tap((token) => this.updateToken(token))
+      );
   }
 }
