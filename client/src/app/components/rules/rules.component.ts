@@ -19,6 +19,11 @@ import { environment } from 'src/environments/environment';
 import { map } from 'rxjs/operators';
 import { AuthService } from 'src/app/services/auth.service';
 import { Rule } from 'src/app/models/rule.model';
+import {
+  faTriangleExclamation,
+  faCircleCheck,
+  faQuestion,
+} from '@fortawesome/free-solid-svg-icons';
 
 import { store } from 'src/app/store';
 import { User } from 'src/app/models/user.model';
@@ -35,12 +40,15 @@ import { User } from 'src/app/models/user.model';
 export class RulesComponent implements AfterViewInit {
   rules: Rule[] = [];
   displayedColumns: string[] = [
+    'status',
     'name',
     'source',
     'type',
     'comparator',
     'value',
     'interval',
+    'lastExecution',
+    'message',
     'actions',
   ];
   dataSource = new MatTableDataSource<any>(this.rules);
@@ -51,6 +59,9 @@ export class RulesComponent implements AfterViewInit {
     yes: 'Yes',
     no: 'No',
   };
+  errorIcon = faTriangleExclamation;
+  successIcon = faCircleCheck;
+  unknownStatusIcon = faQuestion;
 
   user: User | null;
 

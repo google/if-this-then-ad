@@ -38,6 +38,7 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatCardModule } from '@angular/material/card';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 import {
   AddRuleComponent,
@@ -55,8 +56,8 @@ import { UserSettingsComponent } from './components/user-settings/user-settings.
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { GoogleAdsSelectorComponent } from './components/googleads-selector/googleads-selector.component';
 import { DashComponent } from './components/dash/dash.component';
-import { StringReplacePipe } from './pipes/string-replace.pipe';
-import { IntervalFormatPipe } from './interval-format.pipe';
+import { StringReplacePipe } from './pipes/string-replace/string-replace.pipe';
+import { IntervalFormatPipe } from './pipes/interval-format/interval-format.pipe';
 
 @NgModule({
   declarations: [
@@ -102,6 +103,7 @@ import { IntervalFormatPipe } from './interval-format.pipe';
     MatListModule,
     MatRadioModule,
     MatCardModule,
+    MatTooltipModule,
     FontAwesomeModule,
   ],
   providers: [httpInterceptorProviders],
