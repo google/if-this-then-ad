@@ -34,8 +34,7 @@ const router = Router();
 // * Authorization routes
 // **************************
 // App authorization routes
-router.get('/api/auth/login', AuthController.universalLogin);
-router.get('/api/auth/google', AuthController.googleLogin);
+router.get('/api/auth/login', AuthController.login);
 router.get('/api/auth/logout', AuthController.logout);
 router.post('/api/auth/logout', AuthController.logout);
 router.get(

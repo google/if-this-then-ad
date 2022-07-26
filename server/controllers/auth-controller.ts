@@ -80,19 +80,11 @@ export function googleLoginDone(
   res.redirect(`${clientUrl}/logged-in?returnTo=${returnTo}&user=${userValue}`);
 }
 
-export function googleLogin(req: Request, res: Response, next: NextFunction) {
+export function login(req: Request, res: Response, next: NextFunction) {
   log.debug('Executing Google login.');
   passport.authenticate('google', {
     accessType: 'offline',
     prompt: 'consent',
     state: encodeLoginStateFromRequest(req),
   })(req, res, next);
-}
-
-export function universalLogin(req: Request, res: Response) {
-  // Redirect to Google authentication
-  log.debug('Redirecting to Google login.');
-  res.redirect(
-    `/api/auth/google?returnTo=${req.query.returnTo}&clientUrl=${req.query.clientUrl}`
-  );
 }
