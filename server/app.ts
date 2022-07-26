@@ -27,10 +27,13 @@ import cors from 'cors';
 import path from 'path';
 import router from './routes';
 import bodyParser from 'body-parser';
-import * as PassportSetup from './config/passport-setup';
 import { Collection } from './models/fire-store-entity';
-const { Firestore } = require('@google-cloud/firestore');
-const { FirestoreStore } = require('@google-cloud/connect-firestore');
+import passport from 'passport';
+import { createGoogleStrategy } from './auth/google-auth';
+import { User } from './models/user';
+import { Firestore } from '@google-cloud/firestore';
+import { FirestoreStore } from '@google-cloud/connect-firestore';
+import { handleGenericError } from './util/error';
 
 let app = express();
 
@@ -43,7 +46,7 @@ app.set('PORT', PORT);
  * Express configuration
  */
 
-// Explicitly setting CORS options
+// Configure CORS
 app.use(
   cors({
     origin: true,
@@ -53,21 +56,18 @@ app.use(
     optionsSuccessStatus: 204,
   })
 );
-// Static assets & Frontend files
+// Configure static assets & Frontend files
 app.use(express.static(path.join(__dirname, './public')));
 app.use(express.json());
 
-// Process any request body as JSON, throw error if JSON is not correct
+// Configure app to process any request body as JSON and throw error if JSON is
+// not valid
 app.use(bodyParser.json({ type: '*/*' }));
 app.use(express.urlencoded({ extended: true }));
 
-// Cookie settings
-const now = new Date().getTime();
-// Setting session time to match access Token TTL
-const interval = 3600 * 1 * 1000;
-const cookieExpiresOn = new Date(now + interval);
-log.debug(`Cookie expires on: ${cookieExpiresOn}`);
-
+// Configure sessions
+// TDOD(jhoesel): Check if session cookie can live longer than access-token
+const SESSION_COOKIE_MAX_AGE = 3600000;
 app.use(
   session({
     store: new FirestoreStore({
@@ -76,14 +76,15 @@ app.use(
     }),
     secret: process.env.SESSION_SECRET || 's9hp0VtUkd$FJM$T91lB',
     cookie: {
-      secure: false,
-      expires: cookieExpiresOn,
+      secure: process.env.NODE_ENV !== 'development',
+      maxAge: SESSION_COOKIE_MAX_AGE,
     },
     resave: false,
     saveUninitialized: true,
   })
 );
 
+// Configure request logger
 export const requestLogger = (
   req: Request,
   res: Response,
@@ -96,34 +97,26 @@ export const requestLogger = (
   log.debug(message);
   next();
 };
-
 app.use(requestLogger);
 
-// Prevent app from crashing if some oauthcallback env variable is not set.
+// Initialize passport for app login
 try {
-  app = PassportSetup.init(app);
+  passport.use(createGoogleStrategy());
+  // TODO(jhoesel): Reduce user properties stored in session
+  passport.serializeUser((user, done) => done(null, user));
+  passport.deserializeUser<User>((user, done) => done(null, user));
+
+  app.use(passport.initialize());
+  app.use(passport.session());
 } catch (err) {
   log.error(err);
 }
 
+// Configure routes
 app.use('/', router);
 
-/**
- * Last layer to handle errors thrown by API, prevents some routes
- * to throw 500 errors which are caused by missing auth token.
- *
- * @param {string} err Error message
- * @param {Request} req Request
- * @param {Resonse} res Response
- * @returns {Response}
- */
-const errorHandler = (err: string, req: Request, res: Response) => {
-  if (err == 'Failed auth') {
-    return res.status(401).json({ error: err });
-  }
-  return res.status(500);
-};
-
-app.use(errorHandler);
+// Configure error handlers (always do last)
+// Register generic error handler for anything uncaught
+app.use(handleGenericError);
 
 export default app;

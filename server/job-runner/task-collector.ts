@@ -20,6 +20,7 @@ import {
 } from './interfaces';
 import TaskConfiguration from './task-configuration';
 import { Token } from './../models/user';
+import { refreshTokensForUser } from '../auth/google-auth';
 
 /**
  * Task Collector.
@@ -41,7 +42,7 @@ export default class TaskCollector {
 
     try {
       // New token
-      token = await TaskConfiguration.refreshTokensForUser(ownerId);
+      token = await refreshTokensForUser(ownerId);
       ownerSettings = await TaskConfiguration.getUserSettings(ownerId);
     } catch (e) {
       log.error(['Could not configure the task.', e as string]);

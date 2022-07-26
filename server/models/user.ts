@@ -17,7 +17,7 @@ export interface UserSettingKeyValue {
 
 export interface User {
   id?: string;
-  profileId: number;
+  profileId: string;
   displayName?: string;
   givenName?: string;
   familyName?: string;
