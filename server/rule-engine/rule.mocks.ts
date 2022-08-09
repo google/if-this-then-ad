@@ -11,7 +11,7 @@
     limitations under the License.
  */
 
-import { AgentResult, COMPARATORS, Rule } from '../src/interfaces';
+import { AgentResult, COMPARATORS, Rule } from './interfaces';
 
 export const PollenTestRule: Rule = {
   condition: {

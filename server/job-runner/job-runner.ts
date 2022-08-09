@@ -13,8 +13,8 @@
 
 const { PubSub } = require('@google-cloud/pubsub');
 import { log, date } from '@iftta/util';
-import OpenWeatherMap from '../agents/source-agents/open-weather-map';
-import DV360Ads from '../agents/target-agents/dv360-ads';
+import { OpenWeatherMap } from '../agents/source-agents/open-weather-map/open-weather-map';
+import { DV360Agent } from '../agents/target-agents/dv360-ads/dv360-agent';
 import {
   AgentResult,
   RuleResult,
@@ -25,13 +25,13 @@ import {
   Rule,
 } from './interfaces';
 import { Collection } from '../models/fire-store-entity';
-import rulesEngine from '../packages/rule-engine';
+import { processMessage } from '../rule-engine/message-handler';
 import Collections from '../services/collection-factory';
 import Repository from '../services/repository-service';
 import TaskCollector from './task-collector';
 import TaskConfiguration from './task-configuration';
-import AmbeeAgent from '@iftta/ambee-agent';
-import googleAdsAgent from '@iftta/google-ads';
+import { AmbeeAgent } from '../agents/source-agents/ambee/ambee';
+import { GoogleAdsAgent } from '../agents/target-agents/google-ads/googleads-agent';
 
 // Temp coupling between packages/
 // TODO: replace this with sending messages over pubsub.
@@ -157,8 +157,8 @@ class JobRunner {
    */
   private listTargetAgents() {
     return {
-      'dv360-agent': DV360Ads,
-      'googleads-agent': googleAdsAgent,
+      'dv360-agent': DV360Agent,
+      'googleads-agent': GoogleAdsAgent,
     };
   }
   /**
@@ -312,7 +312,7 @@ class JobRunner {
       log.info('Publishing results to the rule engine');
       log.info(`Completed job: ${currentResult.jobId}`);
       log.debug(currentResult);
-      const results: Array<RuleResult> = await rulesEngine.processMessage(
+      const results: Array<RuleResult> = await processMessage(
         currentResult
       );
 
@@ -404,4 +404,4 @@ class JobRunner {
   }
 }
 
-export default new JobRunner(pubSubClient, jobsRepo, rulesRepo);
+export const jobRunner = new JobRunner(pubSubClient, jobsRepo, rulesRepo);

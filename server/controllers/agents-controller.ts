@@ -15,10 +15,10 @@ require('module-alias/register');
 
 import { Request, Response } from 'express';
 import { log } from '@iftta/util';
-import OpenWeatherMap from '@iftta/open-weather-map-agent';
-import DV360Agent from '@iftta/dv360-ads';
-import GoogleAdsAgent, { googleAds } from '@iftta/google-ads';
-import AmbeeAgent from '@iftta/ambee-agent';
+import { OpenWeatherMap } from '../agents/source-agents/open-weather-map/open-weather-map';
+import { DV360Agent } from '../agents/target-agents/dv360-ads/dv360-agent';
+import { GoogleAdsAgent } from '../agents/target-agents/google-ads/googleads-agent';
+import { AmbeeAgent } from '../agents/source-agents/ambee/ambee';
 import { Token, User } from 'models/user';
 import Repository from '../services/repository-service';
 import Collections from '../services/collection-factory';
@@ -26,15 +26,17 @@ import { Collection } from '../models/fire-store-entity';
 
 const usersCollection = Collections.get(Collection.USERS);
 const userRepo = new Repository<User>(usersCollection);
+const dv360Agent = new DV360Agent();
+const googleAdsAgent = new GoogleAdsAgent(); 
 
 const registeredAgents = {
   'dv360-agent': {
-    metadata: DV360Agent.getAgentMetadata,
-    list: DV360Agent.getEntityList,
+    metadata: dv360Agent.getAgentMetadata,
+    list: dv360Agent.getEntityList,
   },
   'googleads-agent': {
-    metadata: GoogleAdsAgent.getAgentMetadata,
-    list: GoogleAdsAgent.listAdGroups,
+    metadata: googleAdsAgent.getAgentMetadata,
+    list: googleAdsAgent.listAdGroups,
   },
   'open-weather-map': {
     metadata: OpenWeatherMap.getAgentMetadata,
@@ -87,7 +89,8 @@ export const getAgentEntityList = async (req: Request, res: Response) => {
         }
 
         if (agentId == 'googleads-agent') {
-          const googleAdsAgent = new googleAds();
+          // TODO: re-use the const from the top? what's the logic here?
+          const googleAdsAgent = new GoogleAdsAgent();
           return res
             .status(200)
             .json(

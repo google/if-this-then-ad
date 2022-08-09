@@ -12,7 +12,7 @@
  */
 require('module-alias/register');
 import { RulesProcessor } from '../src/rules-processor';
-import { AgentResult, Rule, COMPARATORS } from '../src/interfaces';
+import { AgentResult, Rule, COMPARATORS } from '../../../rule-engine/interfaces';
 import {
   HazardousAirRule,
   PollenAgentResult as ModeratePollenResult,

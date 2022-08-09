@@ -11,7 +11,6 @@
     limitations under the License.
  */
 
-import { Request, Response } from 'express';
 import { log } from '@iftta/util';
 import { AgentResult, RuleResult } from './interfaces';
 import { RulesProcessor } from './rules-processor';

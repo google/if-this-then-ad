@@ -11,10 +11,10 @@
     limitations under the License.
  */
 
-import { AgentResult, Rule, COMPARATORS, RuleResult } from '../src/interfaces';
-import Repository from '../../../services/repository-service';
-import Collections from '../../../services/collection-factory';
-import { Collection } from '../../../models/fire-store-entity';
+import { AgentResult, Rule, COMPARATORS, RuleResult } from './interfaces';
+import Repository from '../services/repository-service';
+import Collections from '../services/collection-factory';
+import { Collection } from '../models/fire-store-entity';
 import { log } from '@iftta/util';
 
 const rulesCollection = Collections.get(Collection.RULES);

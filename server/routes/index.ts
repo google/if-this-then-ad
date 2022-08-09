@@ -11,13 +11,7 @@
     limitations under the License.
  */
 
-import express, {
-  Router,
-  Request,
-  Response,
-  NextFunction,
-  RequestHandler,
-} from 'express';
+import express, { Router } from 'express';
 import * as AuthController from '../controllers/auth-controller';
 import * as AccountController from '../controllers/account-controller';
 import * as AgentsController from '../controllers/agents-controller';

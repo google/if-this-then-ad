@@ -31,7 +31,7 @@ import { log } from '@iftta/util';
  *
  * Enables use of Google Ads entities as targets for rules.
  */
-export default class GoogleAdsAgent implements IAgent {
+export class GoogleAdsAgent implements IAgent {
   public agentId = config.id;
   public name = config.name;
 

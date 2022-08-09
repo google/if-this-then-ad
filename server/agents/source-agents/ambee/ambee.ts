@@ -31,7 +31,7 @@ import { Rule } from '../../../models/rule';
 /**
  * Ambee Agent.
  */
-export default class AmbeeAgent implements IAgent {
+export class AmbeeAgent implements IAgent {
   public agentId: string = config.id;
   public name: string = config.name;
 

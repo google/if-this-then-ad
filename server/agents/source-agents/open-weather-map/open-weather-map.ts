@@ -28,7 +28,7 @@ import { log } from '@iftta/util';
 /**
  * OpenWeatherMap agent.
  */
-class OpenWeatherMap implements IAgent {
+export class OpenWeatherMap implements IAgent {
   public agentId: string = 'open-weather-map';
   public name: string = 'Weather';
 
@@ -289,5 +289,3 @@ class OpenWeatherMap implements IAgent {
     return Promise.resolve(meta);
   }
 }
-
-export default OpenWeatherMap;
