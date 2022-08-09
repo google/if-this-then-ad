@@ -11,13 +11,13 @@
     limitations under the License.
  */
 
-import { log } from '@iftta/util';
+import { logger } from '../util/logger';
 import { AgentResult, RuleResult } from './interfaces';
 import { RulesProcessor } from './rules-processor';
 // export const messageHandler = (req:Request, res:Response) => {
 //         if (req.body) {
 //             if (!req.body.message) {
-//                 log.error('Invalid message format received');
+//                 logger.error('Invalid message format received');
 //                 res.status(400).send(`Bad request : invalid message format`);
 //                 return;
 //             }
@@ -32,8 +32,8 @@ import { RulesProcessor } from './rules-processor';
 export const processMessage = async (
   message: AgentResult
 ): Promise<Array<RuleResult>> => {
-  log.debug('Message-Handler: Received incoming message');
-  log.debug(message);
+  logger.debug('Message-Handler: Received incoming message');
+  logger.debug(message);
   const rp = new RulesProcessor();
 
   return await rp.processAgentResult(message);

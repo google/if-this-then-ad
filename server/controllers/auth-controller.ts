@@ -13,7 +13,7 @@
 
 import { NextFunction, Request, Response } from 'express';
 import passport from 'passport';
-import { log } from '@iftta/util';
+import { logger } from '../util/logger';
 
 // TODO(jhoesel): move token refresh out of job runner.
 import { refreshAccessToken } from '../auth/google-auth';
@@ -63,7 +63,7 @@ export function googleLoginCallback(
   res: Response,
   next: NextFunction
 ) {
-  log.debug('Google login called back.');
+  logger.debug('Google login called back.');
   passport.authenticate('google', {
     failureRedirect: '/api/auth/login',
   })(req, res, next);
@@ -74,14 +74,14 @@ export function googleLoginDone(
   res: Response,
   next: NextFunction
 ) {
-  log.debug('Google login process done, redirecting client.');
+  logger.debug('Google login process done, redirecting client.');
   const { returnTo, clientUrl } = decodeLoginStateFromRequest(req);
   const userValue = encodeURIComponent(JSON.stringify(req.user) || '');
   res.redirect(`${clientUrl}/logged-in?returnTo=${returnTo}&user=${userValue}`);
 }
 
 export function login(req: Request, res: Response, next: NextFunction) {
-  log.debug('Executing Google login.');
+  logger.debug('Executing Google login.');
   passport.authenticate('google', {
     accessType: 'offline',
     prompt: 'consent',

@@ -15,7 +15,7 @@ import { AgentResult, Rule, COMPARATORS, RuleResult } from './interfaces';
 import Repository from '../services/repository-service';
 import Collections from '../services/collection-factory';
 import { Collection } from '../models/fire-store-entity';
-import { log } from '@iftta/util';
+import { logger } from '../util/logger';
 
 const rulesCollection = Collections.get(Collection.RULES);
 const repo = new Repository<Rule>(rulesCollection);
@@ -52,7 +52,7 @@ export class RulesProcessor {
       );
     });
 
-    log.info(`Got ${rulesForJob.length} rules for job ${jobResult.jobId}`);
+    logger.info(`Got ${rulesForJob.length} rules for job ${jobResult.jobId}`);
 
     return rulesForJob;
   }
@@ -96,7 +96,7 @@ export class RulesProcessor {
     const dpResult = jobResult.data[rule.condition.dataPoint];
     if (typeof dpResult == 'undefined') {
       const msg = `Datapoint ${rule.condition.dataPoint} is not a valid property of AgentResult`;
-      log.debug(msg);
+      logger.debug(msg);
       return false;
     }
 

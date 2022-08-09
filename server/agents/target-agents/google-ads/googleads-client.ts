@@ -20,7 +20,7 @@ import {
   AdGroupObject,
 } from './interfaces';
 import axios, { AxiosRequestConfig, Method } from 'axios';
-import { log } from '@iftta/util';
+import { logger } from '../../../util/logger';
 import { config } from './config';
 
 /**
@@ -179,7 +179,7 @@ export default class GoogleAdsClient {
         return adGroup;
       });
     } catch (err) {
-      log.error(err);
+      logger.error(err);
       return Promise.reject(err);
     }
   }
@@ -216,7 +216,7 @@ export default class GoogleAdsClient {
         return adGroup;
       });
     } catch (err) {
-      log.error(err);
+      logger.error(err);
       return Promise.reject(err);
     }
   }

@@ -14,7 +14,7 @@
 require('module-alias/register');
 
 import { Request, Response } from 'express';
-import { log } from '@iftta/util';
+import { logger } from '../util/logger';
 import { OpenWeatherMap } from '../agents/source-agents/open-weather-map/open-weather-map';
 import { DV360Agent } from '../agents/target-agents/dv360-ads/dv360-agent';
 import { GoogleAdsAgent } from '../agents/target-agents/google-ads/googleads-agent';
@@ -71,7 +71,7 @@ export const getAgentEntityList = async (req: Request, res: Response) => {
     // TODO: Move auth/user settings to the separate module
     let token: Token;
     const accessToken = req.headers.authorization?.split(' ')[1];
-    log.debug(
+    logger.debug(
       'agents-controller:getAgentEntityList: Access Token',
       accessToken
     );
@@ -111,7 +111,7 @@ export const getAgentEntityList = async (req: Request, res: Response) => {
     }
     return res.status(404);
   } catch (err) {
-    log.error(err);
+    logger.error(err);
     return res.status(500).json({ message: (err as Error).message });
   }
 };

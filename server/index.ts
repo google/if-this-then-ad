@@ -13,15 +13,15 @@
 require('module-alias/register');
 
 import app from './app';
-import { log } from '@iftta/util';
+import { logger } from './util/logger';
 
 /**
  * Start Express
  */
 const port = app.get('PORT');
 const server = app.listen(port, () => {
-  log.info(`Server listening on port ${port}`);
-  log.info('ctrl + C to kill it');
+  logger.info(`Server listening on port ${port}`);
+  logger.info('ctrl + C to kill it');
 });
 
 export default server;

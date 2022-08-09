@@ -12,7 +12,6 @@
  */
 
 import { Request, Response, NextFunction } from 'express';
-import { log } from '@iftta/util';
 
 /**
  * A error implementation for Express error handling.

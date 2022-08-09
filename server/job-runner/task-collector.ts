@@ -11,7 +11,7 @@
     limitations under the License.
  */
 
-import { log } from '@iftta/util';
+import { logger } from '../util/logger';
 import {
   AgentTask,
   AgentResult,
@@ -45,7 +45,7 @@ export default class TaskCollector {
       token = await refreshTokensForUser(ownerId);
       ownerSettings = await TaskConfiguration.getUserSettings(ownerId);
     } catch (e) {
-      log.error(['Could not configure the task.', e as string]);
+      logger.error(['Could not configure the task.', e as string]);
       return;
     }
 

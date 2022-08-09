@@ -11,9 +11,18 @@
     limitations under the License.
  */
 
-import { log, isObject } from '@iftta/util';
+import { logger } from '../util/logger';
 import { FirestoreCollection } from '../models/fire-store-entity';
 import { QueryDocumentSnapshot } from '@google-cloud/firestore';
+
+/**
+ * 
+ * @param {unknown} value to check
+ * @returns {boolean} true if value is an object
+ */
+function isObject(value: unknown): boolean {
+  return value !== null && typeof value === 'object';
+};
 
 /**
  * Repository Service.
@@ -47,7 +56,7 @@ class RepositoryService<T> {
           // detect the timestamp object
           if (isObject(data[field])) {
             if (Object.keys(data[field]).includes('_seconds')) {
-              log.debug(`Converting field : ${field}  to Date`);
+              logger.debug(`Converting field : ${field}  to Date`);
               // convert to JS Date so that we dont have to deal wtih Timestamp object
               data[field] = data[field].toDate();
             }
@@ -60,7 +69,7 @@ class RepositoryService<T> {
       const data = snapshot.data();
 
       deepInspect(data);
-      log.debug(data);
+      logger.debug(data);
       return data;
     };
 
@@ -74,15 +83,15 @@ class RepositoryService<T> {
    * @returns {Promise<string>}
    */
   async save<T>(obj: T): Promise<string> {
-    log.debug('Saving data to firestore');
-    log.debug(JSON.stringify(obj, null, 2));
+    logger.debug('Saving data to firestore');
+    logger.debug(JSON.stringify(obj, null, 2));
     try {
       const collectionRef = this.db.collection(this.fireStoreCollection.name);
       const result = await collectionRef.add(obj);
-      log.debug('Saved entity with id :' + result.id);
+      logger.debug('Saved entity with id :' + result.id);
       return result.id;
     } catch (err) {
-      log.error(err);
+      logger.error(err);
     }
     return '';
   }
@@ -104,11 +113,11 @@ class RepositoryService<T> {
       collection.forEach((entry) => {
         data.push({ id: entry.id, ...entry.data() });
       });
-      log.debug('Repository:list');
-      log.debug(data);
+      logger.debug('Repository:list');
+      logger.debug(data);
       return data;
     } catch (err) {
-      log.error(err);
+      logger.error(err);
       return Promise.reject(err);
     }
   }
@@ -120,7 +129,7 @@ class RepositoryService<T> {
    * @returns {Promise<T | undefined>}
    */
   async get(id: string): Promise<T | undefined> {
-    log.debug(['Repository:get', id]);
+    logger.debug(['Repository:get', id]);
     if (!id) {
       throw new Error('Document id cannot be empty');
     }
@@ -134,13 +143,13 @@ class RepositoryService<T> {
       const doc = await docRef.get();
 
       if (!doc.exists) {
-        log.info(`Document with id : ${id} not found`);
+        logger.info(`Document with id : ${id} not found`);
       }
       const data = { id: doc.id, ...doc.data() };
 
       return data;
     } catch (err) {
-      log.error(err);
+      logger.error(err);
       return Promise.reject(err);
     }
   }
@@ -156,7 +165,7 @@ class RepositoryService<T> {
     fieldName: any,
     fieldValue: string | number | boolean
   ): Promise<T[]> {
-    log.debug('Repository:getBy');
+    logger.debug('Repository:getBy');
     const data: Array<T> = [];
     try {
       if (fieldValue == undefined) {
@@ -170,7 +179,7 @@ class RepositoryService<T> {
       const snapshot = await colRef.where(fieldName, '==', fieldValue).get();
 
       if (snapshot.empty) {
-        log.debug(
+        logger.debug(
           `Collection ${this.fireStoreCollection.name} contains no document with field ${fieldName} : ${fieldValue}`
         );
       }
@@ -179,7 +188,7 @@ class RepositoryService<T> {
         data.push({ id: doc.id, ...doc.data() });
       });
     } catch (err) {
-      log.error(err);
+      logger.error(err);
       return Promise.reject(err);
     }
 
@@ -202,7 +211,7 @@ class RepositoryService<T> {
       const result = await docRef.set(data);
       return result.id;
     } catch (err) {
-      log.error(err);
+      logger.error(err);
       return Promise.reject(err);
     }
   }
@@ -218,7 +227,7 @@ class RepositoryService<T> {
       const docRef = this.db.collection(this.fireStoreCollection.name).doc(id);
       return await docRef.delete();
     } catch (err) {
-      log.error(err);
+      logger.error(err);
       return Promise.reject(err);
     }
   }
@@ -232,14 +241,14 @@ class RepositoryService<T> {
   async arrayContains(fieldName: string, searchValue: string): Promise<T[]> {
     try {
       const data: Array<T> = [];
-      log.debug('repository:arrayContainsAny');
+      logger.debug('repository:arrayContainsAny');
       const snapshot = await this.db
         .collection(this.fireStoreCollection.name)
         .where(fieldName, 'array-contains', searchValue)
         .get();
 
       if (snapshot.empty) {
-        log.debug(
+        logger.debug(
           `No matching documents found ${fieldName}[] containing ${searchValue}`
         );
       }
@@ -249,7 +258,7 @@ class RepositoryService<T> {
       });
       return Promise.resolve(data);
     } catch (e) {
-      log.error(e);
+      logger.error(e);
       return Promise.reject(e);
     }
   }
