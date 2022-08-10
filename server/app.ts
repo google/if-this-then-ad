@@ -39,7 +39,9 @@ const app = express();
 
 logger.info(`LOG LEVEL SETTING : ${process.env.LOG_LEVEL}`);
 logger.debug({ ...process.env });
-logger.debug('-------------------------------END CONFIGURATION----------------');
+logger.debug(
+  '-------------------------------END CONFIGURATION----------------'
+);
 const PORT = process.env.PORT || 8080;
 app.set('PORT', PORT);
 /**

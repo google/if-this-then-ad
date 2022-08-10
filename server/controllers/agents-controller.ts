@@ -27,7 +27,7 @@ import { Collection } from '../models/fire-store-entity';
 const usersCollection = Collections.get(Collection.USERS);
 const userRepo = new Repository<User>(usersCollection);
 const dv360Agent = new DV360Agent();
-const googleAdsAgent = new GoogleAdsAgent(); 
+const googleAdsAgent = new GoogleAdsAgent();
 
 const registeredAgents = {
   'dv360-agent': {

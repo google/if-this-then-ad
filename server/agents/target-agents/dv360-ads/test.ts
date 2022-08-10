@@ -11,7 +11,8 @@
     limitations under the License.
  */
 
-import { DV360Agent } from './dv360-agent'; './dv360-agent';
+import { DV360Agent } from './dv360-agent';
+('./dv360-agent');
 import { AgentTask } from './interfaces';
 
 const task: AgentTask = {

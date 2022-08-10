@@ -221,7 +221,9 @@ class JobRunner {
 
     // Filter by execution interval
     const nowUTC = new Date();
-    logger.info(`System time used for calculating Execution interval ${nowUTC}`);
+    logger.info(
+      `System time used for calculating Execution interval ${nowUTC}`
+    );
     logger.info(`Filtering jobs that have reached execution interval`);
 
     const jobs = allJobs.filter((j) => {
@@ -313,9 +315,7 @@ class JobRunner {
       logger.info('Publishing results to the rule engine');
       logger.info(`Completed job: ${currentResult.jobId}`);
       logger.debug(currentResult);
-      const results: Array<RuleResult> = await processMessage(
-        currentResult
-      );
+      const results: Array<RuleResult> = await processMessage(currentResult);
 
       taskCollector.put(currentResult, results);
 

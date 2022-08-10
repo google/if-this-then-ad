@@ -139,7 +139,9 @@ export async function refreshTokensForUser(userId: string): Promise<Token> {
       logger.info(`Access token for user ${userId} is still valid`);
       return user.token;
     }
-    logger.info(`Noticed expired access token for user ${userId} , refreshing...`);
+    logger.info(
+      `Noticed expired access token for user ${userId} , refreshing...`
+    );
     const refreshToken: string = user.token.refresh as string;
     const newToken: Token = await getNewAuthToken(refreshToken);
 

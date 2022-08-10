@@ -16,13 +16,13 @@ import { FirestoreCollection } from '../models/fire-store-entity';
 import { QueryDocumentSnapshot } from '@google-cloud/firestore';
 
 /**
- * 
+ *
  * @param {unknown} value to check
  * @returns {boolean} true if value is an object
  */
 function isObject(value: unknown): boolean {
   return value !== null && typeof value === 'object';
-};
+}
 
 /**
  * Repository Service.
