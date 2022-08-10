@@ -13,11 +13,11 @@
 
 // Load environment variables first
 import env from 'dotenv';
-import { log } from '@iftta/util';
+import { logger } from './util/logger';
 
 const envConfig = env.config();
 if (envConfig.error || envConfig.parsed == null) {
-  log.error('Error loading configuration from .env file');
+  logger.error('Error loading configuration from .env file');
 }
 
 import express from 'express';
@@ -35,11 +35,13 @@ import { Firestore } from '@google-cloud/firestore';
 import { FirestoreStore } from '@google-cloud/connect-firestore';
 import { handleGenericError } from './util/error';
 
-let app = express();
+const app = express();
 
-log.info(`LOG LEVEL SETTING : ${process.env.LOG_LEVEL}`);
-log.debug({ ...process.env });
-log.debug('-------------------------------END CONFIGURATION----------------');
+logger.info(`LOG LEVEL SETTING : ${process.env.LOG_LEVEL}`);
+logger.debug({ ...process.env });
+logger.debug(
+  '-------------------------------END CONFIGURATION----------------'
+);
 const PORT = process.env.PORT || 8080;
 app.set('PORT', PORT);
 /**
@@ -94,7 +96,7 @@ export const requestLogger = (
                       Method: ${req.method}
                       Params: ${JSON.stringify(req.params, null, 2)} 
                       Body: ${JSON.stringify(req.body, null, 2)}`;
-  log.debug(message);
+  logger.debug(message);
   next();
 };
 app.use(requestLogger);
@@ -109,7 +111,7 @@ try {
   app.use(passport.initialize());
   app.use(passport.session());
 } catch (err) {
-  log.error(err);
+  logger.error(err);
 }
 
 // Configure routes

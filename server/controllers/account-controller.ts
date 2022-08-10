@@ -12,7 +12,7 @@
  */
 import { Request, Response } from 'express';
 import Repository from '../services/repository-service';
-import { log } from '@iftta/util';
+import { logger } from '../util/logger';
 import Collections from '../services/collection-factory';
 import { User } from '../models/user';
 import { Collection } from '../models/fire-store-entity';
@@ -27,7 +27,7 @@ export const listAccounts = async (req: Request, res: Response) => {
     const userData = await userRepo.list();
     return res.json(userData);
   } catch (e) {
-    log.debug(e);
+    logger.debug(e);
     return res.status(500).send('Failed to fetch account list');
   }
 };
@@ -59,7 +59,7 @@ export const update = async (req: Request, res: Response) => {
     await userRepo.update(userId, user);
     return res.sendStatus(200);
   } catch (e) {
-    log.error(e);
+    logger.error(e);
     return res.sendStatus(500);
   }
 };
@@ -70,7 +70,7 @@ export const updateSettings = async (req: Request, res: Response) => {
     user.userSettings = req.body;
     await userRepo.update(req.params.userId, user);
   } catch (e) {
-    log.error(e);
+    logger.error(e);
     return res
       .status(500)
       .json({ error: 'Error occurred while updating user settings' });
@@ -80,7 +80,7 @@ export const updateSettings = async (req: Request, res: Response) => {
 
 export const remove = async (req: Request, res: Response) => {
   const id = req.params.id;
-  log.debug(`Deleting document ${id}`);
+  logger.debug(`Deleting document ${id}`);
   await userRepo.delete(id);
   return res.json({ status: 'done' });
 };

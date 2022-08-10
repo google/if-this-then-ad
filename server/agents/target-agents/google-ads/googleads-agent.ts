@@ -25,13 +25,13 @@ import {
   InstanceOptions,
 } from './interfaces';
 import { config } from './config';
-import { log } from '@iftta/util';
+import { logger } from '../../../util/logger';
 /**
  * Class GoogleAdsAgent
  *
  * Enables use of Google Ads entities as targets for rules.
  */
-export default class GoogleAdsAgent implements IAgent {
+export class GoogleAdsAgent implements IAgent {
   public agentId = config.id;
   public name = config.name;
 
@@ -116,7 +116,7 @@ export default class GoogleAdsAgent implements IAgent {
   public async execute(task: AgentTask): Promise<Array<ActionResult>> {
     const result: Array<ActionResult> = [];
     for (const action of task.target.actions) {
-      log.debug(['ads.execute task', task]);
+      logger.debug(['ads.execute task', task]);
 
       const instanceOptions = {} as InstanceOptions;
       action.params.forEach((p) => {
@@ -150,10 +150,10 @@ export default class GoogleAdsAgent implements IAgent {
           timestamp: new Date(),
           success: true,
         };
-        log.debug('ads.execute tmpResult', updateResult);
+        logger.debug('ads.execute tmpResult', updateResult);
         result.push(updateResult);
       } catch (err) {
-        log.debug('ads.agent Error:', err);
+        logger.debug('ads.agent Error:', err);
         result.push({
           ruleId: task.target.ruleId,
           agentId: config.id,

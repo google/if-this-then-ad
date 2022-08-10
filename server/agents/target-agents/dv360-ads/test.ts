@@ -11,7 +11,8 @@
     limitations under the License.
  */
 
-import dv360agent from './index';
+import { DV360Agent } from './dv360-agent';
+('./dv360-agent');
 import { AgentTask } from './interfaces';
 
 const task: AgentTask = {
@@ -78,4 +79,4 @@ const task: AgentTask = {
   },
 };
 
-dv360agent.execute(task).then((x) => console.log(x));
+new DV360Agent().execute(task).then((x) => console.log(x));

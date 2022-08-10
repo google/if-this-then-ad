@@ -22,7 +22,7 @@ import {
   Job,
 } from './interfaces';
 import { config } from './config';
-import { log } from '@iftta/util';
+import { logger } from '../../../util/logger';
 import Repository from '../../../services/repository-service';
 import Collections from '../../../services/collection-factory';
 import { Collection } from '../../../models/fire-store-entity';
@@ -31,7 +31,7 @@ import { Rule } from '../../../models/rule';
 /**
  * Ambee Agent.
  */
-export default class AmbeeAgent implements IAgent {
+export class AmbeeAgent implements IAgent {
   public agentId: string = config.id;
   public name: string = config.name;
 
@@ -49,7 +49,7 @@ export default class AmbeeAgent implements IAgent {
     if (!options.apiKey) {
       const errorMessage =
         'API Key not set, it needs to be set in the user settings';
-      log.error(errorMessage);
+      logger.error(errorMessage);
       throw new Error(errorMessage);
     }
 
@@ -73,8 +73,8 @@ export default class AmbeeAgent implements IAgent {
       },
     });
 
-    log.debug(`${this.agentId} : HTTP Client created, with options`);
-    log.debug(
+    logger.debug(`${this.agentId} : HTTP Client created, with options`);
+    logger.debug(
       JSON.stringify({
         q: options.targetLocation,
         appid: options.apiKey,
@@ -93,7 +93,7 @@ export default class AmbeeAgent implements IAgent {
    * @returns {Promise<AgentResponse>}
    */
   private async run(options: Configuration): Promise<AgentResponse> {
-    log.debug(['ambee:run: options', options]);
+    logger.debug(['ambee:run: options', options]);
     try {
       // Get rule
       const rulesCollection = Collections.get(Collection.RULES);
@@ -107,13 +107,13 @@ export default class AmbeeAgent implements IAgent {
         throw new Error(`Cannot find the rule: ${options.rules[0]}`);
       }
 
-      log.debug(`${this.agentId} :run: options`);
-      log.debug(options);
+      logger.debug(`${this.agentId} :run: options`);
+      logger.debug(options);
 
       const client = this.createApiClient(rule.condition.dataPoint, options);
       const response = await client.get('/');
-      log.debug(`${this.agentId} :run: raw client response`);
-      log.debug(JSON.stringify(response.data));
+      logger.debug(`${this.agentId} :run: raw client response`);
+      logger.debug(JSON.stringify(response.data));
 
       const agentResponse: AgentResponse = {
         jobOwner: '',
@@ -121,11 +121,11 @@ export default class AmbeeAgent implements IAgent {
         data: response.data,
       };
 
-      log.debug(`${this.agentId} :run: client response`);
-      log.debug(agentResponse);
+      logger.debug(`${this.agentId} :run: client response`);
+      logger.debug(agentResponse);
       return Promise.resolve(agentResponse);
     } catch (e) {
-      log.error(e as string);
+      logger.error(e as string);
       return Promise.reject(e);
     }
 
@@ -143,8 +143,8 @@ export default class AmbeeAgent implements IAgent {
    * @returns {AgentResult | undefined}
    */
   private transform(ambeeData: AgentResponse): AgentResult | undefined {
-    log.info('Transforming ambee data');
-    log.info(ambeeData);
+    logger.info('Transforming ambee data');
+    logger.info(ambeeData);
 
     const generalResponse = {
       agentId: this.agentId,
@@ -202,8 +202,8 @@ export default class AmbeeAgent implements IAgent {
       jobOwner: job.owner,
     };
 
-    log.debug(`${this.agentId} : Agent options used for this job`);
-    log.debug(options);
+    logger.debug(`${this.agentId} : Agent options used for this job`);
+    logger.debug(options);
 
     return options;
   }
@@ -246,12 +246,12 @@ export default class AmbeeAgent implements IAgent {
    * @returns {Promise<AgentResult>}
    */
   public async execute(job: Job): Promise<AgentResult> {
-    log.debug(`${this.agentId} : execute : Job to execute`);
-    log.debug(job);
+    logger.debug(`${this.agentId} : execute : Job to execute`);
+    logger.debug(job);
     const jobOptions = this.getOptions(job);
     if (!jobOptions.apiKey) {
       const errorMessage = `Execution of Job ${job.id} failed: Cannot run the job without the apiKey`;
-      log.debug(errorMessage);
+      logger.debug(errorMessage);
       return Promise.reject(errorMessage);
     }
 

@@ -15,7 +15,7 @@ import Repository from '../services/repository-service';
 import Collections from '../services/collection-factory';
 import { Rule } from '../models/rule';
 import { Collection } from '../models/fire-store-entity';
-import { log } from '@iftta/util';
+import { logger } from '../util/logger';
 import * as JobController from '../controllers/jobs-controller';
 import { Request, Response } from 'express';
 
@@ -43,8 +43,8 @@ export const create = async (req: Request, res: Response) => {
   };
 
   try {
-    log.debug(rule);
-    log.info('rules-controller:create: Creating rule');
+    logger.debug(rule);
+    logger.info('rules-controller:create: Creating rule');
 
     // Create job based on rule
     const jobId = await JobController.addJob(rule);
@@ -59,7 +59,7 @@ export const create = async (req: Request, res: Response) => {
 
     await JobController.assignRuleToJob(ruleId, jobId);
 
-    log.info(
+    logger.info(
       `rules-controller:create: Successfully created rule with id : ${ruleId}`
     );
     return res.json(rule);
@@ -99,10 +99,10 @@ export const remove = async (req: Request, res: Response) => {
       return res.sendStatus(204);
     }
     const msg = `FORBIDDEN: Non ower userId: ${userId} attempted to delete Rule ${ruleId}`;
-    log.warn(msg);
+    logger.warn(msg);
     return res.status(403).send(msg);
   } catch (e) {
-    log.error(e);
+    logger.error(e);
     return res.sendStatus(500);
   }
 };
@@ -119,7 +119,7 @@ export const get = async (req: Request, res: Response) => {
     const rule = await repo.get(ruleId);
     return res.json(rule);
   } catch (e) {
-    log.error(e);
+    logger.error(e);
     return res.sendStatus(500);
   }
 };
@@ -136,7 +136,7 @@ export const getByUser = async (req: Request, res: Response) => {
     const rules = await repo.getBy('owner', userId);
     return res.json(rules);
   } catch (e) {
-    log.error(e);
+    logger.error(e);
     return res.sendStatus(500).json(e);
   }
 };

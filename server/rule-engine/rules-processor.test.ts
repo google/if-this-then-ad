@@ -11,8 +11,8 @@
     limitations under the License.
  */
 require('module-alias/register');
-import { RulesProcessor } from '../src/rules-processor';
-import { AgentResult, Rule, COMPARATORS } from '../src/interfaces';
+import { RulesProcessor } from './rules-processor';
+import { AgentResult, Rule, COMPARATORS } from './interfaces';
 import {
   HazardousAirRule,
   PollenAgentResult as ModeratePollenResult,

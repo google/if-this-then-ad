@@ -18,8 +18,8 @@ import Collections from '../services/collection-factory';
 import { Collection } from '../models/fire-store-entity';
 import { Job } from '../models/job';
 import { isDeepStrictEqual } from 'util';
-import { log } from '@iftta/util';
-import * as JobRunner from '@iftta/job-runner';
+import { logger } from '../util/logger';
+import { jobRunner } from '../job-runner/job-runner';
 
 const jobsCollection = Collections.get(Collection.JOBS);
 const repo = new Repository<Job>(jobsCollection);
@@ -33,9 +33,9 @@ const repo = new Repository<Job>(jobsCollection);
  * @returns {Promise<string>}
  */
 export const addJob = async (rule: Rule): Promise<string> => {
-  log.debug('jobs-controller:addJob');
-  log.debug(JSON.stringify(rule, null, 2));
-  log.info('Checking for existing similar jobs');
+  logger.debug('jobs-controller:addJob');
+  logger.debug(JSON.stringify(rule, null, 2));
+  logger.info('Checking for existing similar jobs');
   const agentJobs = await repo.getBy('agentId', rule.source.id);
 
   // get all jobs for agent.
@@ -46,8 +46,8 @@ export const addJob = async (rule: Rule): Promise<string> => {
     owner: rule.owner,
     rules: [],
   };
-  log.debug('Jobs-controller:addJob');
-  log.debug(job);
+  logger.debug('Jobs-controller:addJob');
+  logger.debug(job);
 
   const existingJobs = agentJobs.filter((j) => {
     // remove ID to avoid deepequal being always false.
@@ -56,31 +56,31 @@ export const addJob = async (rule: Rule): Promise<string> => {
     delete j.lastExecution;
 
     if (isDeepStrictEqual(j, job)) {
-      log.debug('found existing job ' + id);
+      logger.debug('found existing job ' + id);
       j.id = id; // return ID, we need this later.
       return true;
     }
     return false;
   });
 
-  log.info(`Found ${existingJobs.length} existing jobs`);
-  log.debug(existingJobs);
+  logger.info(`Found ${existingJobs.length} existing jobs`);
+  logger.debug(existingJobs);
 
   if (!existingJobs || existingJobs.length == 0) {
     try {
-      log.info(
+      logger.info(
         `job-controller:addJob: Creating a new job for agent ${job.agentId}`
       );
       const jobId = await repo.save(job);
-      log.info(`Job created :  ${jobId}`);
+      logger.info(`Job created :  ${jobId}`);
       return jobId;
     } catch (err) {
-      log.error(err);
+      logger.error(err);
     }
   }
 
   if (existingJobs.length > 0) {
-    log.debug(existingJobs[0].id);
+    logger.debug(existingJobs[0].id);
     return existingJobs[0].id as string;
   }
 
@@ -88,8 +88,8 @@ export const addJob = async (rule: Rule): Promise<string> => {
 };
 
 export const executeJobs = async (req: Request, res: Response) => {
-  log.info('job-controller:executeJobs: Executing all available jobs');
-  JobRunner.execute();
+  logger.info('job-controller:executeJobs: Executing all available jobs');
+  jobRunner.runAll();
   res.json({ status: 'started' });
 };
 
@@ -103,10 +103,10 @@ export const assignRuleToJob = async (ruleId: string, jobId: string) => {
     const job: Job = (await repo.get(jobId)) as Job;
     job.rules.push(ruleId);
     await repo.update(jobId, job);
-    log.debug(`Associated rule ${ruleId} with job ${jobId}`);
+    logger.debug(`Associated rule ${ruleId} with job ${jobId}`);
     return Promise.resolve();
   } catch (e) {
-    log.error(e);
+    logger.error(e);
     return Promise.reject(e);
   }
 };
@@ -125,18 +125,18 @@ export const removeRuleFromJob = async (ruleId: string) => {
       const rules = job.rules.filter((r) => {
         return r !== ruleId;
       });
-      log.debug(rules);
+      logger.debug(rules);
       if (rules.length == 0) {
         // last rule associated to the job, remove the job.
         await repo.delete(job.id!);
-        log.info(`jobs-controller:removeRuleFromJob: Removed job ${job.id}`);
+        logger.info(`jobs-controller:removeRuleFromJob: Removed job ${job.id}`);
       } else {
         job.rules = rules;
         await repo.update(job.id!, job);
-        log.info(`Removed rule ${ruleId} from job ${job.id}`);
+        logger.info(`Removed rule ${ruleId} from job ${job.id}`);
       }
     }
   } catch (e) {
-    log.error(e);
+    logger.error(e);
   }
 };

@@ -12,9 +12,10 @@
  */
 
 const { PubSub } = require('@google-cloud/pubsub');
-import { log, date } from '@iftta/util';
-import OpenWeatherMap from '../agents/source-agents/open-weather-map';
-import DV360Ads from '../agents/target-agents/dv360-ads';
+import date from 'date-fns';
+import { logger } from '../util/logger';
+import { OpenWeatherMap } from '../agents/source-agents/open-weather-map/open-weather-map';
+import { DV360Agent } from '../agents/target-agents/dv360-ads/dv360-agent';
 import {
   AgentResult,
   RuleResult,
@@ -25,13 +26,13 @@ import {
   Rule,
 } from './interfaces';
 import { Collection } from '../models/fire-store-entity';
-import rulesEngine from '../packages/rule-engine';
+import { processMessage } from '../rule-engine/message-handler';
 import Collections from '../services/collection-factory';
 import Repository from '../services/repository-service';
 import TaskCollector from './task-collector';
 import TaskConfiguration from './task-configuration';
-import AmbeeAgent from '@iftta/ambee-agent';
-import googleAdsAgent from '@iftta/google-ads';
+import { AmbeeAgent } from '../agents/source-agents/ambee/ambee';
+import { GoogleAdsAgent } from '../agents/target-agents/google-ads/googleads-agent';
 
 // Temp coupling between packages/
 // TODO: replace this with sending messages over pubsub.
@@ -97,11 +98,11 @@ class JobRunner {
     try {
       if (topic == null) {
         await this.client.createTopic(name);
-        log.info(`New topic created : ${fullTopicName}`);
+        logger.info(`New topic created : ${fullTopicName}`);
         topic = await this.getTopic(fullTopicName);
         // Creates a subscription on that new topic
         await topic.createSubscription(subsId);
-        log.info(`Subscription ${subsId} for topic ${topic.name} created`);
+        logger.info(`Subscription ${subsId} for topic ${topic.name} created`);
         return topic;
       }
 
@@ -112,15 +113,15 @@ class JobRunner {
       });
 
       if (!existingSubscription) {
-        log.info('Found existing topic, but missing a subscription');
+        logger.info('Found existing topic, but missing a subscription');
         await topic.createSubscription(subsId);
-        log.info(
+        logger.info(
           `Subscription ${subsId} created on existing topic. ${fullTopicName}`
         );
       }
-      log.info(`Topic ${name} exists, skipping creation`);
+      logger.info(`Topic ${name} exists, skipping creation`);
     } catch (err) {
-      log.error(JSON.stringify(err));
+      logger.error(JSON.stringify(err));
     }
 
     return topic;
@@ -157,8 +158,8 @@ class JobRunner {
    */
   private listTargetAgents() {
     return {
-      'dv360-agent': DV360Ads,
-      'googleads-agent': googleAdsAgent,
+      'dv360-agent': DV360Agent,
+      'googleads-agent': GoogleAdsAgent,
     };
   }
   /**
@@ -170,12 +171,12 @@ class JobRunner {
   private async *runJobs(jobs: Job[]) {
     const agents = this.listSourceAgents();
 
-    log.debug('runJobs jobs');
-    log.debug(jobs);
+    logger.debug('runJobs jobs');
+    logger.debug(jobs);
 
     for (const job of jobs) {
       const agent = agents[job.agentId];
-      log.info(`Executing job ${job.id} via agent ${job.agentId}`);
+      logger.info(`Executing job ${job.id} via agent ${job.agentId}`);
       try {
         yield await agent.execute(job);
       } catch (e) {
@@ -185,7 +186,7 @@ class JobRunner {
           new Date(),
           (e as Error).message
         );
-        log.error(e);
+        logger.error(e);
       }
     }
   }
@@ -201,7 +202,7 @@ class JobRunner {
       if (job) {
         job.lastExecution = new Date();
         await this.jobsRepository.update(j.jobId, job);
-        log.info(
+        logger.info(
           `Set lastExecution time: ${j.lastExecution} on job : ${j.jobId}`
         );
       }
@@ -215,29 +216,31 @@ class JobRunner {
    */
   private async getEligibleJobs(): Promise<Array<Job>> {
     // Get a list of jobs to execute
-    log.info('Fetching job list to execute');
+    logger.info('Fetching job list to execute');
     const allJobs: Job[] = await this.jobsRepository.list();
 
     // Filter by execution interval
     const nowUTC = new Date();
-    log.info(`System time used for calculating Execution interval ${nowUTC}`);
-    log.info(`Filtering jobs that have reached execution interval`);
+    logger.info(
+      `System time used for calculating Execution interval ${nowUTC}`
+    );
+    logger.info(`Filtering jobs that have reached execution interval`);
 
     const jobs = allJobs.filter((j) => {
       // For first time executions lastExecution will not be set
       if (!date.isValid(j.lastExecution)) {
-        log.debug(`Invalid date in last execution ${j.id}`);
-        log.debug(j.lastExecution);
+        logger.debug(`Invalid date in last execution ${j.id}`);
+        logger.debug(j.lastExecution);
         j.lastExecution = 0;
         return true;
       }
-      log.debug(
+      logger.debug(
         `job-runner:getEligibleJobs: jobTime: ${j.id} : ${j.lastExecution}`
       );
       const nextRuntime = date.add(j.lastExecution!, {
         minutes: j.executionInterval,
       });
-      log.info(`Job: ${j.id} next execution : ${nextRuntime}`);
+      logger.info(`Job: ${j.id} next execution : ${nextRuntime}`);
 
       return date.isPast(nextRuntime);
     });
@@ -277,25 +280,25 @@ class JobRunner {
       executionTimes.push(execTime);
     };
     // Get a list of jobs to execute
-    log.info('job-runner:runAll: Fetching job list to execute');
+    logger.info('job-runner:runAll: Fetching job list to execute');
     const eligibleJobs = await this.getEligibleJobs();
     const jobCount = eligibleJobs.length;
-    log.debug('job-runner:runAll: List of jobs to execute');
-    log.info(`job-runner:runAll: Got ${jobCount} jobs to execute`);
-    log.debug(eligibleJobs);
+    logger.debug('job-runner:runAll: List of jobs to execute');
+    logger.info(`job-runner:runAll: Got ${jobCount} jobs to execute`);
+    logger.debug(eligibleJobs);
 
     if (jobCount == 0) {
-      log.info('job-runner:runAll: Sleeping till next execution cycle');
+      logger.info('job-runner:runAll: Sleeping till next execution cycle');
       return;
     }
 
     const eligibleJobsWithSettings = await this.getUserSettingsForJobs(
       eligibleJobs
     );
-    log.debug(['JobRunner.runAll eligibleJobs', eligibleJobs]);
+    logger.debug(['JobRunner.runAll eligibleJobs', eligibleJobs]);
     // execute each job agent
     // await for yielded results
-    log.info('job-runner:runAll: Executing jobs on all available agents');
+    logger.info('job-runner:runAll: Executing jobs on all available agents');
     const agentResultIter = this.runJobs(eligibleJobsWithSettings);
     let agentResult = agentResultIter.next();
 
@@ -304,31 +307,29 @@ class JobRunner {
 
     const taskCollector = new TaskCollector();
     while (!(await agentResult).done) {
-      log.debug('job-runner:runAll: jobResult');
-      log.debug(await agentResult);
+      logger.debug('job-runner:runAll: jobResult');
+      logger.debug(await agentResult);
       // pass this to rules engine.
       const currentResult: AgentResult = (await agentResult).value;
       collectExecutionTimes(currentResult);
-      log.info('Publishing results to the rule engine');
-      log.info(`Completed job: ${currentResult.jobId}`);
-      log.debug(currentResult);
-      const results: Array<RuleResult> = await rulesEngine.processMessage(
-        currentResult
-      );
+      logger.info('Publishing results to the rule engine');
+      logger.info(`Completed job: ${currentResult.jobId}`);
+      logger.debug(currentResult);
+      const results: Array<RuleResult> = await processMessage(currentResult);
 
       taskCollector.put(currentResult, results);
 
       agentResult = agentResultIter.next();
     }
 
-    log.info('Updating Last execution time of jobs');
+    logger.info('Updating Last execution time of jobs');
 
     // Update execution times in the jobs collection
     await this.updateJobExecutionTimes(executionTimes);
 
     const tasks = taskCollector.get();
-    log.debug('TASKS');
-    log.debug(tasks);
+    logger.debug('TASKS');
+    logger.debug(tasks);
     await this.processTasks(tasks);
   }
 
@@ -339,7 +340,7 @@ class JobRunner {
    */
   private async processTasks(tasks: Array<AgentTask>) {
     const agents = this.listTargetAgents();
-    log.debug(`job-runner:processTasks: #of tasks ${tasks.length}`);
+    logger.debug(`job-runner:processTasks: #of tasks ${tasks.length}`);
 
     Promise.all(
       tasks.map(async (task) => {
@@ -347,7 +348,7 @@ class JobRunner {
         return targetAgent.execute(task);
       })
     ).then(async (taskResults) => {
-      log.debug(taskResults);
+      logger.debug(taskResults);
       await this.updateRuleRunStatus(taskResults.flat());
     });
   }
@@ -371,7 +372,7 @@ class JobRunner {
         message
       );
 
-      log.debug(
+      logger.debug(
         `Execution: Rule ${actionResult.ruleId} ` +
           `success: ${success}, message: ${message}`
       );
@@ -399,9 +400,9 @@ class JobRunner {
         this.rulesRepository.update(ruleId, rule);
       }
     } catch (e) {
-      log.error(e);
+      logger.error(e);
     }
   }
 }
 
-export default new JobRunner(pubSubClient, jobsRepo, rulesRepo);
+export const jobRunner = new JobRunner(pubSubClient, jobsRepo, rulesRepo);

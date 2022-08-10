@@ -31,7 +31,7 @@ import { config } from './config';
 /**
  * DV360 agent.
  */
-export default class DV360Agent implements IAgent {
+export class DV360Agent implements IAgent {
   public agentId = config.id;
   public name = config.name;
 

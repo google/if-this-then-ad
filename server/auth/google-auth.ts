@@ -23,7 +23,8 @@ import { Collection } from '../models/fire-store-entity';
 import { Token, User } from '../models/user';
 import Collections from '../services/collection-factory';
 import Repository from '../services/repository-service';
-import { log, date } from '../util/index';
+import date from 'date-fns';
+import { logger } from '../util/logger';
 import { AppError } from '../util/error';
 
 const usersCollection = Collections.get(Collection.USERS);
@@ -59,13 +60,13 @@ export async function isAuthenticated(
   next: NextFunction
 ) {
   const accessToken = extractAccessTokenFromRequest(req);
-  log.debug(`Authenticating via access token ${accessToken}.`);
+  logger.debug(`Authenticating via access token ${accessToken}.`);
   if (accessToken) {
     const [user] = await userRepo.getBy('token.access', accessToken);
     if (user) {
-      log.debug(`Found eligible user ${user.id}`);
+      logger.debug(`Found eligible user ${user.id}`);
       if (date.isFuture(user.token.expiry)) {
-        log.debug(`Eligible user's access token is valid.`);
+        logger.debug(`Eligible user's access token is valid.`);
         return next();
       }
     }
@@ -85,7 +86,7 @@ export async function isAuthenticated(
  */
 async function getNewAuthToken(refreshToken: string): Promise<Token> {
   try {
-    log.debug(`Exchanging Refresh token  ${refreshToken} for Auth Token`);
+    logger.debug(`Exchanging Refresh token  ${refreshToken} for Auth Token`);
     const grantType = 'refresh_token';
     const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
     const clientId = process.env.GOOGLE_CLIENT_ID;
@@ -107,14 +108,14 @@ async function getNewAuthToken(refreshToken: string): Promise<Token> {
         type: request.data.token_type,
       };
 
-      log.info(`Obtained new access Token ${token.access}`);
-      log.info(`Token expires in ${request.data.expires_in}`);
+      logger.info(`Obtained new access Token ${token.access}`);
+      logger.info(`Token expires in ${request.data.expires_in}`);
 
-      log.debug(token);
+      logger.debug(token);
       return token;
     }
   } catch (err) {
-    log.error(err);
+    logger.error(err);
     return Promise.reject(err);
   }
   return Promise.reject(
@@ -135,10 +136,12 @@ export async function refreshTokensForUser(userId: string): Promise<Token> {
       (user != null || user != 'undefined') &&
       date.isFuture(user.token.expiry)
     ) {
-      log.info(`Access token for user ${userId} is still valid`);
+      logger.info(`Access token for user ${userId} is still valid`);
       return user.token;
     }
-    log.info(`Noticed expired access token for user ${userId} , refreshing...`);
+    logger.info(
+      `Noticed expired access token for user ${userId} , refreshing...`
+    );
     const refreshToken: string = user.token.refresh as string;
     const newToken: Token = await getNewAuthToken(refreshToken);
 
@@ -150,7 +153,7 @@ export async function refreshTokensForUser(userId: string): Promise<Token> {
 
     return user.token;
   } catch (err) {
-    log.error(['google-auth:refreshTokenForUser', err as string]);
+    logger.error(['google-auth:refreshTokenForUser', err as string]);
     throw err;
   }
 }
@@ -177,7 +180,7 @@ export async function refreshAccessToken(
     }
     throw new Error('Refresh request denied');
   } catch (e) {
-    log.error(e);
+    logger.error(e);
     throw e;
   }
 }
@@ -190,7 +193,7 @@ export async function refreshAccessToken(
  * Initializes a new user in the data store.
  */
 async function createUser(profile: Profile) {
-  log.debug('Initializing new user.');
+  logger.debug('Initializing new user.');
   const profileData = profile._json;
   const userData: User = {
     profileId: profile.id,
@@ -210,9 +213,9 @@ async function createUser(profile: Profile) {
       type: 'Bearer',
     },
   };
-  log.debug(`User data from profile: ${JSON.stringify(userData, null, 2)}`);
+  logger.debug(`User data from profile: ${JSON.stringify(userData, null, 2)}`);
   const userId = await userRepo.save(userData);
-  log.debug(`Stored user data with id: ${userId}`);
+  logger.debug(`Stored user data with id: ${userId}`);
 
   const user = await userRepo.get(userId);
   if (!user) {
@@ -231,11 +234,11 @@ async function verify(
   done: VerifyCallback
 ) {
   // this is the callback method called after successful authentication
-  log.debug(`Profile : ${JSON.stringify(profile, null, 2)}`);
+  logger.debug(`Profile : ${JSON.stringify(profile, null, 2)}`);
 
   // Check if the user exists in db
   let [user] = await userRepo.getBy('profileId', profile.id);
-  log.debug(user);
+  logger.debug(user);
   if (!user) {
     user = await createUser(profile);
   }
@@ -261,7 +264,7 @@ export function createGoogleStrategy() {
       'OAUTH_CALLBACK_URL undefined, it must be set as environment variable'
     );
   }
-  log.warn(
+  logger.warn(
     `Set oauth callback URL to ${process.env.OAUTH_CALLBACK_URL}, adjust Authorized URLs in GCP client settings accordingly`
   );
 
