@@ -15,7 +15,6 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AddRuleComponent } from 'src/app/components/add-rule/add-rule.component';
 import { LoginComponent } from 'src/app/components/login/login.component';
-import { LoggedInComponent } from 'src/app/components/logged-in/logged-in.component';
 
 import { AuthGuard } from './services/auth.guard';
 import { UserSettingsComponent } from './components/user-settings/user-settings.component';
@@ -41,10 +40,6 @@ const routes: Routes = [
   {
     path: 'login',
     component: LoginComponent,
-  },
-  {
-    path: 'logged-in',
-    component: LoggedInComponent,
   },
   {
     path: 'settings',

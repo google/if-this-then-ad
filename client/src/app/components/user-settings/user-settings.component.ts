@@ -21,10 +21,10 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 
 import { User, UserSettingKeyValue } from 'src/app/models/user.model';
-import { AuthService } from 'src/app/services/auth.service';
 
 import { of } from 'rxjs';
 import { debounceTime, switchMap } from 'rxjs/operators';
+import { UserService } from 'src/app/services/user.service';
 
 interface UserSetting {
   title: string;
@@ -97,7 +97,7 @@ export class UserSettingsComponent {
    * @param {ActivatedRoute} route
    * @param {Location} location
    * @param {HttpClient} http
-   * @param {AuthService} authService
+   * @param {UserService} userService
    * @param {FormBuilder} formBuilder
    * @param {MatSnackBar} message
    */
@@ -105,7 +105,7 @@ export class UserSettingsComponent {
     private route: ActivatedRoute,
     private location: Location,
     private http: HttpClient,
-    private authService: AuthService,
+    private userService: UserService,
     private formBuilder: FormBuilder,
     private message: MatSnackBar
   ) {
@@ -128,11 +128,11 @@ export class UserSettingsComponent {
     }
 
     this.userSettings = this.formBuilder.group(group);
-    if (this.authService?.currentUser?.userSettings) {
+    if (this.userService?.currentUser?.userSettings) {
       const filteredUserSettings: UserSettingKeyValue = {};
       for (const setting of this.settings) {
         filteredUserSettings[setting.settingName] =
-          this.authService?.currentUser?.userSettings[setting.settingName] ||
+          this.userService?.currentUser?.userSettings[setting.settingName] ||
           '';
       }
 
@@ -170,12 +170,12 @@ export class UserSettingsComponent {
   save(value: UserSettingKeyValue) {
     this.http
       .post(
-        `${environment.apiUrl}/accounts/${this.authService.currentUser?.id}/settings`,
+        `${environment.apiUrl}/accounts/${this.userService.currentUser?.id}/settings`,
         value
       )
       .subscribe({
         next: (_) => {
-          this.authService.setUserSettings(value);
+          this.userService.setSettings(value);
           this.showSavedStatus('Saved');
         },
         error: (_) => {

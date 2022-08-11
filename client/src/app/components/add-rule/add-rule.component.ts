@@ -26,8 +26,8 @@ import { SourceAgent } from 'src/app/interfaces/source-agent';
 import { TargetAgent } from 'src/app/interfaces/target-agent';
 import { SourceAgentParameter } from 'src/app/interfaces/source-agent-parameter';
 import { SourceAgentSettingsParam } from 'src/app/interfaces/source-agent-settings-parameter';
-import { AuthService } from 'src/app/services/auth.service';
 import { StepperOrientation } from '@angular/cdk/stepper';
+import { UserService } from 'src/app/services/user.service';
 
 @Component({
   selector: 'app-add-rule',
@@ -71,7 +71,7 @@ export class AddRuleComponent implements OnInit {
    */
   constructor(
     private http: HttpClient,
-    private authService: AuthService,
+    private userService: UserService,
     private router: Router,
     public dialog: MatDialog
   ) {
@@ -232,7 +232,7 @@ export class AddRuleComponent implements OnInit {
    */
   saveRule() {
     // Add owner
-    this.currentRule.owner = this.authService.currentUser?.id;
+    this.currentRule.owner = this.userService.currentUser?.id;
 
     // Send rule to API
     this.http
@@ -252,29 +252,25 @@ export class AddRuleComponent implements OnInit {
 
     this.router.navigate(['/rules/list']);
   }
+
   /**
-   *  Checks user Settings
-   *  @param {Array<SourceAgentSettingsParam>}  params
+   *  Checks user Settings.
+   *
+   *  @param {Array<SourceAgentSettingsParam>} params
    */
   private checkUserSettingsForAgent(params: Array<SourceAgentSettingsParam>) {
     const missingSettings: Array<SourceAgentSettingsParam> = params.filter(
-      (p) => this.isMissing(p.settingName)
+      (param) => !this.userService.getSetting(param.settingName)
     );
 
     if (missingSettings.length) {
       this.showMissingSettingsDialog(missingSettings);
     }
   }
+
   /**
-   * Checks if value is missing
-   * @param {string } name
-   * @returns {boolean}
-   */
-  private isMissing(name: string) {
-    return !this.authService.getUserSetting(name);
-  }
-  /**
-   * Displays settings dialog
+   * Displays settings dialog.
+   *
    * @param {Array<SourceAgentSettingsParam>} missingSettings
    */
   private showMissingSettingsDialog(
@@ -288,12 +284,14 @@ export class AddRuleComponent implements OnInit {
   selector: 'missing-settings-dialog',
   templateUrl: 'missing-settings-dialog.html',
 })
+
 /**
- *  User Settings Dialog Component
+ *  User Settings Dialog Component.
  */
 export class MissingSettingsDialogComponent {
   /**
-   * Component constructor
+   * Component constructor.
+   *
    * @param {Array<SourceAgentSettingsParam>} settings
    * @param {Router} router
    */
@@ -303,7 +301,7 @@ export class MissingSettingsDialogComponent {
   ) {}
 
   /**
-   * Navigate to user settings
+   * Navigate to user settings.
    */
   goToUserSettings() {
     const fragment = this.settings.map((s) => s.settingName).join(',');

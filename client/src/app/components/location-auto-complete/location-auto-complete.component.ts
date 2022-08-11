@@ -31,7 +31,7 @@ import { HttpClient } from '@angular/common/http';
 import { DOCUMENT } from '@angular/common';
 
 import { config } from './config';
-import { AuthService } from 'src/app/services/auth.service';
+import { UserService } from 'src/app/services/user.service';
 declare const google: any;
 
 @Component({
@@ -75,14 +75,14 @@ export class LocationAutoComplete implements MatFormFieldControl<string> {
    * @param {FormBuilder} fb
    * @param {NgControl} ngControl
    * @param {HttpClient} http
-   * @param {AuthService} authService
+   * @param {UserService} userService
    * @param {Document} document
    */
   constructor(
     fb: FormBuilder,
     @Optional() @Self() public ngControl: NgControl,
     private http: HttpClient,
-    private authService: AuthService,
+    private userService: UserService,
     @Inject(DOCUMENT) private document: Document
   ) {
     this.geoForm = fb.group({
@@ -242,7 +242,7 @@ export class LocationAutoComplete implements MatFormFieldControl<string> {
    * Init geo search.
    */
   private async initGeoSearch() {
-    const apiKey = this.authService.getUserSetting('GOOGLEMAPS_API_KEY');
+    const apiKey = this.userService.getSetting('GOOGLEMAPS_API_KEY');
     if (apiKey) {
       const url = config.apiUrl + apiKey;
       this.getScriptOnce(url, () => {
@@ -333,7 +333,7 @@ export class LocationAutoComplete implements MatFormFieldControl<string> {
    * @returns {any}
    */
   private getApiKey(name: string) {
-    const settings = (this.authService as any)?.currentUser.settings;
+    const settings = (this.userService as any)?.currentUser.settings;
     if (this.isIterable(settings)) {
       // eslint-disable-next-line guard-for-in
       for (const s in settings) {
