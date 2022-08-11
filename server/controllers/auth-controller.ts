@@ -77,7 +77,7 @@ export function googleLoginDone(
   log.debug('Google login process done, redirecting client.');
   const { returnTo, clientUrl } = decodeLoginStateFromRequest(req);
   const userValue = encodeURIComponent(JSON.stringify(req.user) || '');
-  res.redirect(`${clientUrl}/logged-in?returnTo=${returnTo}&user=${userValue}`);
+  res.redirect(`${clientUrl}/login?returnTo=${returnTo}&user=${userValue}`);
 }
 
 export function login(req: Request, res: Response, next: NextFunction) {

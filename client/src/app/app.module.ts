@@ -49,7 +49,6 @@ import { RulesStatusComponent } from './components/rules-status/rules.status.com
 import { TargetSelectorComponent } from './components/target-selector/target-selector.component';
 import { HeaderComponent } from './components/header/header.component';
 import { LoginComponent } from './components/login/login.component';
-import { LoggedInComponent } from './components/logged-in/logged-in.component';
 import { httpInterceptorProviders } from './interceptors';
 import { LocationAutoComplete } from './components/location-auto-complete/location-auto-complete.component';
 import { UserSettingsComponent } from './components/user-settings/user-settings.component';
@@ -68,7 +67,6 @@ import { IntervalFormatPipe } from './pipes/interval-format/interval-format.pipe
     TargetSelectorComponent,
     HeaderComponent,
     LoginComponent,
-    LoggedInComponent,
     LocationAutoComplete,
     UserSettingsComponent,
     MissingSettingsDialogComponent,

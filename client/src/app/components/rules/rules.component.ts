@@ -17,7 +17,6 @@ import { MatTableDataSource } from '@angular/material/table';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { map } from 'rxjs/operators';
-import { AuthService } from 'src/app/services/auth.service';
 import { Rule } from 'src/app/models/rule.model';
 import {
   faTriangleExclamation,
@@ -27,6 +26,7 @@ import {
 
 import { store } from 'src/app/store';
 import { User } from 'src/app/models/user.model';
+import { UserService } from 'src/app/services/user.service';
 
 @Component({
   selector: 'app-rules',
@@ -72,9 +72,9 @@ export class RulesComponent implements AfterViewInit {
    *
    * @param {HttpClient} http
    */
-  constructor(private http: HttpClient, private authService: AuthService) {
+  constructor(private http: HttpClient, private userService: UserService) {
     // Reload rules when rule was added
-    this.user = this.authService.currentUser;
+    this.user = this.userService.currentUser;
     store.ruleAdded.subscribe((v) => {
       this.loadRules();
     });

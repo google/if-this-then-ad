@@ -17,7 +17,6 @@ import { MatTableDataSource } from '@angular/material/table';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { map } from 'rxjs/operators';
-import { AuthService } from 'src/app/services/auth.service';
 import { Rule } from 'src/app/models/rule.model';
 
 import { store } from 'src/app/store';
@@ -27,6 +26,7 @@ import {
   faCircleCheck,
   faQuestion,
 } from '@fortawesome/free-solid-svg-icons';
+import { UserService } from 'src/app/services/user.service';
 
 @Component({
   selector: 'app-rules-status',
@@ -59,9 +59,9 @@ export class RulesStatusComponent implements AfterViewInit {
    *
    * @param {HttpClient} http
    */
-  constructor(private http: HttpClient, private authService: AuthService) {
+  constructor(private http: HttpClient, private userService: UserService) {
     // Reload rules when rule was added
-    this.user = this.authService.currentUser;
+    this.user = this.userService.currentUser;
     store.ruleAdded.subscribe((v) => {
       this.loadRules();
     });

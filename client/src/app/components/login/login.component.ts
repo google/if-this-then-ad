@@ -12,8 +12,11 @@
  */
 
 import { Component, OnInit } from '@angular/core';
+import { Router, ActivatedRoute } from '@angular/router';
+import { User } from 'src/app/models/user.model';
 
 import { AuthService } from 'src/app/services/auth.service';
+import { UserService } from 'src/app/services/user.service';
 
 @Component({
   selector: 'app-login',
@@ -26,13 +29,34 @@ import { AuthService } from 'src/app/services/auth.service';
  */
 export class LoginComponent implements OnInit {
   bannerImage = 'assets/img/iftta-banner.png';
+
   /**
    * Constructor.
    *
+   * @param {Router} router
+   * @param {ActivatedRoute} route
    * @param {AuthService} authService
+   * @param {UserService} userService
    */
-  constructor(public authService: AuthService) {}
+  constructor(
+    private router: Router,
+    private route: ActivatedRoute,
+    public authService: AuthService,
+    private userService: UserService
+  ) {}
 
-  // eslint-disable-next-line require-jsdoc
-  ngOnInit(): void {}
+  /**
+   * Handle login if user is in query params.
+   */
+  ngOnInit() {
+    const userString = this.route.snapshot.queryParamMap.get('user');
+
+    if (userString) {
+      this.userService.user = User.fromJSON(userString);
+
+      // Redirect user to where they came from
+      const returnTo = this.route.snapshot.queryParamMap.get('returnTo') || '';
+      this.router.navigate([returnTo]);
+    }
+  }
 }

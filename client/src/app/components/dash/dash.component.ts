@@ -12,12 +12,12 @@
  */
 
 import { Component, OnInit } from '@angular/core';
-import { AuthService } from '../../services/auth.service';
 import { HttpClient } from '@angular/common/http';
 import { map } from 'rxjs/operators';
 import { Rule } from 'src/app/models/rule.model';
 import { User } from 'src/app/models/user.model';
 import { environment } from 'src/environments/environment';
+import { UserService } from 'src/app/services/user.service';
 
 @Component({
   selector: 'app-dash',
@@ -40,16 +40,16 @@ export class DashComponent implements OnInit {
   /**
    * Constructor.
    *
-   * @param {AuthService} authService AuthService
+   * @param {UserService} userService
    */
-  constructor(private authService: AuthService, private http: HttpClient) {}
+  constructor(private userService: UserService, private http: HttpClient) {}
 
   /**
    * Init.
    */
   ngOnInit(): void {
-    this.displayName = this.authService.currentUser?.displayName!;
-    this.user = this.authService.currentUser!;
+    this.displayName = this.userService.currentUser?.displayName!;
+    this.user = this.userService.currentUser!;
     this.loadRules();
   }
 
