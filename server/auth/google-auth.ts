@@ -23,7 +23,7 @@ import { Collection } from '../models/fire-store-entity';
 import { Token, User } from '../models/user';
 import Collections from '../services/collection-factory';
 import Repository from '../services/repository-service';
-import date from 'date-fns';
+import { add, isFuture } from 'date-fns';
 import { logger } from '../util/logger';
 import { AppError } from '../util/error';
 
@@ -65,7 +65,7 @@ export async function isAuthenticated(
     const [user] = await userRepo.getBy('token.access', accessToken);
     if (user) {
       logger.debug(`Found eligible user ${user.id}`);
-      if (date.isFuture(user.token.expiry)) {
+      if (isFuture(user.token.expiry)) {
         logger.debug(`Eligible user's access token is valid.`);
         return next();
       }
@@ -103,7 +103,7 @@ async function getNewAuthToken(refreshToken: string): Promise<Token> {
     if (request.status == 200) {
       const token: Token = {
         access: request.data.access_token,
-        expiry: date.add(Date.now(), { seconds: request.data.expires_in }),
+        expiry: add(Date.now(), { seconds: request.data.expires_in }),
         refresh: refreshToken,
         type: request.data.token_type,
       };
@@ -132,10 +132,7 @@ export async function refreshTokensForUser(userId: string): Promise<Token> {
   try {
     const user: User = (await userRepo.get(userId)) as User;
 
-    if (
-      (user != null || user != 'undefined') &&
-      date.isFuture(user.token.expiry)
-    ) {
+    if ((user != null || user != 'undefined') && isFuture(user.token.expiry)) {
       logger.info(`Access token for user ${userId} is still valid`);
       return user.token;
     }
@@ -246,7 +243,7 @@ async function verify(
   user.token = Object.assign(user.token, {
     access: accessToken,
     refresh: refreshToken,
-    expiry: date.add(Date.now(), { seconds: 3599 }),
+    expiry: add(Date.now(), { seconds: 3599 }),
   });
 
   await userRepo.update(user.id!, user);
