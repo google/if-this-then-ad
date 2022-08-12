@@ -48,8 +48,8 @@ export class DashComponent implements OnInit {
    * Init.
    */
   ngOnInit(): void {
-    this.displayName = this.userService.currentUser?.displayName!;
-    this.user = this.userService.currentUser!;
+    this.displayName = this.userService.user.displayName!;
+    this.user = this.userService.user;
     this.loadRules();
   }
 

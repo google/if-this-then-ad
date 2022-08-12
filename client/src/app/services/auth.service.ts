@@ -68,7 +68,7 @@ export class AuthService {
    * Logout.
    */
   logout() {
-    this.userService.remove();
+    this.userService.updateUser(undefined);
 
     this.router.navigate(['/login']);
   }
@@ -87,7 +87,7 @@ export class AuthService {
    * @returns {Observable<any>}
    */
   refreshAccessToken(maxRetries = 2): Observable<Token> {
-    const user: User = this.userService.currentUser!;
+    const user: User = this.userService.user;
     const token = this.accessToken;
     const userId = user.id;
     const data = { userId, token };

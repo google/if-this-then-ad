@@ -74,7 +74,7 @@ export class RulesComponent implements AfterViewInit {
    */
   constructor(private http: HttpClient, private userService: UserService) {
     // Reload rules when rule was added
-    this.user = this.userService.currentUser;
+    this.user = this.userService.user;
     store.ruleAdded.subscribe((v) => {
       this.loadRules();
     });
