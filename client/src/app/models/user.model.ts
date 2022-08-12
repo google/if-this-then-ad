@@ -23,7 +23,7 @@ export class User {
   profilePhoto: string;
   token: Token;
   email?: string;
-  userSettings?: UserSettingKeyValue;
+  settings?: Record<string, string>;
 
   /**
    * Parse User from JSON Object.
@@ -39,8 +39,4 @@ export class User {
       throw new Error('Error parsing the user object.');
     }
   }
-}
-
-export interface UserSettingKeyValue {
-  [key: string]: string;
 }

@@ -20,7 +20,7 @@ import { Location } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 
-import { User, UserSettingKeyValue } from 'src/app/models/user.model';
+import { User } from 'src/app/models/user.model';
 
 import { of } from 'rxjs';
 import { debounceTime, switchMap } from 'rxjs/operators';
@@ -128,11 +128,11 @@ export class UserSettingsComponent {
     }
 
     this.userSettings = this.formBuilder.group(group);
-    if (this.userService.user?.userSettings) {
-      const filteredUserSettings: UserSettingKeyValue = {};
+    if (this.userService.user?.settings) {
+      const filteredUserSettings: Record<string, string> = {};
       for (const setting of this.settings) {
         filteredUserSettings[setting.settingName] =
-          this.userService.user?.userSettings[setting.settingName] || '';
+          this.userService.user?.settings[setting.settingName] || '';
       }
 
       this.userSettings.setValue(filteredUserSettings);
@@ -148,7 +148,7 @@ export class UserSettingsComponent {
         debounceTime(1000),
         switchMap((settings) => of(settings))
       )
-      .subscribe((settings: UserSettingKeyValue) => {
+      .subscribe((settings: Record<string, string>) => {
         this.showSavedStatus('Saving...', true);
         this.save(settings);
       });
@@ -164,9 +164,9 @@ export class UserSettingsComponent {
   /**
    * Save user settings.
    *
-   * @param {UserSettingKeyValue} settings
+   * @param {Record<string, string>} settings
    */
-  save(settings: UserSettingKeyValue) {
+  save(settings: Record<string, string>) {
     this.http
       .post(
         `${environment.apiUrl}/accounts/${this.userService.user.id}/settings`,

@@ -67,7 +67,7 @@ export const update = async (req: Request, res: Response) => {
 export const updateSettings = async (req: Request, res: Response) => {
   try {
     const user = (await userRepo.get(req.params.userId)) as User;
-    user.userSettings = req.body;
+    user.settings = req.body;
     await userRepo.update(req.params.userId, user);
   } catch (e) {
     logger.error(e);
