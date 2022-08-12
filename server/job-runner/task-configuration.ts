@@ -14,8 +14,7 @@
 import Repository from '../services/repository-service';
 import Collections from '../services/collection-factory';
 import { Collection } from '../models/fire-store-entity';
-import { User, Token } from './../models/user';
-import { UserSettingKeyValue } from './interfaces';
+import { User } from './../models/user';
 
 const usersCollection = Collections.get(Collection.USERS);
 const userRepository = new Repository<User>(usersCollection);
@@ -30,7 +29,6 @@ class TaskConfiguration {
   /**
    * Constructor.
    *
-   * @param {string} tokenEndpoint
    * @param {Repository<User>} repository
    */
   constructor(repository: Repository<User>) {
@@ -38,14 +36,17 @@ class TaskConfiguration {
   }
 
   /**
-   * Gets settings e.g api keys for use with the agent.
+   * Get settings (i.e. API keys) for use with the agent.
+   *
    * @param {string} userId
    * @param {string} agentId
    */
-  public async getUserSettings(userId: string): Promise<UserSettingKeyValue> {
+  public async getUserSettings(
+    userId: string
+  ): Promise<Record<string, string>> {
     try {
       const user: User = (await this.repo.get(userId)) as User;
-      return user?.userSettings as UserSettingKeyValue;
+      return user?.settings as Record<string, string>;
     } catch (err) {
       return Promise.reject(err);
     }

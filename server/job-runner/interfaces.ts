@@ -44,10 +44,6 @@ export interface ExecutionTime {
   lastExecution: Date;
 }
 
-export interface UserSettingKeyValue {
-  [key: string]: string;
-}
-
 export interface AgentTask {
   token: {
     auth: string;
@@ -59,7 +55,7 @@ export interface AgentTask {
     actions: Array<Action>;
   };
   ownerId?: string;
-  ownerSettings?: UserSettingKeyValue;
+  ownerSettings?: Record<string, string>;
 }
 export interface AgentResult {
   agentId: string;

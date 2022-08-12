@@ -12,7 +12,6 @@
  */
 
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { faGear } from '@fortawesome/free-solid-svg-icons';
 
 import { AuthService } from 'src/app/services/auth.service';
@@ -31,7 +30,7 @@ import { UserService } from 'src/app/services/user.service';
  * Header component.
  */
 export class HeaderComponent implements OnInit {
-  user: User | null;
+  user?: User;
   faGear = faGear;
 
   /**
@@ -39,35 +38,19 @@ export class HeaderComponent implements OnInit {
    *
    * @param {AuthService} authService
    * @param {UserService} userService
-   * @param {Router} router
    */
   constructor(
     public authService: AuthService,
-    public userService: UserService,
-    private router: Router
+    public userService: UserService
   ) {
     // Get user's profile picture
-    this.userService.userWatch.subscribe((user) => {
-      this.user = user!;
+    this.userService.userWatch.subscribe((user?: User) => {
+      this.user = user;
     });
   }
 
   // eslint-disable-next-line require-jsdoc
   ngOnInit(): void {}
-
-  /**
-   * Logout.
-   */
-  logout() {
-    this.authService.logout();
-  }
-
-  /**
-   * Settings - Navigate to user settings page.
-   */
-  userSettings() {
-    this.router.navigate(['/settings']);
-  }
 
   /**
    * Toggle sidenav.

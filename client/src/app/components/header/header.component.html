@@ -68,7 +68,11 @@
           </a>
         </div>
         <div class="centered-content logout">
-          <button mat-raised-button color="primary" (click)="logout()">
+          <button
+            mat-raised-button
+            color="primary"
+            (click)="authService.logout()"
+          >
             Logout
           </button>
         </div>

@@ -82,10 +82,10 @@ export const getAgentEntityList = async (req: Request, res: Response) => {
       if (result.length > 0) {
         user = result[0];
         token = user.token;
-        if (user.userSettings !== undefined) {
-          developerToken = user.userSettings['GOOGLEADS_DEV_TOKEN'];
-          managerAccountId = user.userSettings['GOOGLEADS_MANAGER_ACCOUNT_ID'];
-          customerAccountId = user.userSettings['GOOGLEADS_ACCOUNT_ID'];
+        if (user.settings !== undefined) {
+          developerToken = user.settings['GOOGLEADS_DEV_TOKEN'];
+          managerAccountId = user.settings['GOOGLEADS_MANAGER_ACCOUNT_ID'];
+          customerAccountId = user.settings['GOOGLEADS_ACCOUNT_ID'];
         }
 
         if (agentId == 'googleads-agent') {

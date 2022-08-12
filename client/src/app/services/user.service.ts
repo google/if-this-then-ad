@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { Token } from '../interfaces/token';
-import { User, UserSettingKeyValue } from '../models/user.model';
+import { User } from '../models/user.model';
 
 @Injectable({
   providedIn: 'root',
@@ -49,26 +49,7 @@ export class UserService {
   }
 
   /**
-   * Set user.
-   *
-   * @param {User|undefined} user
-   */
-  /* set user(user: User | undefined) {
-    this.currentUser = user;
-
-    if (user) {
-      // Write to LocalStorage
-      localStorage.setItem(this.localStorageUserKey, JSON.stringify(user));
-    } else {
-      localStorage.removeItem(this.localStorageUserKey);
-    }
-
-    // Propagate
-    this.userWatch.next(user);
-  } */
-
-  /**
-   * Something.
+   * Update user.
    *
    * @param {User|undefined} user
    */
@@ -94,21 +75,20 @@ export class UserService {
    */
   getSetting(setting: string) {
     return this.currentUser &&
-      this.currentUser.userSettings &&
-      setting in this.currentUser.userSettings
-      ? (this.currentUser.userSettings[setting] as string)
+      this.currentUser.settings &&
+      setting in this.currentUser.settings
+      ? (this.currentUser.settings[setting] as string)
       : '';
   }
 
   /**
    * Set user settings.
    *
-   * @param {UserSettingKeyValue} settings
+   * @param {Record<string, string>} settings
    */
-  setSettings(settings: UserSettingKeyValue) {
+  setSettings(settings: Record<string, string>) {
     if (this.currentUser) {
-      this.currentUser.userSettings = settings;
-      // this.user = this.currentUser;
+      this.currentUser.settings = settings;
       this.updateUser(this.currentUser);
     }
   }

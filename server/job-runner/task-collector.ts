@@ -12,12 +12,7 @@
  */
 
 import { logger } from '../util/logger';
-import {
-  AgentTask,
-  AgentResult,
-  RuleResult,
-  UserSettingKeyValue,
-} from './interfaces';
+import { AgentTask, AgentResult, RuleResult } from './interfaces';
 import TaskConfiguration from './task-configuration';
 import { Token } from './../models/user';
 import { refreshTokensForUser } from '../auth/google-auth';
@@ -38,7 +33,7 @@ export default class TaskCollector {
     const ownerId = agentResult.jobOwner;
 
     let token: Token | undefined;
-    let ownerSettings: UserSettingKeyValue;
+    let ownerSettings: Record<string, string>;
 
     try {
       // New token
