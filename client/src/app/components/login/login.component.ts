@@ -52,7 +52,7 @@ export class LoginComponent implements OnInit {
     const userString = this.route.snapshot.queryParamMap.get('user');
 
     if (userString) {
-      this.userService.user = User.fromJSON(userString);
+      this.userService.updateUser(User.fromJSON(userString));
 
       // Redirect user to where they came from
       const returnTo = this.route.snapshot.queryParamMap.get('returnTo') || '';

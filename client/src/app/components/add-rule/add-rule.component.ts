@@ -232,7 +232,7 @@ export class AddRuleComponent implements OnInit {
    */
   saveRule() {
     // Add owner
-    this.currentRule.owner = this.userService.currentUser?.id;
+    this.currentRule.owner = this.userService.user.id;
 
     // Send rule to API
     this.http

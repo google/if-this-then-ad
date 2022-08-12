@@ -128,12 +128,11 @@ export class UserSettingsComponent {
     }
 
     this.userSettings = this.formBuilder.group(group);
-    if (this.userService?.currentUser?.userSettings) {
+    if (this.userService.user?.userSettings) {
       const filteredUserSettings: UserSettingKeyValue = {};
       for (const setting of this.settings) {
         filteredUserSettings[setting.settingName] =
-          this.userService?.currentUser?.userSettings[setting.settingName] ||
-          '';
+          this.userService.user?.userSettings[setting.settingName] || '';
       }
 
       this.userSettings.setValue(filteredUserSettings);
@@ -147,11 +146,11 @@ export class UserSettingsComponent {
     this.userSettings.valueChanges
       .pipe(
         debounceTime(1000),
-        switchMap((value) => of(value))
+        switchMap((settings) => of(settings))
       )
-      .subscribe((value: UserSettingKeyValue) => {
+      .subscribe((settings: UserSettingKeyValue) => {
         this.showSavedStatus('Saving...', true);
-        this.save(value);
+        this.save(settings);
       });
   }
 
@@ -165,17 +164,17 @@ export class UserSettingsComponent {
   /**
    * Save user settings.
    *
-   * @param {UserSettingKeyValue} value
+   * @param {UserSettingKeyValue} settings
    */
-  save(value: UserSettingKeyValue) {
+  save(settings: UserSettingKeyValue) {
     this.http
       .post(
-        `${environment.apiUrl}/accounts/${this.userService.currentUser?.id}/settings`,
-        value
+        `${environment.apiUrl}/accounts/${this.userService.user.id}/settings`,
+        settings
       )
       .subscribe({
         next: (_) => {
-          this.userService.setSettings(value);
+          this.userService.setSettings(settings);
           this.showSavedStatus('Saved');
         },
         error: (_) => {

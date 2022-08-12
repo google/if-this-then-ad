@@ -12,10 +12,10 @@ import { User, UserSettingKeyValue } from '../models/user.model';
  */
 export class UserService {
   localStorageUserKey: string = 'user';
-  currentUser: User | null;
-  userWatch: BehaviorSubject<User | null> = new BehaviorSubject<User | null>(
-    null
-  );
+  currentUser?: User;
+  userWatch: BehaviorSubject<User | undefined> = new BehaviorSubject<
+    User | undefined
+  >(undefined);
 
   /**
    * Constructor.
@@ -27,45 +27,63 @@ export class UserService {
   /**
    * Get user from local storage.
    */
-  loadFromLocalStorage() {
+  private loadFromLocalStorage() {
     if (localStorage.getItem(this.localStorageUserKey)) {
-      this.user = User.fromJSON(localStorage.getItem(this.localStorageUserKey));
+      this.updateUser(
+        User.fromJSON(localStorage.getItem(this.localStorageUserKey))
+      );
     }
   }
 
   /**
    * Get logged in user.
    *
-   * @returns {User|null}
+   * @returns {User}
    */
-  get user(): User | null {
-    return this.currentUser;
+  get user(): User {
+    if (this.currentUser) {
+      return this.currentUser;
+    } else {
+      throw new Error('No logged in user');
+    }
   }
 
   /**
    * Set user.
    *
-   * @param {User|null} user
+   * @param {User|undefined} user
    */
-  set user(user: User | null) {
+  /* set user(user: User | undefined) {
     this.currentUser = user;
 
-    // Write to LocalStorage
-    localStorage.setItem(
-      this.localStorageUserKey,
-      JSON.stringify(user || '""')
-    );
+    if (user) {
+      // Write to LocalStorage
+      localStorage.setItem(this.localStorageUserKey, JSON.stringify(user));
+    } else {
+      localStorage.removeItem(this.localStorageUserKey);
+    }
 
     // Propagate
     this.userWatch.next(user);
-  }
+  } */
 
   /**
-   * Remove user from localStorage.
+   * Something.
+   *
+   * @param {User|undefined} user
    */
-  remove() {
-    localStorage.removeItem(this.localStorageUserKey);
-    this.user = null;
+  updateUser(user?: User) {
+    this.currentUser = user;
+
+    if (user) {
+      // Write to LocalStorage
+      localStorage.setItem(this.localStorageUserKey, JSON.stringify(user));
+    } else {
+      localStorage.removeItem(this.localStorageUserKey);
+    }
+
+    // Propagate
+    this.userWatch.next(user);
   }
 
   /**
@@ -90,7 +108,8 @@ export class UserService {
   setSettings(settings: UserSettingKeyValue) {
     if (this.currentUser) {
       this.currentUser.userSettings = settings;
-      this.user = this.currentUser;
+      // this.user = this.currentUser;
+      this.updateUser(this.currentUser);
     }
   }
 
@@ -101,6 +120,6 @@ export class UserService {
    */
   updateToken(token: Token) {
     this.currentUser!.token = token;
-    this.user = this.currentUser;
+    this.updateUser(this.currentUser);
   }
 }
