@@ -12,7 +12,7 @@
  */
 
 const { PubSub } = require('@google-cloud/pubsub');
-import date from 'date-fns';
+import { isValid, add, isPast } from 'date-fns';
 import { logger } from '../util/logger';
 import { OpenWeatherMap } from '../agents/source-agents/open-weather-map/open-weather-map';
 import { DV360Agent } from '../agents/target-agents/dv360-ads/dv360-agent';
@@ -228,7 +228,7 @@ class JobRunner {
 
     const jobs = allJobs.filter((j) => {
       // For first time executions lastExecution will not be set
-      if (!date.isValid(j.lastExecution)) {
+      if (!isValid(j.lastExecution)) {
         logger.debug(`Invalid date in last execution ${j.id}`);
         logger.debug(j.lastExecution);
         j.lastExecution = 0;
@@ -237,12 +237,12 @@ class JobRunner {
       logger.debug(
         `job-runner:getEligibleJobs: jobTime: ${j.id} : ${j.lastExecution}`
       );
-      const nextRuntime = date.add(j.lastExecution!, {
+      const nextRuntime = add(j.lastExecution!, {
         minutes: j.executionInterval,
       });
       logger.info(`Job: ${j.id} next execution : ${nextRuntime}`);
 
-      return date.isPast(nextRuntime);
+      return isPast(nextRuntime);
     });
 
     return jobs;
