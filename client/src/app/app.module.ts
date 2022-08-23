@@ -40,10 +40,8 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatCardModule } from '@angular/material/card';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
-import {
-  AddRuleComponent,
-  MissingSettingsDialogComponent,
-} from './components/add-rule/add-rule.component';
+import { AddRuleComponent } from './components/add-rule/add-rule.component';
+import { MissingSettingsDialogComponent } from './missing-settings-dialog/missing-settings-dialog.component';
 import { RulesComponent } from './components/rules/rules.component';
 import { RulesStatusComponent } from './components/rules-status/rules.status.component';
 import { TargetSelectorComponent } from './components/target-selector/target-selector.component';

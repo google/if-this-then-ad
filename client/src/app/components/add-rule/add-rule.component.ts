@@ -11,7 +11,7 @@
     limitations under the License.
  */
 
-import { Component, OnInit, ViewChild, Inject } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
@@ -21,13 +21,14 @@ import { Rule } from 'src/app/models/rule.model';
 
 import { store } from 'src/app/store';
 import { NgForm } from '@angular/forms';
-import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { SourceAgent } from 'src/app/interfaces/source-agent';
 import { TargetAgent } from 'src/app/interfaces/target-agent';
 import { SourceAgentParameter } from 'src/app/interfaces/source-agent-parameter';
 import { SourceAgentSettingsParam } from 'src/app/interfaces/source-agent-settings-parameter';
 import { StepperOrientation } from '@angular/cdk/stepper';
 import { UserService } from 'src/app/services/user.service';
+import { MissingSettingsDialogComponent } from 'src/app/missing-settings-dialog/missing-settings-dialog.component';
 
 @Component({
   selector: 'app-add-rule',
@@ -277,34 +278,5 @@ export class AddRuleComponent implements OnInit {
     missingSettings: Array<SourceAgentSettingsParam>
   ) {
     this.dialog.open(MissingSettingsDialogComponent, { data: missingSettings });
-  }
-}
-
-@Component({
-  selector: 'missing-settings-dialog',
-  templateUrl: 'missing-settings-dialog.html',
-})
-
-/**
- *  User Settings Dialog Component.
- */
-export class MissingSettingsDialogComponent {
-  /**
-   * Component constructor.
-   *
-   * @param {Array<SourceAgentSettingsParam>} settings
-   * @param {Router} router
-   */
-  constructor(
-    @Inject(MAT_DIALOG_DATA) public settings: Array<SourceAgentSettingsParam>,
-    private router: Router
-  ) {}
-
-  /**
-   * Navigate to user settings.
-   */
-  goToUserSettings() {
-    const fragment = this.settings.map((s) => s.settingName).join(',');
-    this.router.navigate(['/settings'], { fragment });
   }
 }
