@@ -13,23 +13,31 @@
 # limitations under the License.
 
 steps:
-# Build the image from source
+# Build image from source
 - name: gcr.io/cloud-builders/docker
-  id: Build IFTTA image 
-  args: ['build', '-f', 'Dockerfile', 
-          '-t', '$_GCR_HOSTNAME/$PROJECT_ID/$_SERVICE_NAME/$_IMAGE_NAME:$SHORT_SHA',
-          '-t', '$_GCR_HOSTNAME/$PROJECT_ID/$_SERVICE_NAME/$_IMAGE_NAME:latest',
-           '--cache-from', '$_GCR_HOSTNAME/$PROJECT_ID/$_SERVICE_NAME/$_IMAGE_NAME:latest', '.' ]
- 
-# TODO: Tag container with semver 
+  id: Build image 
+  args: 
+    - build
+    - '-f'
+    - 'Dockerfile', 
+    - '-t'
+    - '$_GCR_HOSTNAME/$PROJECT_ID/$_SERVICE_NAME/$_IMAGE_NAME:$SHORT_SHA',
+    - '-t'
+    - '$_GCR_HOSTNAME/$PROJECT_ID/$_SERVICE_NAME/$_IMAGE_NAME:latest',
+    - '-t'
+    - '$_GCR_HOSTNAME/$PROJECT_ID/$_SERVICE_NAME/$_IMAGE_NAME:$TAG_NAME',
+    - '--cache-from'
+    - '$_GCR_HOSTNAME/$PROJECT_ID/$_SERVICE_NAME/$_IMAGE_NAME:latest'
+    - '.'
 
-# Push image to GCR
+# Push image to Google Container Registry
 - name: gcr.io/cloud-builders/docker
-  id: Push IFTTA image
-  args: ['push', '$_GCR_HOSTNAME/$PROJECT_ID/$_SERVICE_NAME/$_IMAGE_NAME:$SHORT_SHA']
+  id: Push image
+  args:
+    - push
+    - '$_GCR_HOSTNAME/$PROJECT_ID/$_SERVICE_NAME/$_IMAGE_NAME:$SHORT_SHA'
 
-# Deploy to cloudrun 
-
+# Deploy to Cloud Run
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
   id: Deploy to cloudrun
   args:
@@ -42,9 +50,12 @@ steps:
     - '--port=$_SERVICE_PORT'
     - '--quiet'
   entrypoint: gcloud
+
+# General configuration
 images:
   - '$_GCR_HOSTNAME/$PROJECT_ID/$_SERVICE_NAME/$_IMAGE_NAME:$SHORT_SHA'
   - '$_GCR_HOSTNAME/$PROJECT_ID/$_SERVICE_NAME/$_IMAGE_NAME:latest'
+  - '$_GCR_HOSTNAME/$PROJECT_ID/$_SERVICE_NAME/$_IMAGE_NAME:$TAG_NAME'
 options:
   substitutionOption: ALLOW_LOOSE
   logging: CLOUD_LOGGING_ONLY
