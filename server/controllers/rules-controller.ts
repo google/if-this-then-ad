@@ -11,16 +11,12 @@
     limitations under the License.
  */
 
-import Repository from '../services/repository-service';
-import Collections from '../services/collection-factory';
-import { Rule } from '../models/rule';
-import { Collection } from '../models/fire-store-entity';
-import { logger } from '../util/logger';
-import * as JobController from '../controllers/jobs-controller';
 import { Request, Response } from 'express';
-
-const rulesCollection = Collections.get(Collection.RULES);
-const repo = new Repository<Rule>(rulesCollection);
+import { ModelSpec } from '../common/common';
+import { Comparator, Rule } from '../common/rule';
+import { collectionService } from '../services/collections-service';
+import { rulesService } from '../services/rules-service';
+import { logger } from '../util/logger';
 
 /**
  * Endpoint to create a rule.
@@ -33,34 +29,32 @@ export const create = async (req: Request, res: Response) => {
   // TODO: add express-validator
 
   // Parse incoming rule data.
-  const rule: Rule = {
+  const ruleSpec: ModelSpec<Rule> = {
     name: req.body.name,
-    owner: req.body.owner,
-    source: req.body.source,
-    condition: req.body.condition,
+    ownerId: req.body.ownerId,
+    source: {
+      agentId: req.body.source.agentId,
+      parameters: req.body.source.parameters,
+    },
+    condition: {
+      dataPoint: req.body.condition.dataPoint,
+      comparator: req.body.condition.comparator as Comparator,
+      compareValue: req.body.condition.compareValue,
+    },
+    targets: req.body.targets.map((target) => ({
+      agentId: target.agentId,
+      parameters: target.parameters,
+      action: target.action,
+    })),
     executionInterval: req.body.executionInterval,
-    targets: req.body.targets,
   };
 
   try {
-    logger.debug(rule);
+    logger.debug(ruleSpec);
     logger.info('rules-controller:create: Creating rule');
-
-    // Create job based on rule
-    const jobId = await JobController.addJob(rule);
-
-    // Add job ID to rule
-    rule.jobId = jobId;
-
-    // Save rule
-    const ruleId = await repo.save(rule);
-
-    rule.id = ruleId;
-
-    await JobController.assignRuleToJob(ruleId, jobId);
-
+    const rule = await rulesService.insertRule(ruleSpec);
     logger.info(
-      `rules-controller:create: Successfully created rule with id : ${ruleId}`
+      `rules-controller:create: Successfully created rule with id : ${rule.id}`
     );
     return res.json(rule);
   } catch (err) {
@@ -76,9 +70,7 @@ export const create = async (req: Request, res: Response) => {
  * @param {Response} res
  */
 export const list = async (req: Request, res: Response) => {
-  const rules = await repo.list();
-
-  return res.json(rules);
+  return res.json(await collectionService.rules.list());
 };
 
 /**
@@ -92,15 +84,19 @@ export const remove = async (req: Request, res: Response) => {
     const userId = req.params.userId;
     const ruleId = req.params.id;
 
-    const rule = await repo.get(ruleId);
-    if (rule?.owner == userId) {
-      await JobController.removeRuleFromJob(ruleId);
-      await repo.delete(ruleId);
-      return res.sendStatus(204);
+    const rule = await collectionService.rules.get(ruleId);
+    if (rule) {
+      if (rule.ownerId === userId) {
+        await rulesService.deleteRule(rule.id);
+        return res.status(200).send();
+      } else {
+        const msg = `FORBIDDEN: Non ower userId: ${userId} attempted to delete Rule ${ruleId}`;
+        logger.warn(msg);
+        return res.status(403).send(msg);
+      }
+    } else {
+      return res.status(404).send('Not found');
     }
-    const msg = `FORBIDDEN: Non ower userId: ${userId} attempted to delete Rule ${ruleId}`;
-    logger.warn(msg);
-    return res.status(403).send(msg);
   } catch (e) {
     logger.error(e);
     return res.sendStatus(500);
@@ -116,7 +112,7 @@ export const remove = async (req: Request, res: Response) => {
 export const get = async (req: Request, res: Response) => {
   try {
     const ruleId = req.params.id;
-    const rule = await repo.get(ruleId);
+    const rule = await collectionService.rules.get(ruleId);
     return res.json(rule);
   } catch (e) {
     logger.error(e);
@@ -133,7 +129,7 @@ export const get = async (req: Request, res: Response) => {
 export const getByUser = async (req: Request, res: Response) => {
   try {
     const userId = req.params.id;
-    const rules = await repo.getBy('owner', userId);
+    const rules = await collectionService.rules.findWhere('ownerId', userId);
     return res.json(rules);
   } catch (e) {
     logger.error(e);

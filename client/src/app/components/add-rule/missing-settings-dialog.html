@@ -15,9 +15,7 @@
 <mat-dialog-content>
   You are missing the following settings for this rule type:
   <ul>
-    <li *ngFor="let setting of settings">
-      {{ setting.name }} ({{ setting.settingName }})
-    </li>
+    <li *ngFor="let setting of settings">{{ setting.name }}</li>
   </ul>
   <b>Note:</b> You can add the missing settings later, but your rules won't
   work.

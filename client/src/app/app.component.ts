@@ -13,15 +13,16 @@
 
 import { Component, ViewChild } from '@angular/core';
 import {
+  faBug,
+  faGear,
   faHouse,
   faList,
-  faSquarePlus,
-  faGear,
   faMessage,
-  faBug,
+  faSquarePlus,
 } from '@fortawesome/free-solid-svg-icons';
 
 import { store } from 'src/app/store';
+import { AgentsService } from './services/agents.service';
 import { AuthService } from './services/auth.service';
 
 @Component({
@@ -45,13 +46,19 @@ export class AppComponent {
    * Constructor.
    *
    * @param {AuthService} authService
-   * @param {Router} router
+   * @param {AgentService} agentService
    */
-  constructor(public authService: AuthService) {
+  constructor(
+    public authService: AuthService,
+    private readonly agentsService: AgentsService
+  ) {
     store.sidenav.subscribe((v) => {
       if (authService.isLoggedIn) {
         this.sidenav.toggle();
       }
     });
+    if (authService.isLoggedIn) {
+      this.agentsService.fetchAgentsMetadata();
+    }
   }
 }

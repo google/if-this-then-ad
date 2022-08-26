@@ -11,14 +11,14 @@
     limitations under the License.
  */
 
-import { Injectable } from '@angular/core';
 import {
-  HttpRequest,
-  HttpHandler,
   HttpEvent,
+  HttpHandler,
   HttpInterceptor,
+  HttpRequest,
 } from '@angular/common/http';
-import { catchError, Observable, throwError, switchMap } from 'rxjs';
+import { Injectable } from '@angular/core';
+import { catchError, Observable, switchMap, throwError } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 
 const REFRESH_ERROR_CODES = new Set([401]);
@@ -32,29 +32,44 @@ const REFRESH_ERROR_CODES = new Set([401]);
  * if Token expired error is thrown.
  */
 export class AuthInterceptor implements HttpInterceptor {
+  /**
+   * Constructor
+   * @param {AuthService} authService injected
+   */
   constructor(private authService: AuthService) {}
 
+  /**
+   * Applies an access token to the request's authorization header.
+   * @param {HttpRequest<unknown>} request the request to be sent
+   * @param {string} accessToken the access token for the authorization header
+   * @returns {HttpRequest<unknown>} the authorized request
+   */
   private applyToken(request: HttpRequest<unknown>, accessToken: string) {
     return request.clone({
       setHeaders: { Authorization: 'Bearer ' + accessToken },
     });
   }
 
+  /**
+   * Handles the access token refresh.
+   * @param {HttpRequest<unknown>} request the request to be sent
+   * @param {HttpHandler} next the next handler in the chain.
+   * @returns {Observable<HttpEvent<any>>}
+   */
   private handleRefresh(request: HttpRequest<unknown>, next: HttpHandler) {
     return this.authService
       .refreshAccessToken()
       .pipe(
-        switchMap((token) =>
-          next.handle(this.applyToken(request, token.access))
+        switchMap((credentials) =>
+          next.handle(this.applyToken(request, credentials.accessToken))
         )
       );
   }
 
   /**
    * Handle HTTP request.
-   *
-   * @param {HttpRequest<unknown>} request
-   * @param {HttpHandler} next
+   * @param {HttpRequest<unknown>} request the request to authorize
+   * @param {HttpHandler} next the next handler in the chain.
    * @returns {Observable<HttpEvent<unknown>>}
    */
   intercept(

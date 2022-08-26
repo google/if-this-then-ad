@@ -18,6 +18,12 @@ import { logger } from '../util/logger';
 // TODO(jhoesel): move token refresh out of job runner.
 import { refreshAccessToken } from '../auth/google-auth';
 
+/**
+ * Encodes the login request parameters into a pass-through state variable for
+ * the OAuth flow.
+ * @param {Request} req the express request
+ * @returns {string} the base-64 encoded state value
+ */
 function encodeLoginStateFromRequest(req: Request) {
   return Buffer.from(
     JSON.stringify({
@@ -26,6 +32,12 @@ function encodeLoginStateFromRequest(req: Request) {
     })
   ).toString('base64');
 }
+
+/**
+ *
+ * @param {Request} req the express request
+ * @returns {{returnTo: string, clientUrl: string}} the decoded login state
+ */
 function decodeLoginStateFromRequest(req: Request) {
   const parsed = JSON.parse(
     Buffer.from(req.query.state!.toString(), 'base64').toString()
@@ -35,6 +47,13 @@ function decodeLoginStateFromRequest(req: Request) {
     clientUrl: parsed['clientUrl'] as string,
   };
 }
+
+/**
+ * Attempts an access token refresh.
+ * @param {Request} req the express request
+ * @param {Response} res the express response
+ * @param {NextFunction} next the express next function
+ */
 export async function refreshToken(
   req: Request,
   res: Response,
@@ -49,6 +68,11 @@ export async function refreshToken(
   }
 }
 
+/**
+ * Performs a logout.
+ * @param {Request} req the express request
+ * @param {Response} res the express response
+ */
 export function logout(req: Request, res: Response) {
   req.logout(() => {
     req.session.destroy(() => {
@@ -58,6 +82,12 @@ export function logout(req: Request, res: Response) {
   });
 }
 
+/**
+ * Handles the login callback from Google's OAuth flow.
+ * @param {Request} req the express request
+ * @param {Response} res the express response
+ * @param {NextFunction} next the express next function
+ */
 export function googleLoginCallback(
   req: Request,
   res: Response,
@@ -69,17 +99,25 @@ export function googleLoginCallback(
   })(req, res, next);
 }
 
-export function googleLoginDone(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
+/**
+ * Handles the final leg of the OAuth flow and redirects the user's agent to
+ * the final 'logged-in' page.
+ * @param {Request} req the express request
+ * @param {Response} res the express response
+ */
+export function googleLoginDone(req: Request, res: Response) {
   logger.debug('Google login process done, redirecting client.');
   const { returnTo, clientUrl } = decodeLoginStateFromRequest(req);
   const userValue = encodeURIComponent(JSON.stringify(req.user) || '');
   res.redirect(`${clientUrl}/login?returnTo=${returnTo}&user=${userValue}`);
 }
 
+/**
+ * Starts the Google OAuth login flow.
+ * @param {Request} req the express request
+ * @param {Response} res the express response
+ * @param {NextFunction} next the express next function
+ */
 export function login(req: Request, res: Response, next: NextFunction) {
   logger.debug('Executing Google login.');
   passport.authenticate('google', {

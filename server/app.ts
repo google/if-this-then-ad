@@ -20,19 +20,17 @@ if (envConfig.error || envConfig.parsed == null) {
   logger.error('Error loading configuration from .env file');
 }
 
-import express from 'express';
-import { Request, Response, NextFunction } from 'express';
-import session from 'express-session';
-import cors from 'cors';
-import path from 'path';
-import router from './routes';
-import bodyParser from 'body-parser';
-import { Collection } from './models/fire-store-entity';
-import passport from 'passport';
-import { createGoogleStrategy } from './auth/google-auth';
-import { User } from './models/user';
-import { Firestore } from '@google-cloud/firestore';
 import { FirestoreStore } from '@google-cloud/connect-firestore';
+import { Firestore } from '@google-cloud/firestore';
+import bodyParser from 'body-parser';
+import cors from 'cors';
+import express, { NextFunction, Request, Response } from 'express';
+import session from 'express-session';
+import passport from 'passport';
+import path from 'path';
+import { createGoogleStrategy } from './auth/google-auth';
+import { User } from './common/user';
+import router from './routes';
 import { handleGenericError } from './util/error';
 
 const app = express();
@@ -74,7 +72,7 @@ app.use(
   session({
     store: new FirestoreStore({
       dataset: new Firestore(),
-      kind: Collection.SESSIONS,
+      kind: 'sessions',
     }),
     secret: process.env.SESSION_SECRET || 's9hp0VtUkd$FJM$T91lB',
     cookie: {

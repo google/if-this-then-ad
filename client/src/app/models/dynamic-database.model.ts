@@ -11,11 +11,23 @@
     limitations under the License.
  */
 
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { map } from 'rxjs';
-import { environment } from 'src/environments/environment';
-import { EntityNode } from './entity-node.model';
+import { map, tap } from 'rxjs';
+import { TargetEntity } from '../interfaces/target';
+import { AgentsService } from '../services/agents.service';
+import { TargetEntityTreeNode } from './entity-node.model';
+
+const ENTITY_TYPES: Record<
+  string,
+  { childType?: string; expandable: boolean; selectable: boolean }
+> = {
+  dv360: { childType: 'partner', expandable: true, selectable: false },
+  partner: { childType: 'advertiser', expandable: true, selectable: false },
+  advertiser: { childType: 'campaign', expandable: true, selectable: false },
+  campaign: { childType: 'insertionOrder', expandable: true, selectable: true },
+  insertionOrder: { childType: 'lineItem', expandable: true, selectable: true },
+  lineItem: { expandable: true, selectable: true },
+};
 
 @Injectable({ providedIn: 'root' })
 /**
@@ -28,79 +40,61 @@ export class DynamicDatabase {
    *
    * @param {HttpClient} http
    */
-  constructor(private http: HttpClient) {}
+  constructor(private agents: AgentsService) {}
 
   /**
    * Initial data from database.
    *
-   * @returns {EntityNode[]}
+   * @returns {TargetEntityTreeNode[]}
    */
-  initialData(): EntityNode[] {
-    return [new EntityNode('root', 'DV360', 0, true)];
-  }
-
-  /**
-   * Get type from entity.
-   *
-   * @param {EntityNode} entity
-   * @returns {string}
-   */
-  getEntityType(entity: EntityNode): string {
-    if (entity.lineItemId) {
-      return 'lineItem';
-    } else if (entity.insertionOrderId) {
-      return 'insertionOrder';
-    } else if (entity.advertiserId) {
-      return 'advertiser';
-    } else {
-      return 'partner';
-    }
+  initialData(): TargetEntityTreeNode[] {
+    const root = new TargetEntityTreeNode('dv360', 'DV360', 0, true);
+    root.type = 'dv360';
+    return [root];
   }
 
   /**
    * Derive ID from entity.
    *
-   * @param {EntityNode} entity
+   * @param {TargetEntityTreeNode} entity
    * @returns {string}
    */
-  getEntityId(entity: EntityNode): string {
-    if (entity.lineItemId) {
-      return entity.lineItemId;
-    } else if (entity.insertionOrderId) {
-      return entity.insertionOrderId;
-    } else if (entity.advertiserId) {
-      return entity.advertiserId;
-    } else {
-      return entity.partnerId;
+  getEntityId(entity: TargetEntityTreeNode): string {
+    switch (entity.type) {
+      case 'lineItem':
+        return entity.parameters['lineItemId'];
+      case 'insertionOrder':
+        return entity.parameters['insertionOrderId'];
+      case 'campaign':
+        return entity.parameters['campaignId'];
+      case 'advertiser':
+        return entity.parameters['advertiserId'];
+      case 'partner':
+        return entity.parameters['partnerId'];
+      default:
+        throw new Error(`Unknown entity type: ${entity.type}`);
     }
   }
 
   /**
    * Get node children.
    *
-   * @param {EntityNode} node
-   * @returns {Promise<EntityNode[] | undefined>}
+   * @param {TargetEntityTreeNode} node
+   * @returns {Promise<TargetEntityTreeNode[] | undefined>}
    */
-  getChildren(node: EntityNode): Promise<EntityNode[] | undefined> {
-    const agent = 'dv360-agent';
-    const method = 'list';
-    let childEntityType = 'partner';
-    const params = {
-      partnerId: node.partnerId,
-      advertiserId: node.advertiserId,
-      insertionOrderId: node.insertionOrderId,
-    };
-
-    if (node.insertionOrderId) {
-      childEntityType = 'lineItem';
-    } else if (node.advertiserId) {
-      childEntityType = 'insertionOrder';
-    } else if (node.partnerId) {
-      childEntityType = 'advertiser';
+  getChildren(
+    node: TargetEntityTreeNode
+  ): Promise<TargetEntityTreeNode[] | undefined> {
+    const agentId = 'dv360';
+    const entityType = ENTITY_TYPES[node.type].childType;
+    if (!entityType) {
+      return Promise.resolve(undefined);
     }
 
+    const params = node.parameters;
+
     // Build request URL
-    const url = `agents/${agent}/${method}/${childEntityType}`;
+    const url = `agents/${agentId}/list/${entityType}`;
 
     // Build cache key
     const hash = btoa(`${url}-${JSON.stringify(params)}`);
@@ -115,44 +109,35 @@ export class DynamicDatabase {
 
     // Fetch children from server
     return new Promise((resolve, reject) => {
-      this.http
-        .get<Array<EntityNode>>(`${environment.apiUrl}/${url}`, {
-          params,
-        })
+      this.agents
+        .fetchTargetEntities(agentId, entityType, params)
         .pipe(
-          map((data) => {
-            return data.map((entity) => {
-              return this.parseEntity(entity, node);
-            });
+          map((targetEntities) => {
+            return targetEntities?.map((entity) =>
+              this.parseEntity(entity, node)
+            );
+          }),
+          tap((targetNodes) => {
+            localStorage.setItem(hash, JSON.stringify(targetNodes));
           })
         )
-        .subscribe({
-          next: (result) => {
-            // Store children in cache
-            localStorage.setItem(hash, JSON.stringify(result));
-            resolve(result);
-          },
-          error: (err) => {
-            reject(err);
-          },
-        });
+        .subscribe({ next: resolve, error: reject });
     });
   }
 
   /**
    * Parse entity from JSON to proper model.
    *
-   * @param {object} entity
-   * @param {EntityNode} parent
-   * @returns {EntityNode}
+   * @param {TargetEntity} entity
+   * @param {TargetEntityTreeNode} parent
+   * @returns {TargetEntityTreeNode}
    */
-  parseEntity(entity: object, parent: EntityNode) {
-    const child = EntityNode.fromJSON(entity);
+  parseEntity(entity: TargetEntity, parent: TargetEntityTreeNode) {
+    const child = TargetEntityTreeNode.fromJSON(entity);
     child.id = this.getEntityId(child);
     child.level = parent.level + 1;
-    child.type = this.getEntityType(child);
-    child.selectable = !!(child.insertionOrderId || child.lineItemId);
-    child.expandable = !child.lineItemId;
+    child.selectable = ENTITY_TYPES[child.type].selectable;
+    child.expandable = ENTITY_TYPES[child.type].expandable;
 
     return child;
   }
@@ -160,10 +145,10 @@ export class DynamicDatabase {
   /**
    * Check if node is expandable.
    *
-   * @param {EntityNode} node
+   * @param {TargetEntityTreeNode} node
    * @returns {boolean}
    */
-  isExpandable(node: EntityNode): boolean {
+  isExpandable(node: TargetEntityTreeNode): boolean {
     return node.expandable;
   }
 }

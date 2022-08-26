@@ -11,10 +11,10 @@
     limitations under the License.
  */
 
-import { EntityNode } from './entity-node.model';
+import { TargetEntityTreeNode } from './entity-node.model';
 
 describe('EntityNode', () => {
   it('should create an instance', () => {
-    expect(new EntityNode()).toBeTruthy();
+    expect(new TargetEntityTreeNode()).toBeTruthy();
   });
 });
