@@ -11,17 +11,16 @@
     limitations under the License.
  */
 
-import { Component, Inject, OnInit, ViewChild } from '@angular/core';
-import { Router } from '@angular/router';
-// import { DataPoint } from 'src/app/interfaces/datapoint';
-
 import { StepperOrientation } from '@angular/cdk/stepper';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatDialog } from '@angular/material/dialog';
+import { Router } from '@angular/router';
 import { AgentSettingDescription, ModelSpec } from 'src/app/interfaces/common';
 import { Comparator, Rule, RuleTargetAction } from 'src/app/interfaces/rule';
 import { SourceAgentDescription } from 'src/app/interfaces/source';
 import { TargetAgentDescription } from 'src/app/interfaces/target';
+import { MissingSettingsDialogComponent } from 'src/app/missing-settings-dialog/missing-settings-dialog.component';
 import { AgentsService } from 'src/app/services/agents.service';
 import { RulesService } from 'src/app/services/rules.service';
 import { UserService } from 'src/app/services/user.service';
@@ -292,34 +291,5 @@ export class AddRuleComponent implements OnInit {
         data: missingSettings,
       });
     }
-  }
-}
-
-@Component({
-  selector: 'missing-settings-dialog',
-  templateUrl: 'missing-settings-dialog.html',
-})
-
-/**
- *  User Settings Dialog Component.
- */
-export class MissingSettingsDialogComponent {
-  /**
-   * Component constructor.
-   *
-   * @param {Array<SourceAgentSettingsParam>} settings
-   * @param {Router} router
-   */
-  constructor(
-    @Inject(MAT_DIALOG_DATA) public settings: AgentSettingDescription[],
-    private router: Router
-  ) {}
-
-  /**
-   * Navigate to user settings.
-   */
-  goToUserSettings() {
-    const fragment = this.settings.map((setting) => setting.key).join(',');
-    this.router.navigate(['/settings'], { fragment });
   }
 }
