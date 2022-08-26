@@ -13,38 +13,47 @@
 # limitations under the License.
 
 steps:
-# Build the image from source
-- name: gcr.io/cloud-builders/docker
-  id: Build IFTTA image 
-  args: ['build', '-f', 'Dockerfile', 
-          '-t', '$_GCR_HOSTNAME/$PROJECT_ID/$_SERVICE_NAME/$_IMAGE_NAME:$SHORT_SHA',
-          '-t', '$_GCR_HOSTNAME/$PROJECT_ID/$_SERVICE_NAME/$_IMAGE_NAME:latest',
-           '--cache-from', '$_GCR_HOSTNAME/$PROJECT_ID/$_SERVICE_NAME/$_IMAGE_NAME:latest', '.' ]
- 
-# TODO: Tag container with semver 
+  # Build image from source
+  - name: gcr.io/cloud-builders/docker
+    id: Build image
+    args:
+      - build
+      - '-f'
+      - 'Dockerfile'
+      - '-t'
+      - '$_GCR_HOSTNAME/$PROJECT_ID/$_SERVICE_NAME/$_IMAGE_NAME:$SHORT_SHA'
+      - '-t'
+      - '$_GCR_HOSTNAME/$PROJECT_ID/$_SERVICE_NAME/$_IMAGE_NAME:latest'
+      - '--cache-from'
+      - '$_GCR_HOSTNAME/$PROJECT_ID/$_SERVICE_NAME/$_IMAGE_NAME:latest'
+      - '.'
 
-# Push image to GCR
-- name: gcr.io/cloud-builders/docker
-  id: Push IFTTA image
-  args: ['push', '$_GCR_HOSTNAME/$PROJECT_ID/$_SERVICE_NAME/$_IMAGE_NAME:$SHORT_SHA']
+  # Push image to Google Container Registry
+  - name: gcr.io/cloud-builders/docker
+    id: Push image
+    args:
+      - push
+      - '$_GCR_HOSTNAME/$PROJECT_ID/$_SERVICE_NAME/$_IMAGE_NAME:$SHORT_SHA'
 
-# Deploy to cloudrun 
+  # Deploy to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
+    id: Deploy to cloudrun
+    args:
+      - run
+      - deploy
+      - $_SERVICE_NAME
+      - '--image=$_GCR_HOSTNAME/$PROJECT_ID/$_SERVICE_NAME/$_IMAGE_NAME:$SHORT_SHA'
+      - '--platform=managed'
+      - '--region=$_DEPLOY_REGION'
+      - '--port=$_SERVICE_PORT'
+      - '--quiet'
+    entrypoint: gcloud
 
-- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
-  id: Deploy to cloudrun
-  args:
-    - run
-    - deploy
-    - $_SERVICE_NAME
-    - '--image=$_GCR_HOSTNAME/$PROJECT_ID/$_SERVICE_NAME/$_IMAGE_NAME:$SHORT_SHA'
-    - '--platform=managed'
-    - '--region=$_DEPLOY_REGION'
-    - '--port=$_SERVICE_PORT'
-    - '--quiet'
-  entrypoint: gcloud
+# General configuration
 images:
   - '$_GCR_HOSTNAME/$PROJECT_ID/$_SERVICE_NAME/$_IMAGE_NAME:$SHORT_SHA'
   - '$_GCR_HOSTNAME/$PROJECT_ID/$_SERVICE_NAME/$_IMAGE_NAME:latest'
+  - '$_GCR_HOSTNAME/$PROJECT_ID/$_SERVICE_NAME/$_IMAGE_NAME:$TAG_NAME'
 options:
   substitutionOption: ALLOW_LOOSE
   logging: CLOUD_LOGGING_ONLY

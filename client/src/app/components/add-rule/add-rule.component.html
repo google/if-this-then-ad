@@ -272,7 +272,7 @@
           <li>
             {{ target.action }} -
             <i *ngFor="let ap of target.parameters | keyvalue">
-              {{ ap.value }} &nbsp;
+              {{ap.key}} {{ ap.value }} &nbsp;
             </i>
           </li>
         </ul>
