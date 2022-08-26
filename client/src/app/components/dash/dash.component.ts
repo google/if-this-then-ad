@@ -11,13 +11,12 @@
     limitations under the License.
  */
 
-import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { map } from 'rxjs/operators';
-import { Rule } from 'src/app/models/rule.model';
-import { User } from 'src/app/models/user.model';
-import { environment } from 'src/environments/environment';
+import { Component, OnInit } from '@angular/core';
+import { Rule } from 'src/app/interfaces/rule';
+import { User } from 'src/app/interfaces/user';
 import { UserService } from 'src/app/services/user.service';
+import { store } from 'src/app/store';
 
 @Component({
   selector: 'app-dash',
@@ -39,7 +38,6 @@ export class DashComponent implements OnInit {
 
   /**
    * Constructor.
-   *
    * @param {UserService} userService
    */
   constructor(private userService: UserService, private http: HttpClient) {}
@@ -48,24 +46,11 @@ export class DashComponent implements OnInit {
    * Init.
    */
   ngOnInit(): void {
-    this.displayName = this.userService.user.displayName!;
-    this.user = this.userService.user;
-    this.loadRules();
-  }
-
-  // TODO: centralise all data fetching into one service
-  // use caching to prevent hitting the api unnecessarily.
-  /**
-   * Fetch all rules for logged in user.
-   */
-  loadRules() {
-    this.http
-      .get<Array<Rule>>(`${environment.apiUrl}/rules/user/${this.user?.id}`)
-      .pipe(map((res: Array<Rule>) => res))
-      .subscribe((result) => {
-        this.rules = result;
-        this.calculateStats(this.rules);
-      });
+    this.displayName = this.userService.loggedInUser.displayName!;
+    store.rules.subscribe((rules) => {
+      this.rules = rules;
+      this.calculateStats(this.rules);
+    });
   }
 
   /**
@@ -74,9 +59,9 @@ export class DashComponent implements OnInit {
    * @param {Rule[]} rules
    */
   calculateStats(rules: Rule[]) {
-    rules.forEach((r) => {
+    rules.forEach((rule) => {
       this.activeRules += 1;
-      if (!r.status?.success) {
+      if (!rule.latestStatus?.success) {
         this.errorRules += 1;
       }
     });

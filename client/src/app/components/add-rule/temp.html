@@ -1,0 +1,82 @@
+<mat-step>
+  <ng-template matStepLabel>Target</ng-template>
+  <h3>Application to target</h3>
+  <!-- Target -->
+  <mat-radio-group
+    aria-label="Select the target"
+    [(ngModel)]="targetAgent"
+    (change)="onTargetChange($event.value)"
+  >
+    <mat-radio-button value="dv360-agent">
+      <div class="radio-button-content">
+        <img class="radio-button-icon" alt="DV360" src="assets/img/dv360.png" />
+        <span class="radio-button-label">DV360</span>
+      </div>
+    </mat-radio-button>
+    <mat-radio-button value="googleads-agent">
+      <div class="radio-button-content">
+        <img
+          class="radio-button-icon"
+          alt="Google Ads"
+          src="assets/img/ads.png"
+        />
+        <span class="radio-button-label">Google Ads</span>
+      </div>
+    </mat-radio-button>
+  </mat-radio-group>
+
+  <app-target-selector
+    *ngIf="'dv360-agent' === targetAgent"
+  ></app-target-selector>
+  <app-googleads-selector
+    *ngIf="'googleads-agent' === targetAgent"
+  ></app-googleads-selector>
+
+  <div class="step-footer">
+    <button mat-raised-button matStepperPrevious>Back</button>
+    <button mat-raised-button color="primary" matStepperNext>Next</button>
+  </div>
+</mat-step>
+
+<mat-step>
+  <ng-template matStepLabel>Review & Finish</ng-template>
+  <div id="rule-summary">
+    <p>Rule name <i> {{ this.currentRule.name }} </i></p>
+    <p>
+      Monitor <i> {{ this.currentRule.source.name }} </i> for
+      <i *ngFor="let param of this.currentRule.source.params">
+        {{ param.name }} : {{ param.value }}
+      </i>
+    </p>
+    <p>
+      Trigger when
+      <i>
+        {{ this.currentRule.condition.name }} {{
+        this.currentRule.condition.comparator }} {{
+        this.currentRule.condition.value }}
+      </i>
+    </p>
+
+    <p>Run every <i> {{ this.currentRule.executionInterval }} </i> minutes</p>
+
+    <p>Perform these actions:</p>
+    <ul *ngFor="let t of this.currentRule.targets">
+      <li *ngFor="let a of t.actions">
+        {{ a.type }} -
+        <i *ngFor="let ap of a.params"> {{ ap.value }} &nbsp; </i>
+      </li>
+    </ul>
+  </div>
+  <div class="step-footer">
+    <button mat-raised-button matStepperPrevious>Back</button>
+    <!-- Save button -->
+    <button
+      [disabled]="!saveEnabled"
+      mat-raised-button
+      color="accent"
+      (click)="saveRule()"
+    >
+      Save
+    </button>
+  </div>
+</mat-step>

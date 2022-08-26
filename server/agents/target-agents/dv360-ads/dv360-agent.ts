@@ -1,240 +1,285 @@
-/**
-    Copyright 2022 Google LLC
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
-        https://www.apache.org/licenses/LICENSE-2.0
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
- */
-
-import EntityManager from './entity-manager';
+import { OperationResult } from '../../../common/common';
 import {
-  AgentTask,
-  Action,
-  ActionResult,
-  EntityActions,
-  InstanceOptions,
-  IAgent,
-  AgentType,
-  AgentMetadata,
-  EntityType,
-  httpMethods,
-  RuleResultValue,
-  Parameter,
-} from './interfaces';
-import { config } from './config';
+  TargetAgent,
+  TargetAgentDescription,
+  TargetAgentTask,
+  TargetEntityResponse,
+} from '../../../common/target';
+import { User } from '../../../common/user';
+import { googleAuthService } from '../../../services/google-auth-service';
+import { Dv360ApiClient } from './dv360-api-client';
+
+const DV360_AGENT_ID = 'dv360';
 
 /**
- * DV360 agent.
+ * Target agent implementation for Display & Video 360.
  */
-export class DV360Agent implements IAgent {
-  public agentId = config.id;
-  public name = config.name;
+export class Dv360Agent implements TargetAgent {
+  readonly id = DV360_AGENT_ID;
 
   /**
-   * Transform.
-   *
-   * @param {AgentTask} task
-   * @param {any} data
-   * @param {any} error
-   * @returns {ActionResult}
+   * Returns an API client authorized for the user.
+   * @param {User} user
+   * @returns {Dv360ApiClient} the API client with the user's authorization
    */
-  private transform(task: AgentTask, data, error?): ActionResult {
-    return {
-      ruleId: task.target.ruleId,
-      agentId: config.id,
-      displayName: data?.displayName,
-      entityStatus: data?.entityStatus,
-      timestamp: new Date(),
-      success: error ? false : true,
-      error: error?.message,
-    };
+  private getDv360ApiClient(user: User) {
+    const auth = googleAuthService.getAuthorizedClientForUser(user);
+    return new Dv360ApiClient(auth);
   }
 
   /**
-   * Convert to instance options.
-   *
-   * @param {Array<Parameter>} a
-   * @returns {InstanceOptions}
+   * Executes a single target agent task.
+   * @param {TargetAgentTask} task the task
+   * @returns {Promise<OperationResult>}the result of the action
    */
-  private toInstanceOptions(a: Array<Parameter>): InstanceOptions {
-    const o = {};
-    a.forEach((p) => {
-      o[p.key] = p.value;
-    });
-    if (!o['entityType']) {
-      throw Error('entityType cannot be empty');
-    }
+  private async executeTask(task: TargetAgentTask): Promise<OperationResult> {
+    const client = this.getDv360ApiClient(task.owner);
 
-    return o as InstanceOptions;
-  }
+    const entityType = task.parameters['entityType'];
+    const advertiserId = task.parameters['advertiserId'] as string;
+    const targetStatus =
+      task.action === 'ACTIVATE'
+        ? 'ENTITY_STATUS_ACTIVE'
+        : 'ENTITY_STATUS_PAUSED';
 
-  /**
-   * Execute action.
-   *
-   * @param {Action} action
-   * @param {RuleResultValue} result
-   * @param {string} token
-   * @returns {any}
-   */
-  private async executeAction(
-    action: Action,
-    result: RuleResultValue,
-    token: string
-  ) {
-    const instanceOptions = this.toInstanceOptions(action.params);
-    const entity = EntityManager.getInstance(instanceOptions, token);
-
-    switch (action.type) {
-      case EntityActions.ACTIVATE:
-        return await (result ? entity.activate() : entity.pause());
-
-      case EntityActions.PAUSE:
-        return await (result ? entity.pause() : entity.activate());
-
-      default:
-        throw Error(
-          `Not supported entity action method: ${instanceOptions.action}`
-        );
-    }
-  }
-
-  /**
-   * Execute.
-   *
-   * @param {AgentTask} task
-   * @returns {Array<ActionResult>}
-   */
-  public async execute(task: AgentTask) {
-    const result: Array<ActionResult> = [];
-    for (const action of task.target.actions) {
-      try {
-        const data = await this.executeAction(
-          action,
-          task.target.result,
-          task.token.auth
-        );
-        result.push(this.transform(task, data));
-      } catch (err) {
-        result.push(this.transform(task, {}, err));
+    try {
+      switch (entityType) {
+        case 'lineItem':
+          await client.modifyLineItemStatus(
+            advertiserId,
+            task.parameters['lineItemId'] as string,
+            targetStatus
+          );
+          return { status: 'success' };
+        case 'insertionOrder':
+          await client.modifyInsertionOrderStatus(
+            advertiserId,
+            task.parameters['insertionOrderId'] as string,
+            targetStatus
+          );
+          return { status: 'success' };
+        case 'campaign':
+          await client.modifyCampaignStatus(
+            advertiserId,
+            task.parameters['campaignId'] as string,
+            targetStatus
+          );
+          return { status: 'success' };
+        default:
+          return {
+            status: 'failed',
+            error: `Unsupported target entity type: ${entityType}`,
+          };
       }
+    } catch (err) {
+      return {
+        status: 'failed',
+        error: err instanceof Error ? err.message : JSON.stringify(err),
+      };
     }
-
-    return result;
   }
 
   /**
-   * Get agent metadata for UI.
-   *
-   * @returns {Promise<AgentMetadata>}
+   * @inheritdoc
    */
-  public async getAgentMetadata(): Promise<AgentMetadata> {
-    // TODO decide if we should store this metadata as json
-    // and simply serve that to the caller.
+  async executeTasks(tasks: TargetAgentTask[]): Promise<OperationResult[]> {
+    const results: OperationResult[] = [];
+    for (const task of tasks) {
+      const result = await this.executeTask(task);
+      results.push(result);
+    }
+    return results;
+  }
 
-    const meta: AgentMetadata = {
-      id: config.id,
-      name: config.name,
-      type: AgentType.TARGET,
-      arguments: ['advertiserId', 'entityId', 'entityType'],
-      api: [
+  /**
+   * @inheritdoc
+   */
+  describe() {
+    const description: TargetAgentDescription = {
+      id: 'dv360',
+      name: 'Display & Video 360',
+      type: 'target',
+      targetEntities: [
         {
-          dataPoint: 'partnerId',
-          list: {
-            url: `/api/agents/${config.id}/list/partner`,
-            method: httpMethods.GET,
-          },
+          name: 'Line Item',
+          key: 'lineItem',
+          parameters: ['advertiserId', 'lineItemId'],
         },
         {
-          dataPoint: 'advertiserId',
-          list: {
-            url: `/api/agents/${config.id}/list/advertiser`,
-            method: httpMethods.GET,
-            params: {
-              partnerId: typeof Number(),
-            },
-          },
+          name: 'Insertion Order',
+          key: 'insertionOrder',
+          parameters: ['advertiserId', 'insertionOrderId'],
         },
         {
-          dataPoint: 'insertionOrderId',
-          list: {
-            url: `/api/agents/${config.id}/list/insertionOrder`,
-            method: httpMethods.GET,
-            params: {
-              partnerId: typeof Number(),
-              advertiserId: typeof Number(),
-            },
-          },
-        },
-        {
-          dataPoint: 'lineItemId',
-          list: {
-            url: `/api/agents/${config.id}/list/lineItem`,
-            method: httpMethods.GET,
-            params: {
-              partnerId: typeof Number(),
-              advertiserId: typeof Number(),
-              insertionOrderId: typeof Number(),
-            },
-          },
-        },
-      ],
-      dataPoints: [
-        {
-          id: 'advertiserId',
-          displayName: 'Advertiser',
-          dataType: typeof Number(),
-        },
-        {
-          id: 'entityId',
-          displayName: 'Entity',
-          dataType: typeof Number(),
-        },
-        {
-          id: 'entityType',
-          displayName: 'Entity Type',
-          dataType: `${EntityType.insertionOrder}|${EntityType.lineItem}`,
+          name: 'Campaign',
+          key: 'campaign',
+          parameters: ['advertiserId', 'campaignId'],
         },
       ],
     };
-
-    return Promise.resolve(meta);
+    return Promise.resolve(description);
   }
 
   /**
-   * Query DV360 entities for the UI.
-   *
-   * @param {string} token
-   * @param {EntityType} entityType
-   * @param {Object} params
-   * @returns {Object[]}
+   * Fetches a list of DV360 partners.
+   * @param {Dv360ApiClient} client the DV360 API client
+   * @returns {Promise<TargetEntityResponse>} the agent response
    */
-  public async getEntityList(
-    token: string,
-    entityType: EntityType,
-    params: Object
-  ) {
-    if (!entityType || !Object.values(EntityType).includes(entityType)) {
-      throw new Error(`${entityType} is not a known entity type`);
+  private async listPartners(
+    client: Dv360ApiClient
+  ): Promise<TargetEntityResponse> {
+    try {
+      const entities = await client.listPartners();
+      return { status: 'success', entities };
+    } catch (err) {
+      return {
+        status: 'failed',
+        error: err instanceof Error ? err.message : JSON.stringify(err),
+      };
     }
+  }
 
-    const instance = EntityManager.getInstance({ entityType }, token, params);
-    const result: Object[] = [];
-    (await instance.list(params)).forEach((o: any) => {
-      result.push({
-        name: o?.displayName,
-        partnerId: o?.partnerId || params['partnerId'],
-        advertiserId: o?.advertiserId || params['advertiserId'],
-        insertionOrderId: o?.insertionOrderId || params['insertionOrderId'],
-        lineItemId: o?.lineItemId,
-        entityStatus: o?.entityStatus,
-      });
-    });
+  /**
+   * Fetches a list of advertisers.
+   * @param {Dv360ApiClient} client the DV360 API client
+   * @param {Record<string, unknown>} parameters the parameters for the API call
+   * @returns {Promise<TargetEntityResponse>} the agent response
+   */
+  private async listAdvertisers(
+    client: Dv360ApiClient,
+    parameters: Record<string, unknown>
+  ): Promise<TargetEntityResponse> {
+    if (!parameters['partnerId']) {
+      return {
+        status: 'failed',
+        error: 'Missing required parameter: partnerId.',
+      };
+    }
+    try {
+      const entities = await client.listAdvertisers(
+        parameters['partnerId'] as string
+      );
+      return { status: 'success', entities };
+    } catch (err) {
+      return {
+        status: 'failed',
+        error: err instanceof Error ? err.message : JSON.stringify(err),
+      };
+    }
+  }
+  /**
+   * Fetches a list of campaigns.
+   * @param {Dv360ApiClient} client the DV360 API client
+   * @param {Record<string, unknown>} parameters the parameters for the API call
+   * @returns {Promise<TargetEntityResponse>} the agent response
+   */
+  private async listCampaigns(
+    client: Dv360ApiClient,
+    parameters: Record<string, unknown>
+  ): Promise<TargetEntityResponse> {
+    if (!parameters['advertiserId']) {
+      return {
+        status: 'failed',
+        error: 'Missing required parameter: advertiserId.',
+      };
+    }
+    try {
+      const entities = await client.listCampaigns(
+        parameters['advertiserId'] as string
+      );
+      return { status: 'success', entities };
+    } catch (err) {
+      return {
+        status: 'failed',
+        error: err instanceof Error ? err.message : JSON.stringify(err),
+      };
+    }
+  }
+  /**
+   * Fetches a list of insertion orders.
+   * @param {Dv360ApiClient} client the DV360 API client
+   * @param {Record<string, unknown>} parameters the parameters for the API call
+   * @returns {Promise<TargetEntityResponse>} the agent response
+   */
+  private async listInsertionOrders(
+    client: Dv360ApiClient,
+    parameters: Record<string, unknown>
+  ): Promise<TargetEntityResponse> {
+    if (!parameters['advertiserId']) {
+      return {
+        status: 'failed',
+        error: 'Missing required parameter: advertiserId.',
+      };
+    }
+    try {
+      const entities = await client.listInsertionOrders(
+        parameters['advertiserId'] as string,
+        parameters['campaignId'] as string | undefined
+      );
+      return { status: 'success', entities };
+    } catch (err) {
+      return {
+        status: 'failed',
+        error: err instanceof Error ? err.message : JSON.stringify(err),
+      };
+    }
+  }
+  /**
+   * Fetches a list of insertion orders.
+   * @param {Dv360ApiClient} client the DV360 API client
+   * @param {Record<string, unknown>} parameters the parameters for the API call
+   * @returns {Promise<TargetEntityResponse>} the agent response
+   */
+  private async listLineItems(
+    client: Dv360ApiClient,
+    parameters: Record<string, unknown>
+  ): Promise<TargetEntityResponse> {
+    if (!parameters['advertiserId']) {
+      return {
+        status: 'failed',
+        error: 'Missing required parameter: advertiserId.',
+      };
+    }
+    try {
+      const entities = await client.listLineItems(
+        parameters['advertiserId'] as string,
+        parameters['campaignId'] as string | undefined,
+        parameters['insertionOrderId'] as string | undefined
+      );
+      return { status: 'success', entities };
+    } catch (err) {
+      return {
+        status: 'failed',
+        error: err instanceof Error ? err.message : JSON.stringify(err),
+      };
+    }
+  }
 
-    return result;
+  /**
+   * @inheritdoc
+   */
+  async listTargetEntities(
+    type: string,
+    parameters: Record<string, unknown>,
+    requestor: User
+  ): Promise<TargetEntityResponse> {
+    const client = this.getDv360ApiClient(requestor);
+    switch (type) {
+      case 'partner':
+        return this.listPartners(client);
+      case 'advertiser':
+        return this.listAdvertisers(client, parameters);
+      case 'campaign':
+        return this.listCampaigns(client, parameters);
+      case 'insertionOrder':
+        return this.listInsertionOrders(client, parameters);
+      case 'lineItem':
+        return this.listLineItems(client, parameters);
+      default:
+        return Promise.resolve({
+          status: 'failed',
+          error: `Unsupported target entity type: ${type}`,
+        });
+    }
   }
 }

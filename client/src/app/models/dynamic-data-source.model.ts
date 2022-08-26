@@ -13,47 +13,47 @@
 
 import {
   CollectionViewer,
-  SelectionChange,
   DataSource,
+  SelectionChange,
 } from '@angular/cdk/collections';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { BehaviorSubject, merge, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { DynamicDatabase } from './dynamic-database.model';
-import { EntityNode } from './entity-node.model';
+import { TargetEntityTreeNode } from './entity-node.model';
 
 /**
  * Dynamic data source.
  */
-export class DynamicDataSource implements DataSource<EntityNode> {
-  dataChange = new BehaviorSubject<EntityNode[]>([]);
+export class DynamicDataSource implements DataSource<TargetEntityTreeNode> {
+  dataChange = new BehaviorSubject<TargetEntityTreeNode[]>([]);
 
   /**
    * Getter function for data.
    *
-   * @returns {EntityNode[]}
+   * @returns {TargetEntityTreeNode[]}
    */
-  get data(): EntityNode[] {
+  get data(): TargetEntityTreeNode[] {
     return this.dataChange.value;
   }
 
   /**
    * Setter function for data.
    *
-   * @param {EntityNode[]} value
+   * @param {TargetEntityTreeNode[]} value
    */
-  set data(value: EntityNode[]) {
+  set data(value: TargetEntityTreeNode[]) {
     this._treeControl.dataNodes = value;
     this.dataChange.next(value);
   }
 
   /**
    *
-   * @param {FlatTreeControl<EntityNode>} _treeControl
+   * @param {FlatTreeControl<TargetEntityTreeNode>} _treeControl
    * @param {DynamicDatabase} _database
    */
   constructor(
-    private _treeControl: FlatTreeControl<EntityNode>,
+    private _treeControl: FlatTreeControl<TargetEntityTreeNode>,
     private _database: DynamicDatabase
   ) {}
 
@@ -61,15 +61,17 @@ export class DynamicDataSource implements DataSource<EntityNode> {
    * Connect.
    *
    * @param {CollectionViewer} collectionViewer
-   * @returns {Observable<EntityNode[]>}
+   * @returns {Observable<TargetEntityTreeNode[]>}
    */
-  connect(collectionViewer: CollectionViewer): Observable<EntityNode[]> {
+  connect(
+    collectionViewer: CollectionViewer
+  ): Observable<TargetEntityTreeNode[]> {
     this._treeControl.expansionModel.changed.subscribe((change) => {
       if (
-        (change as SelectionChange<EntityNode>).added ||
-        (change as SelectionChange<EntityNode>).removed
+        (change as SelectionChange<TargetEntityTreeNode>).added ||
+        (change as SelectionChange<TargetEntityTreeNode>).removed
       ) {
-        this.handleTreeControl(change as SelectionChange<EntityNode>);
+        this.handleTreeControl(change as SelectionChange<TargetEntityTreeNode>);
       }
     });
 
@@ -88,9 +90,9 @@ export class DynamicDataSource implements DataSource<EntityNode> {
   /**
    * Handle expand/collapse behaviors
    *
-   * @param {SelectionChange<EntityNode>} change
+   * @param {SelectionChange<TargetEntityTreeNode>} change
    */
-  handleTreeControl(change: SelectionChange<EntityNode>) {
+  handleTreeControl(change: SelectionChange<TargetEntityTreeNode>) {
     if (change.added) {
       change.added.forEach((node) => this.toggleNode(node, true));
     }
@@ -105,11 +107,11 @@ export class DynamicDataSource implements DataSource<EntityNode> {
   /**
    * Toggle node expansion, remove from display list
    *
-   * @param {EntityNode} node
+   * @param {TargetEntityTreeNode} node
    * @param {boolean} expand
    * @returns {Promise<void>}
    */
-  async toggleNode(node: EntityNode, expand: boolean): Promise<void> {
+  async toggleNode(node: TargetEntityTreeNode, expand: boolean): Promise<void> {
     if (!node.expandable) {
       return;
     }

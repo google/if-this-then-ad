@@ -16,10 +16,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 
 import { environment } from 'src/environments/environment';
 
-import { User } from 'src/app/models/user.model';
-import { catchError, Observable, retry, tap, throwError } from 'rxjs';
-import { Token } from '../interfaces/token';
 import { HttpClient } from '@angular/common/http';
+import { catchError, Observable, retry, tap, throwError } from 'rxjs';
+import { Credentials, User } from '../interfaces/user';
 import { UserService } from './user.service';
 @Injectable({
   providedIn: 'root',
@@ -57,7 +56,6 @@ export class AuthService {
 
   /**
    * Check if logged in.
-   *
    * @returns {boolean}
    */
   get isLoggedIn(): boolean {
@@ -69,7 +67,6 @@ export class AuthService {
    */
   logout() {
     this.userService.updateUser(undefined);
-
     this.router.navigate(['/login']);
   }
 
@@ -77,7 +74,7 @@ export class AuthService {
    * Get access token.
    */
   get accessToken() {
-    return this.userService.currentUser?.token?.access ?? '';
+    return this.userService.currentUser?.credentials?.accessToken ?? '';
   }
 
   /**
@@ -86,21 +83,21 @@ export class AuthService {
    * @param {number} maxRetries
    * @returns {Observable<any>}
    */
-  refreshAccessToken(maxRetries = 2): Observable<Token> {
-    const user: User = this.userService.user;
+  refreshAccessToken(maxRetries = 2): Observable<Credentials> {
+    const user: User = this.userService.loggedInUser;
     const token = this.accessToken;
     const userId = user.id;
     const data = { userId, token };
 
     return this.http
-      .post<Token>(`${environment.apiUrl}/auth/refresh`, data)
+      .post<Credentials>(`${environment.apiUrl}/auth/refresh`, data)
       .pipe(
         retry(maxRetries),
         catchError((err) => {
           this.logout();
           return throwError(() => err);
         }),
-        tap((token) => this.userService.updateToken(token))
+        tap((token) => this.userService.updateCredentials(token))
       );
   }
 }

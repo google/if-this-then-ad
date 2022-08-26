@@ -11,9 +11,9 @@
     limitations under the License.
  */
 
-import { BehaviorSubject, Subject } from 'rxjs';
-import { TargetAgent } from '../interfaces/target-agent';
-import { TargetAgentAction } from '../interfaces/target-agent-action';
+import { BehaviorSubject, ReplaySubject, Subject } from 'rxjs';
+import { AgentsDescription } from '../interfaces/api';
+import { Rule, RuleTargetAction } from '../interfaces/rule';
 
 interface SaveRequirements {
   name: boolean;
@@ -23,8 +23,6 @@ interface SaveRequirements {
   target: boolean;
   executionInterval: boolean;
 }
-
-const targetsCollector = new Map<string, TargetAgentAction[]>();
 
 const saveRequirements: SaveRequirements = {
   name: false,
@@ -36,17 +34,12 @@ const saveRequirements: SaveRequirements = {
 };
 
 export const store = {
+  rules: new BehaviorSubject<Rule[]>([]),
+  agents: new ReplaySubject<AgentsDescription>(1),
+
   saveRequirements: new BehaviorSubject<SaveRequirements>(saveRequirements),
   sourceSet: new BehaviorSubject<boolean>(false),
   ruleAdded: new Subject<boolean>(),
-  targets: new Subject<TargetAgent[]>(),
+  targets: new Subject<RuleTargetAction[]>(),
   sidenav: new Subject<boolean>(),
-  addTarget: (_targetAgent: TargetAgent) => {
-    targetsCollector.set(_targetAgent.agentId, _targetAgent.actions);
-    const targets: TargetAgent[] = [];
-    for (const k of targetsCollector.keys()) {
-      targets.push({ agentId: k, actions: targetsCollector.get(k)! });
-    }
-    store.targets.next(targets);
-  },
 };

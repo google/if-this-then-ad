@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { Token } from '../interfaces/token';
-import { User } from '../models/user.model';
+import { Credentials, User } from '../interfaces/user';
 
 @Injectable({
   providedIn: 'root',
@@ -29,9 +28,9 @@ export class UserService {
    */
   private loadFromLocalStorage() {
     if (localStorage.getItem(this.localStorageUserKey)) {
-      this.updateUser(
-        User.fromJSON(localStorage.getItem(this.localStorageUserKey))
-      );
+      const userString = localStorage.getItem(this.localStorageUserKey);
+      const user = JSON.parse(userString!) as User;
+      this.updateUser(user);
     }
   }
 
@@ -40,7 +39,7 @@ export class UserService {
    *
    * @returns {User}
    */
-  get user(): User {
+  get loggedInUser(): User {
     if (this.currentUser) {
       return this.currentUser;
     } else {
@@ -95,11 +94,10 @@ export class UserService {
 
   /**
    * Set new user token.
-   *
-   * @param {Token} token
+   * @param {Credentials} credentials the new user credentials
    */
-  updateToken(token: Token) {
-    this.currentUser!.token = token;
-    this.updateUser(this.currentUser);
+  updateCredentials(credentials: Credentials) {
+    this.loggedInUser.credentials = credentials;
+    this.updateUser(this.loggedInUser);
   }
 }

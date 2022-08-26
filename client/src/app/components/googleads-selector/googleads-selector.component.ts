@@ -11,20 +11,19 @@
     limitations under the License.
  */
 
-import { Component, ViewChild, AfterViewInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { environment } from 'src/environments/environment';
-import { map } from 'rxjs/operators';
+import { AfterViewInit, Component, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
-import { store } from 'src/app/store';
-import { TargetAgent } from '../../interfaces/target-agent';
-import { TargetAgentAction } from 'src/app/interfaces/target-agent-action';
 import {
   faCircle,
   faCirclePause,
   faRefresh,
 } from '@fortawesome/free-solid-svg-icons';
+import { map } from 'rxjs/operators';
+import { RuleTargetAction } from 'src/app/interfaces/rule';
+import { store } from 'src/app/store';
+import { environment } from 'src/environments/environment';
 
 interface AdGroup {
   customerId: string;
@@ -87,7 +86,7 @@ export class GoogleAdsSelectorComponent implements AfterViewInit {
       this.selectedRows.add(r);
     }
     const targetAgentActions = this.transformToActions(this.selectedRows);
-    store.addTarget(targetAgentActions);
+    store.targets.next(targetAgentActions);
 
     // Update save requirements
     const valid = this.selectedRows.size > 0;
@@ -103,24 +102,16 @@ export class GoogleAdsSelectorComponent implements AfterViewInit {
    * @param {Set<AdGroup>} userSelection
    * @returns {TargetAgent} TargetAgent Object
    */
-  private transformToActions(userSelection: Set<AdGroup>): TargetAgent {
-    const actions: TargetAgentAction[] = [];
-    userSelection.forEach((row: AdGroup) => {
-      const a = {
-        type: 'activate',
-        params: [
-          {
-            key: 'entityId',
-            value: row.id,
-          },
-        ],
-      };
-      actions.push(a);
-    });
-    return {
-      agentId: 'googleads-agent',
-      actions: actions,
-    };
+  private transformToActions(userSelection: Set<AdGroup>): RuleTargetAction[] {
+    const actions: RuleTargetAction[] = [...userSelection].map((row) => ({
+      agentId: 'google-ads',
+      action: 'ACTIVATE',
+      parameters: {
+        customerAccountId: row.customerId,
+        adGroupId: row.id,
+      },
+    }));
+    return actions;
   }
 
   /**

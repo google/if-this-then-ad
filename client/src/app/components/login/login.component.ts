@@ -12,8 +12,8 @@
  */
 
 import { Component, OnInit } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
-import { User } from 'src/app/models/user.model';
+import { ActivatedRoute, Router } from '@angular/router';
+import { User } from 'src/app/interfaces/user';
 
 import { AuthService } from 'src/app/services/auth.service';
 import { UserService } from 'src/app/services/user.service';
@@ -52,7 +52,8 @@ export class LoginComponent implements OnInit {
     const userString = this.route.snapshot.queryParamMap.get('user');
 
     if (userString) {
-      this.userService.updateUser(User.fromJSON(userString));
+      const user = JSON.parse(userString) as User;
+      this.userService.updateUser(user);
 
       // Redirect user to where they came from
       const returnTo = this.route.snapshot.queryParamMap.get('returnTo') || '';
