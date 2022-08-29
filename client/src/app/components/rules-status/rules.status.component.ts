@@ -20,7 +20,7 @@ import {
   faQuestion,
   faTriangleExclamation,
 } from '@fortawesome/free-solid-svg-icons';
-import { AgentsDescription } from 'src/app/interfaces/api';
+import { AgentsMetadata } from 'src/app/interfaces/api';
 import { Rule } from 'src/app/interfaces/rule';
 import { UserService } from 'src/app/services/user.service';
 import { store } from 'src/app/store';
@@ -56,7 +56,7 @@ export class RulesStatusComponent implements AfterViewInit, OnInit {
   dataSource = new MatTableDataSource<RulesDataSourceItem>([]);
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
-  agentsMetadata: AgentsDescription;
+  agentsMetadata: AgentsMetadata;
 
   /**
    * Constructor.

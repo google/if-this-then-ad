@@ -14,7 +14,7 @@
 import { OperationResult } from '../../../common/common';
 import {
   TargetAgent,
-  TargetAgentDescription,
+  TargetAgentMetadata,
   TargetAgentTask,
   TargetEntityResponse,
 } from '../../../common/target';
@@ -108,7 +108,7 @@ export class Dv360Agent implements TargetAgent {
    * @inheritdoc
    */
   describe() {
-    const description: TargetAgentDescription = {
+    const description: TargetAgentMetadata = {
       id: 'dv360',
       name: 'Display & Video 360',
       type: 'target',

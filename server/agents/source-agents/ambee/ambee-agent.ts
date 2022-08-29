@@ -12,8 +12,8 @@
  */
 
 import axios from 'axios';
-import { AgentSettingDescription } from 'common/common';
-import { SourceAgentDataPointDescription } from 'common/source';
+import { AgentSettingMetadata } from 'common/common';
+import { SourceAgentDataPointMetadata } from 'common/source';
 import { SimpleSourceAgent } from '../simple-source-agent';
 
 interface AmbeePollenData {
@@ -53,17 +53,17 @@ interface AmbeeAirQualityData {
   }>;
 }
 
-const AMBEE_API_KEY_SETTNG: AgentSettingDescription = {
+const AMBEE_API_KEY_SETTNG: AgentSettingMetadata = {
   key: 'AMBEE_API_KEY',
   name: 'Ambee API Key',
 };
-const POLLEN_LEVEL_DATAPOINT: SourceAgentDataPointDescription = {
+const POLLEN_LEVEL_DATAPOINT: SourceAgentDataPointMetadata = {
   key: 'pollen-level',
   name: 'Pollen Level',
   type: 'string',
   values: POLLEN_LEVELS,
 };
-const AIR_QUALITY_DATAPOINT: SourceAgentDataPointDescription = {
+const AIR_QUALITY_DATAPOINT: SourceAgentDataPointMetadata = {
   key: 'air-quality',
   name: 'Air Quality',
   type: 'string',

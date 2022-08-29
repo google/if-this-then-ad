@@ -15,7 +15,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { map } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { AgentsDescription } from '../interfaces/api';
+import { AgentsMetadata } from '../interfaces/api';
 import { TargetEntityResponse } from '../interfaces/target';
 import { store } from '../store';
 
@@ -35,7 +35,7 @@ export class AgentsService {
    */
   fetchAgentsMetadata() {
     const url = `${environment.apiUrl}/agents/metadata`;
-    this.http.get<AgentsDescription>(url).subscribe((agentsMetadata) => {
+    this.http.get<AgentsMetadata>(url).subscribe((agentsMetadata) => {
       store.agents.next(agentsMetadata);
       store.agents.complete();
     });

@@ -13,7 +13,7 @@
 
 import {
   Agent,
-  AgentDescription,
+  AgentMetadata,
   AgentParameters,
   OperationResult,
 } from './common';
@@ -25,7 +25,7 @@ export interface TargetEntity {
   parameters: Record<string, string>;
 }
 
-export interface TargetEntityDescription {
+export interface TargetEntityMetadata {
   key: string;
   name: string;
   parameters?: string[];
@@ -41,7 +41,7 @@ export interface TargetAgent extends Agent {
   /**
    * @inheritdoc
    */
-  describe(): Promise<TargetAgentDescription>;
+  describe(): Promise<TargetAgentMetadata>;
 
   /**
    * List a set of target entities this agent can interact with.
@@ -60,8 +60,8 @@ export interface TargetAgent extends Agent {
   ): Promise<TargetEntityResponse>;
 }
 
-export interface TargetAgentDescription extends AgentDescription {
-  targetEntities: TargetEntityDescription[];
+export interface TargetAgentMetadata extends AgentMetadata {
+  targetEntities: TargetEntityMetadata[];
 }
 
 export type TargetAgentAction = 'ACTIVATE' | 'DEACTIVATE';

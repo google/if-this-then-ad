@@ -17,7 +17,7 @@ import { OperationResult } from '../../../common/common';
 import {
   TargetAgent,
   TargetAgentAction,
-  TargetAgentDescription,
+  TargetAgentMetadata,
   TargetAgentTask,
   TargetEntity,
   TargetEntityResponse,
@@ -149,7 +149,7 @@ export class GoogleAdsAgent implements TargetAgent {
    * @inheritdoc
    */
   describe() {
-    const description: TargetAgentDescription = {
+    const description: TargetAgentMetadata = {
       id: 'google-ads',
       name: 'Google Ads',
       type: 'target',

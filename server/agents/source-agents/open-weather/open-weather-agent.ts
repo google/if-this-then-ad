@@ -12,8 +12,8 @@
  */
 
 import axios from 'axios';
-import { AgentSettingDescription } from '../../../common/common';
-import { SourceAgentDataPointDescription } from '../../../common/source';
+import { AgentSettingMetadata } from '../../../common/common';
+import { SourceAgentDataPointMetadata } from '../../../common/source';
 import { SimpleSourceAgent } from '../simple-source-agent';
 
 const WEAHTER_CODES = {
@@ -25,42 +25,42 @@ const WEAHTER_CODES = {
   CLEAR: new Set([800, 801]),
 };
 
-const OPENWEATHER_API_KEY_SETTING: AgentSettingDescription = {
+const OPENWEATHER_API_KEY_SETTING: AgentSettingMetadata = {
   key: 'OPENWEATHER_API_KEY',
   name: 'Open Weather Map API Key',
 };
 
-const TEMPERATURE_DATAPOINT: SourceAgentDataPointDescription = {
+const TEMPERATURE_DATAPOINT: SourceAgentDataPointMetadata = {
   key: 'temperature',
   name: 'Temperature',
   type: 'number',
 };
-const WINDSPEED_DATAPOINT: SourceAgentDataPointDescription = {
+const WINDSPEED_DATAPOINT: SourceAgentDataPointMetadata = {
   key: 'windspeed',
   name: 'Wind Speed',
   type: 'number',
 };
-const THUNDERSTORM_DATAPOINT: SourceAgentDataPointDescription = {
+const THUNDERSTORM_DATAPOINT: SourceAgentDataPointMetadata = {
   key: 'thunderstorm',
   name: 'Thunderstorm',
   type: 'boolean',
 };
-const SNOW_DATAPOINT: SourceAgentDataPointDescription = {
+const SNOW_DATAPOINT: SourceAgentDataPointMetadata = {
   key: 'snow',
   name: 'Snow',
   type: 'boolean',
 };
-const RAIN_DATAPOINT: SourceAgentDataPointDescription = {
+const RAIN_DATAPOINT: SourceAgentDataPointMetadata = {
   key: 'rain',
   name: 'Rain',
   type: 'boolean',
 };
-const CLOUDS_DATAPOINT: SourceAgentDataPointDescription = {
+const CLOUDS_DATAPOINT: SourceAgentDataPointMetadata = {
   key: 'clouds',
   name: 'Clouds',
   type: 'boolean',
 };
-const CLEAR_SKY_DATAPOINT: SourceAgentDataPointDescription = {
+const CLEAR_SKY_DATAPOINT: SourceAgentDataPointMetadata = {
   key: 'clearSky',
   name: 'Clear sky',
   type: 'boolean',

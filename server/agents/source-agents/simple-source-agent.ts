@@ -14,7 +14,7 @@
 import {
   SourceAgent,
   SourceAgentData,
-  SourceAgentDescription,
+  SourceAgentMetadata,
   SourceAgentTask,
   SourceAgentTaskResult,
 } from 'common/source';
@@ -64,10 +64,10 @@ export abstract class SimpleSourceAgent implements SourceAgent {
 
   /**
    * Constructor
-   * @param {SourceAgentDescription} description the source agent description
+   * @param {SourceAgentMetadata} description the source agent description
    *    for this agent
    */
-  constructor(private readonly description: SourceAgentDescription) {
+  constructor(private readonly description: SourceAgentMetadata) {
     this.id = description.id;
     this.supportedDataPoints = new Set(
       description.dataPoints.map((dataPoint) => dataPoint.key)

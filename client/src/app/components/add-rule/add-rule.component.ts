@@ -16,17 +16,17 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { AgentSettingDescription, ModelSpec } from 'src/app/interfaces/common';
+import { AgentSettingMetadata, ModelSpec } from 'src/app/interfaces/common';
 import { Comparator, Rule, RuleTargetAction } from 'src/app/interfaces/rule';
-import { SourceAgentDescription } from 'src/app/interfaces/source';
-import { TargetAgentDescription } from 'src/app/interfaces/target';
+import { SourceAgentMetadata } from 'src/app/interfaces/source';
+import { TargetAgentMetadata } from 'src/app/interfaces/target';
 import { MissingSettingsDialogComponent } from 'src/app/missing-settings-dialog/missing-settings-dialog.component';
 import { AgentsService } from 'src/app/services/agents.service';
 import { RulesService } from 'src/app/services/rules.service';
 import { UserService } from 'src/app/services/user.service';
 import { store } from 'src/app/store';
 
-const EMPTY_SOURCE_AGENT_DESCRIPTION: SourceAgentDescription = {
+const EMPTY_SOURCE_AGENT_DESCRIPTION: SourceAgentMetadata = {
   dataPoints: [],
   id: '',
   name: '',
@@ -50,13 +50,13 @@ export class AddRuleComponent implements OnInit {
   lockEquals: boolean = false;
 
   executionIntervals: number[] = [30, 60, 240, 480, 720, 1440];
-  sources: SourceAgentDescription[] = [];
+  sources: SourceAgentMetadata[] = [];
   comparators: any[] = [
     { key: 'gt', value: 'greater than' },
     { key: 'lt', value: 'less than' },
     { key: 'eq', value: 'equals' },
   ];
-  targets: TargetAgentDescription[] = [];
+  targets: TargetAgentMetadata[] = [];
 
   currentRuleName: string = '';
   currentRuleSourceAgentId: string = '';
@@ -158,7 +158,7 @@ export class AddRuleComponent implements OnInit {
    * @param {string} id
    * @returns {SourceAgentDescription | undefined}
    */
-  getSourceAgent(id: string): SourceAgentDescription | undefined {
+  getSourceAgent(id: string): SourceAgentMetadata | undefined {
     return this.sources.find((source) => source.id === id);
   }
 
@@ -168,7 +168,7 @@ export class AddRuleComponent implements OnInit {
    * @param {string} id
    * @returns {TargetAgent | undefined}
    */
-  getTargetAgent(id: string): TargetAgentDescription | undefined {
+  getTargetAgent(id: string): TargetAgentMetadata | undefined {
     return this.targets.find((agent) => agent.id === id);
   }
 
@@ -279,9 +279,9 @@ export class AddRuleComponent implements OnInit {
 
   /**
    *  Checks missing settings required by an agent.
-   *  @param {AgentSettingDescription[]} settings? the agent's required settings
+   *  @param {AgentSettingMetadata[]} settings? the agent's required settings
    */
-  private checkUserSettingsForAgent(settings?: AgentSettingDescription[]) {
+  private checkUserSettingsForAgent(settings?: AgentSettingMetadata[]) {
     const missingSettings = settings?.filter(
       (setting) => !this.userService.getSetting(setting.key)
     );

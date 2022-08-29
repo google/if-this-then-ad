@@ -21,13 +21,13 @@
       <th mat-header-cell *matHeaderCellDef>Status</th>
       <td mat-cell *matCellDef="let rule">
         <fa-icon
-          *ngIf="rule.status == 'success'"
+          *ngIf="rule.status === 'success'"
           [ngClass]="'error-icon'"
           size="lg"
           [icon]="errorIcon"
         ></fa-icon>
         <fa-icon
-          *ngIf="rule.status == 'failed'"
+          *ngIf="rule.status === 'failed'"
           [ngClass]="'success-icon'"
           [icon]="successIcon"
           size="lg"

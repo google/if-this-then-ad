@@ -14,7 +14,7 @@
 import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { AgentSettingDescription } from '../interfaces/common';
+import { AgentSettingMetadata } from '../interfaces/common';
 
 @Component({
   selector: 'missing-settings-dialog',
@@ -29,11 +29,11 @@ export class MissingSettingsDialogComponent {
   /**
    * Component constructor.
    *
-   * @param {AgentSettingDescription[]} settings
+   * @param {AgentSettingMetadata[]} settings
    * @param {Router} router
    */
   constructor(
-    @Inject(MAT_DIALOG_DATA) public settings: AgentSettingDescription[],
+    @Inject(MAT_DIALOG_DATA) public settings: AgentSettingMetadata[],
     private router: Router
   ) {}
 

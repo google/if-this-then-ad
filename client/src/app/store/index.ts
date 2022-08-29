@@ -12,7 +12,7 @@
  */
 
 import { BehaviorSubject, ReplaySubject, Subject } from 'rxjs';
-import { AgentsDescription } from '../interfaces/api';
+import { AgentsMetadata } from '../interfaces/api';
 import { Rule, RuleTargetAction } from '../interfaces/rule';
 
 interface SaveRequirements {
@@ -35,7 +35,7 @@ const saveRequirements: SaveRequirements = {
 
 export const store = {
   rules: new BehaviorSubject<Rule[]>([]),
-  agents: new ReplaySubject<AgentsDescription>(1),
+  agents: new ReplaySubject<AgentsMetadata>(1),
 
   saveRequirements: new BehaviorSubject<SaveRequirements>(saveRequirements),
   sourceSet: new BehaviorSubject<boolean>(false),

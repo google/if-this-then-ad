@@ -129,18 +129,18 @@ describe('Dv360Agent', () => {
       expect(results[1].status).toBe('success');
       expect(results[2].status).toBe('success');
       expect(modifyCampaignStatusSpy).toHaveBeenCalledWith(
-        1,
-        1,
+        '1',
+        '1',
         'ENTITY_STATUS_ACTIVE'
       );
       expect(modifyInsertionOrderStatusSpy).toHaveBeenCalledWith(
-        1,
-        2,
+        '1',
+        '2',
         'ENTITY_STATUS_ACTIVE'
       );
       expect(modifyLineItemStatusSpy).toHaveBeenCalledWith(
-        1,
-        3,
+        '1',
+        '3',
         'ENTITY_STATUS_PAUSED'
       );
     });

@@ -21,7 +21,7 @@ import {
   faTriangleExclamation,
 } from '@fortawesome/free-solid-svg-icons';
 import { combineLatestWith } from 'rxjs';
-import { AgentsDescription } from 'src/app/interfaces/api';
+import { AgentsMetadata } from 'src/app/interfaces/api';
 import { Rule, RuleStatus } from 'src/app/interfaces/rule';
 import { RulesService } from 'src/app/services/rules.service';
 import { UserService } from 'src/app/services/user.service';
@@ -102,12 +102,12 @@ export class RulesComponent implements AfterViewInit, OnInit {
   /**
    * Transforms rules into a table data source.
    * @param {Rule[]} rules the rules
-   * @param {AgentsDescription} agentsMetadata the agent metadata
+   * @param {AgentsMetadata} agentsMetadata the agent metadata
    * @returns {RulesDataSourceItem[]} the table data source
    */
   private createRulesDataSource(
     rules: Rule[],
-    agentsMetadata: AgentsDescription
+    agentsMetadata: AgentsMetadata
   ): RulesDataSourceItem[] {
     return rules.map((rule) => {
       const sourceAgentMetadata = agentsMetadata?.source.find(

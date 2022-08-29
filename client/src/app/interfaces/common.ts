@@ -50,16 +50,16 @@ export interface Agent {
    * Provides descriptive metadata about this agent, including its name, id and
    * additional capabilities.
    */
-  describe(): Promise<AgentDescription>;
+  describe(): Promise<AgentMetadata>;
 }
 
-export interface AgentSettingDescription {
+export interface AgentSettingMetadata {
   key: string;
   name: string;
 }
-export interface AgentDescription {
+export interface AgentMetadata {
   id: string;
   name: string;
   type: 'source' | 'target';
-  settings?: AgentSettingDescription[];
+  settings?: AgentSettingMetadata[];
 }

@@ -11,10 +11,10 @@
     limitations under the License.
  */
 
-import { SourceAgentDescription } from './source';
-import { TargetAgentDescription } from './target';
+import { SourceAgentMetadata } from './source';
+import { TargetAgentMetadata } from './target';
 
-export interface AgentsDescription {
-  source: SourceAgentDescription[];
-  target: TargetAgentDescription[];
+export interface AgentsMetadata {
+  source: SourceAgentMetadata[];
+  target: TargetAgentMetadata[];
 }

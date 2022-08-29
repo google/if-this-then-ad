@@ -15,14 +15,14 @@ import { AmbeeAgent } from '../agents/source-agents/ambee/ambee-agent';
 import { OpenWeatherAgent } from '../agents/source-agents/open-weather/open-weather-agent';
 import { Dv360Agent } from '../agents/target-agents/dv360-ads/dv360-agent';
 import { GoogleAdsAgent } from '../agents/target-agents/google-ads/google-ads-agent';
-import { SourceAgent, SourceAgentDescription } from '../common/source';
-import { TargetAgent, TargetAgentDescription } from '../common/target';
+import { SourceAgent, SourceAgentMetadata } from '../common/source';
+import { TargetAgent, TargetAgentMetadata } from '../common/target';
 
-export interface AgentsDescription {
+export interface AgentsMetadata {
   /** A list of source agent descriptions */
-  source: SourceAgentDescription[];
+  source: SourceAgentMetadata[];
   /** A list of target agent descriptions */
-  target: TargetAgentDescription[];
+  target: TargetAgentMetadata[];
 }
 
 /**
@@ -50,9 +50,9 @@ export class AgentService {
 
   /**
    * Provides a description of all available agents.
-   * @returns {Promise<AgentsDescription>}
+   * @returns {Promise<AgentsMetadata>}
    */
-  async describeAll(): Promise<AgentsDescription> {
+  async describeAll(): Promise<AgentsMetadata> {
     const sources = await Promise.all(
       Object.values(this.sourceAgents).map((agent) => agent.describe())
     );

@@ -13,7 +13,7 @@
 
 import {
   Agent,
-  AgentDescription,
+  AgentMetadata,
   AgentParameters,
   OperationResult,
 } from './common';
@@ -22,7 +22,7 @@ import {
  * A description of a parameter a source agent requires to make calls
  * to the ultimate API.
  */
-export interface SourceAgentParameterDescription {
+export interface SourceAgentParameterMetadata {
   /** The parameter's human readable name. */
   name: string;
   /** The parameter's unique key. */
@@ -45,7 +45,7 @@ export interface SourceAgentParameterDescription {
  * E.g. index data points should specify possible values like 'low', 'medium',
  * 'high', etc.
  */
-export interface SourceAgentDataPointDescription {
+export interface SourceAgentDataPointMetadata {
   /** The data point's unique key. */
   key: string;
   /** The data point's human readable name. */
@@ -59,15 +59,15 @@ export interface SourceAgentDataPointDescription {
 /**
  * A description of an agent and it's capabilities.
  */
-export interface SourceAgentDescription extends AgentDescription {
+export interface SourceAgentMetadata extends AgentMetadata {
   /**
    * Parameters which a source agent requires to fetch data.
    */
-  readonly parameters: SourceAgentParameterDescription[];
+  readonly parameters: SourceAgentParameterMetadata[];
   /**
    * Data points which a source agent provides.
    */
-  readonly dataPoints: SourceAgentDataPointDescription[];
+  readonly dataPoints: SourceAgentDataPointMetadata[];
 }
 
 /**
@@ -147,5 +147,5 @@ export interface SourceAgent extends Agent {
    * Provides descriptive metadata about this agent, including its name, id and
    * available source data points .
    */
-  describe(): Promise<SourceAgentDescription>;
+  describe(): Promise<SourceAgentMetadata>;
 }
