@@ -11,50 +11,49 @@
     limitations under the License.
  */
 
-import { NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
-import { FormsModule } from '@angular/forms';
-import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
-import { AppRoutingModule } from './app-routing.module';
-import { AppComponent } from './app.component';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { NgModule } from '@angular/core';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
-import { MatTableModule } from '@angular/material/table';
-import { MatPaginatorModule } from '@angular/material/paginator';
-import { MatTreeModule } from '@angular/material/tree';
-import { MatIconModule } from '@angular/material/icon';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatExpansionModule } from '@angular/material/expansion';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatListModule } from '@angular/material/list';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatStepperModule } from '@angular/material/stepper';
-import { MatSidenavModule } from '@angular/material/sidenav';
-import { MatListModule } from '@angular/material/list';
-import { MatRadioModule } from '@angular/material/radio';
-import { MatCardModule } from '@angular/material/card';
+import { MatTableModule } from '@angular/material/table';
+import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatTreeModule } from '@angular/material/tree';
+import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { AppRoutingModule } from './app-routing.module';
+import { AppComponent } from './app.component';
 
-import { AddRuleComponent } from './components/add-rule/add-rule.component';
-import { MissingSettingsDialogComponent } from './missing-settings-dialog/missing-settings-dialog.component';
-import { RulesComponent } from './components/rules/rules.component';
-import { RulesStatusComponent } from './components/rules-status/rules.status.component';
-import { TargetSelectorComponent } from './components/target-selector/target-selector.component';
-import { HeaderComponent } from './components/header/header.component';
-import { LoginComponent } from './components/login/login.component';
-import { httpInterceptorProviders } from './interceptors';
-import { LocationAutoComplete } from './components/location-auto-complete/location-auto-complete.component';
-import { UserSettingsComponent } from './components/user-settings/user-settings.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { GoogleAdsSelectorComponent } from './components/googleads-selector/googleads-selector.component';
+import { AddRuleComponent } from './components/add-rule/add-rule.component';
 import { DashComponent } from './components/dash/dash.component';
-import { StringReplacePipe } from './pipes/string-replace/string-replace.pipe';
+import { GoogleAdsSelectorComponent } from './components/googleads-selector/googleads-selector.component';
+import { HeaderComponent } from './components/header/header.component';
+import { LocationAutoComplete } from './components/location-auto-complete/location-auto-complete.component';
+import { LoginComponent } from './components/login/login.component';
+import { MissingSettingsDialogComponent } from './components/missing-settings-dialog/missing-settings-dialog.component';
+import { RulesStatusComponent } from './components/rules-status/rules.status.component';
+import { RulesComponent } from './components/rules/rules.component';
+import { TargetSelectorComponent } from './components/target-selector/target-selector.component';
+import { UserSettingsComponent } from './components/user-settings/user-settings.component';
+import { httpInterceptorProviders } from './interceptors';
 import { IntervalFormatPipe } from './pipes/interval-format/interval-format.pipe';
+import { StringReplacePipe } from './pipes/string-replace/string-replace.pipe';
 
 @NgModule({
   declarations: [

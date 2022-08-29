@@ -14,7 +14,7 @@
 import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { AgentSettingMetadata } from '../interfaces/common';
+import { AgentSettingMetadata } from '../../interfaces/common';
 
 @Component({
   selector: 'missing-settings-dialog',
