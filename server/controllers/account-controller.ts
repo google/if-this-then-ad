@@ -10,21 +10,19 @@
     See the License for the specific language governing permissions and
     limitations under the License.
  */
+import { ModelSpec } from 'common/common';
 import { Request, Response } from 'express';
-import Repository from '../services/repository-service';
+import { User } from '../common/user';
+import { collectionService } from '../services/collections-service';
 import { logger } from '../util/logger';
-import Collections from '../services/collection-factory';
-import { User } from '../models/user';
-import { Collection } from '../models/fire-store-entity';
 
-const usersCollection = Collections.get(Collection.USERS);
-const userRepo = new Repository<User>(usersCollection);
+const users = collectionService.users;
 
 // TODO: add exception handling
 //      input data validation
 export const listAccounts = async (req: Request, res: Response) => {
   try {
-    const userData = await userRepo.list();
+    const userData = await users.list();
     return res.json(userData);
   } catch (e) {
     logger.debug(e);
@@ -34,16 +32,13 @@ export const listAccounts = async (req: Request, res: Response) => {
 
 export const create = async (req: Request, res: Response) => {
   // TODO: implement data validation.
-  const user: User = { ...req.body };
-
-  const result = await userRepo.save(user);
-
+  const user: ModelSpec<User> = { ...req.body };
+  const result = await users.insert(user);
   return res.json(result);
 };
 
 export const get = async (req: Request, res: Response) => {
-  const userData = await userRepo.get(req.params.id);
-
+  const userData = await users.get(req.params.id);
   return res.json(userData);
 };
 
@@ -55,8 +50,8 @@ export const get = async (req: Request, res: Response) => {
 export const update = async (req: Request, res: Response) => {
   try {
     const userId = req.params.id;
-    const user: User = { ...req.body };
-    await userRepo.update(userId, user);
+    const user: ModelSpec<User> = { ...req.body };
+    await users.update(userId, user);
     return res.sendStatus(200);
   } catch (e) {
     logger.error(e);
@@ -66,9 +61,9 @@ export const update = async (req: Request, res: Response) => {
 
 export const updateSettings = async (req: Request, res: Response) => {
   try {
-    const user = (await userRepo.get(req.params.userId)) as User;
+    const user = (await users.get(req.params.userId)) as User;
     user.settings = req.body;
-    await userRepo.update(req.params.userId, user);
+    await users.update(req.params.userId, user);
   } catch (e) {
     logger.error(e);
     return res
@@ -81,7 +76,7 @@ export const updateSettings = async (req: Request, res: Response) => {
 export const remove = async (req: Request, res: Response) => {
   const id = req.params.id;
   logger.debug(`Deleting document ${id}`);
-  await userRepo.delete(id);
+  await users.delete(id);
   return res.json({ status: 'done' });
 };
 
@@ -89,7 +84,7 @@ export const getBy = async (req: Request, res: Response) => {
   const fieldName = req.query.fieldName! as string;
   const fieldValue: string = req.query.fieldValue! as string;
 
-  const data = await userRepo.getBy(fieldName, fieldValue);
+  const data = await users.findWhere(fieldName, fieldValue);
 
   return res.json(data);
 };

@@ -14,11 +14,11 @@
 import { SelectionModel } from '@angular/cdk/collections';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { Component } from '@angular/core';
-import { TargetAgent } from 'src/app/interfaces/target-agent';
+import { RuleTargetAction } from 'src/app/interfaces/rule';
 
 import { DynamicDataSource } from 'src/app/models/dynamic-data-source.model';
 import { DynamicDatabase } from 'src/app/models/dynamic-database.model';
-import { EntityNode } from 'src/app/models/entity-node.model';
+import { TargetEntityTreeNode } from 'src/app/models/entity-node.model';
 import { store } from 'src/app/store';
 
 /**
@@ -34,12 +34,14 @@ import { store } from 'src/app/store';
  * Target Selector component.
  */
 export class TargetSelectorComponent {
-  treeControl: FlatTreeControl<EntityNode>;
+  treeControl: FlatTreeControl<TargetEntityTreeNode>;
   dataSource: DynamicDataSource;
   allowSelectionBubbling: boolean = false;
 
   // The selection for checklist
-  checklistSelection = new SelectionModel<EntityNode>(true /* multiple */);
+  checklistSelection = new SelectionModel<TargetEntityTreeNode>(
+    true /* multiple */
+  );
 
   /**
    * Constructor.
@@ -47,7 +49,7 @@ export class TargetSelectorComponent {
    * @param {DynamicDatabase} database
    */
   constructor(private database: DynamicDatabase) {
-    this.treeControl = new FlatTreeControl<EntityNode>(
+    this.treeControl = new FlatTreeControl<TargetEntityTreeNode>(
       this.getLevel,
       this.isExpandable
     );
@@ -71,20 +73,20 @@ export class TargetSelectorComponent {
   /**
    * Get node level.
    *
-   * @param {EntityNode} node
+   * @param {TargetEntityTreeNode} node
    * @returns {number}
    */
-  getLevel(node: EntityNode): number {
+  getLevel(node: TargetEntityTreeNode): number {
     return node.level;
   }
 
   /**
    * Check if node is expandable.
    *
-   * @param {EntityNode} node
+   * @param {TargetEntityTreeNode} node
    * @returns {boolean}
    */
-  isExpandable(node: EntityNode): boolean {
+  isExpandable(node: TargetEntityTreeNode): boolean {
     return node.expandable;
   }
 
@@ -92,20 +94,20 @@ export class TargetSelectorComponent {
    * Check if node has children.
    *
    * @param {number} _
-   * @param {EntityNode} _nodeData
+   * @param {TargetEntityTreeNode} _nodeData
    * @returns {boolean}
    */
-  hasChild(_: number, _nodeData: EntityNode): boolean {
+  hasChild(_: number, _nodeData: TargetEntityTreeNode): boolean {
     return _nodeData.expandable;
   }
 
   /**
    * Check whether all the descendants of the node are selected.
    *
-   * @param {EntityNode} node
+   * @param {TargetEntityTreeNode} node
    * @returns {boolean}
    */
-  descendantsAllSelected(node: EntityNode): boolean {
+  descendantsAllSelected(node: TargetEntityTreeNode): boolean {
     const descendants = this.treeControl.getDescendants(node);
 
     const descAllSelected =
@@ -120,10 +122,10 @@ export class TargetSelectorComponent {
   /**
    * Check whether part of the descendants are selected
    *
-   * @param {EntityNode} node
+   * @param {TargetEntityTreeNode} node
    * @returns {boolean}
    */
-  descendantsPartiallySelected(node: EntityNode): boolean {
+  descendantsPartiallySelected(node: TargetEntityTreeNode): boolean {
     if (this.allowSelectionBubbling) {
       const descendants = this.treeControl.getDescendants(node);
       const result = descendants.some((child) =>
@@ -140,9 +142,9 @@ export class TargetSelectorComponent {
    * Toggle the entity selection.
    * Select/deselect all the descendants node
    *
-   * @param {EntityNode} node
+   * @param {TargetEntityTreeNode} node
    */
-  entitySelectionToggle(node: EntityNode): void {
+  entitySelectionToggle(node: TargetEntityTreeNode): void {
     this.checklistSelection.toggle(node);
 
     if (this.allowSelectionBubbling) {
@@ -165,7 +167,9 @@ export class TargetSelectorComponent {
    * Publish selection change to store.
    */
   publishSelectionChange() {
-    store.addTarget(this.entityToTargetAgent(this.checklistSelection.selected));
+    store.targets.next(
+      this.entitiesToRuleTargetAction(this.checklistSelection.selected)
+    );
 
     // Update save requirements
     const valid = this.checkAllParentsSelection.length > 0;
@@ -179,9 +183,9 @@ export class TargetSelectorComponent {
    * Toggle a leaf entity selection.
    * Check all the parents to see if they changed
    *
-   * @param {EntityNode} node
+   * @param {TargetEntityTreeNode} node
    */
-  entityLeafItemSelectionToggle(node: EntityNode): void {
+  entityLeafItemSelectionToggle(node: TargetEntityTreeNode): void {
     this.checklistSelection.toggle(node);
 
     if (this.allowSelectionBubbling) {
@@ -195,10 +199,10 @@ export class TargetSelectorComponent {
   /**
    * Check if node is selected.
    *
-   * @param {EntityNode} node
+   * @param {TargetEntityTreeNode} node
    * @returns {boolean}
    */
-  isSelected(node: EntityNode): boolean {
+  isSelected(node: TargetEntityTreeNode): boolean {
     const selected = this.checklistSelection.isSelected(node);
     return selected;
   }
@@ -206,41 +210,26 @@ export class TargetSelectorComponent {
   /**
    * Transform entities to Target Agent.
    *
-   * @param {EntityNode[]} nodes
+   * @param {TargetEntityTreeNode[]} nodes
    * @returns {TargetAgent}
    */
-  entityToTargetAgent(nodes: EntityNode[]): TargetAgent {
-    return {
-      agentId: 'dv360-agent',
-      actions: nodes.map((node) => {
-        return {
-          type: 'activate',
-          params: [
-            {
-              key: 'entityId',
-              value: node.id,
-            },
-            {
-              key: 'parentId',
-              value: node.advertiserId,
-            },
-            {
-              key: 'entityType',
-              value: node.type,
-            },
-          ],
-        };
-      }),
-    };
+  entitiesToRuleTargetAction(
+    nodes: TargetEntityTreeNode[]
+  ): RuleTargetAction[] {
+    return nodes.map((node) => ({
+      agentId: 'dv360',
+      action: 'ACTIVATE',
+      parameters: node.parameters,
+    }));
   }
 
   /**
    * Checks all the parents when a leaf node is selected/unselected.
    *
-   * @param {EntityNode} node
+   * @param {TargetEntityTreeNode} node
    */
-  checkAllParentsSelection(node: EntityNode): void {
-    let parent: EntityNode | null = this.getParentNode(node);
+  checkAllParentsSelection(node: TargetEntityTreeNode): void {
+    let parent: TargetEntityTreeNode | null = this.getParentNode(node);
 
     while (parent) {
       this.checkRootNodeSelection(parent);
@@ -251,9 +240,9 @@ export class TargetSelectorComponent {
   /**
    * Check root node checked state and change it accordingly.
    *
-   * @param {EntityNode} node
+   * @param {TargetEntityTreeNode} node
    */
-  checkRootNodeSelection(node: EntityNode): void {
+  checkRootNodeSelection(node: TargetEntityTreeNode): void {
     if (!node.selectable) {
       return;
     }
@@ -276,10 +265,10 @@ export class TargetSelectorComponent {
   /**
    * Get the parent node of a node.
    *
-   * @param {EntityNode} node
-   * @returns {EntityNode | null}
+   * @param {TargetEntityTreeNode} node
+   * @returns {TargetEntityTreeNode | null}
    */
-  getParentNode(node: EntityNode): EntityNode | null {
+  getParentNode(node: TargetEntityTreeNode): TargetEntityTreeNode | null {
     const currentLevel = this.getLevel(node);
 
     if (currentLevel < 1) {

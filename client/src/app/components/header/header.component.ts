@@ -13,12 +13,11 @@
 
 import { Component, OnInit } from '@angular/core';
 import { faGear } from '@fortawesome/free-solid-svg-icons';
+import { User } from 'src/app/interfaces/user';
 
 import { AuthService } from 'src/app/services/auth.service';
-import { User } from 'src/app/models/user.model';
-
-import { store } from 'src/app/store';
 import { UserService } from 'src/app/services/user.service';
+import { store } from 'src/app/store';
 
 @Component({
   selector: 'app-header',
@@ -42,15 +41,15 @@ export class HeaderComponent implements OnInit {
   constructor(
     public authService: AuthService,
     public userService: UserService
-  ) {
+  ) {}
+
+  // eslint-disable-next-line require-jsdoc
+  ngOnInit(): void {
     // Get user's profile picture
     this.userService.userWatch.subscribe((user?: User) => {
       this.user = user;
     });
   }
-
-  // eslint-disable-next-line require-jsdoc
-  ngOnInit(): void {}
 
   /**
    * Toggle sidenav.

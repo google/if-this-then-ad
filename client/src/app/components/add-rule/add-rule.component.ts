@@ -11,24 +11,28 @@
     limitations under the License.
  */
 
+import { StepperOrientation } from '@angular/cdk/stepper';
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
-import { environment } from 'src/environments/environment';
-import { map } from 'rxjs/operators';
-import { DataPoint } from 'src/app/interfaces/datapoint';
-import { Rule } from 'src/app/models/rule.model';
-
-import { store } from 'src/app/store';
 import { NgForm } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
-import { SourceAgent } from 'src/app/interfaces/source-agent';
-import { TargetAgent } from 'src/app/interfaces/target-agent';
-import { SourceAgentParameter } from 'src/app/interfaces/source-agent-parameter';
-import { SourceAgentSettingsParam } from 'src/app/interfaces/source-agent-settings-parameter';
-import { StepperOrientation } from '@angular/cdk/stepper';
-import { UserService } from 'src/app/services/user.service';
+import { Router } from '@angular/router';
+import { AgentSettingMetadata, ModelSpec } from 'src/app/interfaces/common';
+import { Comparator, Rule, RuleTargetAction } from 'src/app/interfaces/rule';
+import { SourceAgentMetadata } from 'src/app/interfaces/source';
+import { TargetAgentMetadata } from 'src/app/interfaces/target';
 import { MissingSettingsDialogComponent } from 'src/app/missing-settings-dialog/missing-settings-dialog.component';
+import { AgentsService } from 'src/app/services/agents.service';
+import { RulesService } from 'src/app/services/rules.service';
+import { UserService } from 'src/app/services/user.service';
+import { store } from 'src/app/store';
+
+const EMPTY_SOURCE_AGENT_DESCRIPTION: SourceAgentMetadata = {
+  dataPoints: [],
+  id: '',
+  name: '',
+  parameters: [],
+  type: 'source',
+};
 
 @Component({
   selector: 'app-add-rule',
@@ -42,22 +46,30 @@ import { MissingSettingsDialogComponent } from 'src/app/missing-settings-dialog/
 export class AddRuleComponent implements OnInit {
   isLinear = false;
   stepperOrientation: StepperOrientation = 'horizontal'; // vertical
-  sources: SourceAgent[] = [];
-  targets: TargetAgent[] = [];
-  sourceDataPoints: DataPoint[] = [];
-  sourceParams: SourceAgentParameter[] = [];
-  currentRule: Rule = new Rule();
   saveEnabled: boolean = false;
-  comparatorMapping: any[] = [
+  lockEquals: boolean = false;
+
+  executionIntervals: number[] = [30, 60, 240, 480, 720, 1440];
+  sources: SourceAgentMetadata[] = [];
+  comparators: any[] = [
     { key: 'gt', value: 'greater than' },
     { key: 'lt', value: 'less than' },
     { key: 'eq', value: 'equals' },
   ];
+  targets: TargetAgentMetadata[] = [];
 
-  executionIntervals: number[] = [30, 60, 240, 480, 720, 1440];
-  dataPointListValues?: string[] = [];
-  lockEquals: boolean = false;
-  targetAgent: string;
+  currentRuleName: string = '';
+  currentRuleSourceAgentId: string = '';
+  currentRuleSourceAgentDescription = EMPTY_SOURCE_AGENT_DESCRIPTION;
+  currentExecutionInterval = 30;
+  currentRuleConditionDataPoint: string = '';
+  currentRuleConditionDataType: string;
+  currentRuleConditionValues?: string[];
+  currentRuleConditionComparator: Comparator;
+  currentRuleConditionCompareValue: string | boolean | number;
+  currentTargetAgentId: string;
+  currentRuleTargets: RuleTargetAction[];
+  currentRuleSourceParameters: Record<string, string> = {};
 
   @ViewChild('name', { static: true }) nameForm: NgForm;
   @ViewChild('source', { static: true }) sourceForm: NgForm;
@@ -66,13 +78,15 @@ export class AddRuleComponent implements OnInit {
   executionIntervalForm: NgForm;
 
   /**
-   * Constructor.
-   *
-   * @param {HttpClient} http
+   * Constructor
+   * @param {UserService} userService - injected
+   * @param {Router} router - injected
+   * @param {MatDialog} dialog
    */
   constructor(
-    private http: HttpClient,
     private userService: UserService,
+    private readonly rulesService: RulesService,
+    private readonly agentsService: AgentsService,
     private router: Router,
     public dialog: MatDialog
   ) {
@@ -85,10 +99,8 @@ export class AddRuleComponent implements OnInit {
 
     // Watch targets update
     store.targets.subscribe((targets) => {
-      this.currentRule.targets = targets;
+      this.currentRuleTargets = targets;
     });
-
-    this.loadAgents();
   }
 
   // eslint-disable-next-line require-jsdoc
@@ -132,15 +144,21 @@ export class AddRuleComponent implements OnInit {
         ...{ condition: valid },
       });
     });
+
+    this.agentsService.fetchAgentsMetadata();
+    store.agents.subscribe((agentsDescription) => {
+      this.sources = agentsDescription.source;
+      this.targets = agentsDescription.target;
+    });
   }
 
   /**
    * Get source agent by ID.
    *
    * @param {string} id
-   * @returns {SourceAgent | undefined}
+   * @returns {SourceAgentDescription | undefined}
    */
-  getSourceAgent(id: string): SourceAgent | undefined {
+  getSourceAgent(id: string): SourceAgentMetadata | undefined {
     return this.sources.find((source) => source.id === id);
   }
 
@@ -150,46 +168,23 @@ export class AddRuleComponent implements OnInit {
    * @param {string} id
    * @returns {TargetAgent | undefined}
    */
-  getTargetAgent(id: string): TargetAgent | undefined {
+  getTargetAgent(id: string): TargetAgentMetadata | undefined {
     return this.targets.find((agent) => agent.id === id);
-  }
-
-  /**
-   * Fetch all source agents from API.
-   */
-  loadAgents() {
-    this.http
-      .get<Array<SourceAgent | TargetAgent>>(
-        `${environment.apiUrl}/agents/metadata`
-      )
-      .pipe(map((res: Array<SourceAgent | TargetAgent>) => res))
-      .subscribe((result) => {
-        this.sources = result.filter(
-          (agent) => agent.type === 'source-agent'
-        ) as SourceAgent[];
-        this.targets = result.filter(
-          (agent) => agent.type === 'target-agent'
-        ) as TargetAgent[];
-      });
   }
 
   /**
    * Handle source change.
    *
-   * @param {string} val
+   * @param {string} sourceAgentId
    */
-  onSourceChange(val: string) {
-    const agent = this.getSourceAgent(val);
+  onSourceChange(sourceAgentId: string) {
+    const agent = this.getSourceAgent(sourceAgentId);
 
     if (agent) {
-      this.currentRule.source.id = val;
-      this.currentRule.source.name = agent.name;
-      this.sourceDataPoints = agent.dataPoints;
-      this.currentRule.source.params = agent.params;
-
+      this.currentRuleSourceAgentDescription = agent;
       store.sourceSet.next(true);
 
-      this.checkUserSettingsForAgent(agent.settings.params);
+      this.checkUserSettingsForAgent(agent.settings);
     }
   }
 
@@ -201,8 +196,8 @@ export class AddRuleComponent implements OnInit {
   onTargetChange(val: string) {
     const agent = this.getTargetAgent(val);
 
-    if (agent && agent.params) {
-      this.checkUserSettingsForAgent(agent.params);
+    if (agent && agent.settings) {
+      this.checkUserSettingsForAgent(agent.settings);
     }
   }
 
@@ -211,72 +206,90 @@ export class AddRuleComponent implements OnInit {
    *
    * @param {DataPoint} val
    */
-  onDataPointChange(val: DataPoint) {
-    // Store data point
-    this.currentRule.condition.dataPoint = val.dataPoint;
-    this.currentRule.condition.name = val.name;
-    this.currentRule.condition.dataType = val.dataType;
-    // Reset comparator
-    this.currentRule.condition.comparator = undefined;
-
-    if (val.dataType === 'boolean' || val.dataType === 'enum') {
-      this.currentRule.condition.comparator = 'eq';
-      this.lockEquals = true;
-    } else {
-      this.lockEquals = false;
+  onDataPointChange(val: string) {
+    const dataPoint = this.currentRuleSourceAgentDescription!.dataPoints.find(
+      (dataPoint) => dataPoint.key === val
+    );
+    if (dataPoint) {
+      this.currentRuleConditionDataPoint = val;
+      this.currentRuleConditionComparator = 'eq';
+      this.currentRuleConditionDataType = dataPoint.type;
+      if (dataPoint.type === 'boolean') {
+        this.lockEquals = true;
+        this.currentRuleConditionCompareValue = true;
+      } else if (dataPoint.values) {
+        this.lockEquals = true;
+        this.currentRuleConditionCompareValue = dataPoint.values[0];
+        this.currentRuleConditionValues = dataPoint.values;
+      } else {
+        this.lockEquals = false;
+        this.currentRuleConditionCompareValue = '';
+      }
     }
-    this.dataPointListValues = val.enum;
+  }
+
+  /**
+   * Resets this form to its initial state
+   */
+  reset() {
+    this.currentRuleName = '';
+    this.currentRuleSourceAgentId = '';
+    this.currentRuleSourceAgentDescription = EMPTY_SOURCE_AGENT_DESCRIPTION;
+    this.currentExecutionInterval = 30;
+    this.currentRuleConditionDataPoint = '';
+    this.currentRuleConditionDataType = '';
+    this.currentRuleConditionValues = undefined;
+    this.currentRuleConditionComparator = 'eq';
+    this.currentRuleConditionCompareValue = '';
+    this.currentTargetAgentId = '';
+    this.currentRuleTargets = [];
+    this.currentRuleSourceParameters = {};
+
+    // Reset forms
+    this.conditionForm.resetForm();
+    this.sourceForm.resetForm();
+    this.executionIntervalForm.resetForm();
   }
 
   /**
    * Save rule.
    */
   saveRule() {
-    // Add owner
-    this.currentRule.owner = this.userService.user.id;
+    const rule: ModelSpec<Rule> = {
+      ownerId: this.userService.loggedInUser.id,
+      name: this.currentRuleName,
+      executionInterval: this.currentExecutionInterval,
+      source: {
+        agentId: this.currentRuleSourceAgentId,
+        parameters: this.currentRuleSourceParameters,
+      },
+      condition: {
+        dataPoint: this.currentRuleConditionDataPoint,
+        comparator: this.currentRuleConditionComparator,
+        compareValue: this.currentRuleConditionCompareValue,
+      },
+      targets: this.currentRuleTargets,
+    };
+    this.rulesService.addRule(rule);
 
-    // Send rule to API
-    this.http
-      .post(`${environment.apiUrl}/rules`, this.currentRule)
-      .subscribe((result) => {
-        // Inform the rules component about the new rule
-        store.ruleAdded.next(true);
-      });
-
-    // Reset rule
-    this.currentRule = new Rule();
-
-    // Reset forms
-    this.conditionForm.resetForm();
-    this.sourceForm.resetForm();
-    this.executionIntervalForm.resetForm();
+    this.reset();
 
     this.router.navigate(['/rules/list']);
   }
 
   /**
-   *  Checks user Settings.
-   *
-   *  @param {Array<SourceAgentSettingsParam>} params
+   *  Checks missing settings required by an agent.
+   *  @param {AgentSettingMetadata[]} settings? the agent's required settings
    */
-  private checkUserSettingsForAgent(params: Array<SourceAgentSettingsParam>) {
-    const missingSettings: Array<SourceAgentSettingsParam> = params.filter(
-      (param) => !this.userService.getSetting(param.settingName)
+  private checkUserSettingsForAgent(settings?: AgentSettingMetadata[]) {
+    const missingSettings = settings?.filter(
+      (setting) => !this.userService.getSetting(setting.key)
     );
 
-    if (missingSettings.length) {
-      this.showMissingSettingsDialog(missingSettings);
+    if (missingSettings && missingSettings.length) {
+      this.dialog.open(MissingSettingsDialogComponent, {
+        data: missingSettings,
+      });
     }
-  }
-
-  /**
-   * Displays settings dialog.
-   *
-   * @param {Array<SourceAgentSettingsParam>} missingSettings
-   */
-  private showMissingSettingsDialog(
-    missingSettings: Array<SourceAgentSettingsParam>
-  ) {
-    this.dialog.open(MissingSettingsDialogComponent, { data: missingSettings });
   }
 }

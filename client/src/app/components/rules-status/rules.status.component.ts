@@ -11,22 +11,27 @@
     limitations under the License.
  */
 
-import { Component, ViewChild, AfterViewInit } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
-import { HttpClient } from '@angular/common/http';
-import { environment } from 'src/environments/environment';
-import { map } from 'rxjs/operators';
-import { Rule } from 'src/app/models/rule.model';
-
-import { store } from 'src/app/store';
-import { User } from 'src/app/models/user.model';
 import {
-  faTriangleExclamation,
   faCircleCheck,
   faQuestion,
+  faTriangleExclamation,
 } from '@fortawesome/free-solid-svg-icons';
+import { AgentsMetadata } from 'src/app/interfaces/api';
+import { Rule } from 'src/app/interfaces/rule';
 import { UserService } from 'src/app/services/user.service';
+import { store } from 'src/app/store';
+
+interface RulesDataSourceItem {
+  status?: string;
+  name: string;
+  source: string;
+  lastExecution?: Date;
+  message?: string;
+}
 
 @Component({
   selector: 'app-rules-status',
@@ -37,36 +42,40 @@ import { UserService } from 'src/app/services/user.service';
 /**
  * Rules component.
  */
-export class RulesStatusComponent implements AfterViewInit {
+export class RulesStatusComponent implements AfterViewInit, OnInit {
   errorIcon = faTriangleExclamation;
   successIcon = faCircleCheck;
   unknownStatusIcon = faQuestion;
-  rules: Rule[] = [];
-  displayedColumns: string[] = [
+  columnHeaders: string[] = [
     'status',
     'name',
     'source',
     'lastExecution',
     'message',
   ];
-  dataSource = new MatTableDataSource<any>(this.rules);
-  user: User | null;
-
+  dataSource = new MatTableDataSource<RulesDataSourceItem>([]);
   @ViewChild(MatPaginator) paginator!: MatPaginator;
+
+  agentsMetadata: AgentsMetadata;
 
   /**
    * Constructor.
    *
    * @param {HttpClient} http
    */
-  constructor(private http: HttpClient, private userService: UserService) {
-    // Reload rules when rule was added
-    this.user = this.userService.user;
-    store.ruleAdded.subscribe((v) => {
-      this.loadRules();
+  constructor(private http: HttpClient, private userService: UserService) {}
+
+  /**
+   * @inheritdoc
+   */
+  ngOnInit(): void {
+    store.agents.subscribe((agentsMetadata) => {
+      this.agentsMetadata = agentsMetadata;
     });
 
-    this.loadRules();
+    store.rules.subscribe((rules) => {
+      this.dataSource.data = this.createRulesDataSource(rules);
+    });
   }
 
   // eslint-disable-next-line require-jsdoc
@@ -75,17 +84,28 @@ export class RulesStatusComponent implements AfterViewInit {
   }
 
   /**
-   * Fetch all rules for logged in user.
+   * Transforms a set of rules into a table data source.
+   * @param {Rule[]} rules the rules to display
+   * @returns {RulesDataSourceItem[]}
    */
-  loadRules() {
-    this.http
-      .get<Array<Rule>>(`${environment.apiUrl}/rules/user/${this.user?.id}`)
-      .pipe(map((res: Array<Rule>) => res))
-      .subscribe((result) => {
-        this.rules = result;
-        console.log(this.rules);
-        this.dataSource.data = this.rules;
-        this.dataSource.paginator = this.paginator;
-      });
+  private createRulesDataSource(rules: Rule[]): RulesDataSourceItem[] {
+    return rules.map((rule) => {
+      const sourceAgentMetadata = this.agentsMetadata.source?.find(
+        (agentMetadata) => agentMetadata.id === rule.source.agentId
+      );
+      const status = rule.latestStatus
+        ? rule.latestStatus.success
+          ? 'success'
+          : 'failed'
+        : undefined;
+
+      return {
+        status,
+        name: rule.name,
+        source: sourceAgentMetadata?.name ?? '[Unknown source]',
+        lastExecution: rule.latestStatus?.lastExecution,
+        message: rule.latestStatus?.error,
+      };
+    });
   }
 }

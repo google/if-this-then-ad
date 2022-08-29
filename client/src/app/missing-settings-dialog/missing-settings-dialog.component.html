@@ -11,26 +11,26 @@
     limitations under the License.
  -->
 
- <h2 mat-dialog-title>WARNING: Missing User Settings</h2>
- <mat-dialog-content>
-   You are missing the following settings for this rule type:
-   <ul>
-     <li *ngFor="let setting of settings">
-       {{ setting.name }} ({{ setting.settingName }})
-     </li>
-   </ul>
-   <b>Note:</b> You can add the missing settings later, but your rules won't
-   work.
- </mat-dialog-content>
- <mat-dialog-actions align="end">
-   <button mat-raised-button mat-dialog-close>I'll do this later</button>
-   <button
-     mat-raised-button
-     mat-dialog-close
-     cdkFocusInitial
-     color="primary"
-     (click)="goToUserSettings()"
-   >
-     Add missing settings
-   </button>
- </mat-dialog-actions>
+<h2 mat-dialog-title>WARNING: Missing User Settings</h2>
+<mat-dialog-content>
+  You are missing the following settings for this rule type:
+  <ul>
+    <li *ngFor="let setting of settings">
+      {{ setting.key }} ({{ setting.name }})
+    </li>
+  </ul>
+  <b>Note:</b> You can add the missing settings later, but your rules won't
+  work.
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-raised-button mat-dialog-close>I'll do this later</button>
+  <button
+    mat-raised-button
+    mat-dialog-close
+    cdkFocusInitial
+    color="primary"
+    (click)="goToUserSettings()"
+  >
+    Add missing settings
+  </button>
+</mat-dialog-actions>

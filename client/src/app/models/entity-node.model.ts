@@ -11,10 +11,12 @@
     limitations under the License.
  */
 
+import { AgentParameters } from '../interfaces/common';
+
 /**
  * Entity node.
  */
-export class EntityNode {
+export class TargetEntityTreeNode {
   /**
    *
    * @param {string} id
@@ -23,9 +25,9 @@ export class EntityNode {
    * @param {boolean} expandable
    * @param {boolean} selectable
    * @param {boolean} isLoading
-   * @param {string} advertiserId
+   * @param {Record<string, unknown>} parameters
    * @param {string} type
-   * @param {EntityNode} children
+   * @param {TargetEntityTreeNode} children
    */
   constructor(
     public id?: string,
@@ -34,12 +36,9 @@ export class EntityNode {
     public expandable: boolean = false,
     public selectable: boolean = false,
     public isLoading: boolean = false,
-    public partnerId: string = '',
-    public advertiserId: string = '',
-    public insertionOrderId: string = '',
-    public lineItemId: string = '',
     public type: string = '',
-    public children: EntityNode[] | null = null
+    public parameters: AgentParameters = {},
+    public children: TargetEntityTreeNode[] | null = null
   ) {}
 
   /**
@@ -48,7 +47,7 @@ export class EntityNode {
    * @param {any} input
    * @returns {User}
    */
-  static fromJSON(input: any): EntityNode {
-    return Object.assign(new EntityNode(), input);
+  static fromJSON(input: any): TargetEntityTreeNode {
+    return Object.assign(new TargetEntityTreeNode(), input);
   }
 }

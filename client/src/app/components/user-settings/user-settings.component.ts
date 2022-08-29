@@ -11,22 +11,20 @@
     limitations under the License.
  */
 
-import { Component, ViewChild } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { FormBuilder, FormGroup } from '@angular/forms';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatAccordion } from '@angular/material/expansion';
 import { Location } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
+import { Component, ViewChild } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { MatAccordion } from '@angular/material/expansion';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { ActivatedRoute } from '@angular/router';
 import { environment } from 'src/environments/environment';
-
-import { User } from 'src/app/models/user.model';
 
 import { of } from 'rxjs';
 import { debounceTime, switchMap } from 'rxjs/operators';
 import { UserService } from 'src/app/services/user.service';
 
-interface UserSetting {
+interface UserSettingUiInfo {
   title: string;
   description: string;
   field: string;
@@ -45,14 +43,12 @@ interface UserSetting {
  * User Settings Component.
  */
 export class UserSettingsComponent {
-  user: User | null;
-
   @ViewChild(MatAccordion) accordion: MatAccordion;
 
   public savingUserSettings = false;
   public userSettings: FormGroup;
-  private requiredSettings: Array<string> = [];
-  public settings: Array<UserSetting> = [
+  private requiredSettings: string[] = [];
+  public settings: UserSettingUiInfo[] = [
     {
       title: 'OpenWeatherMap API',
       description: 'Required to fetch the weather',
@@ -128,11 +124,11 @@ export class UserSettingsComponent {
     }
 
     this.userSettings = this.formBuilder.group(group);
-    if (this.userService.user?.settings) {
+    if (this.userService.loggedInUser.settings) {
       const filteredUserSettings: Record<string, string> = {};
       for (const setting of this.settings) {
         filteredUserSettings[setting.settingName] =
-          this.userService.user?.settings[setting.settingName] || '';
+          this.userService.loggedInUser?.settings[setting.settingName] || '';
       }
 
       this.userSettings.setValue(filteredUserSettings);
@@ -169,7 +165,7 @@ export class UserSettingsComponent {
   save(settings: Record<string, string>) {
     this.http
       .post(
-        `${environment.apiUrl}/accounts/${this.userService.user.id}/settings`,
+        `${environment.apiUrl}/accounts/${this.userService.loggedInUser.id}/settings`,
         settings
       )
       .subscribe({
