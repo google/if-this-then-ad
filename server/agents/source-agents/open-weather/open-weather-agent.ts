@@ -78,15 +78,7 @@ export class OpenWeatherAgent extends SimpleSourceAgent {
       name: 'Open Weather Map',
       type: 'source',
       settings: [OPENWEATHER_API_KEY_SETTING],
-      parameters: [
-        { key: 'location', type: 'location', name: 'Location' },
-        {
-          key: 'unit',
-          type: 'string',
-          name: 'Unit',
-          values: ['standard', 'metric', 'imperial'],
-        },
-      ],
+      parameters: [{ key: 'location', type: 'location', name: 'Location' }],
       dataPoints: [
         TEMPERATURE_DATAPOINT,
         WINDSPEED_DATAPOINT,
@@ -116,7 +108,7 @@ export class OpenWeatherAgent extends SimpleSourceAgent {
       'https://api.openweathermap.org/data/2.5/weather',
       {
         q: sourceParameters['location'],
-        units: sourceParameters['unit'],
+        units: 'metric',
         appid: apiKey,
       }
     );
