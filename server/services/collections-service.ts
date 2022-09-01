@@ -13,7 +13,6 @@
 
 import { Firestore } from '@google-cloud/firestore';
 import { FirebaseCollection } from '../collections/firebase-collection';
-import { JobsCollection } from '../collections/jobs-collection';
 import { UsersCollection } from '../collections/users-collection';
 import { Rule } from '../common/rule';
 
@@ -26,7 +25,6 @@ export class CollectionService {
     this.prefix + 'rules',
     this.fireStore
   );
-  readonly jobs = new JobsCollection(this.prefix + 'jobs', this.fireStore);
 
   /**
    * Creates a collection service based on the environment variable configuration.
