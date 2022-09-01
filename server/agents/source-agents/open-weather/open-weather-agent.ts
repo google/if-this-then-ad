@@ -105,7 +105,7 @@ export class OpenWeatherAgent extends SimpleSourceAgent {
     }
 
     const response = await this.executeHttpRequest(
-      'https://api.openweathermap.org/data/2.5/weather',
+      'https://api.openweathermap.org/data/2.5/weather/',
       {
         q: sourceParameters['location'],
         units: 'metric',

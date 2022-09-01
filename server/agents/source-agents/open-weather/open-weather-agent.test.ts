@@ -115,12 +115,6 @@ describe('OpenWeatherAgent', () => {
         type: 'location',
         name: 'Location',
       });
-      expect(description.parameters).toContainEqual({
-        key: 'unit',
-        type: 'string',
-        name: 'Unit',
-        values: ['standard', 'metric', 'imperial'],
-      });
       expect(description.settings).toContainEqual({
         key: 'OPENWEATHER_API_KEY',
         name: 'Open Weather Map API Key',
