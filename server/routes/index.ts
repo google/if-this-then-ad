@@ -16,7 +16,6 @@ import * as AuthController from '../controllers/auth-controller';
 import * as AccountController from '../controllers/account-controller';
 import * as AgentsController from '../controllers/agents-controller';
 import * as RulesController from '../controllers/rules-controller';
-import * as JobController from '../controllers/jobs-controller';
 import path from 'path';
 import passport from 'passport';
 import { isAuthenticated } from '../auth/google-auth';
@@ -57,6 +56,7 @@ router.post(
 
 // Rules endpoints
 router.post('/api/rules', isAuthenticated, RulesController.create);
+router.get('/api/rules/run', RulesController.runAll);
 router.get('/api/rules', isAuthenticated, RulesController.list);
 router.get('/api/rules/:id', isAuthenticated, RulesController.get);
 router.get('/api/rules/user/:id', isAuthenticated, RulesController.getByUser);
@@ -65,9 +65,6 @@ router.delete(
   isAuthenticated,
   RulesController.remove
 );
-
-// Job runner trigger endpoint
-router.get('/api/jobs/execute', JobController.executeJobs);
 
 router.get(
   '/api/agents/metadata',

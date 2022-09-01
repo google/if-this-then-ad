@@ -28,18 +28,6 @@ export interface OperationResult {
   error?: string;
 }
 
-/**
- * Represents the scheduled fetching of data via a source agent.
- */
-export interface Job extends Model {
-  ownerId: string;
-  executionInterval: number;
-  lastExecutionDate?: Date;
-  sourceAgentId: string;
-  sourceParameters: AgentParameters;
-  ruleIds: string[];
-}
-
 export type AgentParameters = Record<string, string>;
 
 export interface Agent {

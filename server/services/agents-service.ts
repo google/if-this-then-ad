@@ -29,23 +29,16 @@ export interface AgentsMetadata {
  * Provides agent utilities.
  */
 export class AgentService {
-  private readonly sourceAgents: Record<string, SourceAgent>;
-  private readonly targetAgents: Record<string, TargetAgent>;
+  private readonly sourceAgents: Array<SourceAgent>;
+  private readonly targetAgents: Array<TargetAgent>;
 
   /**
    * Constructor.
    */
   constructor() {
-    this.sourceAgents = Object.fromEntries(
-      [new AmbeeAgent(), new OpenWeatherAgent()].map((agent) => [
-        agent.id,
-        agent,
-      ])
-    );
+    this.sourceAgents = [new AmbeeAgent(), new OpenWeatherAgent()];
 
-    this.targetAgents = Object.fromEntries(
-      [new Dv360Agent(), new GoogleAdsAgent()].map((agent) => [agent.id, agent])
-    );
+    this.targetAgents = [new Dv360Agent(), new GoogleAdsAgent()];
   }
 
   /**
@@ -54,10 +47,10 @@ export class AgentService {
    */
   async describeAll(): Promise<AgentsMetadata> {
     const sources = await Promise.all(
-      Object.values(this.sourceAgents).map((agent) => agent.describe())
+      this.sourceAgents.map((agent) => agent.describe())
     );
     const targets = await Promise.all(
-      Object.values(this.targetAgents).map((agent) => agent.describe())
+      this.targetAgents.map((agent) => agent.describe())
     );
 
     return {
@@ -73,8 +66,9 @@ export class AgentService {
    *    with the specified ID exists.
    */
   getSourceAgent(id: string): SourceAgent | undefined {
-    return this.sourceAgents[id];
+    return this.sourceAgents.find((agent) => agent.id === id);
   }
+
   /**
    * Looks up a target agent with the specified ID.
    * @param {string} id the ID of the agent
@@ -82,7 +76,7 @@ export class AgentService {
    *    with the specified ID exists.
    */
   getTargetAgent(id: string): TargetAgent | undefined {
-    return this.targetAgents[id];
+    return this.targetAgents.find((agent) => agent.id === id);
   }
 }
 

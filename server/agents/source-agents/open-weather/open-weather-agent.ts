@@ -11,7 +11,6 @@
     limitations under the License.
  */
 
-import axios from 'axios';
 import { AgentSettingMetadata } from '../../../common/common';
 import { SourceAgentDataPointMetadata } from '../../../common/source';
 import { SimpleSourceAgent } from '../simple-source-agent';
@@ -113,17 +112,14 @@ export class OpenWeatherAgent extends SimpleSourceAgent {
       throw new Error('Missing API key for Open Weather API.');
     }
 
-    const client = axios.create({
-      baseURL: 'https://api.openweathermap.org/data/2.5/weather',
-      params: {
+    const response = await this.executeHttpRequest(
+      'https://api.openweathermap.org/data/2.5/weather',
+      {
         q: sourceParameters['location'],
         units: sourceParameters['unit'],
         appid: apiKey,
-      },
-      responseType: 'json',
-    });
-
-    const response = await client.get('/');
+      }
+    );
     const data = response.data;
     const code = data.weather[0]?.id;
 

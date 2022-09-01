@@ -11,7 +11,6 @@
     limitations under the License.
  */
 
-import axios from 'axios';
 import { AgentSettingMetadata } from 'common/common';
 import { SourceAgentDataPointMetadata } from 'common/source';
 import { SimpleSourceAgent } from '../simple-source-agent';
@@ -108,19 +107,18 @@ export class AmbeeAgent extends SimpleSourceAgent {
       throw new Error('Missing API key for Ambee API.');
     }
 
-    const client = axios.create({
-      baseURL: 'https://api.ambeedata.com/latest',
-      headers: { 'x-api-key': apiKey },
-      responseType: 'json',
-    });
+    const baseURL = 'https://api.ambeedata.com/latest';
+    const headers = { 'x-api-key': apiKey };
 
     const location = sourceParameters['location'];
     if (dataPoint === POLLEN_LEVEL_DATAPOINT.key) {
-      const response = await client.get<AmbeePollenData>('/pollen/by-place', {
-        params: { place: location },
-      });
+      const response = await this.executeHttpRequest(
+        `${baseURL}/pollen/by-place`,
+        { params: { place: location }, headers }
+      );
+
       if (response.data?.data && response.data?.data.length > 0) {
-        const risk = response.data.data[0].Risk;
+        const risk = (response.data as AmbeePollenData).data[0].Risk;
         const highest = getHighestPollenLevel(
           risk.grass_pollen,
           risk.tree_pollen,
@@ -133,11 +131,13 @@ export class AmbeeAgent extends SimpleSourceAgent {
         );
       }
     } else if (dataPoint === AIR_QUALITY_DATAPOINT.key) {
-      const response = await client.get<AmbeeAirQualityData>('/by-city', {
+      const response = await this.executeHttpRequest(`${baseURL}/by-city`, {
         params: { city: location },
+        headers,
       });
+
       if (response.data?.stations && response.data?.stations.length) {
-        const station = response.data.stations[0];
+        const station = (response.data as AmbeeAirQualityData).stations[0];
         return { [AIR_QUALITY_DATAPOINT.key]: station.aqiInfo.category };
       } else {
         throw new Error(
