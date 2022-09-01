@@ -140,6 +140,7 @@ export interface SourceAgent extends Agent {
   /**
    * Executes a query task.
    * @param task the task to be executed
+   * @param cache Cached responses
    */
   executeTask(task: SourceAgentTask): Promise<SourceAgentTaskResult>;
 

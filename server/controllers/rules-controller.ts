@@ -136,3 +136,20 @@ export const getByUser = async (req: Request, res: Response) => {
     return res.sendStatus(500).json(e);
   }
 };
+
+/**
+ * Run all rules.
+ *
+ * @param {Request} req
+ * @param {Response} res
+ */
+export const runAll = async (req: Request, res: Response) => {
+  try {
+    await rulesService.runAll();
+
+    return res.json({ status: 'started' });
+  } catch (e) {
+    logger.error(e);
+    return res.sendStatus(500).json(e);
+  }
+};

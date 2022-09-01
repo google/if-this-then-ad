@@ -11,6 +11,7 @@
     limitations under the License.
  */
 
+import axios, { AxiosResponse } from 'axios';
 import {
   SourceAgent,
   SourceAgentData,
@@ -18,6 +19,7 @@ import {
   SourceAgentTask,
   SourceAgentTaskResult,
 } from 'common/source';
+import { createHash } from 'crypto';
 import { logger } from '../../util/logger';
 
 /**
@@ -31,6 +33,7 @@ export abstract class SimpleSourceAgent implements SourceAgent {
    * @inheritdoc
    */
   readonly id: string;
+  protected cache: Record<string, AxiosResponse<any, any>>;
 
   /**
    * A logger object this source agent can use to log information about the
@@ -72,6 +75,43 @@ export abstract class SimpleSourceAgent implements SourceAgent {
     this.supportedDataPoints = new Set(
       description.dataPoints.map((dataPoint) => dataPoint.key)
     );
+    this.cache = {};
+  }
+
+  /**
+   * Execute HTTP request.
+   *
+   * @param {string} url
+   * @param {Object} params
+   * @param {Object} headers
+   * @returns {AxiosResponse<any, any>}
+   */
+  async executeHttpRequest(
+    url: string,
+    params = {},
+    headers = {}
+  ): Promise<AxiosResponse<any, any>> {
+    // Calculate cache key
+    const cacheKey = createHash('md5')
+      .update(`${url}.${JSON.stringify(params)}`)
+      .digest('hex');
+
+    // Check if request is cached
+    if (Object.keys(this.cache).includes(cacheKey)) {
+      this.logger.info(`Returning cached result!`);
+      return this.cache[cacheKey];
+    }
+
+    // Execute request
+    const res = await axios.get(url, {
+      headers,
+      params,
+    });
+
+    // Store response in cache
+    this.cache[cacheKey] = res;
+
+    return res;
   }
 
   /**
