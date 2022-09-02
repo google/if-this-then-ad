@@ -142,10 +142,11 @@ export const getByUser = async (req: Request, res: Response) => {
  *
  * @param {Request} req
  * @param {Response} res
+ * @returns {Response}
  */
-export const runAll = async (req: Request, res: Response) => {
+export const runAll = (req: Request, res: Response) => {
   try {
-    await rulesService.runAll();
+    rulesService.runAll();
 
     return res.json({ status: 'started' });
   } catch (e) {
