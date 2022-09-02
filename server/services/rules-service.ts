@@ -11,8 +11,8 @@
     limitations under the License.
  */
 
+import { TargetAgent, TargetAgentTask } from 'common/target';
 import { add as dateAdd, isPast as isDatePast } from 'date-fns';
-import { TargetAgentTask, TargetAgent } from 'common/target';
 import { ModelSpec } from '../common/common';
 import { Rule, RuleEvaluationResult } from '../common/rule';
 import {
@@ -162,21 +162,20 @@ export class RulesService {
     );
     const involvedAgents: TargetAgent[] = [];
 
-    [...involvedAgentIds].forEach((agentId) => {
+    for (const agentId of involvedAgentIds) {
       const agent = agentsService.getTargetAgent(agentId);
       if (!agent) {
         logger.error(
           `Received target agent task for unknown agent: ${agentId}`
         );
-        return;
       } else {
         involvedAgents.push(agent);
       }
-    });
+    }
 
-    involvedAgents.forEach(async (agent) => {
+    for (const agent of involvedAgents) {
       const tasksForAgent = targetTasks.filter(
-        (task) => (task.agentId = agent.id)
+        (task) => task.agentId === agent.id
       );
       const results = await agent.executeTasks(tasksForAgent);
       results.forEach((result) => {
@@ -185,7 +184,7 @@ export class RulesService {
           logger.error(`Target agent task did not succeed: ${agent.id}`);
         }
       });
-    });
+    }
 
     return success;
   }
