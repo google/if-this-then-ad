@@ -104,6 +104,7 @@ export class OpenWeatherAgent extends SimpleSourceAgent {
       throw new Error('Missing API key for Open Weather API.');
     }
 
+    // TODO: Add return type and interface
     const response = await this.executeHttpRequest(
       'https://api.openweathermap.org/data/2.5/weather/',
       {

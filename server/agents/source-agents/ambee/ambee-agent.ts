@@ -112,13 +112,13 @@ export class AmbeeAgent extends SimpleSourceAgent {
 
     const location = sourceParameters['location'];
     if (dataPoint === POLLEN_LEVEL_DATAPOINT.key) {
-      const response = await this.executeHttpRequest(
+      const response = await this.executeHttpRequest<AmbeePollenData>(
         `${baseURL}/pollen/by-place`,
         { params: { place: location }, headers }
       );
 
       if (response.data?.data && response.data?.data.length > 0) {
-        const risk = (response.data as AmbeePollenData).data[0].Risk;
+        const risk = response.data.data[0].Risk;
         const highest = getHighestPollenLevel(
           risk.grass_pollen,
           risk.tree_pollen,
