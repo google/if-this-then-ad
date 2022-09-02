@@ -84,26 +84,22 @@ export abstract class SimpleSourceAgent implements SourceAgent {
    * @param {string} url
    * @param {Object} params
    * @param {Object} headers
-   * @returns {AxiosResponse<any, any>}
+   * @returns {Promise<AxiosResponse<T, any>>}
    */
-  async executeHttpRequest(
-    url: string,
-    params = {},
-    headers = {}
-  ): Promise<AxiosResponse<any, any>> {
+  async executeHttpRequest<T>(url: string, params = {}, headers = {}) {
     // Calculate cache key
     const cacheKey = createHash('md5')
       .update(`${url}.${JSON.stringify(params)}`)
       .digest('hex');
 
     // Check if request is cached
-    if (Object.keys(this.cache).includes(cacheKey)) {
+    if (cacheKey in this.cache) {
       this.logger.info(`Returning cached result!`);
       return this.cache[cacheKey];
     }
 
     // Execute request
-    const res = await axios.get(url, {
+    const res = await axios.get<T>(url, {
       headers,
       params,
     });
