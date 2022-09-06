@@ -83,7 +83,7 @@ export abstract class SimpleSourceAgent implements SourceAgent {
    *
    * @param {string} url
    * @param {Object} params
-   * @param {Object} headers
+   * @param {AxiosRequestHeaders} headers
    * @returns {Promise<AxiosResponse<T, any>>}
    */
   async executeHttpRequest<T>(url: string, params = {}, headers = {}) {
