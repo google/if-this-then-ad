@@ -46,6 +46,9 @@ fi
 # Create Firestore in Native Mode
 gcloud firestore databases create --region ${GOOGLE_CLOUD_REGION} --no-user-output-enabled -q --verbosity="none"
 
+# Create Cloud Scheduler Job
+gcloud scheduler jobs create http iftta-rules-run --schedule="*/15 * * * *" --http-method=GET --uri="${SERVICE_URL}/api/rules/run"
+
 # Generate session secret
 SESSION_SECRET=$(openssl rand -hex 32)
 
