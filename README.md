@@ -86,6 +86,8 @@ The installation below is partly automated, this means that you will need to do 
 
 1. Ignore any other prompts, which will get auto-populated
 
+1. Make sure you add the **Authorized JavaScript origin** as well as the **Authorized redirect URI** presented to you at the end of the script to your OAuth Client
+
 ## Reporting bugs / feature requests
 
 We love to hear your feedback! Please [create an issue](https://github.com/google/if-this-then-ad/issues/new) directly on GitHub. Please be **specific** describing your question/bug/feature.
@@ -101,6 +103,15 @@ To run all checks manually you can execute the following code from the project r
 - For server: `cd server; npm run pre-commit`.
 - For client: `cd client; npm run pre-commit`.
 
-# Did you like our tool?
+# Do you like our tool?
 You can start contributing by sending pull requests right now!
 Also you can give us a star on our [GitHub page](https://github.com/google/if-this-then-ad) ;-)
+
+# Troubleshooting
+## Authorization Error (redirect_uri_mismatch)
+This usually originates from not having the **Authorized redirect URI** set properly.
+To do that:
+1. Go to [Cloud Credentials](https://console.cloud.google.com/apis/credentials)
+1. Select the right project
+1. Click on the **if-this-then-ad** OAuth 2.0 Client ID
+1. Add the redirect_uri presented to you in the error message to **Authorized redirect URIs**
