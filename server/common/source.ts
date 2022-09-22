@@ -51,7 +51,7 @@ export interface SourceAgentDataPointMetadata {
   /** The data point's human readable name. */
   name: string;
   /** The type of the data point. */
-  type: 'string' | 'number' | 'boolean';
+  type: 'string' | 'number' | 'boolean' | 'enum';
   /** Optional enumeration values. */
   values?: string[];
 }

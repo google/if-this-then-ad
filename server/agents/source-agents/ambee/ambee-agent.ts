@@ -59,13 +59,13 @@ const AMBEE_API_KEY_SETTNG: AgentSettingMetadata = {
 const POLLEN_LEVEL_DATAPOINT: SourceAgentDataPointMetadata = {
   key: 'pollen-level',
   name: 'Pollen Level',
-  type: 'string',
+  type: 'enum',
   values: POLLEN_LEVELS,
 };
 const AIR_QUALITY_DATAPOINT: SourceAgentDataPointMetadata = {
   key: 'air-quality',
   name: 'Air Quality',
-  type: 'string',
+  type: 'enum',
   values: [
     'Good',
     'Moderate',
