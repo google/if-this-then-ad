@@ -164,7 +164,7 @@
                 >
               </mat-select>
               <input
-                *ngSwitchCase="currentRuleConditionDataType === 'number'"
+                *ngSwitchCase="currentRuleConditionDataType === 'number' && !currentRuleConditionValues"
                 [(ngModel)]="currentRuleConditionCompareValue"
                 matInput
                 name="rule-value"
