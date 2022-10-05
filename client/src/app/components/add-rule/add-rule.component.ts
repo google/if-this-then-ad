@@ -214,6 +214,8 @@ export class AddRuleComponent implements OnInit {
       this.currentRuleConditionDataPoint = val;
       this.currentRuleConditionComparator = 'eq';
       this.currentRuleConditionDataType = dataPoint.type;
+      this.currentRuleConditionValues = undefined;
+
       if (dataPoint.type === 'boolean') {
         this.lockEquals = true;
         this.currentRuleConditionCompareValue = true;
@@ -221,6 +223,9 @@ export class AddRuleComponent implements OnInit {
         this.lockEquals = true;
         this.currentRuleConditionCompareValue = dataPoint.values[0];
         this.currentRuleConditionValues = dataPoint.values;
+      } else if (dataPoint.type === 'string') {
+        this.lockEquals = true;
+        this.currentRuleConditionCompareValue = '';
       } else {
         this.lockEquals = false;
         this.currentRuleConditionCompareValue = '';

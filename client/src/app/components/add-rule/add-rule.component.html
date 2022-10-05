@@ -149,29 +149,9 @@
             *ngIf="currentRuleConditionDataType"
           >
             <mat-label>Value</mat-label>
-            <ng-container [ngSwitch]="currentRuleConditionDataType">
-              <input
-                *ngSwitchCase="'number'"
-                [(ngModel)]="currentRuleConditionCompareValue"
-                matInput
-                name="rule-value"
-                required
-                type="number"
-                step="1"
-              />
+            <ng-container [ngSwitch]="true">
               <mat-select
-                *ngSwitchCase="'boolean'"
-                [(ngModel)]="currentRuleConditionCompareValue"
-                matInput
-                name="rule-value"
-                required
-              >
-                <mat-option value="true">Yes</mat-option>
-                <mat-option value="false">No</mat-option>
-              </mat-select>
-
-              <mat-select
-                *ngSwitchCase="'enum'"
+                *ngSwitchCase="currentRuleConditionValues && currentRuleConditionValues.length > 0"
                 [(ngModel)]="currentRuleConditionCompareValue"
                 matInput
                 name="rule-value"
@@ -182,6 +162,33 @@
                   value="{{ value }}"
                   >{{ value }}</mat-option
                 >
+              </mat-select>
+              <input
+                *ngSwitchCase="currentRuleConditionDataType === 'number'"
+                [(ngModel)]="currentRuleConditionCompareValue"
+                matInput
+                name="rule-value"
+                required
+                type="number"
+                step="1"
+              />
+              <input
+                *ngSwitchCase="currentRuleConditionDataType === 'string' && !currentRuleConditionValues"
+                [(ngModel)]="currentRuleConditionCompareValue"
+                matInput
+                name="rule-value"
+                required
+                type="text"
+              />
+              <mat-select
+                *ngSwitchCase="currentRuleConditionDataType === 'boolean'"
+                [(ngModel)]="currentRuleConditionCompareValue"
+                matInput
+                name="rule-value"
+                required
+              >
+                <mat-option value="true">Yes</mat-option>
+                <mat-option value="false">No</mat-option>
               </mat-select>
             </ng-container>
           </mat-form-field>
