@@ -32,6 +32,10 @@ gcloud services enable displayvideo.googleapis.com --no-user-output-enabled
 echo "Enabling API: Google Maps..."
 gcloud services enable places-backend.googleapis.com --no-user-output-enabled
 
+# Enable Cloud Scheduler API
+echo "Enabling API: Cloud Scheduler..."
+gcloud services enable cloudscheduler.googleapis.com --no-user-output-enabled
+
 # Create App Engine if not exists
 echo "Checking for App Engine..."
 
