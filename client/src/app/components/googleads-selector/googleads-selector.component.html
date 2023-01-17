@@ -10,7 +10,22 @@
     See the License for the specific language governing permissions and
     limitations under the License.
  -->
-<div class="ads-table">
+<div style="display: flex; align-items: center; justify-content: center;">
+  <form [formGroup]="account" (ngSubmit)="onSubmit()" style="display: flex; align-items: center; justify-content: center;">
+    <mat-form-field appearance="fill">
+      <mat-label>Account ID</mat-label>
+      <input
+        matInput
+        [required]="true"
+        formControlName="accountId"
+        pattern="\d{3}-?\d{3}-?\d{4}"
+      />
+    </mat-form-field>
+
+    <button mat-raised-button color="primary" [disabled]="!account.valid">Next</button>
+  </form>
+</div>
+<div class="ads-table" *ngIf="adGroups.length">
   <h2>Select Ad Groups</h2>
   <a [routerLink]="" (click)="refreshAdGroups()" class="refresh">
     <fa-icon [icon]="faRefresh"></fa-icon>
