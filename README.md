@@ -32,12 +32,14 @@ On the marketing activation side we support the following platforms:
 *Keywords: Weather Based Marketing, External Signal Based Marketing, Pollen Based Marketing, AirQuality Based Marketing, Rule-based Marketing.*
 
 ## The Problem that we solve
+
 * Advertisers want to show their ads as targeted as possible to reach the right audience at the right time
 * Managing ad campaigns in response to real-time events like weather, pollen data or air quality can be challenging to impossible (just imagine, manually switching hundreds of ad groups on a daily basis... it is really time consuming and an error-prone)
 
 Our tool will do this for you automatically!
 
 ## Is IFTTA for you?
+
 Basically all advertisers can benefit from this solution and especially those that clearly see a correlation between the real world factors (e.g. weather) and sales (or other marketing KPIs).
 
 Some examples to ignite the imagination (based on our experience):
@@ -48,15 +50,19 @@ Some examples to ignite the imagination (based on our experience):
 * Healthcare companies can advertise based on the pollen index and/or the air quality
 
 ## Benefits you get
+
 * Ads will reach their audience at the right time under the right circumstances
 * Advertisers can automate their campaign management in response to real-time events
 * Personalized ads and WOW effect on the end user side (since the user will see the right ad at the right time)
 
 ## Setup
+
 ### Prerequisities
+
 Basic Google Cloud knowledge and a Google Cloud project with [enabled billing](https://cloud.google.com/billing/docs/how-to/modify-project) are required.
 
 ### Step-by-step guide
+
 With the following simple steps you can install IFTTA on your [Google Cloud](https://cloud.google.com/resource-manager/docs/creating-managing-projects) project.
 The installation below is partly automated, this means that you will need to do some manual steps at the beginning and at the end the installation script (the big blue button below) will do the rest.
 
@@ -94,23 +100,46 @@ We love to hear your feedback! Please [create an issue](https://github.com/googl
 
 ## Development
 
+### Local dev setup
+
+1. Clone this repository
+1. Complete the step-by-step guide above
+1. Create a new [GCP Service Account](https://console.cloud.google.com/iam-admin/serviceaccounts) (or add another key for it, if it already exists)
+1. Download the `.json` credentials
+1. Rename `server/.env.sample` to `server/.env`
+1. Add all missing values to `server/.env`
+1. Go to `server/`
+1. To set up and start the server, run:
+    - `npm run build-local`
+    - `npm run dev`
+1. Go to `client/`
+1. To set up and start the client, run:
+    - `sudo npm i -g @angular/cli`
+    - `npm i`
+    - `ng serve --ssl`
+1. The application is running at https://localhost:4200
+
 ### Git: Pre commit
 
 To do all the checks before the commit automatically please add the [git/pre-commit](git/pre-commit) to your `.git/hooks/` directory. The easiest way would be to create a soft link: `cd .git/hooks/; ln -sf ../../git/pre-commit`.
 
-To run all checks manually you can execute the following code from the project root:
+To run all checks manually you can execute the following commands from the project root:
 
 - For server: `cd server; npm run pre-commit`.
 - For client: `cd client; npm run pre-commit`.
 
 # Do you like our tool?
+
 You can start contributing by sending pull requests right now!
 Also you can give us a star on our [GitHub page](https://github.com/google/if-this-then-ad) ;-)
 
 # Troubleshooting
+
 ## Authorization Error (redirect_uri_mismatch)
+
 This usually originates from not having the **Authorized redirect URI** set properly.
-To do that:
+
+Here's how to fix it:
 1. Go to [Cloud Credentials](https://console.cloud.google.com/apis/credentials)
 1. Select the right project
 1. Click on the **if-this-then-ad** OAuth 2.0 Client ID
