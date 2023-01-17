@@ -11,7 +11,7 @@
     limitations under the License.
  */
 
-import { GaxiosOptions } from 'gaxios';
+import { GaxiosError, GaxiosOptions } from 'gaxios';
 import { OAuth2Client } from 'google-auth-library';
 import { OperationResult } from '../../../common/common';
 import {
@@ -181,13 +181,16 @@ export class GoogleAdsAgent implements TargetAgent {
     requestorSettings: Record<string, string>
   ): Promise<TargetEntityResponse> {
     const client = googleAuthService.getAuthorizedClientForUser(requestor);
-    const customerAccountId = parameters['customerAccountId'] as string;
+    const customerAccountId =
+      'customerAccountId' in parameters
+        ? (parameters['customerAccountId'] as string)
+        : (requestorSettings['GOOGLEADS_ACCOUNT_ID'] as string);
     const developerToken = requestorSettings['GOOGLEADS_DEV_TOKEN'] as string;
     const managerAccountId = requestorSettings[
       'GOOGLEADS_MANAGER_ACCOUNT_ID'
     ] as string;
 
-    if (type === 'adGroup') {
+    if (type.toLowerCase() === 'adgroup') {
       const query = `SELECT ad_group.name,
           campaign.id,
           campaign.name,
@@ -198,17 +201,24 @@ export class GoogleAdsAgent implements TargetAgent {
       FROM ad_group
       WHERE ad_group.status != 'REMOVED'`;
 
-      const response = await client.request<
-        GoogleAdsQueryResult<GoogleAdsAdgroupInfo>
-      >({
-        url: `${GOOGLEADS_API_URL}/customers/${customerAccountId}/googleAds:search`,
-        data: { query },
-        method: 'POST',
-        headers: {
-          'developer-token': developerToken,
-          'login-customer-id': parseInt(managerAccountId),
-        },
-      });
+      let response;
+
+      try {
+        response = await client.request<
+          GoogleAdsQueryResult<GoogleAdsAdgroupInfo>
+        >({
+          url: `${GOOGLEADS_API_URL}/customers/${customerAccountId}/googleAds:search`,
+          data: { query },
+          method: 'POST',
+          headers: {
+            'developer-token': developerToken,
+            'login-customer-id': parseInt(managerAccountId),
+          },
+        });
+      } catch (err) {
+        console.log(err);
+        response = (err as GaxiosError).response;
+      }
 
       if (response.status !== 200 || response.data === undefined) {
         return {

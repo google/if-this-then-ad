@@ -13,6 +13,7 @@
 
 import { HttpClient } from '@angular/common/http';
 import { AfterViewInit, Component, ViewChild } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import {
@@ -35,12 +36,13 @@ interface AdGroup {
   status: string;
 }
 
+const ACCOUNT_ID_IDENITFIER = 'accountId';
+
 @Component({
   selector: 'app-googleads-selector',
   templateUrl: './googleads-selector.component.html',
   styleUrls: ['./googleads-selector.component.scss'],
 })
-
 /**
  *  Google ad groups selector component
  */
@@ -48,7 +50,9 @@ export class GoogleAdsSelectorComponent implements AfterViewInit {
   adGroupEnabled = faCircle;
   adGroupDisabled = faCirclePause;
   faRefresh = faRefresh;
-  isLoading = true;
+  isLoading = false;
+  account: FormGroup;
+  accountId: string;
   adGroups: AdGroup[] = [];
   displayedColumns: string[] = ['status', 'name', 'campaignName', 'type', 'id'];
   selectedRows = new Set<AdGroup>();
@@ -60,7 +64,11 @@ export class GoogleAdsSelectorComponent implements AfterViewInit {
    *
    * @param {HttpClient} http Http client
    */
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private formBuilder: FormBuilder) {
+    const group: { [key: string]: string } = {};
+    group[ACCOUNT_ID_IDENITFIER] = '';
+    this.account = this.formBuilder.group(group);
+  }
 
   // eslint-disable-next-line require-jsdoc
   ngAfterViewInit() {
@@ -70,7 +78,9 @@ export class GoogleAdsSelectorComponent implements AfterViewInit {
   /**
    * Fetch Google ads data to display
    */
-  ngOnInit(): void {
+  onSubmit() {
+    this.accountId = this.account.value[ACCOUNT_ID_IDENITFIER];
+
     this.fetchAccountData();
   }
 
@@ -126,10 +136,13 @@ export class GoogleAdsSelectorComponent implements AfterViewInit {
    * Fetch Google Ads account data.
    */
   private fetchAccountData() {
+    this.isLoading = true;
     this.http
-      .get<AdGroup[]>(
-        `${environment.apiUrl}/agents/googleads-agent/list/adgroups`
-      )
+      .get<AdGroup[]>(`${environment.apiUrl}/agents/google-ads/list/adgroup`, {
+        params: {
+          customerAccountId: this.accountId,
+        },
+      })
       .pipe(map((res: AdGroup[]) => res))
       .subscribe((adGroups) => {
         this.adGroups = adGroups;
