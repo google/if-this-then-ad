@@ -28,6 +28,10 @@ gcloud services enable appengine.googleapis.com --no-user-output-enabled
 echo "Enabling API: DV360..."
 gcloud services enable displayvideo.googleapis.com --no-user-output-enabled
 
+# Enable Google Ads API
+echo "Enabling API: Google Ads..."
+gcloud services enable googleads.googleapis.com --no-user-output-enabled
+
 # Enable Google Maps API (for the UI location autocompletion)
 echo "Enabling API: Google Maps..."
 gcloud services enable places-backend.googleapis.com --no-user-output-enabled
