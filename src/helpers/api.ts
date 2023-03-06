@@ -89,7 +89,10 @@ export class ApiHelper {
       Logger.log('HTTP code: ' + resRaw.getResponseCode());
       Logger.log('API error: ' + resRaw.getContentText());
       Logger.log('URL: ' + url);
+<<<<<<< HEAD
       Logger.log('Parameters: ' + JSON.stringify(params));
+=======
+>>>>>>> 1a33360 (Built IFTTA v2)
       throw new Error(resRaw.getContentText());
     }
 

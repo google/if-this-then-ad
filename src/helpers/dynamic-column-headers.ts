@@ -18,15 +18,25 @@
 import { JPath } from './jpath';
 
 export class DynamicColumnHeaders {
+<<<<<<< HEAD
   headers: string[];
+=======
+  headers: Array<string>;
+>>>>>>> 1a33360 (Built IFTTA v2)
   static namespaceSeparator = ':';
 
   /**
    * Constructor.
    *
+<<<<<<< HEAD
    * @param {string[]} headers
    */
   constructor(headers: string[]) {
+=======
+   * @param {Array<string>} headers
+   */
+  constructor(headers: Array<string>) {
+>>>>>>> 1a33360 (Built IFTTA v2)
     this.headers = headers;
   }
 
@@ -38,14 +48,22 @@ export class DynamicColumnHeaders {
    * Per default it will nest results under the respective group, which is '0'
    * if none exists.
    *
+<<<<<<< HEAD
    * @param {string[]} row
+=======
+   * @param {Array<string>} row
+>>>>>>> 1a33360 (Built IFTTA v2)
    * @param {string} namespace
    * @param {string} separator
    * @param {boolean} includeGroup
    * @returns {Record<string, Object>}
    */
   getMappedValues(
+<<<<<<< HEAD
     row: string[],
+=======
+    row: Array<string>,
+>>>>>>> 1a33360 (Built IFTTA v2)
     namespace: string | undefined = undefined,
     includeGroup: boolean = true
   ): Record<string, any> {

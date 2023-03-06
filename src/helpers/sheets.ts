@@ -22,7 +22,11 @@
  */
 export class SheetsService {
   defaultMode: string;
+<<<<<<< HEAD
   spreadsheet: GoogleAppsScript.Spreadsheet.Spreadsheet;
+=======
+  spreadsheet_: GoogleAppsScript.Spreadsheet.Spreadsheet;
+>>>>>>> 1a33360 (Built IFTTA v2)
 
   /**
    * Constructor.
@@ -46,7 +50,11 @@ export class SheetsService {
     }
 
     /** @private @const {?SpreadsheetApp.Spreadsheet} */
+<<<<<<< HEAD
     this.spreadsheet = spreadsheet;
+=======
+    this.spreadsheet_ = spreadsheet;
+>>>>>>> 1a33360 (Built IFTTA v2)
 
     /** @type {string} */
     this.defaultMode = 'FORMULA';
@@ -164,6 +172,10 @@ export class SheetsService {
    * @return {?SpreadsheetApp.Spreadsheet} The spreadsheet
    */
   getSpreadsheet() {
+<<<<<<< HEAD
     return this.spreadsheet;
+=======
+    return this.spreadsheet_;
+>>>>>>> 1a33360 (Built IFTTA v2)
   }
 }

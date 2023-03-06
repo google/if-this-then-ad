@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!--
     Copyright 2023 Google LLC
     Licensed under the Apache License, Version 2.0 (the "License");
@@ -11,6 +12,8 @@
     limitations under the License.
  -->
 
+=======
+>>>>>>> 1a33360 (Built IFTTA v2)
 [![build](https://img.shields.io/badge/build-passing-brightgreen?style=flat&logo=github)](https://github.com/google/if-this-then-ad)
 [![GitHub tag (latest SemVer)](https://img.shields.io/github/v/tag/google/if-this-then-ad?label=release&logo=github)](https://github.com/google/if-this-then-ad)
 [![GitHub last commit](https://img.shields.io/github/last-commit/google/if-this-then-ad)](https://github.com/google/if-this-then-ad/commits)
