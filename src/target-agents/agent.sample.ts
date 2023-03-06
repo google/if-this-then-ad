@@ -51,12 +51,14 @@ export class Sample extends TargetAgent {
    * @param {string} type
    * @param {boolean} evaluation
    * @param {Parameters} params Additional parameters
-   * @throws {Error}
+   * @returns {Array<string>}‚
    */
   validate(
     identifier: string,
     type: string,
     evaluation: boolean,
     params: Parameters
-  ) {}
+  ) {
+    return [];
+  }
 }

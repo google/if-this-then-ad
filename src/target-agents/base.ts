@@ -38,7 +38,9 @@ export class TargetAgent extends ApiHelper {
     type: string,
     evaluation: boolean,
     params: Object
-  ) {}
+  ): Array<string> {
+    throw new Error('Method not implemented.');
+  }
 
   /**
    * Find missing required parameters exist in object.

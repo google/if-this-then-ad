@@ -36,6 +36,11 @@ interface Parameters {
   serviceAccount?: ServiceAccount;
 }
 
+interface Entity {
+  resourceName: string;
+  status: GOOGLE_ADS_ENTITY_STATUS;
+}
+
 export class GoogleAds extends TargetAgent {
   static friendlyName = 'Google Ads';
   authToken?: string;
@@ -101,6 +106,8 @@ export class GoogleAds extends TargetAgent {
     }
   }
 
+  areAdsEnabled() {}
+
   /**
    * Check if supposed entity status matches its actual live status.
    *
@@ -108,7 +115,7 @@ export class GoogleAds extends TargetAgent {
    * @param {GOOGLE_ADS_SELECTOR_TYPE} type
    * @param {boolean} evaluation
    * @param {Parameters} params Additional parameters
-   * @throws {Error}
+   * @returns {Array<string>}
    */
   validate(
     identifier: string,
@@ -120,26 +127,62 @@ export class GoogleAds extends TargetAgent {
     this.authToken = auth.getAuthToken();
 
     this.developerToken = params.developerToken;
+
+    const expectedStatus = evaluation
+      ? GOOGLE_ADS_ENTITY_STATUS.ENABLED
+      : GOOGLE_ADS_ENTITY_STATUS.PAUSED;
+    let entitiesToBeChecked: Array<Entity> = [];
+    const errors: Array<string> = [];
+
+    if (type === GOOGLE_ADS_SELECTOR_TYPE.AD_ID) {
+      entitiesToBeChecked = entitiesToBeChecked.concat(
+        this.getAdsById_(
+          params.customerId,
+          identifier.split(',').map((id) => Number(id))
+        )
+      );
+    } else if (type === GOOGLE_ADS_SELECTOR_TYPE.AD_LABEL) {
+      entitiesToBeChecked = entitiesToBeChecked.concat(
+        this.getAdsByLabel_(params.customerId, identifier)
+      );
+    } else if (type === GOOGLE_ADS_SELECTOR_TYPE.AD_GROUP_ID) {
+      entitiesToBeChecked = entitiesToBeChecked.concat(
+        this.getAdGroupsById_(
+          params.customerId,
+          identifier.split(',').map((id) => Number(id))
+        )
+      );
+    } else if (type === GOOGLE_ADS_SELECTOR_TYPE.AD_GROUP_LABEL) {
+      entitiesToBeChecked = entitiesToBeChecked.concat(
+        this.getAdGroupsByLabel_(params.customerId, identifier)
+      );
+    }
+
+    for (const entity of entitiesToBeChecked) {
+      if (entity.status !== expectedStatus) {
+        errors.push(
+          `Status for ${identifier} (${type}) should be ${expectedStatus} but is ${entity.status}`
+        );
+      }
+    }
+
+    return errors;
   }
 
   /**
    * Update entity status.
    *
    * @param {string} path
-   * @param {string} resourceName
+   * @param {Entity} entity
    * @param {string} status
    */
-  private updateEntityStatus_(
-    path: string,
-    resourceName: string,
-    status: string
-  ) {
+  private updateEntityStatus_(path: string, entity: Entity, status: string) {
     const payload = {
       operations: [
         {
           updateMask: 'status',
           update: {
-            resourceName: resourceName,
+            resourceName: entity.resourceName,
             status: status,
           },
         },
@@ -270,10 +313,11 @@ export class GoogleAds extends TargetAgent {
    * @param {Array<number>} ids
    * @returns {Array<string>}
    */
-  getAdsById_(customerId: any, ids: Array<number>): Array<string> {
+  getAdsById_(customerId: any, ids: Array<number>): Array<Entity> {
     const query = `
         SELECT 
-          ad_group_ad.ad.id
+          ad_group_ad.ad.id,
+          ad_group_ad.status
         FROM ad_group_ad
         WHERE 
           ad_group_ad.ad.id IN (${ids.join(',')})
@@ -289,7 +333,12 @@ export class GoogleAds extends TargetAgent {
       Array<Record<string, any>>
     >;
 
-    return res.results.map((result: any) => result.adGroupAd.resourceName);
+    return res.results.map((result: any) => {
+      return {
+        resourceName: result.adGroupAd.resourceName,
+        status: result.adGroupAd.status,
+      };
+    });
   }
 
   /**
@@ -302,10 +351,11 @@ export class GoogleAds extends TargetAgent {
   private getAdGroupsById_(
     customerId: string,
     ids: Array<number>
-  ): Array<string> {
+  ): Array<Entity> {
     const query = `
           SELECT 
-            ad_group.id
+            ad_group.id,
+            ad_group.status
           FROM ad_group
           WHERE 
             ad_group.id IN (${ids.join(',')})
@@ -318,7 +368,12 @@ export class GoogleAds extends TargetAgent {
     const path = `customers/${customerId}/googleAds:search`;
     const res = this.fetchUrl_(path, 'POST', payload, true) as any;
 
-    return res.results.map((result: any) => result.adGroup.resourceName);
+    return res.results.map((result: any) => {
+      return {
+        resourceName: result.adGroup.resourceName,
+        status: result.adGroup.status,
+      };
+    });
   }
 
   /**
@@ -328,12 +383,13 @@ export class GoogleAds extends TargetAgent {
    * @param {Array<number>} ids
    * @returns {Array<string>}
    */
-  private getAdsByLabel_(customerId: any, label: string): Array<string> {
+  private getAdsByLabel_(customerId: any, label: string): Array<Entity> {
     const labelResource = this.getAdLabelByName_(customerId, label);
 
     const query = `
       SELECT 
-        ad_group_ad.ad.id
+        ad_group_ad.ad.id,
+        ad_group_ad.status
       FROM ad_group_ad
       WHERE 
         ad_group_ad.labels CONTAINS ANY ('${labelResource}')
@@ -346,7 +402,12 @@ export class GoogleAds extends TargetAgent {
     const path = `customers/${customerId}/googleAds:search`;
     const res = this.fetchUrl_(path, 'POST', payload, true) as any;
 
-    return res.results.map((result: any) => result.adGroupAd.resourceName);
+    return res.results.map((result: any) => {
+      return {
+        resourceName: result.adGroupAd.resourceName,
+        status: result.adGroupAd.status,
+      };
+    });
   }
 
   /**
@@ -382,12 +443,13 @@ export class GoogleAds extends TargetAgent {
    * @param {Array<number>} ids
    * @returns {Array<string>}
    */
-  private getAdGroupsByLabel_(customerId: any, label: string): Array<string> {
+  private getAdGroupsByLabel_(customerId: any, label: string): Array<Entity> {
     const labelResource = this.getAdGroupLabelByName_(customerId, label);
 
     const query = `
       SELECT 
-        ad_group.id
+        ad_group.id,
+        ad_group.status
       FROM ad_group 
       WHERE 
         ad_group.labels CONTAINS ANY ('${labelResource}')
@@ -400,7 +462,12 @@ export class GoogleAds extends TargetAgent {
     const path = `customers/${customerId}/googleAds:search`;
     const res = this.fetchUrl_(path, 'POST', payload, true) as any;
 
-    return res.results.map((result: any) => result.adGroup.resourceName);
+    return res.results.map((result: any) => {
+      return {
+        resultName: result.adGroup.resourceName,
+        status: result.adGroup.status,
+      };
+    });
   }
 
   /**
