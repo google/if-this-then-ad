@@ -121,7 +121,7 @@ function main(mode: MODE) {
 
   // Handle every row
   rows.forEach((row: Array<string>, index: number) => {
-    console.log(`Processing row ${index + 1}`);
+    console.log(`Processing row ${index + 1}/${rows.length}`);
 
     // Check if update is due
     let lastUpdate = Number(row[CONFIG.rules.cols.lastUpdate]);
@@ -234,7 +234,7 @@ function main(mode: MODE) {
  * Validate that the Sheet and target entities are in sync.
  */
 function validate() {
-  const errors: Array<string> = [];
+  let errors: Array<string> = [];
 
   // Get all rows from the sheet
   const rows = getSheetsService().getRangeData(CONFIG.rules.sheetName, 1, 1);
@@ -245,6 +245,7 @@ function validate() {
 
   // Handle every row
   rows.forEach((row: Array<string>, index: number) => {
+    console.log(`Validating row ${index + 1}/${rows.length}`);
     try {
       const evaluation = getSheetsService().getCellValue(
         CONFIG.rules.sheetName,
@@ -256,22 +257,33 @@ function validate() {
 
       const params = columnHeaderHelper.getMappedValues(
         row,
-        CONFIG.targetNamespace
+        CONFIG.targetNamespace,
+        false
       );
 
-      getTargetAgent(row[CONFIG.rules.cols.targetAgent]).validate(
-        row[CONFIG.rules.cols.targetId],
-        row[CONFIG.rules.cols.targetIdType],
-        evaluation,
-        params
+      errors = errors.concat(
+        getTargetAgent(row[CONFIG.rules.cols.targetAgent]).validate(
+          row[CONFIG.rules.cols.targetId],
+          row[CONFIG.rules.cols.targetIdType],
+          evaluation,
+          params
+        )
       );
     } catch (err) {
       errors.push(JSON.stringify((err as Error).message));
     }
   });
 
+  // Log results
+  console.log();
+  console.log('### Validation Results ###');
+  console.log(`Valid rows: ${rows.length - errors.length}/${rows.length}`);
+
   if (errors.length) {
-    throw errors.join('\n');
+    console.log();
+    console.log('Result details:');
+
+    errors.forEach((error) => console.log(error));
   }
 }
 

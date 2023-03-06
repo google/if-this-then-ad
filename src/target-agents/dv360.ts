@@ -79,8 +79,6 @@ export class DV360 extends TargetAgent {
     const auth = new Auth(params.serviceAccount ?? undefined);
     this.authToken = auth.getAuthToken();
 
-    console.log('Switching', identifier, type, evaluation);
-
     if (type === DV360_ENTITY_TYPE.LINE_ITEM) {
       this.switchLIStatus(params.advertiserId, identifier, evaluation);
     } else if (type === DV360_ENTITY_TYPE.INSERTION_ORDER) {
@@ -95,7 +93,7 @@ export class DV360 extends TargetAgent {
    * @param {DV360_ENTITY_TYPE} type
    * @param {boolean} evaluation
    * @param {Parameters} params Additional parameters
-   * @throws {Error}
+   * @returns {Array<string>}
    */
   validate(
     identifier: string,
@@ -110,6 +108,7 @@ export class DV360 extends TargetAgent {
     this.authToken = auth.getAuthToken();
 
     let status;
+    const errors = [];
 
     if (type === DV360_ENTITY_TYPE.LINE_ITEM) {
       status = this.isLIActive(params.advertiserId, identifier);
@@ -118,10 +117,12 @@ export class DV360 extends TargetAgent {
     }
 
     if (evaluation !== status) {
-      throw Error(
+      errors.push(
         `Status for ${identifier} (${type}) should be ${evaluation} but is ${status}`
       );
     }
+
+    return errors;
   }
 
   /**
