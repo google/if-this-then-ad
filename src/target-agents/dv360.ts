@@ -92,6 +92,7 @@ export class DV360 extends TargetAgent {
     this.authToken = auth.getAuthToken();
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     if (type === DV360_ENTITY_TYPE.LINE_ITEM) {
       this.setLineItemStatus(params.advertiserId, identifier, evaluation);
     } else if (type === DV360_ENTITY_TYPE.INSERTION_ORDER) {
@@ -99,6 +100,8 @@ export class DV360 extends TargetAgent {
 =======
     console.log('Switching', identifier, type, evaluation);
 
+=======
+>>>>>>> 0183214 (Improved validation log output)
     if (type === DV360_ENTITY_TYPE.LINE_ITEM) {
       this.switchLIStatus(params.advertiserId, identifier, evaluation);
     } else if (type === DV360_ENTITY_TYPE.INSERTION_ORDER) {
@@ -115,10 +118,14 @@ export class DV360 extends TargetAgent {
    * @param {boolean} evaluation
    * @param {Parameters} params Additional parameters
 <<<<<<< HEAD
+<<<<<<< HEAD
    * @returns {string[]}
 =======
    * @throws {Error}
 >>>>>>> 1a33360 (Built IFTTA v2)
+=======
+   * @returns {Array<string>}
+>>>>>>> 0183214 (Improved validation log output)
    */
   validate(
     identifier: string,
@@ -133,6 +140,7 @@ export class DV360 extends TargetAgent {
     this.authToken = auth.getAuthToken();
 
     let status;
+<<<<<<< HEAD
 <<<<<<< HEAD
     const errors = [];
 
@@ -150,6 +158,9 @@ export class DV360 extends TargetAgent {
 
     return errors;
 =======
+=======
+    const errors = [];
+>>>>>>> 0183214 (Improved validation log output)
 
     if (type === DV360_ENTITY_TYPE.LINE_ITEM) {
       status = this.isLIActive(params.advertiserId, identifier);
@@ -158,11 +169,16 @@ export class DV360 extends TargetAgent {
     }
 
     if (evaluation !== status) {
-      throw Error(
+      errors.push(
         `Status for ${identifier} (${type}) should be ${evaluation} but is ${status}`
       );
     }
+<<<<<<< HEAD
 >>>>>>> 1a33360 (Built IFTTA v2)
+=======
+
+    return errors;
+>>>>>>> 0183214 (Improved validation log output)
   }
 
   /**

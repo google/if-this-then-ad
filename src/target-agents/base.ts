@@ -38,7 +38,11 @@ export class TargetAgent extends ApiHelper {
     type: string,
     evaluation: boolean,
     params: Object
+<<<<<<< HEAD
   ): string[] {
+=======
+  ): Array<string> {
+>>>>>>> 0183214 (Improved validation log output)
     throw new Error('Method not implemented.');
   }
 

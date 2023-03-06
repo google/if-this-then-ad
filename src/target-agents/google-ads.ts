@@ -106,6 +106,8 @@ export class GoogleAds extends TargetAgent {
     }
   }
 
+  areAdsEnabled() {}
+
   /**
    * Check if supposed entity status matches its actual live status.
    *
