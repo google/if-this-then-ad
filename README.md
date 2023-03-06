@@ -1,146 +1,318 @@
-<!--
-    Copyright 2022 Google LLC
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
-        https://www.apache.org/licenses/LICENSE-2.0
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
- -->
-
-# If This Then Ad (IFTTA)
-
 [![build](https://img.shields.io/badge/build-passing-brightgreen?style=flat&logo=github)](https://github.com/google/if-this-then-ad)
 [![GitHub tag (latest SemVer)](https://img.shields.io/github/v/tag/google/if-this-then-ad?label=release&logo=github)](https://github.com/google/if-this-then-ad)
 [![GitHub last commit](https://img.shields.io/github/last-commit/google/if-this-then-ad)](https://github.com/google/if-this-then-ad/commits)
 
-[![If This Then Ad (IFFTA)](imgs/demo-video.png)](http://www.youtube.com/watch?v=ugklLFbij-A "If This Then Ad (IFFTA)")
-YouTube Link: [youtu.be/ugklLFbij-A](https://youtu.be/ugklLFbij-A).
+# If This Then Ad (IFTTA)
 
-IFTTA is a game changer in **rule-based marketing**. With our tool you can run marketing campaigns based on real world events.
-We already support the following data sources:
-* Weather (based on [OpenWeatherMaps API](https://openweathermap.org/)). The Weather conditions that you already can use: temperature, wind speed, cloudiness, rain, snow, thunderstorm.
-* Pollen and Air Quality ([Ambee API](https://www.getambee.com/)).
+IFTTA enables automatic management of marketing campaigns based on real world events.
 
-On the marketing activation side we support the following platforms:
-* [DV360](https://marketingplatform.google.com/intl/de/about/display-video-360/) (via the [DV360 API](https://developers.google.com/display-video/api/reference/rest))
-* [Google Ads](https://ads.google.com/) (via the [Ads API](https://developers.google.com/google-ads/api/docs/release-notes))
+It allows you to query data from virtually any JSON API and control entities in various campaign management tools (e.g. DV360 and Google Ads) in response to the results.
 
-*Keywords: Weather Based Marketing, External Signal Based Marketing, Pollen Based Marketing, AirQuality Based Marketing, Rule-based Marketing.*
+You can get very creative when using this tool and it's capabilities are only limited by your imagination. Here are some inspirations for what can be achieved:
 
-## The Problem that we solve
+- Enable a DV360 Line Item if it's sunny in London
 
-* Advertisers want to show their ads as targeted as possible to reach the right audience at the right time
-* Managing ad campaigns in response to real-time events like weather, pollen data or air quality can be challenging to impossible (just imagine, manually switching hundreds of ad groups on a daily basis... it is really time consuming and an error-prone)
+- Pause Google Ads AdGroup whenever socks of SuperCompany goes below $X
 
-Our tool will do this for you automatically!
+- Enable all Google Ads that have the label 'performance' if it's raining AND pollen levels are above a certain level
 
-## Is IFTTA for you?
+Why would you want to do this?
 
-Basically all advertisers can benefit from this solution and especially those that clearly see a correlation between the real world factors (e.g. weather) and sales (or other marketing KPIs).
+- Control ads to reach their audience at the right time under the right circumstances
+- Automate campaign management in response to real-time events
+- Personalize ads and create a "WOW" effect for the end user side
 
-Some examples to ignite the imagination (based on our experience):
-* Hot beverages can be advertised during the colder weather and cold beverages during the warm weather
-* An ice cream company can show ads when it’s hot
-* Insurance companies can show ads when there’s a storm or a flood
-* A hardware store might show ads for snow shovels when it snowed
-* Healthcare companies can advertise based on the pollen index and/or the air quality
+* Show ads as targeted as possible to reach the right audience at the right time
+* Manage ad campaigns in response to real-time events like weather, pollen data or air quality! This can be challenging or even impossible (imagine manually switching hundreds of ad groups every day - not only time consuming but also highly error-prone)
 
-## Benefits you get
+## Prerequisites
 
-* Ads will reach their audience at the right time under the right circumstances
-* Advertisers can automate their campaign management in response to real-time events
-* Personalized ads and WOW effect on the end user side (since the user will see the right ad at the right time)
+- A copy of the [Google Sheets Template](https://docs.google.com/spreadsheets/d/1EKcPGQ1Vr6LyyQYeYE0-T2gPzNhemVTxsvpSNC5arhE)
+- Google Cloud Project with DV360 API enabled
+- Any JSON API to be used as data source
+- An account for activation (see [Supported Target Agents](#supported-target-agents) below)
 
-## Setup
+## How it works
 
-### Prerequisities
+The tool works with "Rules" which describe which source to check how often and which target to manage.
 
-Basic Google Cloud knowledge and a Google Cloud project with [enabled billing](https://cloud.google.com/billing/docs/how-to/modify-project) are required.
+A rule consists of the following elements:
 
-### Step-by-step guide
+- **Rule Name**
 
-With the following simple steps you can install IFTTA on your [Google Cloud](https://cloud.google.com/resource-manager/docs/creating-managing-projects) project.
-The installation below is partly automated, this means that you will need to do some manual steps at the beginning and at the end the installation script (the big blue button below) will do the rest.
+  Arbitrary name of your choice for readability
 
-1. Create an [OAuth Consent Screen](https://console.cloud.google.com/apis/credentials/consent)
+- **Activation Formula**
 
-1. Make it of type "**External**"
+  Any sheet formula that returns `TRUE` or `FALSE`. This would usually reference the API result fields (see below).
 
-1. Add all users you want to have access to the app
+  For more complex evaluations, please see the section on "Custom Evaluator" below
 
-1. Create an [OAuth Client ID](https://console.cloud.google.com/apis/credentials/oauthclient)
+- **Update Interval**
 
-1. Set Application type to "**Web application**"
+  Regularly the fetch and sync processes would be started automatically using an Apps Script `onOpen()` Trigger. This is the default behaviour with Update Interval = 0.
 
-1. Set the name to "**if-this-then-ad**"
+  However, if you would like to realize different intervals between different rules, you can specify them in this column. The number value in this column will be interpreted as "hours".
 
-1. Take note of the **Client ID** and **Client Secret** presented to you
+- **Target Info**
 
-1. Click the big blue button to deploy:
+  Every Target Agent needs at least the following parameters:
 
-   [![Run on Google Cloud](https://deploy.cloud.run/button.svg)](https://deploy.cloud.run)
+  - **Target Identifier**
 
-1. Choose the Google Cloud Project where you want to deploy the app
+    This can be various things depending on the Agent. It may be a DV360 Line Item ID, a Google Ads Ad Group Label or something entirely different.
 
-1. Select the region where you want to deploy
+  - **Target ID Type**
 
-1. Enter your Client ID and Client Secret when prompted
+    Because the Target Identifier is not one thing for all, the Target ID Type is required to tell the tool what it is working with
 
-1. Ignore any other prompts, which will get auto-populated
+  - **Additional Parameters (optional)**
 
-1. Make sure you add the **Authorized JavaScript origin** as well as the **Authorized redirect URI** presented to you at the end of the script to your OAuth Client
+    Depending on the Target Agent additinal information may be required, such as an Advertiser ID, a Developer Token or other (check out [Supported Target Agents](#supported-target-agents) for details). You set them using the `target:` namespace (see [Dynamic Column Notation](#dynamic-column-notation))
 
-## Reporting bugs / feature requests
+- **Source Info**
 
-We love to hear your feedback! Please [create an issue](https://github.com/google/if-this-then-ad/issues/new) directly on GitHub. Please be **specific** describing your question/bug/feature.
+  - **API URL**
 
-## Development
+    Provide the URL to the API you want to query via `source:url`
 
-### Local dev setup
+  - **Request Headers (optional)**
 
-1. Clone this repository
-1. Complete the step-by-step guide above
-1. Create a new [GCP Service Account](https://console.cloud.google.com/iam-admin/serviceaccounts) (or add another key for it, if it already exists)
-1. Download the `.json` credentials
-1. Rename `server/.env.sample` to `server/.env`
-1. Add all missing values to `server/.env`
-1. Go to `server/`
-1. To set up and start the server, run:
-    - `npm run build-local`
-    - `npm run dev`
-1. Go to `client/`
-1. To set up and start the client, run:
-    - `sudo npm i -g @angular/cli`
-    - `npm i`
-    - `ng serve --ssl`
-1. The application is running at https://localhost:4200
+    If the API you're querying requires any headers to be set (e.g. for authentication), add a column for each one using "Dynamic Column Notation" `source:headers.<header name>` and specify the respective value in the corresponding cell in each row
 
-### Git: Pre commit
+  - **Query Parameters (optional)**
 
-To do all the checks before the commit automatically please add the [git/pre-commit](git/pre-commit) to your `.git/hooks/` directory. The easiest way would be to create a soft link: `cd .git/hooks/; ln -sf ../../git/pre-commit`.
+    If the API you're querying requires any query parameters, add a column for each one using "Dynamic Column Notation" `source:params.<param name>` and specify the respective value in the corresponding cell in each row
 
-To run all checks manually you can execute the following commands from the project root:
+- **API Result Paths**
 
-- For server: `cd server; npm run pre-commit`.
-- For client: `cd client; npm run pre-commit`.
+  To extract values from the queried API, add a column for each one using "Dynamic Column Notation" and the namespace `result:`. See [API Result](#api-result) for examples.
 
-# Do you like our tool?
+## How to run
 
-You can start contributing by sending pull requests right now!
-Also you can give us a star on our [GitHub page](https://github.com/google/if-this-then-ad) ;-)
+You can trigger the tool either manually using the Sheets menu or schedule an Apps Script Trigger to do it automatically.
 
-# Troubleshooting
+## Dynamic Column Notation
 
-## Authorization Error (redirect_uri_mismatch)
+To be as flexible as possible, IFTTA (Lite) uses "Dynamic Column Notation" to add API specific information like headers and query parameters and also to extract information from the request result.
 
-This usually originates from not having the **Authorized redirect URI** set properly.
+### Request Headers
 
-Here's how to fix it:
-1. Go to [Cloud Credentials](https://console.cloud.google.com/apis/credentials)
-1. Select the right project
-1. Click on the **if-this-then-ad** OAuth 2.0 Client ID
-1. Add the redirect_uri presented to you in the error message to **Authorized redirect URIs**
+Using the column title `source:headers.<header name>` lets the tool know to add the respective cell in each row to the request header when querying the API
+
+**Example:**
+
+<img src='./img/dynamic-column-notation-headers.png' width=500 alt='Dynamic Column Notation - Headers'>
+
+The resulting request header would be:
+
+```json
+{
+  "x-api-key": "abc123",
+  "x-debug": "my-value"
+}
+```
+
+### Query Parameters
+
+Encoding query parameters works very similar to request headers, the only difference being the prefix: `source:params`
+
+**Example:**
+
+<img src='./img/dynamic-column-notation-params.png' width=500 alt='Dynamic Column Notation - Query Parameters'>
+
+The resulting url for the first row would look like this: `https://<base-url>?lat=53.551086&lng=9.993682`
+
+### API Result
+
+Similar to setting headers and parameters, the 'Dynamic Column Notation' can also be used to extract data from JSON API results. Using the 'dot notation' we can traverse the JSON result to get to the data point we want to extract.
+
+<img src='./img/dynamic-column-notation-result-json.png' width=500 alt='Dynamic Column Notation - Results'>
+
+Given the above JSON source we could add the following to our Sheet:
+
+<img src='./img/dynamic-column-notation-result.png' width=700 alt='Dynamic Column Notation - Results'>
+
+You can also get min and max values from an array like so:
+
+<img src='./img/dynamic-column-notation-result-agg-json.png' width=500 alt='Dynamic Column Notation - Results'>
+
+Given the above JSON source we could add the following to our Sheet:
+
+<img src='./img/dynamic-column-notation-result-agg.png' width=500 alt='Dynamic Column Notation - Results'>
+
+## Supported Target Agents
+
+### DV360
+
+**Required parameters**
+
+- `target:advertiserId`
+
+**Optional parameters**
+
+- `target:serviceAccount`
+
+### Google Ads
+
+**Required parameters**
+
+- `target:customerId`
+- `target:developerToken`
+
+**Optional parameters**
+
+- `target:serviceAccount`
+
+## Advanced use cases
+
+### Custom Evaluators
+
+In case you have rule conditions more complex than what a standard Sheets function could cover, you can easiily extend this by leveraging Apps Script's / Google Sheet's "Custom Functions".
+
+**Example**
+
+In the linked Apps Script, add another file `custom.gs` in which you can specify your custom evaluator.
+
+**Example:**
+
+```js
+function customEvaluator(val1, val2) {
+  return val1 === 123 && val2 < 3;
+}
+```
+
+You can then reference this function in the "Activation Formula" cell of the respective row:
+
+```
+=customEvaluator(K3, L3)
+```
+
+(adjust for your actual function name and input cells)
+
+Any time any of the referenced cells change, `customEvaluator()` will be called to process the update.
+
+### Querying Multiple Sources
+
+You can easily query multiple source APIs to built even more complex conditions by extending the Dynamic Column Notation with a group:
+
+- `source:url` &rarr; `source.1.url`
+- `source:params.lat` &rarr; `source.1:params.lat`
+
+Add as many sources as you need by incrementing the group for each one.
+
+To be able to access the correct API result for evaluation, the respective group is used again for reference:
+
+- `result:current.temp` &rarr; `result.1:current.temp`
+- `result:current.weather.1.main` &rarr; `result.1:current.weather.1.main`
+
+### Custom Result Parser
+
+IFTTA is designed to be as flexible as possible to cover just about any use case you could come up with for dynamic marketing. If by any chance you should encounter that JPath is not sufficient to extract the information from API results that you require, IFTTA has another ace up its sleeve: Custom Result Parser!
+
+Analogue to a Custom Evaluator, to use a Custom Result Parser, you first need a custom function. You're free to (re-)use the `custom.gs` or any other file you like. In this file you add a function with a name of your choosing:
+
+**Example:**
+
+```js
+/**
+ * Parse and process JSON result.
+ *
+ * @param {Object} data
+ * @param {Object} params
+ * @returns {string}
+ */
+function customParser(data, params) {
+  return 'result';
+}
+```
+
+The function's return value will be written to the corresponding cell cell in each row.
+
+To call this function, just add another column with the heading: `result:!CUSTOM.customParser`.
+
+If you need any parameters passed to the Custom Parser, you can add those using another column and the heading: `customParser:<parameterName>`. Put the values in the corresponding cells of each row. Add as many columns as you need parameters. The parameters will be passed to the Custom Parser in the following format:
+
+```js
+{
+  parameter1: 'value',
+  parameter2: 'another value'
+}
+```
+
+## Developer Guide
+
+### Application Flow
+
+Here's a high level overview of what's happening under the hood:
+
+#### Fetch
+
+- Call `main()` in `src/index.ts` with `MODE.FETCH` (or `MODE.FETCH_AND_SYNC`)
+
+- Load the entire feed from Sheet and iterate over it row-by-row
+
+- Check if row is due for update
+
+- Extract Source parameters using 'Dynamic Column Notation'
+
+- Call API URL for each source
+
+- Update the row data accordingly
+
+- Write back to Sheet
+
+#### Sync
+
+- Call `main()` in `src/index.ts` with `MODE.SYNC` (or `MODE.FETCH_AND_SYNC`)
+
+- Load the entire feed from Sheet and iterate over it row-by-row
+
+- Check if row is due for update
+
+- Read the result of the Activation Formula
+
+- Extract Target parameters
+
+- Select the corresponding Target Agent
+
+- Call `process()` on the Target Agent to handle updating the specified Target Entity
+
+- Update the row data accordingly
+
+- Write back to Sheet
+
+#### Validate
+
+- Call `main()` in `src/index.ts` with `MODE.SYNC` (or `MODE.FETCH_AND_SYNC`)
+
+- Load the entire feed from Sheet and iterate over it row-by-row
+
+- Read the result of the Activation Formula (supposed state)
+
+- Extract Target parameters
+
+- Select the corresponding Target Agent
+
+- Call `validate()` on the Target Agent to handle checking actual Entity state against the supposed state
+
+- Output any errors in case of mismatch
+
+### How to add a new Target Agent
+
+Here's what you need to include a new Target Agent:
+
+1. Use `src/target-agents/agent.sample.ts` as a template for the Target Agent class
+1. Set a `friendlyName` of your choice
+1. Define `requiredParameters` (optional)
+1. Implement the `process()` function
+1. Implement the `validate()` function (optional)
+1. Add your new Target Agent class to the array in `src/target-agents/index.ts`
+1. Deploy your code
+1. Update data validation for 'Target Agent' and 'target:type' in the Sheet (optional)
+
+## FAQ
+
+### I don't have a Google Ads Developer Token (yet). Can I still use IFTTA?
+
+While we recommend applying for a Developer Token for the integration to work "natively", it is also possible to separate the fetching and activation part so that you only query the API with IFTTA to then read and process the results using an Ads Script in your Ads account.
