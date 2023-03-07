@@ -25,7 +25,7 @@ export enum GOOGLE_ADS_SELECTOR_TYPE {
   AD_GROUP_LABEL = 'AD_GROUP_LABEL',
 }
 
-enum GOOGLE_ADS_ENTITY_STATUS {
+export enum GOOGLE_ADS_ENTITY_STATUS {
   ENABLED = 'ENABLED',
   PAUSED = 'PAUSED',
 }
@@ -105,8 +105,6 @@ export class GoogleAds extends TargetAgent {
       this.updateAdGroupStatusByLabel_(params.customerId, identifier, status);
     }
   }
-
-  areAdsEnabled() {}
 
   /**
    * Check if supposed entity status matches its actual live status.
@@ -313,7 +311,7 @@ export class GoogleAds extends TargetAgent {
    * @param {Array<number>} ids
    * @returns {Array<string>}
    */
-  getAdsById_(customerId: any, ids: Array<number>): Array<Entity> {
+  private getAdsById_(customerId: any, ids: Array<number>): Array<Entity> {
     const query = `
         SELECT 
           ad_group_ad.ad.id,
