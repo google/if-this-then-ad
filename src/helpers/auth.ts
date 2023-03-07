@@ -29,42 +29,28 @@ export interface ServiceAccount {
   user_email: string;
 }
 
-<<<<<<< HEAD
 export enum AUTH_MODE {
   USER = 'USER',
   SERVICE_ACCOUNT = 'SERVICE_ACCOUNT',
 }
 
-=======
->>>>>>> 1a33360 (Built IFTTA v2)
 /**
  * This is a wrapper class for handling authentification to DV360 API.
  * This class can be used to auth also to other Google APIs.
  */
 export class Auth {
   serviceAccount: ServiceAccount;
-<<<<<<< HEAD
   authMode: AUTH_MODE;
 
-=======
->>>>>>> 1a33360 (Built IFTTA v2)
   /**
    * Set the OAuth configuration.
    * In order to authorise your DV360 API calls you can:
    * 1. Use the same Google account as you open the spreadsheet.
-<<<<<<< HEAD
    *    For this approach, you don't need to do pass a service account.
    * 2. Use a service account.
    *    This is a service account in JSON format from your GCP project.
    *    How to get a service account credentials from GCP:
    *    https://cloud.google.com/iam/docs/service-accounts
-=======
-   *   If you chose this approach, you don't need to do pass account.
-   * 2. Use a service account.
-   * This is a service account in JSON format from your GCP project.
-   * How to get a service account credentials from GCP:
-   * https://cloud.google.com/iam/docs/service-accounts
->>>>>>> 1a33360 (Built IFTTA v2)
    *
    * Service account credentials should be specified in the following JSON format:
    * {
@@ -83,26 +69,17 @@ export class Auth {
    * @param {?Object} account The service account or empty
    */
   constructor(account?: Object) {
-<<<<<<< HEAD
     this.authMode = account ? AUTH_MODE.SERVICE_ACCOUNT : AUTH_MODE.USER;
-=======
->>>>>>> 1a33360 (Built IFTTA v2)
     this.serviceAccount = account as ServiceAccount;
   }
 
   /**
-<<<<<<< HEAD
    * Get Auth Token for OAuth authorization for your service account.
    * You need this token in order to authorize API requests.
-=======
-   * Get Auth Token for OAuth authorisation for your service account.
-   * You need this token in order to authorise your DV360 API requests.
->>>>>>> 1a33360 (Built IFTTA v2)
    * See more: https://github.com/gsuitedevs/apps-script-oauth2/blob/master/README.md
    * See more: https://developers.google.com/apps-script/reference/script/script-app#getOAuthToken()
    *
    * @returns {string} OAuth Token
-<<<<<<< HEAD
    * @throws {Error}
    */
   getAuthToken() {
@@ -113,12 +90,6 @@ export class Auth {
       !('private_key' in this.serviceAccount)
     ) {
       throw new Error('No or invalid service account provided');
-=======
-   */
-  getAuthToken() {
-    if (!this.serviceAccount || !('private_key' in this.serviceAccount)) {
-      return ScriptApp.getOAuthToken();
->>>>>>> 1a33360 (Built IFTTA v2)
     }
 
     const service = OAuth2.createService('Service Account')
