@@ -311,7 +311,11 @@ export class GoogleAds extends TargetAgent {
    * @param {string[]} ids
    * @returns {string[]}
    */
+<<<<<<< HEAD
   private getAdsById(customerId: any, ids: string[]): Entity[] {
+=======
+  private getAdsById(customerId: any, ids: Array<number>): Array<Entity> {
+>>>>>>> 5d3b159 (Removed trailing underscore to indicate private properties)
     const query = `
         SELECT 
           ad_group_ad.ad.id,
@@ -346,7 +350,14 @@ export class GoogleAds extends TargetAgent {
    * @param {string[]} ids
    * @returns {Entity[]}
    */
+<<<<<<< HEAD
   private getAdGroupsById(customerId: string, ids: string[]): Entity[] {
+=======
+  private getAdGroupsById(
+    customerId: string,
+    ids: Array<number>
+  ): Array<Entity> {
+>>>>>>> 5d3b159 (Removed trailing underscore to indicate private properties)
     const query = `
           SELECT 
             ad_group.id,
@@ -378,7 +389,11 @@ export class GoogleAds extends TargetAgent {
    * @param {string} label
    * @returns {Entity[]}
    */
+<<<<<<< HEAD
   private getAdsByLabel(customerId: any, label: string): Entity[] {
+=======
+  private getAdsByLabel(customerId: any, label: string): Array<Entity> {
+>>>>>>> 5d3b159 (Removed trailing underscore to indicate private properties)
     const labelResource = this.getAdLabelByName(customerId, label);
 
     const query = `
@@ -438,7 +453,11 @@ export class GoogleAds extends TargetAgent {
    * @param {string} label
    * @returns {Entity[]}
    */
+<<<<<<< HEAD
   private getAdGroupsByLabel(customerId: any, label: string): Entity[] {
+=======
+  private getAdGroupsByLabel(customerId: any, label: string): Array<Entity> {
+>>>>>>> 5d3b159 (Removed trailing underscore to indicate private properties)
     const labelResource = this.getAdGroupLabelByName(customerId, label);
 
     const query = `
