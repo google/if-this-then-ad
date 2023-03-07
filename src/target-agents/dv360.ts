@@ -19,19 +19,27 @@ import { Auth } from '../helpers/auth';
 import { TargetAgent } from './base';
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 export enum DV360_ENTITY_STATUS {
 =======
 enum DV360_ENTITY_STATUS {
 >>>>>>> 1a33360 (Built IFTTA v2)
+=======
+export enum DV360_ENTITY_STATUS {
+>>>>>>> 4fbdb4b (Added tests and removed debug code)
   ACTIVE = 'ENTITY_STATUS_ACTIVE',
   PAUSED = 'ENTITY_STATUS_PAUSED',
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 export enum DV360_ENTITY_TYPE {
 =======
 enum DV360_ENTITY_TYPE {
 >>>>>>> 1a33360 (Built IFTTA v2)
+=======
+export enum DV360_ENTITY_TYPE {
+>>>>>>> 4fbdb4b (Added tests and removed debug code)
   LINE_ITEM = 'LINE_ITEM',
   INSERTION_ORDER = 'INSERTION_ORDER',
 }
@@ -53,10 +61,14 @@ export class DV360 extends TargetAgent {
   authToken?: string;
   baseUrl: string;
 <<<<<<< HEAD
+<<<<<<< HEAD
   requiredParameters = ['advertiserId'];
 =======
   requiredParameters = ['id', 'type', 'advertiserId'];
 >>>>>>> 1a33360 (Built IFTTA v2)
+=======
+  requiredParameters = ['advertiserId'];
+>>>>>>> 4fbdb4b (Added tests and removed debug code)
 
   /**
    * Set the DV360 wrapper configuration
@@ -103,10 +115,14 @@ export class DV360 extends TargetAgent {
 =======
 >>>>>>> 0183214 (Improved validation log output)
     if (type === DV360_ENTITY_TYPE.LINE_ITEM) {
-      this.switchLIStatus(params.advertiserId, identifier, evaluation);
+      this.switchLIStatus_(params.advertiserId, identifier, evaluation);
     } else if (type === DV360_ENTITY_TYPE.INSERTION_ORDER) {
+<<<<<<< HEAD
       this.switchIOStatus(params.advertiserId, identifier, evaluation);
 >>>>>>> 1a33360 (Built IFTTA v2)
+=======
+      this.switchIOStatus_(params.advertiserId, identifier, evaluation);
+>>>>>>> 4fbdb4b (Added tests and removed debug code)
     }
   }
 
@@ -145,6 +161,7 @@ export class DV360 extends TargetAgent {
     const errors = [];
 
     if (type === DV360_ENTITY_TYPE.LINE_ITEM) {
+<<<<<<< HEAD
       status = this.isLineItemActive(params.advertiserId, identifier);
     } else if (type === DV360_ENTITY_TYPE.INSERTION_ORDER) {
       status = this.isInsertionOrderActive(params.advertiserId, identifier);
@@ -164,8 +181,11 @@ export class DV360 extends TargetAgent {
 
     if (type === DV360_ENTITY_TYPE.LINE_ITEM) {
       status = this.isLIActive(params.advertiserId, identifier);
+=======
+      status = this.isLIActive_(params.advertiserId, identifier);
+>>>>>>> 4fbdb4b (Added tests and removed debug code)
     } else if (type === DV360_ENTITY_TYPE.INSERTION_ORDER) {
-      status = this.isIOActive(params.advertiserId, identifier);
+      status = this.isIOActive_(params.advertiserId, identifier);
     }
 
     if (evaluation !== status) {
@@ -189,7 +209,7 @@ export class DV360 extends TargetAgent {
    * @param {Object|undefined} payload - What should be updated
    * @returns {JSON} Result of the operation
    */
-  private fetchUrl(url: string, method = 'get', payload?: Object | undefined) {
+  private fetchUrl_(url: string, method = 'get', payload?: Object | undefined) {
     const headers = {
       Authorization: `Bearer ${this.authToken}`,
       Accept: '*/*',
@@ -220,7 +240,7 @@ export class DV360 extends TargetAgent {
    * @param {boolean} turnOn Activate on 'true', deactivate on 'false'
    * @param {string} entity
    */
-  private switchEntityStatus(
+  private switchEntityStatus_(
     advertiserId: string,
     entityId: string,
     turnOn: boolean,
@@ -236,18 +256,23 @@ export class DV360 extends TargetAgent {
 
     const url = `${this.baseUrl}/advertisers/${advertiserId}/${entity}/${entityId}?updateMask=entityStatus`;
 
-    this.fetchUrl(url, 'patch', updateMask);
+    this.fetchUrl_(url, 'patch', updateMask);
 
+<<<<<<< HEAD
 <<<<<<< HEAD
     console.log(
 =======
     Logger.log(
 >>>>>>> 1a33360 (Built IFTTA v2)
+=======
+    console.log(
+>>>>>>> 4fbdb4b (Added tests and removed debug code)
       `* [DV360:switch ${entity}]: DONE, ID: ${entityId} new status ${newStatus}`
     );
   }
 
   /**
+<<<<<<< HEAD
 <<<<<<< HEAD
    * Change Line Item status (Active/Paused) for the specified LI ID.
    *
@@ -301,18 +326,20 @@ export class DV360 extends TargetAgent {
   /**
 <<<<<<< HEAD
 =======
+=======
+>>>>>>> 4fbdb4b (Added tests and removed debug code)
    * Change Line Item status (Active/Paused) for the specified LI ID.
    *
    * @param {string} advertiserId - DV360 Advertiser ID
    * @param {string} lineItemId - DV360 Line Item ID
    * @param {boolean} turnOn - Activate LI on 'true', deactivate on 'false'
    */
-  private switchLIStatus(
+  private switchLIStatus_(
     advertiserId: string,
     lineItemId: string,
     turnOn: boolean
   ) {
-    const newStatus = this.switchEntityStatus(
+    const newStatus = this.switchEntityStatus_(
       advertiserId,
       lineItemId,
       turnOn,
@@ -321,7 +348,30 @@ export class DV360 extends TargetAgent {
   }
 
   /**
+<<<<<<< HEAD
 >>>>>>> 1a33360 (Built IFTTA v2)
+=======
+   * Change Insertion Order status (Active/Paused) for the specified IO ID.
+   *
+   * @param {string} advertiserId DV360 Advertiser ID
+   * @param {string} insertionOrderId DV360 Line Item ID
+   * @param {boolean} turnOn Activate IO on 'true', deactivate on 'false'
+   */
+  private switchIOStatus_(
+    advertiserId: string,
+    insertionOrderId: string,
+    turnOn: boolean
+  ) {
+    this.switchEntityStatus_(
+      advertiserId,
+      insertionOrderId,
+      turnOn,
+      'insertionOrders'
+    );
+  }
+
+  /**
+>>>>>>> 4fbdb4b (Added tests and removed debug code)
    * Get DV360 entity for the specified ID.
    * See more: https://developers.google.com/display-video/api/reference/rest/v1/advertisers.lineItems
    * See more: https://developers.google.com/display-video/api/reference/rest/v1/advertisers.insertionOrders
@@ -331,13 +381,14 @@ export class DV360 extends TargetAgent {
    * @param {string} entity Entity (e.g. lineItems/insertionOrders), see API refernece
    * @returns {Entity} Entity object
    */
-  private getEntity(
+  private getEntity_(
     advertiserId: string,
     entityId: string,
     entity: string
   ): Entity {
     const url = `${this.baseUrl}/advertisers/${advertiserId}/${entity}/${entityId}`;
 
+<<<<<<< HEAD
     return this.fetchUrl(url) as Entity;
   }
 
@@ -360,6 +411,9 @@ export class DV360 extends TargetAgent {
   ): DV360_ENTITY_STATUS {
     const e = this.getEntity(advertiserId, entityId, entity);
     return e.entityStatus;
+=======
+    return this.fetchUrl_(url) as Entity;
+>>>>>>> 4fbdb4b (Added tests and removed debug code)
   }
 
   /**
@@ -370,6 +424,7 @@ export class DV360 extends TargetAgent {
    * @param {string} lineItemId DV360 Line Item ID
    * @returns {boolean}
    */
+<<<<<<< HEAD
 <<<<<<< HEAD
   private isLineItemActive(advertiserId: string, lineItemId: string) {
     const entity = this.getEntity(advertiserId, lineItemId, 'lineItems');
@@ -382,6 +437,12 @@ export class DV360 extends TargetAgent {
       this.getEntityStatus(advertiserId, lineItemId, 'lineItems')
     );
 >>>>>>> 1a33360 (Built IFTTA v2)
+=======
+  private isLIActive_(advertiserId: string, lineItemId: string) {
+    const entity = this.getEntity_(advertiserId, lineItemId, 'lineItems');
+
+    return DV360_ENTITY_STATUS.ACTIVE == entity.entityStatus;
+>>>>>>> 4fbdb4b (Added tests and removed debug code)
   }
 
   /**
@@ -391,6 +452,7 @@ export class DV360 extends TargetAgent {
    * @param {string} insertionOrderId DV360 Insertion Order ID
    * @returns {boolean}
    */
+<<<<<<< HEAD
 <<<<<<< HEAD
   private isInsertionOrderActive(
     advertiserId: string,
@@ -410,5 +472,15 @@ export class DV360 extends TargetAgent {
       this.getEntityStatus(advertiserId, insertionOrderId, 'insertionOrders')
     );
 >>>>>>> 1a33360 (Built IFTTA v2)
+=======
+  private isIOActive_(advertiserId: string, insertionOrderId: string) {
+    const entity = this.getEntity_(
+      advertiserId,
+      insertionOrderId,
+      'insertionOrders'
+    );
+
+    return DV360_ENTITY_STATUS.ACTIVE == entity.entityStatus;
+>>>>>>> 4fbdb4b (Added tests and removed debug code)
   }
 }
