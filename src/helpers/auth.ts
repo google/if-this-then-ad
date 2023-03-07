@@ -29,21 +29,28 @@ export interface ServiceAccount {
   user_email: string;
 }
 
+export enum AUTH_MODE {
+  USER = 'USER',
+  SERVICE_ACCOUNT = 'SERVICE_ACCOUNT',
+}
+
 /**
  * This is a wrapper class for handling authentification to DV360 API.
  * This class can be used to auth also to other Google APIs.
  */
 export class Auth {
   serviceAccount: ServiceAccount;
+  authMode: AUTH_MODE;
+
   /**
    * Set the OAuth configuration.
    * In order to authorise your DV360 API calls you can:
    * 1. Use the same Google account as you open the spreadsheet.
-   *   If you chose this approach, you don't need to do pass account.
+   *    For this approach, you don't need to do pass a service account.
    * 2. Use a service account.
-   * This is a service account in JSON format from your GCP project.
-   * How to get a service account credentials from GCP:
-   * https://cloud.google.com/iam/docs/service-accounts
+   *    This is a service account in JSON format from your GCP project.
+   *    How to get a service account credentials from GCP:
+   *    https://cloud.google.com/iam/docs/service-accounts
    *
    * Service account credentials should be specified in the following JSON format:
    * {
@@ -62,20 +69,27 @@ export class Auth {
    * @param {?Object} account The service account or empty
    */
   constructor(account?: Object) {
+    this.authMode = account ? AUTH_MODE.SERVICE_ACCOUNT : AUTH_MODE.USER;
     this.serviceAccount = account as ServiceAccount;
   }
 
   /**
-   * Get Auth Token for OAuth authorisation for your service account.
-   * You need this token in order to authorise your DV360 API requests.
+   * Get Auth Token for OAuth authorization for your service account.
+   * You need this token in order to authorize API requests.
    * See more: https://github.com/gsuitedevs/apps-script-oauth2/blob/master/README.md
    * See more: https://developers.google.com/apps-script/reference/script/script-app#getOAuthToken()
    *
    * @returns {string} OAuth Token
+   * @throws {Error}
    */
   getAuthToken() {
-    if (!this.serviceAccount || !('private_key' in this.serviceAccount)) {
+    if (this.authMode === AUTH_MODE.USER) {
       return ScriptApp.getOAuthToken();
+    } else if (
+      !this.serviceAccount ||
+      !('private_key' in this.serviceAccount)
+    ) {
+      throw new Error('No or invalid service account provided');
     }
 
     const service = OAuth2.createService('Service Account')
