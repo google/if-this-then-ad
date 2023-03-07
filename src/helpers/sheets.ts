@@ -22,7 +22,7 @@
  */
 export class SheetsService {
   defaultMode: string;
-  spreadsheet_: GoogleAppsScript.Spreadsheet.Spreadsheet;
+  spreadsheet: GoogleAppsScript.Spreadsheet.Spreadsheet;
 
   /**
    * Constructor.
@@ -46,7 +46,7 @@ export class SheetsService {
     }
 
     /** @private @const {?SpreadsheetApp.Spreadsheet} */
-    this.spreadsheet_ = spreadsheet;
+    this.spreadsheet = spreadsheet;
 
     /** @type {string} */
     this.defaultMode = 'FORMULA';
@@ -164,6 +164,6 @@ export class SheetsService {
    * @return {?SpreadsheetApp.Spreadsheet} The spreadsheet
    */
   getSpreadsheet() {
-    return this.spreadsheet_;
+    return this.spreadsheet;
   }
 }

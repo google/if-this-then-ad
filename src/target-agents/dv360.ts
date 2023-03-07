@@ -80,9 +80,13 @@ export class DV360 extends TargetAgent {
     this.authToken = auth.getAuthToken();
 
     if (type === DV360_ENTITY_TYPE.LINE_ITEM) {
-      this.switchLIStatus_(params.advertiserId, identifier, evaluation);
+      this.switchLineItemStatus(params.advertiserId, identifier, evaluation);
     } else if (type === DV360_ENTITY_TYPE.INSERTION_ORDER) {
-      this.switchIOStatus_(params.advertiserId, identifier, evaluation);
+      this.switchInsertionOrderStatus(
+        params.advertiserId,
+        identifier,
+        evaluation
+      );
     }
   }
 
@@ -111,9 +115,9 @@ export class DV360 extends TargetAgent {
     const errors = [];
 
     if (type === DV360_ENTITY_TYPE.LINE_ITEM) {
-      status = this.isLIActive_(params.advertiserId, identifier);
+      status = this.isLineItemActive(params.advertiserId, identifier);
     } else if (type === DV360_ENTITY_TYPE.INSERTION_ORDER) {
-      status = this.isIOActive_(params.advertiserId, identifier);
+      status = this.isInsertionOrderActive(params.advertiserId, identifier);
     }
 
     if (evaluation !== status) {
@@ -133,7 +137,7 @@ export class DV360 extends TargetAgent {
    * @param {Object|undefined} payload - What should be updated
    * @returns {JSON} Result of the operation
    */
-  private fetchUrl_(url: string, method = 'get', payload?: Object | undefined) {
+  private fetchUrl(url: string, method = 'get', payload?: Object | undefined) {
     const headers = {
       Authorization: `Bearer ${this.authToken}`,
       Accept: '*/*',
@@ -152,7 +156,7 @@ export class DV360 extends TargetAgent {
    * @param {boolean} turnOn Activate on 'true', deactivate on 'false'
    * @param {string} entity
    */
-  private switchEntityStatus_(
+  private switchEntityStatus(
     advertiserId: string,
     entityId: string,
     turnOn: boolean,
@@ -167,7 +171,7 @@ export class DV360 extends TargetAgent {
 
     const url = `${this.baseUrl}/advertisers/${advertiserId}/${entity}/${entityId}?updateMask=entityStatus`;
 
-    this.fetchUrl_(url, 'patch', updateMask);
+    this.fetchUrl(url, 'patch', updateMask);
 
     console.log(
       `* [DV360:switch ${entity}]: DONE, ID: ${entityId} new status ${newStatus}`
@@ -181,12 +185,12 @@ export class DV360 extends TargetAgent {
    * @param {string} lineItemId - DV360 Line Item ID
    * @param {boolean} turnOn - Activate LI on 'true', deactivate on 'false'
    */
-  private switchLIStatus_(
+  private switchLineItemStatus(
     advertiserId: string,
     lineItemId: string,
     turnOn: boolean
   ) {
-    const newStatus = this.switchEntityStatus_(
+    const newStatus = this.switchEntityStatus(
       advertiserId,
       lineItemId,
       turnOn,
@@ -201,12 +205,12 @@ export class DV360 extends TargetAgent {
    * @param {string} insertionOrderId DV360 Line Item ID
    * @param {boolean} turnOn Activate IO on 'true', deactivate on 'false'
    */
-  private switchIOStatus_(
+  private switchInsertionOrderStatus(
     advertiserId: string,
     insertionOrderId: string,
     turnOn: boolean
   ) {
-    this.switchEntityStatus_(
+    this.switchEntityStatus(
       advertiserId,
       insertionOrderId,
       turnOn,
@@ -224,14 +228,14 @@ export class DV360 extends TargetAgent {
    * @param {string} entity Entity (e.g. lineItems/insertionOrders), see API refernece
    * @returns {Entity} Entity object
    */
-  private getEntity_(
+  private getEntity(
     advertiserId: string,
     entityId: string,
     entity: string
   ): Entity {
     const url = `${this.baseUrl}/advertisers/${advertiserId}/${entity}/${entityId}`;
 
-    return this.fetchUrl_(url) as Entity;
+    return this.fetchUrl(url) as Entity;
   }
 
   /**
@@ -241,8 +245,8 @@ export class DV360 extends TargetAgent {
    * @param {string} lineItemId DV360 Line Item ID
    * @returns {boolean}
    */
-  private isLIActive_(advertiserId: string, lineItemId: string) {
-    const entity = this.getEntity_(advertiserId, lineItemId, 'lineItems');
+  private isLineItemActive(advertiserId: string, lineItemId: string) {
+    const entity = this.getEntity(advertiserId, lineItemId, 'lineItems');
 
     return DV360_ENTITY_STATUS.ACTIVE == entity.entityStatus;
   }
@@ -254,8 +258,11 @@ export class DV360 extends TargetAgent {
    * @param {string} insertionOrderId DV360 Insertion Order ID
    * @returns {boolean}
    */
-  private isIOActive_(advertiserId: string, insertionOrderId: string) {
-    const entity = this.getEntity_(
+  private isInsertionOrderActive(
+    advertiserId: string,
+    insertionOrderId: string
+  ) {
+    const entity = this.getEntity(
       advertiserId,
       insertionOrderId,
       'insertionOrders'

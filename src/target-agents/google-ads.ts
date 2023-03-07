@@ -85,15 +85,15 @@ export class GoogleAds extends TargetAgent {
 
     if (type === GOOGLE_ADS_SELECTOR_TYPE.AD_ID) {
       console.log(`Updating status of Ad ${identifier} to '${status}'`);
-      this.updateAdStatusById_(
+      this.updateAdStatusById(
         params.customerId,
         identifier.split(',').map((id) => Number(id)),
         status
       );
     } else if (type === GOOGLE_ADS_SELECTOR_TYPE.AD_LABEL) {
-      this.updateAdStatusByLabel_(params.customerId, identifier, status);
+      this.updateAdStatusByLabel(params.customerId, identifier, status);
     } else if (type === GOOGLE_ADS_SELECTOR_TYPE.AD_GROUP_ID) {
-      this.updateAdGroupStatusById_(
+      this.updateAdGroupStatusById(
         params.customerId,
         identifier.split(',').map((id) => Number(id)),
         status
@@ -102,7 +102,7 @@ export class GoogleAds extends TargetAgent {
       console.log(
         `Updating status of AdGroup by label '${identifier}' to '${status}'`
       );
-      this.updateAdGroupStatusByLabel_(params.customerId, identifier, status);
+      this.updateAdGroupStatusByLabel(params.customerId, identifier, status);
     }
   }
 
@@ -134,25 +134,25 @@ export class GoogleAds extends TargetAgent {
 
     if (type === GOOGLE_ADS_SELECTOR_TYPE.AD_ID) {
       entitiesToBeChecked = entitiesToBeChecked.concat(
-        this.getAdsById_(
+        this.getAdsById(
           params.customerId,
           identifier.split(',').map((id) => Number(id))
         )
       );
     } else if (type === GOOGLE_ADS_SELECTOR_TYPE.AD_LABEL) {
       entitiesToBeChecked = entitiesToBeChecked.concat(
-        this.getAdsByLabel_(params.customerId, identifier)
+        this.getAdsByLabel(params.customerId, identifier)
       );
     } else if (type === GOOGLE_ADS_SELECTOR_TYPE.AD_GROUP_ID) {
       entitiesToBeChecked = entitiesToBeChecked.concat(
-        this.getAdGroupsById_(
+        this.getAdGroupsById(
           params.customerId,
           identifier.split(',').map((id) => Number(id))
         )
       );
     } else if (type === GOOGLE_ADS_SELECTOR_TYPE.AD_GROUP_LABEL) {
       entitiesToBeChecked = entitiesToBeChecked.concat(
-        this.getAdGroupsByLabel_(params.customerId, identifier)
+        this.getAdGroupsByLabel(params.customerId, identifier)
       );
     }
 
@@ -174,7 +174,7 @@ export class GoogleAds extends TargetAgent {
    * @param {Entity} entity
    * @param {string} status
    */
-  private updateEntityStatus_(path: string, entity: Entity, status: string) {
+  private updateEntityStatus(path: string, entity: Entity, status: string) {
     const payload = {
       operations: [
         {
@@ -187,7 +187,7 @@ export class GoogleAds extends TargetAgent {
       ],
     };
 
-    const res = this.fetchUrl_(path, 'POST', payload);
+    const res = this.fetchUrl(path, 'POST', payload);
   }
 
   /**
@@ -199,7 +199,7 @@ export class GoogleAds extends TargetAgent {
    * @param {boolean} forceCache
    * @returns {JSON} Result of the operation
    */
-  private fetchUrl_(
+  private fetchUrl(
     path: string,
     method = 'get',
     payload: Object,
@@ -230,16 +230,16 @@ export class GoogleAds extends TargetAgent {
    * @param {Array<number>} ids
    * @param {string} status
    */
-  private updateAdStatusById_(
+  private updateAdStatusById(
     customerId: string,
     ids: Array<number>,
     status: string
   ) {
-    const ads = this.getAdsById_(customerId, ids);
+    const ads = this.getAdsById(customerId, ids);
     const path = `customers/${customerId}/adGroupAds:mutate`;
 
     for (const ad of ads) {
-      this.updateEntityStatus_(path, ad, status);
+      this.updateEntityStatus(path, ad, status);
     }
   }
 
@@ -250,16 +250,16 @@ export class GoogleAds extends TargetAgent {
    * @param {Array<number>} ids
    * @param {string} status
    */
-  private updateAdGroupStatusById_(
+  private updateAdGroupStatusById(
     customerId: string,
     ids: Array<number>,
     status: string
   ) {
-    const adGroups = this.getAdGroupsById_(customerId, ids);
+    const adGroups = this.getAdGroupsById(customerId, ids);
     const path = `customers/${customerId}/adGroup:mutate`;
 
     for (const adGroup of adGroups) {
-      this.updateEntityStatus_(path, adGroup, status);
+      this.updateEntityStatus(path, adGroup, status);
     }
   }
 
@@ -270,16 +270,16 @@ export class GoogleAds extends TargetAgent {
    * @param {string} label
    * @param {string} status
    */
-  private updateAdStatusByLabel_(
+  private updateAdStatusByLabel(
     customerId: string,
     label: string,
     status: string
   ) {
-    const ads = this.getAdsByLabel_(customerId, label);
+    const ads = this.getAdsByLabel(customerId, label);
     const path = `customers/${customerId}/adGroupAds:mutate`;
 
     for (const ad of ads) {
-      this.updateEntityStatus_(path, ad, status);
+      this.updateEntityStatus(path, ad, status);
     }
   }
 
@@ -290,17 +290,17 @@ export class GoogleAds extends TargetAgent {
    * @param {string} label
    * @param {string} status
    */
-  private updateAdGroupStatusByLabel_(
+  private updateAdGroupStatusByLabel(
     customerId: string,
     label: string,
     status: string
   ) {
-    const adGroups = this.getAdGroupsByLabel_(customerId, label);
+    const adGroups = this.getAdGroupsByLabel(customerId, label);
 
     const path = `customers/${customerId}/adGroups:mutate`;
 
     for (const adGroup of adGroups) {
-      this.updateEntityStatus_(path, adGroup, status);
+      this.updateEntityStatus(path, adGroup, status);
     }
   }
 
@@ -311,7 +311,7 @@ export class GoogleAds extends TargetAgent {
    * @param {Array<number>} ids
    * @returns {Array<string>}
    */
-  private getAdsById_(customerId: any, ids: Array<number>): Array<Entity> {
+  private getAdsById(customerId: any, ids: Array<number>): Array<Entity> {
     const query = `
         SELECT 
           ad_group_ad.ad.id,
@@ -326,7 +326,7 @@ export class GoogleAds extends TargetAgent {
     };
 
     const path = `customers/${customerId}/googleAds:search`;
-    const res = this.fetchUrl_(path, 'POST', payload, true) as Record<
+    const res = this.fetchUrl(path, 'POST', payload, true) as Record<
       string,
       Array<Record<string, any>>
     >;
@@ -346,7 +346,7 @@ export class GoogleAds extends TargetAgent {
    * @param {Array<number>} ids
    * @returns {Array<string>}
    */
-  private getAdGroupsById_(
+  private getAdGroupsById(
     customerId: string,
     ids: Array<number>
   ): Array<Entity> {
@@ -364,7 +364,7 @@ export class GoogleAds extends TargetAgent {
     };
 
     const path = `customers/${customerId}/googleAds:search`;
-    const res = this.fetchUrl_(path, 'POST', payload, true) as any;
+    const res = this.fetchUrl(path, 'POST', payload, true) as any;
 
     return res.results.map((result: any) => {
       return {
@@ -381,8 +381,8 @@ export class GoogleAds extends TargetAgent {
    * @param {Array<number>} ids
    * @returns {Array<string>}
    */
-  private getAdsByLabel_(customerId: any, label: string): Array<Entity> {
-    const labelResource = this.getAdLabelByName_(customerId, label);
+  private getAdsByLabel(customerId: any, label: string): Array<Entity> {
+    const labelResource = this.getAdLabelByName(customerId, label);
 
     const query = `
       SELECT 
@@ -398,7 +398,7 @@ export class GoogleAds extends TargetAgent {
     };
 
     const path = `customers/${customerId}/googleAds:search`;
-    const res = this.fetchUrl_(path, 'POST', payload, true) as any;
+    const res = this.fetchUrl(path, 'POST', payload, true) as any;
 
     return res.results.map((result: any) => {
       return {
@@ -415,7 +415,7 @@ export class GoogleAds extends TargetAgent {
    * @param {string} labelName
    * @returns {string}
    */
-  private getAdLabelByName_(customerId: string, labelName: string) {
+  private getAdLabelByName(customerId: string, labelName: string) {
     const query = `
       SELECT 
         label.resource_name
@@ -429,7 +429,7 @@ export class GoogleAds extends TargetAgent {
     };
 
     const path = `customers/${customerId}/googleAds:search`;
-    const res = this.fetchUrl_(path, 'POST', payload, true) as any;
+    const res = this.fetchUrl(path, 'POST', payload, true) as any;
 
     return res.results[0].label.resourceName;
   }
@@ -441,8 +441,8 @@ export class GoogleAds extends TargetAgent {
    * @param {Array<number>} ids
    * @returns {Array<string>}
    */
-  private getAdGroupsByLabel_(customerId: any, label: string): Array<Entity> {
-    const labelResource = this.getAdGroupLabelByName_(customerId, label);
+  private getAdGroupsByLabel(customerId: any, label: string): Array<Entity> {
+    const labelResource = this.getAdGroupLabelByName(customerId, label);
 
     const query = `
       SELECT 
@@ -458,7 +458,7 @@ export class GoogleAds extends TargetAgent {
     };
 
     const path = `customers/${customerId}/googleAds:search`;
-    const res = this.fetchUrl_(path, 'POST', payload, true) as any;
+    const res = this.fetchUrl(path, 'POST', payload, true) as any;
 
     return res.results.map((result: any) => {
       return {
@@ -475,7 +475,7 @@ export class GoogleAds extends TargetAgent {
    * @param {string} labelName
    * @returns {string}
    */
-  private getAdGroupLabelByName_(customerId: string, labelName: string) {
+  private getAdGroupLabelByName(customerId: string, labelName: string) {
     const query = `
       SELECT 
         label.resource_name
@@ -489,7 +489,7 @@ export class GoogleAds extends TargetAgent {
     };
 
     const path = `customers/${customerId}/googleAds:search`;
-    const res = this.fetchUrl_(path, 'POST', payload, true) as any;
+    const res = this.fetchUrl(path, 'POST', payload, true) as any;
 
     return res.results[0].label.resourceName;
   }

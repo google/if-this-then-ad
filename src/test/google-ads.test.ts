@@ -58,25 +58,25 @@ describe('Google Ads Target Agent', () => {
       const ads = new GoogleAds();
 
       // Set up spies
-      const fetchUrlSpy = jest.spyOn(GoogleAds.prototype as any, 'fetchUrl_');
+      const fetchUrlSpy = jest.spyOn(GoogleAds.prototype as any, 'fetchUrl');
 
       jest
-        .spyOn(GoogleAds.prototype as any, 'fetchUrl_')
+        .spyOn(GoogleAds.prototype as any, 'fetchUrl')
         .mockReturnValue(singleAdByIdRaw);
 
       const updateAdStatusByIdSpy = jest.spyOn(
         GoogleAds.prototype as any,
-        'updateAdStatusById_'
+        'updateAdStatusById'
       );
 
       const updateEntityStatusSpy = jest.spyOn(
         GoogleAds.prototype as any,
-        'updateEntityStatus_'
+        'updateEntityStatus'
       );
 
       const getAdsByIdSpy = jest.spyOn(
         GoogleAds.prototype as any,
-        'getAdsById_'
+        'getAdsById'
       );
 
       // Call function
@@ -104,25 +104,25 @@ describe('Google Ads Target Agent', () => {
       const ads = new GoogleAds();
 
       // Set up spies
-      const fetchUrlSpy = jest.spyOn(GoogleAds.prototype as any, 'fetchUrl_');
+      const fetchUrlSpy = jest.spyOn(GoogleAds.prototype as any, 'fetchUrl');
 
       jest
-        .spyOn(GoogleAds.prototype as any, 'fetchUrl_')
+        .spyOn(GoogleAds.prototype as any, 'fetchUrl')
         .mockReturnValue(singleAdByIdRaw);
 
       const updateAdStatusByIdSpy = jest.spyOn(
         GoogleAds.prototype as any,
-        'updateAdStatusById_'
+        'updateAdStatusById'
       );
 
       const updateEntityStatusSpy = jest.spyOn(
         GoogleAds.prototype as any,
-        'updateEntityStatus_'
+        'updateEntityStatus'
       );
 
       const getAdsByIdSpy = jest.spyOn(
         GoogleAds.prototype as any,
-        'getAdsById_'
+        'getAdsById'
       );
 
       // Call function
@@ -160,7 +160,7 @@ describe('Google Ads Target Agent', () => {
 
       const getAdsByIdSpy = jest.spyOn(
         GoogleAds.prototype as any,
-        'getAdsById_'
+        'getAdsById'
       );
 
       // Call function
@@ -187,7 +187,7 @@ describe('Google Ads Target Agent', () => {
 
       const getAdsByIdSpy = jest.spyOn(
         GoogleAds.prototype as any,
-        'getAdsById_'
+        'getAdsById'
       );
 
       // Call function
