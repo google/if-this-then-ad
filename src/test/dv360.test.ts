@@ -15,16 +15,16 @@ describe('DV360 Target Agent', () => {
       const dv360 = new DV360();
 
       // Set up spies
-      jest.spyOn(DV360.prototype as any, 'fetchUrl_').mockReturnValue(null);
+      jest.spyOn(DV360.prototype as any, 'fetchUrl').mockReturnValue(null);
 
       const switchLIStatusSpy = jest.spyOn(
         DV360.prototype as any,
-        'switchLIStatus_'
+        'switchLineItemStatus'
       );
 
       const switchEntityStatusSpy = jest.spyOn(
         DV360.prototype as any,
-        'switchEntityStatus_'
+        'switchEntityStatus'
       );
 
       // Call function
@@ -50,10 +50,13 @@ describe('DV360 Target Agent', () => {
       };
 
       // Set up spies
-      jest.spyOn(DV360.prototype as any, 'fetchUrl_').mockReturnValue(lineItem);
-      const isLIActiveSpy = jest.spyOn(DV360.prototype as any, 'isLIActive_');
-      const getEntitySpy = jest.spyOn(DV360.prototype as any, 'getEntity_');
-      const fetchUrlSpy = jest.spyOn(DV360.prototype as any, 'fetchUrl_');
+      jest.spyOn(DV360.prototype as any, 'fetchUrl').mockReturnValue(lineItem);
+      const isLIActiveSpy = jest.spyOn(
+        DV360.prototype as any,
+        'isLineItemActive'
+      );
+      const getEntitySpy = jest.spyOn(DV360.prototype as any, 'getEntity');
+      const fetchUrlSpy = jest.spyOn(DV360.prototype as any, 'fetchUrl');
 
       // Call function
       dv360.validate('1234', DV360_ENTITY_TYPE.LINE_ITEM, true, params);
