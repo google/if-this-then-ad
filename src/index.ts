@@ -24,35 +24,6 @@ import { Utils } from './helpers/utils';
 import { TargetAgent } from './target-agents/base';
 import { AVAILABLE_AGENTS } from './target-agents/index';
 
-// TODO: Remove me!
-function teamHasWonInPastXDays(fixtures: any, params: any) {
-  return fixtures.response.some((item: any) => {
-    return (
-      item.fixture.status.short === 'FT' &&
-      ((item.teams.home.id == params.teamId &&
-        item.teams.home.winner === true) ||
-        (item.teams.away.id == params.teamId &&
-          item.teams.away.winner === true)) &&
-      item.fixture.timestamp * 1000 > params.lookAroundDays
-    );
-  });
-}
-
-// TODO: Remove me!
-function teamIsPlayingWithinNextXDays(fixtures: any, params: any) {
-  const now = new Date();
-  const maxFuture = new Date(now.valueOf()).setDate(
-    now.getDate() + params.lookAroundDays
-  );
-
-  return fixtures.response.some((item: any) => {
-    return (
-      item.fixture.timestamp * 1000 > now.getTime() &&
-      item.fixture.timestamp * 1000 < maxFuture
-    );
-  });
-}
-
 enum MODE {
   FETCH = 0,
   SYNC = 1,
