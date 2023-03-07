@@ -22,7 +22,7 @@ interface Parameters {
   advertiserId?: string; // optional
 }
 
-export class Sample extends TargetAgent {
+export class SampleAgent extends TargetAgent {
   static friendlyName = 'Sample';
   requiredParameters: Array<keyof Parameters> = ['token'];
 
