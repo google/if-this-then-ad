@@ -85,13 +85,13 @@ function main(mode: MODE) {
   }
 
   // Extract and parse column headers
-  const columnHeaders = rows.shift() as Array<string>;
+  const columnHeaders = rows.shift() as string[];
   const columnHeaderHelper = new DynamicColumnHeaders(columnHeaders);
 
   const apiHelper = new ApiHelper();
 
   // Handle every row
-  rows.forEach((row: Array<string>, index: number) => {
+  rows.forEach((row: string[], index: number) => {
     console.log(`Processing row ${index + 1}/${rows.length}`);
 
     // Check if update is due
@@ -205,17 +205,17 @@ function main(mode: MODE) {
  * Validate that the Sheet and target entities are in sync.
  */
 function validate() {
-  let errors: Array<string> = [];
+  let errors: string[] = [];
 
   // Get all rows from the sheet
   const rows = getSheetsService().getRangeData(CONFIG.rules.sheetName, 1, 1);
 
   // Extract and parse column headers
-  const columnHeaders = rows.shift() as Array<string>;
+  const columnHeaders = rows.shift() as string[];
   const columnHeaderHelper = new DynamicColumnHeaders(columnHeaders);
 
   // Handle every row
-  rows.forEach((row: Array<string>, index: number) => {
+  rows.forEach((row: string[], index: number) => {
     console.log(`Validating row ${index + 1}/${rows.length}`);
     try {
       const evaluation = getSheetsService().getCellValue(
@@ -261,15 +261,15 @@ function validate() {
 /**
  * Update row with data from API according to path in header.
  *
- * @param {Array<string>} headers
- * @param {Array<string>} row
+ * @param {string[]} headers
+ * @param {string[]} row
  * @param {Object} data
  * @param {string} group
  * @returns {string}
  */
 function updateRowWithResultData(
-  headers: Array<string>,
-  row: Array<string>,
+  headers: string[],
+  row: string[],
   data: Object,
   group: string
 ) {

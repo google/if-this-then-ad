@@ -87,7 +87,7 @@ export class GoogleAds extends TargetAgent {
       console.log(`Updating status of Ad ${identifier} to '${status}'`);
       this.updateAdStatusById(
         params.customerId,
-        identifier.split(',').map((id) => Number(id)),
+        identifier.split(';').map((id) => String(id)),
         status
       );
     } else if (type === GOOGLE_ADS_SELECTOR_TYPE.AD_LABEL) {
@@ -95,7 +95,7 @@ export class GoogleAds extends TargetAgent {
     } else if (type === GOOGLE_ADS_SELECTOR_TYPE.AD_GROUP_ID) {
       this.updateAdGroupStatusById(
         params.customerId,
-        identifier.split(',').map((id) => Number(id)),
+        identifier.split(';').map((id) => String(id)),
         status
       );
     } else if (type === GOOGLE_ADS_SELECTOR_TYPE.AD_GROUP_LABEL) {
@@ -113,7 +113,7 @@ export class GoogleAds extends TargetAgent {
    * @param {GOOGLE_ADS_SELECTOR_TYPE} type
    * @param {boolean} evaluation
    * @param {Parameters} params Additional parameters
-   * @returns {Array<string>}
+   * @returns {string[]}
    */
   validate(
     identifier: string,
@@ -129,14 +129,14 @@ export class GoogleAds extends TargetAgent {
     const expectedStatus = evaluation
       ? GOOGLE_ADS_ENTITY_STATUS.ENABLED
       : GOOGLE_ADS_ENTITY_STATUS.PAUSED;
-    let entitiesToBeChecked: Array<Entity> = [];
-    const errors: Array<string> = [];
+    let entitiesToBeChecked: Entity[] = [];
+    const errors: string[] = [];
 
     if (type === GOOGLE_ADS_SELECTOR_TYPE.AD_ID) {
       entitiesToBeChecked = entitiesToBeChecked.concat(
         this.getAdsById(
           params.customerId,
-          identifier.split(',').map((id) => Number(id))
+          identifier.split(',').map((id) => String(id))
         )
       );
     } else if (type === GOOGLE_ADS_SELECTOR_TYPE.AD_LABEL) {
@@ -147,7 +147,7 @@ export class GoogleAds extends TargetAgent {
       entitiesToBeChecked = entitiesToBeChecked.concat(
         this.getAdGroupsById(
           params.customerId,
-          identifier.split(',').map((id) => Number(id))
+          identifier.split(',').map((id) => String(id))
         )
       );
     } else if (type === GOOGLE_ADS_SELECTOR_TYPE.AD_GROUP_LABEL) {
@@ -227,12 +227,12 @@ export class GoogleAds extends TargetAgent {
    * Update Ad status by ID(s).
    *
    * @param {string} customerId
-   * @param {Array<number>} ids
+   * @param {string[]} ids
    * @param {string} status
    */
   private updateAdStatusById(
     customerId: string,
-    ids: Array<number>,
+    ids: string[],
     status: string
   ) {
     const ads = this.getAdsById(customerId, ids);
@@ -247,12 +247,12 @@ export class GoogleAds extends TargetAgent {
    * Update AdGroup status by ID(s).
    *
    * @param {string} customerId
-   * @param {Array<number>} ids
+   * @param {string[]} ids
    * @param {string} status
    */
   private updateAdGroupStatusById(
     customerId: string,
-    ids: Array<number>,
+    ids: string[],
     status: string
   ) {
     const adGroups = this.getAdGroupsById(customerId, ids);
@@ -308,10 +308,10 @@ export class GoogleAds extends TargetAgent {
    * Get Ads status by ID(s).
    *
    * @param {string} customerId
-   * @param {Array<number>} ids
-   * @returns {Array<string>}
+   * @param {string[]} ids
+   * @returns {string[]}
    */
-  private getAdsById(customerId: any, ids: Array<number>): Array<Entity> {
+  private getAdsById(customerId: any, ids: string[]): Entity[] {
     const query = `
         SELECT 
           ad_group_ad.ad.id,
@@ -343,13 +343,10 @@ export class GoogleAds extends TargetAgent {
    * Get AdGroups status by ID(s).
    *
    * @param {string} customerId
-   * @param {Array<number>} ids
-   * @returns {Array<string>}
+   * @param {string[]} ids
+   * @returns {Entity[]}
    */
-  private getAdGroupsById(
-    customerId: string,
-    ids: Array<number>
-  ): Array<Entity> {
+  private getAdGroupsById(customerId: string, ids: string[]): Entity[] {
     const query = `
           SELECT 
             ad_group.id,
@@ -378,10 +375,10 @@ export class GoogleAds extends TargetAgent {
    * Get Ads resource names by labels.
    *
    * @param {string} customerId
-   * @param {Array<number>} ids
-   * @returns {Array<string>}
+   * @param {string} label
+   * @returns {Entity[]}
    */
-  private getAdsByLabel(customerId: any, label: string): Array<Entity> {
+  private getAdsByLabel(customerId: any, label: string): Entity[] {
     const labelResource = this.getAdLabelByName(customerId, label);
 
     const query = `
@@ -438,10 +435,10 @@ export class GoogleAds extends TargetAgent {
    * Get AdGroups resource names by labels.
    *
    * @param {string} customerId
-   * @param {Array<number>} ids
-   * @returns {Array<string>}
+   * @param {string} label
+   * @returns {Entity[]}
    */
-  private getAdGroupsByLabel(customerId: any, label: string): Array<Entity> {
+  private getAdGroupsByLabel(customerId: any, label: string): Entity[] {
     const labelResource = this.getAdGroupLabelByName(customerId, label);
 
     const query = `

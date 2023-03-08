@@ -85,7 +85,7 @@ describe('Google Ads Target Agent', () => {
       // Evaluate
       expect(updateAdStatusByIdSpy).toHaveBeenCalledWith(
         '1',
-        [1234],
+        ['1234'],
         GOOGLE_ADS_ENTITY_STATUS.ENABLED
       );
 
@@ -126,12 +126,12 @@ describe('Google Ads Target Agent', () => {
       );
 
       // Call function
-      ads.process('1234,2345', GOOGLE_ADS_SELECTOR_TYPE.AD_ID, true, params);
+      ads.process('1234;2345', GOOGLE_ADS_SELECTOR_TYPE.AD_ID, true, params);
 
       // Evaluate
       expect(updateAdStatusByIdSpy).toHaveBeenCalledWith(
         '1',
-        [1234, 2345],
+        ['1234', '2345'],
         GOOGLE_ADS_ENTITY_STATUS.ENABLED
       );
 

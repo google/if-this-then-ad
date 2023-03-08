@@ -80,13 +80,9 @@ export class DV360 extends TargetAgent {
     this.authToken = auth.getAuthToken();
 
     if (type === DV360_ENTITY_TYPE.LINE_ITEM) {
-      this.switchLineItemStatus(params.advertiserId, identifier, evaluation);
+      this.setLineItemStatus(params.advertiserId, identifier, evaluation);
     } else if (type === DV360_ENTITY_TYPE.INSERTION_ORDER) {
-      this.switchInsertionOrderStatus(
-        params.advertiserId,
-        identifier,
-        evaluation
-      );
+      this.setInsertionOrderStatus(params.advertiserId, identifier, evaluation);
     }
   }
 
@@ -97,7 +93,7 @@ export class DV360 extends TargetAgent {
    * @param {DV360_ENTITY_TYPE} type
    * @param {boolean} evaluation
    * @param {Parameters} params Additional parameters
-   * @returns {Array<string>}
+   * @returns {string[]}
    */
   validate(
     identifier: string,
@@ -153,16 +149,16 @@ export class DV360 extends TargetAgent {
    *
    * @param {string} advertiserId DV360 Advertiser ID
    * @param {string} entityId DV360 Line Item/Insertion Order ID
-   * @param {boolean} turnOn Activate on 'true', deactivate on 'false'
+   * @param {boolean} status Activate on 'true', deactivate on 'false'
    * @param {string} entity
    */
-  private switchEntityStatus(
+  private setEntityStatus(
     advertiserId: string,
     entityId: string,
-    turnOn: boolean,
+    status: boolean,
     entity: string
   ) {
-    const newStatus = turnOn
+    const newStatus = status
       ? DV360_ENTITY_STATUS.ACTIVE
       : DV360_ENTITY_STATUS.PAUSED;
     const updateMask = {
@@ -185,12 +181,12 @@ export class DV360 extends TargetAgent {
    * @param {string} lineItemId - DV360 Line Item ID
    * @param {boolean} turnOn - Activate LI on 'true', deactivate on 'false'
    */
-  private switchLineItemStatus(
+  private setLineItemStatus(
     advertiserId: string,
     lineItemId: string,
     turnOn: boolean
   ) {
-    const newStatus = this.switchEntityStatus(
+    const newStatus = this.setEntityStatus(
       advertiserId,
       lineItemId,
       turnOn,
@@ -205,12 +201,12 @@ export class DV360 extends TargetAgent {
    * @param {string} insertionOrderId DV360 Line Item ID
    * @param {boolean} turnOn Activate IO on 'true', deactivate on 'false'
    */
-  private switchInsertionOrderStatus(
+  private setInsertionOrderStatus(
     advertiserId: string,
     insertionOrderId: string,
     turnOn: boolean
   ) {
-    this.switchEntityStatus(
+    this.setEntityStatus(
       advertiserId,
       insertionOrderId,
       turnOn,

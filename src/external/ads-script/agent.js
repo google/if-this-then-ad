@@ -15,41 +15,42 @@
  * limitations under the License.
  */
 
-class GoogleAds extends TargetAgent {
-  name = 'Google Ads';
-  requiredParameters = ['id', 'type'];
-
-  /**
-   * Constructor.
-   */
-  constructor() {
-    super();
-  }
-
+class GoogleAds {
   /**
    * Process entity based on evaluation.
    *
-   * @param {Object} params
+   * @param {string} identifier
+   * @param {string} type
    * @param {boolean} evaluation
    */
-  process(params, evaluation) {
-    // Check for missing parameters
-    /*this.ensureRequiredParameters(params);
-
-    const condition = `Name = '${params.identifier}'`;
+  process(identifier, type, evaluation) {
+    /*const condition = `Name = '${params.identifier}'`;
     this.switchAdGroupStatus(condition, evaluation);*/
 
+    let ads = [];
+    let adGroups = [];
+
+    if (type === 'AD_ID') {
+      const adIds = identifier
+        .split(';')
+        .map((pair) => pair.split(',').map((id) => parseInt(id, 10)));
+      ads = ads.concat(this.getAdsByIds(adIds));
+    } else if (type === 'AD_LABEL') {
+      ads = ads.concat(getAdsByLabel(identifier));
+    } else if (type === 'AD_GROUP_ID') {
+      const adGroupIds = identifier.split(',').map((id) => Number(id));
+      adGroups = adGroups.concat(this.getAdGroupsByIds(adGroupIds));
+    } else if (type === 'AD_GROUP_LABEL') {
+      adGroups = adGroups.concat(getAdGroupsByLabel(identifier));
+    }
+
     // Enable/pause the Ad Groups
-    const adGroupIds = row[CONFIG.feed.columns.adGroupIds]
-      ? row[CONFIG.feed.columns.adGroupIds]
-          .split(';')
-          .map((id) => parseInt(id, 10))
-      : [];
+    /*const adGroupIds = identifier.split(';').map((id) => parseInt(id, 10));
     const adGroupsByIds = getAdGroupsByIds(adGroupIds);
     const adGroupsByLabel = getAdGroupsByLabel(
       row[CONFIG.feed.columns.adGroupLabel]
     );
-    const adGroups = [...adGroupsByIds, ...adGroupsByLabel];
+    const adGroups = [...adGroupsByIds, ...adGroupsByLabel];*/
     adGroups.forEach((adGroup) => {
       if (enable && !adGroup.isEnabled()) {
         Logger.log(`Enabling Ad Group ${adGroup.getId()}`);
@@ -64,14 +65,14 @@ class GoogleAds extends TargetAgent {
       }
     });
     // Enable/pause the Ads
-    const adIds = row[CONFIG.feed.columns.adIds]
+    /*const adIds = row[CONFIG.feed.columns.adIds]
       ? row[CONFIG.feed.columns.adIds]
           .split(';')
           .map((pair) => pair.split(',').map((id) => parseInt(id, 10)))
       : [];
     const adsByIds = getAdsByIds(adIds);
     const adsByLabel = getAdsByLabel(row[CONFIG.feed.columns.adLabel]);
-    const ads = [...adsByIds, ...adsByLabel];
+    const ads = [...adsByIds, ...adsByLabel];*/
     ads.forEach((ad) => {
       if (enable && !ad.isEnabled()) {
         Logger.log(`Enabling Ad ${ad.getId()}`);
@@ -90,11 +91,12 @@ class GoogleAds extends TargetAgent {
   /**
    * Check if supposed entity status matches its actual live status.
    *
-   * @param {Object} params
+   * @param {string} identifier
+   * @param {string} type
    * @param {boolean} evaluation
-   * @throws {Error}
+   * @returns {string[]}
    */
-  validate(params, evaluation) {}
+  validate(identifier, type, evaluation) {}
 
   /**
    * Enable or pause an AdGroup by its name
@@ -120,8 +122,6 @@ class GoogleAds extends TargetAgent {
     }
   }
 
-  getAdGroupsByName(adGroupName) {}
-
   switchEntityStatus(entity, enable) {
     if (enable && !entity.isEnabled()) {
       entity.enable();
@@ -134,8 +134,8 @@ class GoogleAds extends TargetAgent {
    * Get Ads based on their IDs.
    * An ID is a pair of [Ad Group ID, Ad ID]
    *
-   * @param {Array<Array<number, number>>}
-   * @returns {Array<Ad>}
+   * @param {string[][]}
+   * @returns {Ad[]}
    */
   getAdsByIds(ids) {
     const ads = [];
@@ -151,8 +151,8 @@ class GoogleAds extends TargetAgent {
   /**
    * Get Ad Groups based on their IDs.
    *
-   * @param {Array<number>}
-   * @returns {Array<AdGroup>}
+   * @param {string[]}
+   * @returns {AdGroup[]}
    */
   getAdGroupsByIds(ids) {
     const adGroups = [];
@@ -169,7 +169,7 @@ class GoogleAds extends TargetAgent {
    * Get Ads by their label.
    *
    * @param {string} label
-   * @returns {Array<Ad>}
+   * @returns {Ad[]}
    */
   getAdsByLabel(label) {
     const ads = [];
@@ -194,7 +194,7 @@ class GoogleAds extends TargetAgent {
    * Get Ad Groups based on their label.
    *
    * @param {string} label
-   * @returns {Array<AdGroup>}
+   * @returns {AdGroup[]}
    */
   getAdGroupsByLabel(label) {
     const adGroups = [];

@@ -18,15 +18,15 @@
 import { JPath } from './jpath';
 
 export class DynamicColumnHeaders {
-  headers: Array<string>;
+  headers: string[];
   static namespaceSeparator = ':';
 
   /**
    * Constructor.
    *
-   * @param {Array<string>} headers
+   * @param {string[]} headers
    */
-  constructor(headers: Array<string>) {
+  constructor(headers: string[]) {
     this.headers = headers;
   }
 
@@ -38,14 +38,14 @@ export class DynamicColumnHeaders {
    * Per default it will nest results under the respective group, which is '0'
    * if none exists.
    *
-   * @param {Array<string>} row
+   * @param {string[]} row
    * @param {string} namespace
    * @param {string} separator
    * @param {boolean} includeGroup
    * @returns {Record<string, Object>}
    */
   getMappedValues(
-    row: Array<string>,
+    row: string[],
     namespace: string | undefined = undefined,
     includeGroup: boolean = true
   ): Record<string, any> {
