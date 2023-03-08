@@ -15,9 +15,6 @@
  * limitations under the License.
  */
 
-/** @type {?ApiSports} */
-let apiHelper;
-
 /** @type {?SheetsService} */
 let sheetsService;
 
@@ -41,6 +38,7 @@ function main() {
   rows.forEach((row, index) => {
     console.log(`Processing row ${index + 1}`);
 
+    const ads = new GoogleAds();
     let status = '';
 
     try {
@@ -55,15 +53,13 @@ function main() {
 
       if (evaluation === '') return;
 
-      const targetAgent = GoogleAds.getInstance();
-
-      targetAgent.process(
+      ads.process(
         row[CONFIG.rules.cols.targetId],
         row[CONFIG.rules.cols.targetIdType],
         evaluation
       );
 
-      status = `Synchronized (${Utils.getCurrentDateString()})`;
+      status = `Synchronized`;
 
       // Update timestamp
       getSheetsService().setCellValue(
@@ -73,9 +69,7 @@ function main() {
         CONFIG.rules.sheetName
       );
     } catch (err) {
-      console.log(
-        `Error (${Utils.getCurrentDateString()}): ${JSON.stringify(err)}`
-      );
+      console.log(`Error: ${JSON.stringify(err)}`);
     }
   });
 }

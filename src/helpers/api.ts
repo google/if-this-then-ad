@@ -89,6 +89,7 @@ export class ApiHelper {
       Logger.log('HTTP code: ' + resRaw.getResponseCode());
       Logger.log('API error: ' + resRaw.getContentText());
       Logger.log('URL: ' + url);
+      Logger.log('Parameters: ' + JSON.stringify(params));
       throw new Error(resRaw.getContentText());
     }
 

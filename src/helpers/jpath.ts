@@ -19,7 +19,7 @@ export class JPath {
   /**
    * Get Object entry value for the provided path.
    *
-   * @param {string} path Format "<entity>.<entity>.<array index>.<entity>"
+   * @param {string} path Format '<entity>.<entity>.<array index>.<entity>'
    * @param {Object} json JSON or JavaScript Object
    * @returns {string} Value from JSON or null if value does not exist
    */

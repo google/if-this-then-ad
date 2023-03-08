@@ -19,7 +19,7 @@ import { ApiHelper } from '../helpers/api';
 
 export class TargetAgent extends ApiHelper {
   public static friendlyName: string = '';
-  protected requiredParameters: Array<string> = [];
+  protected requiredParameters: string[] = [];
   static instance: TargetAgent;
 
   protected constructor() {
@@ -38,7 +38,7 @@ export class TargetAgent extends ApiHelper {
     type: string,
     evaluation: boolean,
     params: Object
-  ): Array<string> {
+  ): string[] {
     throw new Error('Method not implemented.');
   }
 
