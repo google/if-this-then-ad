@@ -19,11 +19,7 @@ export class JPath {
   /**
    * Get Object entry value for the provided path.
    *
-<<<<<<< HEAD
    * @param {string} path Format '<entity>.<entity>.<array index>.<entity>'
-=======
-   * @param {string} path Format "<entity>.<entity>.<array index>.<entity>"
->>>>>>> 1a33360 (Built IFTTA v2)
    * @param {Object} json JSON or JavaScript Object
    * @returns {string} Value from JSON or null if value does not exist
    */
