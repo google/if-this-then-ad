@@ -329,3 +329,5 @@ Here's what you need to include a new Target Agent:
 ### I don't have a Google Ads Developer Token (yet). Can I still use IFTTA?
 
 While we recommend applying for a Developer Token for the integration to work "natively", it is also possible to separate the fetching and activation part so that you only query the API with IFTTA to then read and process the results using an Ads Script in your Ads account.
+
+For more information please refer to the [Google Ads Scripts Extension Documentation](src/external/ads-script/README.md)

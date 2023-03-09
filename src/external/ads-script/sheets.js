@@ -38,19 +38,8 @@ class SheetsService {
 
     // Return empty result if no rows
     if (numRows + sheet.getLastRow() - startRow + 1 === 0) {
-      console.log('nope');
       return [[]];
     }
-
-    console.log(
-      sheetName,
-      startRow,
-      startCol,
-      numRows,
-      numCols,
-      sheet.getLastRow() - startRow + 1,
-      sheet.getLastColumn() - startCol + 1
-    );
 
     return sheet
       .getRange(
