@@ -120,11 +120,6 @@ function main(mode: MODE) {
         for (const group in sourceParams) {
           const source = sourceParams[group];
 
-          console.log('calling api');
-          console.log('url', source.url);
-          console.log('headers', JSON.stringify(source.headers));
-          console.log('params', JSON.stringify(source.params));
-
           const res = apiHelper.callApi(
             source.url,
             source.headers,
