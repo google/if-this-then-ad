@@ -89,7 +89,7 @@ describe('Google Ads Target Agent', () => {
         GOOGLE_ADS_ENTITY_STATUS.ENABLED
       );
 
-      expect(getAdsByIdSpy).toHaveBeenCalledWith('1', [1234]);
+      expect(getAdsByIdSpy).toHaveBeenCalledWith('1', ['1234']);
 
       expect(updateEntityStatusSpy).toHaveBeenCalledWith(
         'customers/1/adGroupAds:mutate',
@@ -135,7 +135,7 @@ describe('Google Ads Target Agent', () => {
         GOOGLE_ADS_ENTITY_STATUS.ENABLED
       );
 
-      expect(getAdsByIdSpy).toHaveBeenCalledWith('1', [1234, 2345]);
+      expect(getAdsByIdSpy).toHaveBeenCalledWith('1', ['1234', '2345']);
 
       expect(updateEntityStatusSpy).toHaveBeenCalledWith(
         'customers/1/adGroupAds:mutate',
