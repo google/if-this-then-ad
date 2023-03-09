@@ -181,9 +181,7 @@ function main(mode: MODE) {
         );
       }
     } catch (err) {
-      status = `Error (${Utils.getCurrentDateString()}): ${JSON.stringify(
-        err
-      )}`;
+      status = `Error (${Utils.getCurrentDateString()}): ${err}`;
     } finally {
       // Update status
       getSheetsService().setCellValue(
