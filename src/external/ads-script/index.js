@@ -24,15 +24,11 @@ let sheetsService;
  */
 function main() {
   // Get all rows from the sheet
-  const rows = getSheetsService().getRangeData(CONFIG.rules.sheetName, 1, 1);
+  const rows = getSheetsService().getRangeData(CONFIG.rules.sheetName, 2, 1);
 
   if (rows.length === 0) {
     return;
   }
-
-  // Extract and parse column headers
-  const columnHeaders = rows.shift();
-  const columnHeaderHelper = new DynamicColumnHeaders(columnHeaders);
 
   // Handle every row
   rows.forEach((row, index) => {
@@ -69,9 +65,11 @@ function main() {
         CONFIG.rules.sheetName
       );
     } catch (err) {
-      console.log(`Error: ${JSON.stringify(err)}`);
+      console.log('Error:', err);
     }
   });
+
+  console.log('Done.');
 }
 
 /**

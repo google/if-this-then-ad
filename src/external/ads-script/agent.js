@@ -24,109 +24,42 @@ class GoogleAds {
    * @param {boolean} evaluation
    */
   process(identifier, type, evaluation) {
-    /*const condition = `Name = '${params.identifier}'`;
-    this.switchAdGroupStatus(condition, evaluation);*/
-
-    let ads = [];
-    let adGroups = [];
+    let entities = [];
 
     if (type === 'AD_ID') {
       const adIds = identifier
         .split(';')
         .map((pair) => pair.split(',').map((id) => parseInt(id, 10)));
-      ads = ads.concat(this.getAdsByIds(adIds));
+      entities = entities.concat(this.getAdsByIds(adIds));
     } else if (type === 'AD_LABEL') {
-      ads = ads.concat(getAdsByLabel(identifier));
+      entities = entities.concat(getAdsByLabel(identifier));
     } else if (type === 'AD_GROUP_ID') {
       const adGroupIds = identifier.split(',').map((id) => Number(id));
-      adGroups = adGroups.concat(this.getAdGroupsByIds(adGroupIds));
+      entities = entities.concat(this.getAdGroupsByIds(adGroupIds));
     } else if (type === 'AD_GROUP_LABEL') {
-      adGroups = adGroups.concat(getAdGroupsByLabel(identifier));
+      entities = entities.concat(getAdGroupsByLabel(identifier));
     }
 
-    // Enable/pause the Ad Groups
-    /*const adGroupIds = identifier.split(';').map((id) => parseInt(id, 10));
-    const adGroupsByIds = getAdGroupsByIds(adGroupIds);
-    const adGroupsByLabel = getAdGroupsByLabel(
-      row[CONFIG.feed.columns.adGroupLabel]
-    );
-    const adGroups = [...adGroupsByIds, ...adGroupsByLabel];*/
-    adGroups.forEach((adGroup) => {
-      if (enable && !adGroup.isEnabled()) {
-        Logger.log(`Enabling Ad Group ${adGroup.getId()}`);
-        adGroup.enable();
-      } else if (enable && adGroup.isEnabled()) {
-        Logger.log(`Ad Group ${adGroup.getId()} already enabled`);
-      } else if (!enable && adGroup.isEnabled()) {
-        Logger.log(`Pausing Ad Group ${adGroup.getId()}`);
-        adGroup.pause();
-      } else {
-        Logger.log(`Ad Group ${adGroup.getId()} already paused`);
-      }
-    });
-    // Enable/pause the Ads
-    /*const adIds = row[CONFIG.feed.columns.adIds]
-      ? row[CONFIG.feed.columns.adIds]
-          .split(';')
-          .map((pair) => pair.split(',').map((id) => parseInt(id, 10)))
-      : [];
-    const adsByIds = getAdsByIds(adIds);
-    const adsByLabel = getAdsByLabel(row[CONFIG.feed.columns.adLabel]);
-    const ads = [...adsByIds, ...adsByLabel];*/
-    ads.forEach((ad) => {
-      if (enable && !ad.isEnabled()) {
-        Logger.log(`Enabling Ad ${ad.getId()}`);
-        ad.enable();
-      } else if (enable && ad.isEnabled()) {
-        Logger.log(`Ad ${ad.getId()} already enabled`);
-      } else if (!enable && ad.isEnabled()) {
-        Logger.log(`Pausing Ad ${ad.getId()}`);
-        ad.pause();
-      } else {
-        Logger.log(`Ad ${ad.getId()} already paused`);
-      }
+    entities.forEach((entity) => {
+      this.setEntityStatus(entity, evaluation);
     });
   }
 
   /**
-   * Check if supposed entity status matches its actual live status.
+   * Set status of Ad or AdGroup.
    *
-   * @param {string} identifier
-   * @param {string} type
-   * @param {boolean} evaluation
-   * @returns {string[]}
+   * @param {Ad|AdGroup} entity
+   * @param {boolean} enable
    */
-  validate(identifier, type, evaluation) {}
-
-  /**
-   * Enable or pause an AdGroup by its name
-   *
-   * @param {string} condition AdGroup name
-   * @param {boolean} enable If true, then enable, else pause
-   */
-  switchAdGroupStatus(condition, enable) {
-    const selectors = [
-      AdsApp.adGroups(),
-      AdsApp.videoAdGroups(),
-      AdsApp.shoppingAdGroups(),
-    ];
-
-    for (var i = 0; i < selectors.length; i++) {
-      const adGroupIter = selectors[i].withCondition(condition).get();
-
-      if (adGroupIter.hasNext()) {
-        const adGroup = adGroupIter.next();
-
-        this.switchEntityStatus(adGroup, enable);
-      }
-    }
-  }
-
-  switchEntityStatus(entity, enable) {
+  setEntityStatus(entity, enable) {
     if (enable && !entity.isEnabled()) {
+      Logger.log(`Enabling ${entity.getId()}...`);
       entity.enable();
-    } else if (enable && !entity.isEnabled()) {
+    } else if (!enable && entity.isEnabled()) {
+      Logger.log(`Pausing ${entity.getId()}...`);
       entity.pause();
+    } else {
+      Logger.log(`Status for ${entity.getId()} unchanged`);
     }
   }
 
@@ -155,11 +88,20 @@ class GoogleAds {
    * @returns {AdGroup[]}
    */
   getAdGroupsByIds(ids) {
-    const adGroups = [];
-    const adGroupsIterator = AdsApp.adGroups().withIds(ids).get();
+    const selectors = [
+      AdsApp.adGroups(),
+      AdsApp.videoAdGroups(),
+      AdsApp.shoppingAdGroups(),
+    ];
 
-    while (adGroupsIterator.hasNext()) {
-      adGroups.push(adGroupsIterator.next());
+    const adGroups = [];
+
+    for (var i = 0; i < selectors.length; i++) {
+      const adGroupsIterator = selectors[i].adGroups().withIds(ids).get();
+
+      while (adGroupsIterator.hasNext()) {
+        adGroups.push(adGroupsIterator.next());
+      }
     }
 
     return adGroups;
