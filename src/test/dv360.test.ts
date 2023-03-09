@@ -17,22 +17,22 @@ describe('DV360 Target Agent', () => {
       // Set up spies
       jest.spyOn(DV360.prototype as any, 'fetchUrl').mockReturnValue(null);
 
-      const switchLIStatusSpy = jest.spyOn(
+      const setLineItemStatusSpy = jest.spyOn(
         DV360.prototype as any,
-        'switchLineItemStatus'
+        'setLineItemStatus'
       );
 
-      const switchEntityStatusSpy = jest.spyOn(
+      const setEntityStatusSpy = jest.spyOn(
         DV360.prototype as any,
-        'switchEntityStatus'
+        'setEntityStatus'
       );
 
       // Call function
       dv360.process('1234', DV360_ENTITY_TYPE.LINE_ITEM, true, params);
 
       // Evaluate
-      expect(switchLIStatusSpy).toHaveBeenCalledWith('1', '1234', true);
-      expect(switchEntityStatusSpy).toHaveBeenCalledWith(
+      expect(setLineItemStatusSpy).toHaveBeenCalledWith('1', '1234', true);
+      expect(setEntityStatusSpy).toHaveBeenCalledWith(
         '1',
         '1234',
         true,
