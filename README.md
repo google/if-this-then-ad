@@ -41,7 +41,7 @@ Why would you want to do this?
 ## Prerequisites
 
 - A copy of the [Google Sheets Template](https://docs.google.com/spreadsheets/d/1EKcPGQ1Vr6LyyQYeYE0-T2gPzNhemVTxsvpSNC5arhE)
-- Google Cloud Project with DV360 API enabled
+- Google Cloud Project with DV360 API and Ads API enabled
 - Any JSON API to be used as data source
 - An account for activation (see [Supported Target Agents](#supported-target-agents) below)
 
