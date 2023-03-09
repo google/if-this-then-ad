@@ -165,13 +165,11 @@ export class DV360 extends TargetAgent {
       entityStatus: newStatus,
     };
 
+    console.log(`Setting status of ${entityId} to ${newStatus}`);
+
     const url = `${this.baseUrl}/advertisers/${advertiserId}/${entity}/${entityId}?updateMask=entityStatus`;
 
     this.fetchUrl(url, 'patch', updateMask);
-
-    console.log(
-      `* [DV360:switch ${entity}]: DONE, ID: ${entityId} new status ${newStatus}`
-    );
   }
 
   /**
@@ -179,17 +177,17 @@ export class DV360 extends TargetAgent {
    *
    * @param {string} advertiserId - DV360 Advertiser ID
    * @param {string} lineItemId - DV360 Line Item ID
-   * @param {boolean} turnOn - Activate LI on 'true', deactivate on 'false'
+   * @param {boolean} status - Activate LI on 'true', deactivate on 'false'
    */
   private setLineItemStatus(
     advertiserId: string,
     lineItemId: string,
-    turnOn: boolean
+    status: boolean
   ) {
     const newStatus = this.setEntityStatus(
       advertiserId,
       lineItemId,
-      turnOn,
+      status,
       'lineItems'
     );
   }
@@ -199,17 +197,17 @@ export class DV360 extends TargetAgent {
    *
    * @param {string} advertiserId DV360 Advertiser ID
    * @param {string} insertionOrderId DV360 Line Item ID
-   * @param {boolean} turnOn Activate IO on 'true', deactivate on 'false'
+   * @param {boolean} status Activate IO on 'true', deactivate on 'false'
    */
   private setInsertionOrderStatus(
     advertiserId: string,
     insertionOrderId: string,
-    turnOn: boolean
+    status: boolean
   ) {
     this.setEntityStatus(
       advertiserId,
       insertionOrderId,
-      turnOn,
+      status,
       'insertionOrders'
     );
   }
