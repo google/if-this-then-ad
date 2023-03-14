@@ -255,6 +255,55 @@ If you need any parameters passed to the Custom Parser, you can add those using 
 
 ## Developer Guide
 
+### How to work with the code
+
+1. Make sure Node and npm are installed
+
+1. Clone this repository
+
+    ```
+    git clone https://github.com/google/if-this-then-ad.git 
+    ```
+
+1. Move into the repo folder
+
+    ```
+    cd if-this-then-ad/
+    ```
+
+1. Install dependencies
+
+    ```
+    npm i
+    ```
+
+1. Authenticate clasp (if not already done before)
+
+    ```
+    clasp login
+    ```
+
+1. Build Apps Script target code
+
+    This will transpile TypeScript to JavaScript and finally bundle everything into `dist/index.js`
+    ```
+    npm run build
+    ```
+
+1. Create Google Sheet to deploy to
+
+    ```
+    clasp create --type sheets --title IFTTA-dev --rootDir ./dist && mv ./dist/.clasp.json .
+    ```
+
+1. Deploy
+
+    This will run all tests, transpile TypeScript to JavaScript, bundle everything into `dist/index.js` and finally deploy it with clasp
+
+    ```
+    npm run deploy
+    ```
+
 ### Application Flow
 
 Here's a high level overview of what's happening under the hood:
