@@ -293,7 +293,7 @@ If you need any parameters passed to the Custom Parser, you can add those using 
 1. Create Google Sheet to deploy to
 
     ```
-    clasp create --type sheets --title IFTTA-dev --rootDir ./dist && mv ./dist/.clasp.json .
+    clasp create --type sheets --title IFTTA-dev --rootDir ./dist && mv ./dist/.clasp.json .clasp-dev.json
     ```
 
 1. Deploy
