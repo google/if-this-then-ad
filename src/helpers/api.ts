@@ -19,13 +19,6 @@ export class ApiHelper {
   private cache: Record<string, Object> = {};
 
   /**
-   * Constructor.
-   */
-  constructor() {
-    this.cache = {};
-  }
-
-  /**
    * Call API.
    *
    * @param {string} url
