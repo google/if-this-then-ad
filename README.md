@@ -68,11 +68,6 @@ Why would you want to do this?
 
 ## Getting started
 
-- A copy of the [Google Sheets Template](https://docs.google.com/spreadsheets/d/1EKcPGQ1Vr6LyyQYeYE0-T2gPzNhemVTxsvpSNC5arhE)
-- Google Cloud Project with DV360 API and Ads API enabled
-- Any JSON API to be used as data source
-- An account for activation (see [Supported Target Agents](#supported-target-agents) below)
-
 1. Create a [Google Cloud](https://console.cloud.google.com) project or re-use an existing one
 
 1. Create an [OAuth Consent Screen](https://console.cloud.google.com/apis/credentials/consent)
