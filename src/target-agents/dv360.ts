@@ -1,12 +1,11 @@
 /**
- * @license
  * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -108,7 +107,7 @@ export class DV360 extends TargetAgent {
     this.authToken = auth.getAuthToken();
 
     let status;
-    const errors = [];
+    const errors: string[] = [];
 
     if (type === DV360_ENTITY_TYPE.LINE_ITEM) {
       status = this.isLineItemActive(params.advertiserId, identifier);
@@ -242,7 +241,7 @@ export class DV360 extends TargetAgent {
   private isLineItemActive(advertiserId: string, lineItemId: string) {
     const entity = this.getEntity(advertiserId, lineItemId, 'lineItems');
 
-    return DV360_ENTITY_STATUS.ACTIVE == entity.entityStatus;
+    return DV360_ENTITY_STATUS.ACTIVE === entity.entityStatus;
   }
 
   /**
@@ -262,6 +261,6 @@ export class DV360 extends TargetAgent {
       'insertionOrders'
     );
 
-    return DV360_ENTITY_STATUS.ACTIVE == entity.entityStatus;
+    return DV360_ENTITY_STATUS.ACTIVE === entity.entityStatus;
   }
 }

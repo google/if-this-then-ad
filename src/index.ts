@@ -1,12 +1,11 @@
 /**
- * @license
  * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -34,7 +33,7 @@ enum MODE {
 let sheetsService: SheetsService;
 
 /** @type {Record<string, TargetAgent>} */
-let targetAgents: Record<string, TargetAgent> = {};
+const targetAgents: Record<string, TargetAgent> = {};
 
 /**
  * Add custom menu item into the Spreadsheet menu.
@@ -95,7 +94,7 @@ function main(mode: MODE) {
     console.log(`Processing row ${index + 1}/${rows.length}`);
 
     // Check if update is due
-    let lastUpdate = Number(row[CONFIG.rules.cols.lastUpdate]);
+    const lastUpdate = Number(row[CONFIG.rules.cols.lastUpdate]);
     const updateInterval = Number(row[CONFIG.rules.cols.updateInterval]);
     let status = '';
 
@@ -247,7 +246,7 @@ function validate() {
     console.log();
     console.log('Result details:');
 
-    errors.forEach((error) => console.log(error));
+    errors.forEach(error => console.log(error));
   }
 }
 
@@ -318,7 +317,7 @@ function getTargetAgent(agentName: string) {
   }
 
   const agent = AVAILABLE_AGENTS.find(
-    (agent) => agent.friendlyName === agentName
+    agent => agent.friendlyName === agentName
   );
 
   if (!agent) {
