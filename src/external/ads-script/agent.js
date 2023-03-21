@@ -1,12 +1,11 @@
 /**
- * @license
  * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,18 +28,18 @@ class GoogleAds {
     if (type === 'AD_ID') {
       const adIds = identifier
         .split(';')
-        .map((pair) => pair.split(',').map((id) => parseInt(id, 10)));
+        .map(pair => pair.split(',').map(id => parseInt(id, 10)));
       entities = entities.concat(this.getAdsByIds(adIds));
     } else if (type === 'AD_LABEL') {
       entities = entities.concat(getAdsByLabel(identifier));
     } else if (type === 'AD_GROUP_ID') {
-      const adGroupIds = identifier.split(',').map((id) => Number(id));
+      const adGroupIds = identifier.split(',').map(id => Number(id));
       entities = entities.concat(this.getAdGroupsByIds(adGroupIds));
     } else if (type === 'AD_GROUP_LABEL') {
       entities = entities.concat(getAdGroupsByLabel(identifier));
     }
 
-    entities.forEach((entity) => {
+    entities.forEach(entity => {
       this.setEntityStatus(entity, evaluation);
     });
   }
@@ -96,7 +95,7 @@ class GoogleAds {
 
     const adGroups = [];
 
-    for (var i = 0; i < selectors.length; i++) {
+    for (let i = 0; i < selectors.length; i++) {
       const adGroupsIterator = selectors[i].adGroups().withIds(ids).get();
 
       while (adGroupsIterator.hasNext()) {

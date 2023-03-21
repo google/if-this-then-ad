@@ -1,12 +1,11 @@
 /**
- * @license
  * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,7 +24,7 @@ export class JPath {
    */
   static getValue(path: string, json: Object) {
     let tmpJson: Record<string, any> = json;
-    let val = null;
+    const val = null;
 
     for (const part of path.split('.')) {
       if (part.startsWith('!')) {
@@ -36,14 +35,14 @@ export class JPath {
       const intVal = parseInt(part);
       if (intVal && intVal in tmpJson) {
         tmpVal = tmpJson[intVal];
-      } else if (tmpJson.hasOwnProperty(part)) {
+      } else if (Object.prototype.hasOwnProperty.call(tmpJson, part)) {
         tmpVal = tmpJson[part];
       } else {
         break;
       }
 
       const typeOf = typeof tmpVal;
-      if ('string' == typeOf || 'number' == typeOf) {
+      if ('string' === typeOf || 'number' === typeOf) {
         return tmpVal;
       } else {
         tmpJson = tmpVal;
@@ -63,10 +62,10 @@ export class JPath {
   static getAgregatedValue(aggFunction: string, json: Object) {
     switch (aggFunction.toLowerCase()) {
       case 'min':
-        return Math.min.apply(Math, Object.values(json));
+        return Math.min(...Object.values(json));
 
       case 'max':
-        return Math.max.apply(Math, Object.values(json));
+        return Math.max(...Object.values(json));
 
       default:
         throw `Aggregation function "${aggFunction}" is not supported`;

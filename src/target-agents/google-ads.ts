@@ -1,12 +1,11 @@
 /**
- * @license
  * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -87,7 +86,7 @@ export class GoogleAds extends TargetAgent {
       console.log(`Updating status of Ad ${identifier} to '${status}'`);
       this.updateAdStatusById(
         params.customerId,
-        identifier.split(';').map((id) => String(id)),
+        identifier.split(';').map(id => String(id)),
         status
       );
     } else if (type === GOOGLE_ADS_SELECTOR_TYPE.AD_LABEL) {
@@ -95,7 +94,7 @@ export class GoogleAds extends TargetAgent {
     } else if (type === GOOGLE_ADS_SELECTOR_TYPE.AD_GROUP_ID) {
       this.updateAdGroupStatusById(
         params.customerId,
-        identifier.split(';').map((id) => String(id)),
+        identifier.split(';').map(id => String(id)),
         status
       );
     } else if (type === GOOGLE_ADS_SELECTOR_TYPE.AD_GROUP_LABEL) {
@@ -136,7 +135,7 @@ export class GoogleAds extends TargetAgent {
       entitiesToBeChecked = entitiesToBeChecked.concat(
         this.getAdsById(
           params.customerId,
-          identifier.split(',').map((id) => String(id))
+          identifier.split(',').map(id => String(id))
         )
       );
     } else if (type === GOOGLE_ADS_SELECTOR_TYPE.AD_LABEL) {
@@ -147,7 +146,7 @@ export class GoogleAds extends TargetAgent {
       entitiesToBeChecked = entitiesToBeChecked.concat(
         this.getAdGroupsById(
           params.customerId,
-          identifier.split(',').map((id) => String(id))
+          identifier.split(',').map(id => String(id))
         )
       );
     } else if (type === GOOGLE_ADS_SELECTOR_TYPE.AD_GROUP_LABEL) {
@@ -203,7 +202,7 @@ export class GoogleAds extends TargetAgent {
     path: string,
     method = 'get',
     payload: Object,
-    forceCache: boolean = false
+    forceCache = false
   ) {
     const headers = {
       Authorization: `Bearer ${this.authToken}`,
