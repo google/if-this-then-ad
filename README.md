@@ -19,6 +19,7 @@ limitations under the License.
 [![build](https://img.shields.io/badge/build-passing-brightgreen?style=flat&logo=github)](https://github.com/google/if-this-then-ad)
 [![GitHub tag (latest SemVer)](https://img.shields.io/github/v/tag/google/if-this-then-ad?label=release&logo=github)](https://github.com/google/if-this-then-ad)
 [![GitHub last commit](https://img.shields.io/github/last-commit/google/if-this-then-ad)](https://github.com/google/if-this-then-ad/commits)
+[![Code Style: Google](https://img.shields.io/badge/code%20style-google-blueviolet.svg)](https://github.com/google/gts)
 
 ## Table of contents
 
@@ -78,6 +79,8 @@ Why would you want to do this?
     - [Google Ads](https://console.cloud.google.com/apis/library/googleads.googleapis.com)
 
 1. Make a copy of the [IFTTA Template](https://docs.google.com/spreadsheets/d/1EKcPGQ1Vr6LyyQYeYE0-T2gPzNhemVTxsvpSNC5arhE)
+
+1. Set your GCP Project Number at Extensions > Apps Script > Project Settings > Google Cloud Platform (GCP) Project
 
 1. Choose a JSON API to be used as data source
 
@@ -420,3 +423,7 @@ Here's what you need to include a new Target Agent:
 While we recommend applying for a Developer Token for the integration to work "natively", it is also possible to separate the fetching and activation part so that you only query the API with IFTTA to then read and process the results using an Ads Script in your Ads account.
 
 For more information please refer to the [Google Ads Scripts Extension Documentation](src/external/ads-script/README.md)
+
+## Disclaimer
+
+This is not an officially supported Google product.
