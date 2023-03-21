@@ -1,21 +1,49 @@
 <!--
-    Copyright 2023 Google LLC
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
-        https://www.apache.org/licenses/LICENSE-2.0
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
- -->
+Copyright 2023 Google LLC
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+# If This Then Ad (IFTTA)
 
 [![build](https://img.shields.io/badge/build-passing-brightgreen?style=flat&logo=github)](https://github.com/google/if-this-then-ad)
 [![GitHub tag (latest SemVer)](https://img.shields.io/github/v/tag/google/if-this-then-ad?label=release&logo=github)](https://github.com/google/if-this-then-ad)
 [![GitHub last commit](https://img.shields.io/github/last-commit/google/if-this-then-ad)](https://github.com/google/if-this-then-ad/commits)
 
-# If This Then Ad (IFTTA)
+## Table of contents
+
+- [Overview](#overview)
+- [Getting Started](#getting-started)
+- [How it works](#how-it-works)
+- [How to run](#how-to-run)
+- [Dynamic Column Notation](#dynamic-column-notation)
+    - [Request Headers](#request-headers)
+    - [Query Parameters](#query-parameters)
+    - [API Result](#api-result)
+- [Supported Target Agents](#supported-target-agents)
+    - [DV360](#dv360)
+    - [Google Ads](#google-ads)
+- [Advanced use cases](#advanced-use-cases)
+    - [Custom Evaluators](#custom-evaluators)
+    - [Querying Multiple Sources](#querying-multiple-sources)
+    - [Custom Result Parser](#custom-result-parser)
+- [Developer Guide](#developer-guide)
+    - [How to work with the code](#how-to-work-with-the-code)
+    - [Application Flow](#application-flow)
+    - [How to add a new Target Agent](#how-to-add-a-new-target-agent)
+- [FAQ](#faq)
+
+## Overview
 
 IFTTA enables automatic management of marketing campaigns based on real world events.
 
@@ -38,12 +66,29 @@ Why would you want to do this?
 * Show ads as targeted as possible to reach the right audience at the right time
 * Manage ad campaigns in response to real-time events like weather, pollen data or air quality! This can be challenging or even impossible (imagine manually switching hundreds of ad groups every day - not only time consuming but also highly error-prone)
 
-## Prerequisites
+## Getting started
 
 - A copy of the [Google Sheets Template](https://docs.google.com/spreadsheets/d/1EKcPGQ1Vr6LyyQYeYE0-T2gPzNhemVTxsvpSNC5arhE)
 - Google Cloud Project with DV360 API and Ads API enabled
 - Any JSON API to be used as data source
 - An account for activation (see [Supported Target Agents](#supported-target-agents) below)
+
+1. Create a [Google Cloud](https://console.cloud.google.com) project or re-use an existing one
+
+1. Create an [OAuth Consent Screen](https://console.cloud.google.com/apis/credentials/consent)
+    - Follow the instructions in the setup wizard
+
+1. Enable the following APIs:
+    - [Display & Video 360](https://console.cloud.google.com/apis/library/displayvideo.googleapis.com)
+    - [Google Ads](https://console.cloud.google.com/apis/library/googleads.googleapis.com)
+
+1. Make a copy of the [IFTTA Template](https://docs.google.com/spreadsheets/d/1EKcPGQ1Vr6LyyQYeYE0-T2gPzNhemVTxsvpSNC5arhE)
+
+1. Choose a JSON API to be used as data source
+
+1. Set up an account for activation (see [Supported Target Agents](#supported-target-agents) below)
+
+1. Get creative with coming up with rules that suit your marketing needs ([guide](#how-it-works))
 
 ## How it works
 
@@ -103,7 +148,7 @@ A rule consists of the following elements:
 
 ## How to run
 
-You can trigger the tool either manually using the Sheets menu or schedule an Apps Script Trigger to do it automatically.
+You can trigger the tool either manually using the "IFTTA" Sheets menu or schedule an Apps Script Trigger to call `fetch()`, `sync()` or `fetchAndSync()` automatically, depending on your requirements.
 
 ## Dynamic Column Notation
 
