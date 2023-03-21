@@ -3,4 +3,3 @@ dist/
 build/
 .DS_Store
 .clasp*.json
-setup.log
