@@ -80,7 +80,7 @@ describe('DV360 Target Agent', () => {
       expect(isLIActiveSpy).toHaveBeenCalledWith('1', '1234');
       expect(getEntitySpy).toHaveBeenCalledWith('1', '1234', 'lineItems');
       expect(fetchUrlSpy).toHaveBeenCalledWith(
-        'https://displayvideo.googleapis.com/v1/advertisers/1/lineItems/1234'
+        'https://displayvideo.googleapis.com/v2/advertisers/1/lineItems/1234'
       );
     });
   });
