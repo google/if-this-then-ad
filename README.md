@@ -60,12 +60,11 @@ You can get very creative when using this tool and it's capabilities are only li
 
 Why would you want to do this?
 
-- Control ads to reach their audience at the right time under the right circumstances
-- Automate campaign management in response to real-time events
-- Personalize ads and create a "WOW" effect for the end user side
+- Control ads to reach the right audiences at the right time under the right circumstances
 
-* Show ads as targeted as possible to reach the right audience at the right time
-* Manage ad campaigns in response to real-time events like weather, pollen data or air quality! This can be challenging or even impossible (imagine manually switching hundreds of ad groups every day - not only time consuming but also highly error-prone)
+- Automate campaign management in response to real-time events like weather, pollen data, air quality and more! This can be challenging or even impossible (imagine manually switching hundreds of ad groups every day - not only time consuming but also highly error-prone)
+
+- Personalize ads and create a "WOW" effect for the end user
 
 ## Getting started
 
