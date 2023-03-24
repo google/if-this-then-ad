@@ -53,9 +53,8 @@ export class DV360 extends TargetAgent {
 
     /**
      * DV360 Write API Endpoint Prefix
-     * See more: https://developers.google.com/display-video/api/reference/rest
      */
-    this.baseUrl = 'https://displayvideo.googleapis.com/v1';
+    this.baseUrl = 'https://displayvideo.googleapis.com/v2';
   }
 
   /**
@@ -143,8 +142,6 @@ export class DV360 extends TargetAgent {
 
   /**
    * Change DV360 entity status (Active/Paused) for the specified ID.
-   * See more: https://developers.google.com/display-video/api/reference/rest/v1/advertisers.lineItems
-   * See more: https://developers.google.com/display-video/api/reference/rest/v1/advertisers.insertionOrders
    *
    * @param {string} advertiserId DV360 Advertiser ID
    * @param {string} entityId DV360 Line Item/Insertion Order ID
@@ -213,8 +210,6 @@ export class DV360 extends TargetAgent {
 
   /**
    * Get DV360 entity for the specified ID.
-   * See more: https://developers.google.com/display-video/api/reference/rest/v1/advertisers.lineItems
-   * See more: https://developers.google.com/display-video/api/reference/rest/v1/advertisers.insertionOrders
    *
    * @param {string} advertiserId DV360 Advertiser ID
    * @param {string} entityId DV360 Line Item/Insertion Order ID
