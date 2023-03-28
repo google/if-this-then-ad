@@ -1,7 +1,7 @@
 {
-  "name": "event-based-marketing",
-  "version": "0.0.1",
-  "description": "",
+  "name": "if-this-then-ad",
+  "version": "2.0.0",
+  "description": "Automatic management of marketing campaigns based on real world events",
   "main": "src/index.ts",
   "scripts": {
     "clean": "rimraf build dist",
