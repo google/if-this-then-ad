@@ -1,10 +1,10 @@
 {
   "compilerOptions": {
     "target": "es2020",
-    "module": "ES2020",
+    "module": "es2020",
     "lib": ["es2020"],
     "moduleResolution": "node",
-    "outDir": "build",
+    "outDir": "dist",
     "rootDir": ".",
     "strict": true,
     "esModuleInterop": true,
@@ -14,6 +14,5 @@
     "allowUnreachableCode": false,
     "allowUnusedLabels": false
   },
-  "include": ["src/**/*.ts", "rollup.config.mjs"],
-  "exclude": ["test/**/*.*"]
+  "include": ["src/**/*", "test/**/*", "rollup.config.mjs"]
 }
