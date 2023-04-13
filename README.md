@@ -217,6 +217,7 @@ Given the above JSON source we could add the following to our Sheet:
 
 **Optional parameters**
 
+- `target:loginCustomerId`
 - `target:serviceAccount`
 
 ## Advanced use cases
