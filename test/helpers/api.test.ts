@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ApiHelper } from '../helpers/api';
+import { ApiHelper } from '../../src/helpers/api';
 
 test('Convert object into correct URL query string', () => {
   const params = {

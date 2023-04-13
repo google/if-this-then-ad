@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ApiHelper } from '../helpers/api';
-import { Auth } from '../helpers/auth';
+import { ApiHelper } from '../../src/helpers/api';
+import { Auth } from '../../src/helpers/auth';
 import {
   GoogleAds,
   GOOGLE_ADS_ENTITY_STATUS,
   GOOGLE_ADS_SELECTOR_TYPE,
-} from '../target-agents/google-ads';
+} from '../../src/target-agents/google-ads';
 
 describe('Google Ads Target Agent', () => {
   const params = {
