@@ -40,8 +40,21 @@ export class SheetsService {
           `Unable to identify spreadsheet with provided ID: ${spreadsheetId}!`
         );
       }
-    } else {
+    } else if (SpreadsheetApp.getActiveSpreadsheet() !== null) {
       spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+    } else if (
+      PropertiesService.getScriptProperties()
+        .getKeys()
+        .includes('spreadsheetId')
+    ) {
+      spreadsheet = SpreadsheetApp.openById(
+        PropertiesService.getScriptProperties().getProperty('spreadsheetId') ??
+          ''
+      );
+    }
+
+    if (!spreadsheet) {
+      throw new Error('Unable to connect to spreadsheet');
     }
 
     /** @private @const {?SpreadsheetApp.Spreadsheet} */

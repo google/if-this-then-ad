@@ -41,11 +41,22 @@ const targetAgents: Record<string, TargetAgent> = {};
 function onOpen() {
   const ui = SpreadsheetApp.getUi();
   ui.createMenu('IFTTA')
+    .addItem('Setup', 'setup')
     .addItem('Fetch', 'fetch')
     .addItem('Sync', 'sync')
     .addItem('FetchAndSync', 'fetchAndSync')
     .addItem('Validate', 'validate')
     .addToUi();
+}
+
+/**
+ * Set spreadsheetId to Script Properties.
+ * This is required because when running 'headless' (e.g. via a trigger),
+ * the SpreadsheetApp.getActiveSpreadsheet() method returns null.
+ */
+function setup() {
+  const ssId = SpreadsheetApp.getActiveSpreadsheet().getId();
+  PropertiesService.getScriptProperties().setProperty('spreadsheetId', ssId);
 }
 
 /**
