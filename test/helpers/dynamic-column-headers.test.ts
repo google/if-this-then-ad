@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { DynamicColumnHeaders } from '../helpers/dynamic-column-headers';
+import { DynamicColumnHeaders } from '../../src/helpers/dynamic-column-headers';
 
 const headers = [
   'One',

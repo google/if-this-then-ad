@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Auth } from '../helpers/auth';
-import { DV360, DV360_ENTITY_TYPE } from '../target-agents/dv360';
+import { Auth } from '../../src/helpers/auth';
+import { DV360, DV360_ENTITY_TYPE } from '../../src/target-agents/dv360';
 
 describe('DV360 Target Agent', () => {
   const params = {

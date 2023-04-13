@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { JPath } from '../helpers/jpath';
+import { JPath } from '../../src/helpers/jpath';
 
 test('Set value in correct location in empty object', () => {
   const path = 'header.api-key';
