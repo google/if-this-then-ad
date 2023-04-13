@@ -146,14 +146,34 @@ A rule consists of the following elements:
 ## How to run
 
 ### Manually
-You can run the tool manually using the "IFTTA" Sheets menu
+You can run the tool manually using the "IFTTA" Sheets menu:
+
+<img src='./img/manual.png' width=500 alt='Setup'>
 
 ### Automatically (via Trigger)
 To run IFTTA automatically in the background, you need to first run the Setup from the "IFTTA" Sheets menu:
 
-<img src='./img/setup.png' width=200 alt='Setup'>
+<img src='./img/setup.png' width=500 alt='Setup'>
 
-You would then set up an Apps Script Trigger to call `fetch()`, `sync()` or `fetchAndSync()` automatically, depending on your requirements.
+Next open up Apps Script by going to Extensions -> Apps Script:
+
+To add a Trigger, first go to Extensions -> Apps Script
+
+<img src='./img/trigger-1.png' width=500 alt='Setup'>
+
+From there, go to "Triggers" and click "Add Trigger":
+
+<img src='./img/trigger-2.png' width=500 alt='Setup'>
+
+Select a function you would like to run (`fetch` to only fetch data, `sync` to only (de)activate without fresh data or `fetchAndSync` for both):
+
+<img src='./img/trigger-3.png' width=500 alt='Setup'>
+
+Select 'Time-driven' as 'Event source' and set the timings as per your requirements:
+
+<img src='./img/trigger-4.png' width=500 alt='Setup'>
+
+Click 'Save' to complete the process.
 
 ## Dynamic Column Notation
 
