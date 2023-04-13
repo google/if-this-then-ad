@@ -145,7 +145,15 @@ A rule consists of the following elements:
 
 ## How to run
 
-You can trigger the tool either manually using the "IFTTA" Sheets menu or schedule an Apps Script Trigger to call `fetch()`, `sync()` or `fetchAndSync()` automatically, depending on your requirements.
+### Manually
+You can run the tool manually using the "IFTTA" Sheets menu
+
+### Automatically (via Trigger)
+To run IFTTA automatically in the background, you need to first run the Setup from the "IFTTA" Sheets menu:
+
+<img src='./img/setup.png' width=200 alt='Setup'>
+
+You would then set up an Apps Script Trigger to call `fetch()`, `sync()` or `fetchAndSync()` automatically, depending on your requirements.
 
 ## Dynamic Column Notation
 
