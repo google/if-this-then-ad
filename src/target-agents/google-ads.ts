@@ -32,6 +32,7 @@ export enum GOOGLE_ADS_ENTITY_STATUS {
 interface Parameters {
   customerId: string;
   developerToken: string;
+  loginCustomerId?: string;
   serviceAccount?: ServiceAccount;
 }
 
@@ -43,7 +44,7 @@ interface Entity {
 export class GoogleAds extends TargetAgent {
   static friendlyName = 'Google Ads';
   authToken?: string;
-  developerToken?: string;
+  parameters: Parameters = {} as Parameters;
   baseUrl: string;
   requiredParameters: Array<keyof Parameters> = [
     'customerId',
@@ -76,7 +77,7 @@ export class GoogleAds extends TargetAgent {
     const auth = new Auth(params.serviceAccount ?? undefined);
     this.authToken = auth.getAuthToken();
 
-    this.developerToken = params.developerToken;
+    this.parameters = params;
 
     const status = evaluation
       ? GOOGLE_ADS_ENTITY_STATUS.ENABLED
@@ -123,7 +124,7 @@ export class GoogleAds extends TargetAgent {
     const auth = new Auth(params.serviceAccount ?? undefined);
     this.authToken = auth.getAuthToken();
 
-    this.developerToken = params.developerToken;
+    this.parameters = params;
 
     const expectedStatus = evaluation
       ? GOOGLE_ADS_ENTITY_STATUS.ENABLED
@@ -204,11 +205,15 @@ export class GoogleAds extends TargetAgent {
     payload: Object,
     forceCache = false
   ) {
-    const headers = {
+    const headers: GoogleAppsScript.URL_Fetch.HttpHeaders = {
       Authorization: `Bearer ${this.authToken}`,
       Accept: '*/*',
-      'developer-token': this.developerToken ?? '',
+      'developer-token': this.parameters.developerToken ?? '',
     };
+
+    if (this.parameters.loginCustomerId) {
+      headers['login-customer-id'] = this.parameters.loginCustomerId;
+    }
 
     const url = `${this.baseUrl}/${path}`;
     return this.callApi(
