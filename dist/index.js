@@ -479,7 +479,7 @@ class GoogleAds extends TargetAgent {
                 },
             ],
         };
-        const res = this.fetchUrl(path, 'POST', payload);
+        this.fetchUrl(path, 'POST', payload);
     }
     fetchUrl(path, method = 'get', payload, forceCache = false) {
         const headers = {
@@ -488,7 +488,7 @@ class GoogleAds extends TargetAgent {
             'developer-token': this.parameters.developerToken ?? '',
         };
         if (this.parameters.loginCustomerId) {
-            headers['login-customer-id'] = this.parameters.loginCustomerId;
+            headers['login-customer-id'] = String(this.parameters.loginCustomerId);
         }
         const url = `${this.baseUrl}/${path}`;
         return this.callApi(url, headers, undefined, payload, method, undefined, forceCache);
@@ -502,7 +502,7 @@ class GoogleAds extends TargetAgent {
     }
     updateAdGroupStatusById(customerId, ids, status) {
         const adGroups = this.getAdGroupsById(customerId, ids);
-        const path = `customers/${customerId}/adGroup:mutate`;
+        const path = `customers/${customerId}/adGroups:mutate`;
         for (const adGroup of adGroups) {
             this.updateEntityStatus(path, adGroup, status);
         }
@@ -535,7 +535,7 @@ class GoogleAds extends TargetAgent {
         };
         const path = `customers/${customerId}/googleAds:search`;
         const res = this.fetchUrl(path, 'POST', payload, true);
-        return res.results.map((result) => {
+        return res.results.map(result => {
             return {
                 resourceName: result.adGroupAd.resourceName,
                 status: result.adGroupAd.status,
@@ -556,7 +556,7 @@ class GoogleAds extends TargetAgent {
         };
         const path = `customers/${customerId}/googleAds:search`;
         const res = this.fetchUrl(path, 'POST', payload, true);
-        return res.results.map((result) => {
+        return res.results.map(result => {
             return {
                 resourceName: result.adGroup.resourceName,
                 status: result.adGroup.status,
@@ -578,7 +578,7 @@ class GoogleAds extends TargetAgent {
         };
         const path = `customers/${customerId}/googleAds:search`;
         const res = this.fetchUrl(path, 'POST', payload, true);
-        return res.results.map((result) => {
+        return res.results.map(result => {
             return {
                 resourceName: result.adGroupAd.resourceName,
                 status: result.adGroupAd.status,
@@ -598,6 +598,9 @@ class GoogleAds extends TargetAgent {
         };
         const path = `customers/${customerId}/googleAds:search`;
         const res = this.fetchUrl(path, 'POST', payload, true);
+        if (!(res.results && res.results.length)) {
+            throw new Error(`Label ${labelName} not found`);
+        }
         return res.results[0].label.resourceName;
     }
     getAdGroupsByLabel(customerId, label) {
@@ -615,9 +618,9 @@ class GoogleAds extends TargetAgent {
         };
         const path = `customers/${customerId}/googleAds:search`;
         const res = this.fetchUrl(path, 'POST', payload, true);
-        return res.results.map((result) => {
+        return res.results.map(result => {
             return {
-                resultName: result.adGroup.resourceName,
+                resourceName: result.adGroup.resourceName,
                 status: result.adGroup.status,
             };
         });
@@ -635,6 +638,9 @@ class GoogleAds extends TargetAgent {
         };
         const path = `customers/${customerId}/googleAds:search`;
         const res = this.fetchUrl(path, 'POST', payload, true);
+        if (!(res.results && res.results.length)) {
+            throw new Error(`Label ${labelName} not found`);
+        }
         return res.results[0].label.resourceName;
     }
 }
@@ -718,7 +724,7 @@ function main(mode) {
             }
         }
         catch (err) {
-            status = `Error (${Utils.getCurrentDateString()}): ${err}`;
+            status = `${Utils.getCurrentDateString()}: ${err}`;
         }
         finally {
             getSheetsService().setCellValue(index + CONFIG.rules.startRow + 1, CONFIG.rules.cols.status + 1, status, CONFIG.rules.sheetName);
