@@ -187,7 +187,7 @@ export class GoogleAds extends TargetAgent {
       ],
     };
 
-    const res = this.fetchUrl(path, 'POST', payload);
+    this.fetchUrl(path, 'POST', payload);
   }
 
   /**
@@ -212,7 +212,7 @@ export class GoogleAds extends TargetAgent {
     };
 
     if (this.parameters.loginCustomerId) {
-      headers['login-customer-id'] = this.parameters.loginCustomerId;
+      headers['login-customer-id'] = String(this.parameters.loginCustomerId);
     }
 
     const url = `${this.baseUrl}/${path}`;
@@ -260,7 +260,7 @@ export class GoogleAds extends TargetAgent {
     status: string
   ) {
     const adGroups = this.getAdGroupsById(customerId, ids);
-    const path = `customers/${customerId}/adGroup:mutate`;
+    const path = `customers/${customerId}/adGroups:mutate`;
 
     for (const adGroup of adGroups) {
       this.updateEntityStatus(path, adGroup, status);
@@ -315,7 +315,7 @@ export class GoogleAds extends TargetAgent {
    * @param {string[]} ids
    * @returns {string[]}
    */
-  private getAdsById(customerId: any, ids: string[]): Entity[] {
+  private getAdsById(customerId: string, ids: string[]): Entity[] {
     const query = `
         SELECT 
           ad_group_ad.ad.id,
@@ -330,12 +330,11 @@ export class GoogleAds extends TargetAgent {
     };
 
     const path = `customers/${customerId}/googleAds:search`;
-    const res = this.fetchUrl(path, 'POST', payload, true) as Record<
-      string,
-      Array<Record<string, any>>
-    >;
+    const res = this.fetchUrl(path, 'POST', payload, true) as {
+      results: Array<Record<'adGroupAd', Entity>>;
+    };
 
-    return res.results.map((result: any) => {
+    return res.results.map(result => {
       return {
         resourceName: result.adGroupAd.resourceName,
         status: result.adGroupAd.status,
@@ -365,9 +364,11 @@ export class GoogleAds extends TargetAgent {
     };
 
     const path = `customers/${customerId}/googleAds:search`;
-    const res = this.fetchUrl(path, 'POST', payload, true) as any;
+    const res = this.fetchUrl(path, 'POST', payload, true) as {
+      results: Array<Record<'adGroup', Entity>>;
+    };
 
-    return res.results.map((result: any) => {
+    return res.results.map(result => {
       return {
         resourceName: result.adGroup.resourceName,
         status: result.adGroup.status,
@@ -382,7 +383,7 @@ export class GoogleAds extends TargetAgent {
    * @param {string} label
    * @returns {Entity[]}
    */
-  private getAdsByLabel(customerId: any, label: string): Entity[] {
+  private getAdsByLabel(customerId: string, label: string): Entity[] {
     const labelResource = this.getAdLabelByName(customerId, label);
 
     const query = `
@@ -399,9 +400,11 @@ export class GoogleAds extends TargetAgent {
     };
 
     const path = `customers/${customerId}/googleAds:search`;
-    const res = this.fetchUrl(path, 'POST', payload, true) as any;
+    const res = this.fetchUrl(path, 'POST', payload, true) as {
+      results: Array<Record<'adGroupAd', Entity>>;
+    };
 
-    return res.results.map((result: any) => {
+    return res.results.map(result => {
       return {
         resourceName: result.adGroupAd.resourceName,
         status: result.adGroupAd.status,
@@ -430,7 +433,13 @@ export class GoogleAds extends TargetAgent {
     };
 
     const path = `customers/${customerId}/googleAds:search`;
-    const res = this.fetchUrl(path, 'POST', payload, true) as any;
+    const res = this.fetchUrl(path, 'POST', payload, true) as {
+      results: Array<Record<'label', Entity>>;
+    };
+
+    if (!(res.results && res.results.length)) {
+      throw new Error(`Label ${labelName} not found`);
+    }
 
     return res.results[0].label.resourceName;
   }
@@ -442,7 +451,7 @@ export class GoogleAds extends TargetAgent {
    * @param {string} label
    * @returns {Entity[]}
    */
-  private getAdGroupsByLabel(customerId: any, label: string): Entity[] {
+  private getAdGroupsByLabel(customerId: string, label: string): Entity[] {
     const labelResource = this.getAdGroupLabelByName(customerId, label);
 
     const query = `
@@ -459,11 +468,13 @@ export class GoogleAds extends TargetAgent {
     };
 
     const path = `customers/${customerId}/googleAds:search`;
-    const res = this.fetchUrl(path, 'POST', payload, true) as any;
+    const res = this.fetchUrl(path, 'POST', payload, true) as {
+      results: Array<Record<'adGroup', Entity>>;
+    };
 
-    return res.results.map((result: any) => {
+    return res.results.map(result => {
       return {
-        resultName: result.adGroup.resourceName,
+        resourceName: result.adGroup.resourceName,
         status: result.adGroup.status,
       };
     });
@@ -490,7 +501,13 @@ export class GoogleAds extends TargetAgent {
     };
 
     const path = `customers/${customerId}/googleAds:search`;
-    const res = this.fetchUrl(path, 'POST', payload, true) as any;
+    const res = this.fetchUrl(path, 'POST', payload, true) as {
+      results: Array<Record<'label', Entity>>;
+    };
+
+    if (!(res.results && res.results.length)) {
+      throw new Error(`Label ${labelName} not found`);
+    }
 
     return res.results[0].label.resourceName;
   }
