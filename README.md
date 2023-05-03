@@ -280,7 +280,7 @@ Any time any of the referenced cells change, `customEvaluator()` will be called 
 
 You can easily query multiple source APIs to built even more complex conditions by extending the Dynamic Column Notation with a group:
 
-- `source:url` &rarr; `source.1.url`
+- `source:url` &rarr; `source.1:url`
 - `source:params.lat` &rarr; `source.1:params.lat`
 
 Add as many sources as you need by incrementing the group for each one.
