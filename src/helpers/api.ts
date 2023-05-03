@@ -95,33 +95,16 @@ export class ApiHelper {
     }
 
     return res;
-
-    /*if (!(cacheKey in this.cache) || !this.cache[cacheKey]) {
-      const res = UrlFetchApp.fetch(url, params);
-
-      if (200 != res.getResponseCode() && 204 != res.getResponseCode()) {
-        Logger.log('HTTP code: ' + res.getResponseCode());
-        Logger.log('API error: ' + res.getContentText());
-        Logger.log('URL: ' + url);
-        throw new Error(res.getContentText());
-      }
-
-      this.cache[cacheKey] = res.getContentText()
-        ? JSON.parse(res.getContentText())
-        : {};
-    }
-
-    return this.cache[cacheKey];*/
   }
 
   /**
    * Convert object into URL query string.
    *
    * @param {string} url
-   * @param {Object|null} obj
+   * @param {Record<string, unknown>} obj
    * @returns {string}
    */
-  objectToUrlQuery(url: string, obj?: object) {
+  objectToUrlQuery(url: string, obj?: Record<string, unknown>) {
     if (!obj || (obj && Object.keys(obj).length === 0)) return '';
 
     const prefix = url.includes('?') ? '&' : '?';
@@ -129,11 +112,11 @@ export class ApiHelper {
     return prefix.concat(
       Object.keys(obj)
         .map(key => {
-          if ((obj as any)[key] instanceof Array) {
-            const joined = (obj as any)[key].join(`&${key}=`);
+          if (obj[key] instanceof Array) {
+            const joined = (obj[key] as Array<unknown>).join(`&${key}=`);
             return joined.length ? `${key}=${joined}` : null;
           }
-          return `${key}=${(obj as any)[key]}`;
+          return `${key}=${obj[key]}`;
         })
         .filter(param => param)
         .join('&')

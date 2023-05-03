@@ -180,12 +180,7 @@ export class DV360 extends TargetAgent {
     lineItemId: string,
     status: boolean
   ) {
-    const newStatus = this.setEntityStatus(
-      advertiserId,
-      lineItemId,
-      status,
-      'lineItems'
-    );
+    this.setEntityStatus(advertiserId, lineItemId, status, 'lineItems');
   }
 
   /**
