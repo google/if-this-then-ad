@@ -29,15 +29,13 @@ enum MODE {
   FETCH_AND_SYNC = 2,
 }
 
-/** @type {?SheetsService} */
-let sheetsService: SheetsService;
-
 /** @type {Record<string, TargetAgent>} */
 const targetAgents: Record<string, TargetAgent> = {};
 
 /**
  * Add custom menu item into the Spreadsheet menu.
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function onOpen() {
   const ui = SpreadsheetApp.getUi();
   ui.createMenu('IFTTA')
@@ -54,6 +52,7 @@ function onOpen() {
  * This is required because when running 'headless' (e.g. via a trigger),
  * the SpreadsheetApp.getActiveSpreadsheet() method returns null.
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function setup() {
   const ssId = SpreadsheetApp.getActiveSpreadsheet().getId();
   PropertiesService.getScriptProperties().setProperty('spreadsheetId', ssId);
@@ -62,6 +61,7 @@ function setup() {
 /**
  * Call main() with mode 'FETCH'.
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function fetch() {
   main(MODE.FETCH);
 }
@@ -69,6 +69,7 @@ function fetch() {
 /**
  * Call main() with mode 'SYNC'.
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function sync() {
   main(MODE.SYNC);
 }
@@ -76,6 +77,7 @@ function sync() {
 /**
  * Call main() with mode 'FETCH_AND_SYNC'.
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function fetchAndSync() {
   main(MODE.FETCH_AND_SYNC);
 }
@@ -88,7 +90,11 @@ function fetchAndSync() {
  */
 function main(mode: MODE) {
   // Get all rows from the sheet
-  const rows = getSheetsService().getRangeData(CONFIG.rules.sheetName, 1, 1);
+  const rows = SheetsService.getInstance().getRangeData(
+    CONFIG.rules.sheetName,
+    1,
+    1
+  );
 
   if (rows.length === 0) {
     return;
@@ -143,7 +149,7 @@ function main(mode: MODE) {
 
           const results = row.slice(resultsHeaderStartCol);
 
-          getSheetsService().setValuesInDefinedRange(
+          SheetsService.getInstance().setValuesInDefinedRange(
             CONFIG.rules.sheetName,
             index + CONFIG.rules.startRow + 1,
             resultsHeaderStartCol + 1,
@@ -157,7 +163,7 @@ function main(mode: MODE) {
       // Sync
       if (mode === MODE.SYNC || mode === MODE.FETCH_AND_SYNC) {
         console.log('Synchronizing...');
-        const evaluation = getSheetsService().getCellValue(
+        const evaluation = SheetsService.getInstance().getCellValue(
           CONFIG.rules.sheetName,
           index + 1 + CONFIG.rules.startRow,
           CONFIG.rules.cols.activationFormula + 1
@@ -183,7 +189,7 @@ function main(mode: MODE) {
         status = `Synchronized (${Utils.getCurrentDateString()})`;
 
         // Update timestamp
-        getSheetsService().setCellValue(
+        SheetsService.getInstance().setCellValue(
           index + CONFIG.rules.startRow + 1,
           CONFIG.rules.cols.lastUpdate + 1,
           String(Date.now()),
@@ -194,7 +200,7 @@ function main(mode: MODE) {
       status = `${Utils.getCurrentDateString()}: ${err}`;
     } finally {
       // Update status
-      getSheetsService().setCellValue(
+      SheetsService.getInstance().setCellValue(
         index + CONFIG.rules.startRow + 1,
         CONFIG.rules.cols.status + 1,
         status,
@@ -207,11 +213,16 @@ function main(mode: MODE) {
 /**
  * Validate that the Sheet and target entities are in sync.
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function validate() {
   let errors: string[] = [];
 
   // Get all rows from the sheet
-  const rows = getSheetsService().getRangeData(CONFIG.rules.sheetName, 1, 1);
+  const rows = SheetsService.getInstance().getRangeData(
+    CONFIG.rules.sheetName,
+    1,
+    1
+  );
 
   // Extract and parse column headers
   const columnHeaders = rows.shift() as string[];
@@ -221,7 +232,7 @@ function validate() {
   rows.forEach((row: string[], index: number) => {
     console.log(`Validating row ${index + 1}/${rows.length}`);
     try {
-      const evaluation = getSheetsService().getCellValue(
+      const evaluation = SheetsService.getInstance().getCellValue(
         CONFIG.rules.sheetName,
         index + CONFIG.rules.startRow + 1,
         CONFIG.rules.cols.activationFormula + 1
@@ -338,18 +349,4 @@ function getTargetAgent(agentName: string) {
   targetAgents[agentName] = agent.getInstance();
 
   return targetAgents[agentName];
-}
-
-/**
- * Return the SheetsService instance, initializing it if it does not exist yet.
- *
- * @returns {!SheetsService} The initialized SheetsService instance
- */
-function getSheetsService() {
-  if (sheetsService === undefined) {
-    const spreadsheetId = CONFIG.spreadsheetId || undefined;
-    sheetsService = new SheetsService(spreadsheetId);
-  }
-
-  return sheetsService;
 }

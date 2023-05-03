@@ -20,8 +20,9 @@
  * spreadsheet directly.
  */
 export class SheetsService {
-  defaultMode: string;
-  spreadsheet: GoogleAppsScript.Spreadsheet.Spreadsheet;
+  private static instance: SheetsService;
+  private defaultMode: string;
+  private readonly spreadsheet: GoogleAppsScript.Spreadsheet.Spreadsheet;
 
   /**
    * Constructor.
@@ -177,5 +178,18 @@ export class SheetsService {
    */
   getSpreadsheet() {
     return this.spreadsheet;
+  }
+
+  /**
+   * Returns the SheetsService instance, initializing it if it does not exist yet.
+   *
+   * @param {string} spreadsheetId
+   * @returns {!SheetsService} The initialized SheetsService instance
+   */
+  static getInstance(spreadsheetId?: string) {
+    if (typeof this.instance === 'undefined') {
+      this.instance = new SheetsService(spreadsheetId);
+    }
+    return this.instance;
   }
 }
