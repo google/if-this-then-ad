@@ -240,6 +240,12 @@ class SheetsService {
     getSpreadsheet() {
         return this.spreadsheet;
     }
+    static getInstance(spreadsheetId) {
+        if (typeof this.instance === 'undefined') {
+            this.instance = new SheetsService(spreadsheetId);
+        }
+        return this.instance;
+    }
 }
 
 class Utils {
@@ -374,7 +380,7 @@ class DV360 extends TargetAgent {
         this.fetchUrl(url, 'patch', updateMask);
     }
     setLineItemStatus(advertiserId, lineItemId, status) {
-        const newStatus = this.setEntityStatus(advertiserId, lineItemId, status, 'lineItems');
+        this.setEntityStatus(advertiserId, lineItemId, status, 'lineItems');
     }
     setInsertionOrderStatus(advertiserId, insertionOrderId, status) {
         this.setEntityStatus(advertiserId, insertionOrderId, status, 'insertionOrders');
@@ -654,7 +660,6 @@ var MODE;
     MODE[MODE["SYNC"] = 1] = "SYNC";
     MODE[MODE["FETCH_AND_SYNC"] = 2] = "FETCH_AND_SYNC";
 })(MODE || (MODE = {}));
-let sheetsService;
 const targetAgents = {};
 function onOpen() {
     const ui = SpreadsheetApp.getUi();
@@ -680,7 +685,7 @@ function fetchAndSync() {
     main(MODE.FETCH_AND_SYNC);
 }
 function main(mode) {
-    const rows = getSheetsService().getRangeData(CONFIG.rules.sheetName, 1, 1);
+    const rows = SheetsService.getInstance().getRangeData(CONFIG.rules.sheetName, 1, 1);
     if (rows.length === 0) {
         return;
     }
@@ -707,39 +712,39 @@ function main(mode) {
                     row = updateRowWithResultData(columnHeaders, row, res, group);
                     const resultsHeaderStartCol = columnHeaderHelper.getFirstColWithNamespace(CONFIG.resultNamespace);
                     const results = row.slice(resultsHeaderStartCol);
-                    getSheetsService().setValuesInDefinedRange(CONFIG.rules.sheetName, index + CONFIG.rules.startRow + 1, resultsHeaderStartCol + 1, [results]);
+                    SheetsService.getInstance().setValuesInDefinedRange(CONFIG.rules.sheetName, index + CONFIG.rules.startRow + 1, resultsHeaderStartCol + 1, [results]);
                     status = `Fetched (${Utils.getCurrentDateString()})`;
                 }
             }
             if (mode === MODE.SYNC || mode === MODE.FETCH_AND_SYNC) {
                 console.log('Synchronizing...');
-                const evaluation = getSheetsService().getCellValue(CONFIG.rules.sheetName, index + 1 + CONFIG.rules.startRow, CONFIG.rules.cols.activationFormula + 1);
+                const evaluation = SheetsService.getInstance().getCellValue(CONFIG.rules.sheetName, index + 1 + CONFIG.rules.startRow, CONFIG.rules.cols.activationFormula + 1);
                 if (evaluation === '')
                     return;
                 const params = columnHeaderHelper.getMappedValues(row, CONFIG.targetNamespace, false);
                 const targetAgent = getTargetAgent(row[CONFIG.rules.cols.targetAgent]);
                 targetAgent.process(row[CONFIG.rules.cols.targetId], row[CONFIG.rules.cols.targetIdType], evaluation, params);
                 status = `Synchronized (${Utils.getCurrentDateString()})`;
-                getSheetsService().setCellValue(index + CONFIG.rules.startRow + 1, CONFIG.rules.cols.lastUpdate + 1, String(Date.now()), CONFIG.rules.sheetName);
+                SheetsService.getInstance().setCellValue(index + CONFIG.rules.startRow + 1, CONFIG.rules.cols.lastUpdate + 1, String(Date.now()), CONFIG.rules.sheetName);
             }
         }
         catch (err) {
             status = `${Utils.getCurrentDateString()}: ${err}`;
         }
         finally {
-            getSheetsService().setCellValue(index + CONFIG.rules.startRow + 1, CONFIG.rules.cols.status + 1, status, CONFIG.rules.sheetName);
+            SheetsService.getInstance().setCellValue(index + CONFIG.rules.startRow + 1, CONFIG.rules.cols.status + 1, status, CONFIG.rules.sheetName);
         }
     });
 }
 function validate() {
     let errors = [];
-    const rows = getSheetsService().getRangeData(CONFIG.rules.sheetName, 1, 1);
+    const rows = SheetsService.getInstance().getRangeData(CONFIG.rules.sheetName, 1, 1);
     const columnHeaders = rows.shift();
     const columnHeaderHelper = new DynamicColumnHeaders(columnHeaders);
     rows.forEach((row, index) => {
         console.log(`Validating row ${index + 1}/${rows.length}`);
         try {
-            const evaluation = getSheetsService().getCellValue(CONFIG.rules.sheetName, index + CONFIG.rules.startRow + 1, CONFIG.rules.cols.activationFormula + 1);
+            const evaluation = SheetsService.getInstance().getCellValue(CONFIG.rules.sheetName, index + CONFIG.rules.startRow + 1, CONFIG.rules.cols.activationFormula + 1);
             if (evaluation === '')
                 return;
             const params = columnHeaderHelper.getMappedValues(row, CONFIG.targetNamespace, false);
@@ -789,11 +794,4 @@ function getTargetAgent(agentName) {
     }
     targetAgents[agentName] = agent.getInstance();
     return targetAgents[agentName];
-}
-function getSheetsService() {
-    if (sheetsService === undefined) {
-        const spreadsheetId = CONFIG.spreadsheetId || undefined;
-        sheetsService = new SheetsService(spreadsheetId);
-    }
-    return sheetsService;
 }
