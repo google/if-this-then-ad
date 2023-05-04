@@ -187,7 +187,7 @@ export class SheetsService {
    * @returns {!SheetsService} The initialized SheetsService instance
    */
   static getInstance(spreadsheetId?: string) {
-    if (typeof this.instance === 'undefined') {
+    if (!this.instance) {
       this.instance = new SheetsService(spreadsheetId);
     }
     return this.instance;

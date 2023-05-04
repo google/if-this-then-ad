@@ -241,7 +241,7 @@ class SheetsService {
         return this.spreadsheet;
     }
     static getInstance(spreadsheetId) {
-        if (typeof this.instance === 'undefined') {
+        if (!this.instance) {
             this.instance = new SheetsService(spreadsheetId);
         }
         return this.instance;
