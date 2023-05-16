@@ -54,7 +54,7 @@ You can get very creative when using this tool and it's capabilities are only li
 
 - Enable a DV360 Line Item if it's sunny in London
 
-- Pause Google Ads AdGroup whenever socks of SuperCompany goes below $X
+- Pause Google Ads AdGroup whenever stocks of SuperCompany goes below $X
 
 - Enable all Google Ads that have the label 'performance' if it's raining AND pollen levels are above a certain level
 
