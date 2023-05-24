@@ -452,6 +452,12 @@ While we recommend applying for a Developer Token for the integration to work "n
 
 For more information please refer to the [Google Ads Scripts Extension Documentation](src/external/ads-script/README.md)
 
+### Can I manage DV360 YouTube Line Items with IFTTA?
+
+Sadly no, according to the [official documentation](https://developers.google.com/display-video/api/guides/managing-line-items/youtube): "YouTube & Partners resources and targeting can only be created or updated through the UI".
+
+An easy workaround to this would be to put all the Line Items you want to control each in their designated Insertion Order which can then be managed by IFTTA. Note: This approach should _not_ affect campaign performance.
+
 ## Disclaimer
 
 This is not an officially supported Google product.
