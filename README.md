@@ -248,6 +248,10 @@ Given the above JSON source we could add the following to our Sheet:
 - `target:loginCustomerId` (when accessing via MCC; should be the MCC's CID)
 - `target:serviceAccount` (alternative way of authentication)
 
+**Important**
+
+In order to use the Google Ads API on production (non-test) accounts, you need a Developer Token with access level "Basic". Please find information on how to get it in the [official documentation](https://developers.google.com/google-ads/api/docs/access-levels#applying_for_basic_access)
+
 ## Advanced use cases
 
 ### Custom Evaluators
