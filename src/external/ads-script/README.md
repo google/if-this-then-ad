@@ -15,7 +15,7 @@ limitations under the License.
 -->
 # If This Then Ad - Ads Scripts Extension
 
-This extension is meant to be used if you don't have a Google Ads Developer Token (yet).
+This extension is meant to be used if you don't have a Google Ads Developer Token or are not using Google Cloud (yet).
 
 ## Setup
 
