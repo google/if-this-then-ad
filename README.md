@@ -456,6 +456,10 @@ While we recommend applying for a Developer Token for the integration to work "n
 
 For more information please refer to the [Google Ads Scripts Extension Documentation](src/external/ads-script/README.md)
 
+### I don't use Google Cloud (yet). Can I still use IFTTA?
+
+To manage entities on DV360 you need a Google Cloud Project. The same goes for accessing the Google Ads via API. However, we have a workaround to manage Google Ads entities without the API by leveraging AdsScript: [Google Ads Scripts Extension Documentation](src/external/ads-script/README.md)
+
 ### Can I manage DV360 YouTube Line Items with IFTTA?
 
 Sadly no, according to the [official documentation](https://developers.google.com/display-video/api/guides/managing-line-items/youtube): "YouTube & Partners resources and targeting can only be created or updated through the UI".
