@@ -54,7 +54,7 @@ export class GoogleAds extends TargetAgent {
   constructor() {
     super();
 
-    this.baseUrl = 'https://googleads.googleapis.com/v13';
+    this.baseUrl = 'https://googleads.googleapis.com/v14';
   }
 
   /**
