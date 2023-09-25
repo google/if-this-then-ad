@@ -28,6 +28,7 @@ export class TargetAgent extends ApiHelper {
   process(
     identifier: string,
     type: string,
+    action: string,
     evaluation: boolean,
     params: Object
   ) {}
@@ -35,6 +36,7 @@ export class TargetAgent extends ApiHelper {
   validate(
     identifier: string,
     type: string,
+    action: string,
     evaluation: boolean,
     params: Object
   ): string[] {

@@ -27,6 +27,10 @@ export enum DV360_ENTITY_TYPE {
   INSERTION_ORDER = 'INSERTION_ORDER',
 }
 
+export enum DV360_ACTION {
+  TOGGLE = 'Activate/Pause',
+}
+
 interface Entity {
   entityStatus: DV360_ENTITY_STATUS;
 }
@@ -62,12 +66,14 @@ export class DV360 extends TargetAgent {
    *
    * @param {string} identifier
    * @param {DV360_ENTITY_TYPE} type
+   * @param {DV360_ACTION} action
    * @param {boolean} evaluation
    * @param {Parameters} params Additional parameters
    */
   process(
     identifier: string,
     type: DV360_ENTITY_TYPE,
+    action: DV360_ACTION,
     evaluation: boolean,
     params: Parameters
   ) {
@@ -77,6 +83,29 @@ export class DV360 extends TargetAgent {
     const auth = new Auth(params.serviceAccount ?? undefined);
     this.authToken = auth.getAuthToken();
 
+    if (action === DV360_ACTION.TOGGLE) {
+      return this.handleToggle(identifier, type, evaluation, params);
+    } else {
+      throw new Error(
+        `Action '${action}' not supported in '${DV360.friendlyName}' agent`
+      );
+    }
+  }
+
+  /**
+   * Handle toggle action
+   *
+   * @param {string} identifier
+   * @param {DV360_ENTITY_TYPE} type
+   * @param {boolean} evaluation
+   * @param {Parameters} params Additional parameters
+   */
+  handleToggle(
+    identifier: string,
+    type: DV360_ENTITY_TYPE,
+    evaluation: boolean,
+    params: Parameters
+  ) {
     if (type === DV360_ENTITY_TYPE.LINE_ITEM) {
       this.setLineItemStatus(params.advertiserId, identifier, evaluation);
     } else if (type === DV360_ENTITY_TYPE.INSERTION_ORDER) {
@@ -89,6 +118,7 @@ export class DV360 extends TargetAgent {
    *
    * @param {string} identifier
    * @param {DV360_ENTITY_TYPE} type
+   * * @param {DV360_ACTION} action
    * @param {boolean} evaluation
    * @param {Parameters} params Additional parameters
    * @returns {string[]}
@@ -96,6 +126,7 @@ export class DV360 extends TargetAgent {
   validate(
     identifier: string,
     type: DV360_ENTITY_TYPE,
+    action: DV360_ACTION,
     evaluation: boolean,
     params: Parameters
   ) {

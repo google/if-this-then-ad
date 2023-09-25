@@ -32,8 +32,9 @@ export const CONFIG = {
       activationFormula: 3,
       updateInterval: 4,
       targetAgent: 5,
-      targetId: 6,
+      targetAction: 6,
       targetIdType: 7,
+      targetId: 8,
     },
   },
 };
