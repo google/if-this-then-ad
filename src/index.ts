@@ -182,6 +182,7 @@ function main(mode: MODE) {
         targetAgent.process(
           row[CONFIG.rules.cols.targetId],
           row[CONFIG.rules.cols.targetIdType],
+          row[CONFIG.rules.cols.targetAction],
           evaluation,
           params
         );
@@ -250,6 +251,7 @@ function validate() {
         getTargetAgent(row[CONFIG.rules.cols.targetAgent]).validate(
           row[CONFIG.rules.cols.targetId],
           row[CONFIG.rules.cols.targetIdType],
+          row[CONFIG.rules.cols.targetAction],
           evaluation,
           params
         )
@@ -329,7 +331,7 @@ function updateRowWithResultData(
  * Dynamically ('lazy') load and return target agent instances.
  * This is done to avoid ReferenceErrors on direct access due to wrong file order
  *
- * @param {string} targetName
+ * @param {string} agentName
  * @returns {TargetAgent}
  * @throws {Error}
  */

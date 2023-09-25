@@ -29,6 +29,10 @@ export enum GOOGLE_ADS_ENTITY_STATUS {
   PAUSED = 'PAUSED',
 }
 
+export enum GOOGLE_ADS_ACTION {
+  TOGGLE = 'Enable/Pause',
+}
+
 interface Parameters {
   customerId: string;
   developerToken: string;
@@ -62,12 +66,14 @@ export class GoogleAds extends TargetAgent {
    *
    * @param {string} identifier
    * @param {GOOGLE_ADS_SELECTOR_TYPE} type
+   * @param {GOOGLE_ADS_ACTION} action
    * @param {boolean} evaluation
    * @param {Parameters} params Additional parameters
    */
   process(
     identifier: string,
     type: GOOGLE_ADS_SELECTOR_TYPE,
+    action: GOOGLE_ADS_ACTION,
     evaluation: boolean,
     params: Parameters
   ) {
@@ -79,6 +85,29 @@ export class GoogleAds extends TargetAgent {
 
     this.parameters = params;
 
+    if (action === GOOGLE_ADS_ACTION.TOGGLE) {
+      return this.handleToggle(identifier, type, evaluation, params);
+    } else {
+      throw new Error(
+        `Action '${action}' not supported in '${GoogleAds.friendlyName}' agent`
+      );
+    }
+  }
+
+  /**
+   * Handle toggle action
+   *
+   * @param {string} identifier
+   * @param {GOOGLE_ADS_SELECTOR_TYPE} type
+   * @param {boolean} evaluation
+   * @param {Parameters} params Additional parameters
+   */
+  handleToggle(
+    identifier: string,
+    type: GOOGLE_ADS_SELECTOR_TYPE,
+    evaluation: boolean,
+    params: Parameters
+  ) {
     const status = evaluation
       ? GOOGLE_ADS_ENTITY_STATUS.ENABLED
       : GOOGLE_ADS_ENTITY_STATUS.PAUSED;
@@ -111,6 +140,7 @@ export class GoogleAds extends TargetAgent {
    *
    * @param {string} identifier
    * @param {GOOGLE_ADS_SELECTOR_TYPE} type
+   * @param {GOOGLE_ADS_ACTION} action
    * @param {boolean} evaluation
    * @param {Parameters} params Additional parameters
    * @returns {string[]}
@@ -118,6 +148,7 @@ export class GoogleAds extends TargetAgent {
   validate(
     identifier: string,
     type: GOOGLE_ADS_SELECTOR_TYPE,
+    action: GOOGLE_ADS_ACTION,
     evaluation: boolean,
     params: Parameters
   ) {
