@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 import { Auth } from '../../src/helpers/auth';
-import { DV360, DV360_ENTITY_TYPE } from '../../src/target-agents/dv360';
+import {
+  DV360,
+  DV360_ACTION,
+  DV360_ENTITY_TYPE,
+} from '../../src/target-agents/dv360';
 
 describe('DV360 Target Agent', () => {
   const params = {
@@ -43,7 +47,13 @@ describe('DV360 Target Agent', () => {
       );
 
       // Call function
-      dv360.process('1234', DV360_ENTITY_TYPE.LINE_ITEM, true, params);
+      dv360.process(
+        '1234',
+        DV360_ENTITY_TYPE.LINE_ITEM,
+        DV360_ACTION.TOGGLE,
+        true,
+        params
+      );
 
       // Evaluate
       expect(setLineItemStatusSpy).toHaveBeenCalledWith('1', '1234', true);
@@ -74,7 +84,13 @@ describe('DV360 Target Agent', () => {
       const fetchUrlSpy = jest.spyOn(DV360.prototype as any, 'fetchUrl');
 
       // Call function
-      dv360.validate('1234', DV360_ENTITY_TYPE.LINE_ITEM, true, params);
+      dv360.validate(
+        '1234',
+        DV360_ENTITY_TYPE.LINE_ITEM,
+        DV360_ACTION.TOGGLE,
+        true,
+        params
+      );
 
       // Evaluate
       expect(isLIActiveSpy).toHaveBeenCalledWith('1', '1234');

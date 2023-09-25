@@ -19,6 +19,7 @@ import {
   GoogleAds,
   GOOGLE_ADS_ENTITY_STATUS,
   GOOGLE_ADS_SELECTOR_TYPE,
+  GOOGLE_ADS_ACTION,
 } from '../../src/target-agents/google-ads';
 
 describe('Google Ads Target Agent', () => {
@@ -95,7 +96,13 @@ describe('Google Ads Target Agent', () => {
       );
 
       // Call function
-      ads.process('1234', GOOGLE_ADS_SELECTOR_TYPE.AD_ID, true, params);
+      ads.process(
+        '1234',
+        GOOGLE_ADS_SELECTOR_TYPE.AD_ID,
+        GOOGLE_ADS_ACTION.TOGGLE,
+        true,
+        params
+      );
 
       // Evaluate
       expect(updateAdStatusByIdSpy).toHaveBeenCalledWith(
@@ -141,7 +148,13 @@ describe('Google Ads Target Agent', () => {
       );
 
       // Call function
-      ads.process('1234;2345', GOOGLE_ADS_SELECTOR_TYPE.AD_ID, true, params);
+      ads.process(
+        '1234;2345',
+        GOOGLE_ADS_SELECTOR_TYPE.AD_ID,
+        GOOGLE_ADS_ACTION.TOGGLE,
+        true,
+        params
+      );
 
       // Evaluate
       expect(updateAdStatusByIdSpy).toHaveBeenCalledWith(
@@ -182,6 +195,7 @@ describe('Google Ads Target Agent', () => {
       const res = ads.validate(
         '1234',
         GOOGLE_ADS_SELECTOR_TYPE.AD_ID,
+        GOOGLE_ADS_ACTION.TOGGLE,
         true,
         params
       );
@@ -209,6 +223,7 @@ describe('Google Ads Target Agent', () => {
       const res = ads.validate(
         '1234',
         GOOGLE_ADS_SELECTOR_TYPE.AD_ID,
+        GOOGLE_ADS_ACTION.TOGGLE,
         false,
         params
       );
