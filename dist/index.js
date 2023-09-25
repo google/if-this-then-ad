@@ -30,8 +30,9 @@ const CONFIG = {
             activationFormula: 3,
             updateInterval: 4,
             targetAgent: 5,
-            targetId: 6,
+            targetAction: 6,
             targetIdType: 7,
+            targetId: 8,
         },
     },
 };
@@ -294,8 +295,8 @@ class TargetAgent extends ApiHelper {
         super();
         this.requiredParameters = [];
     }
-    process(identifier, type, evaluation, params) { }
-    validate(identifier, type, evaluation, params) {
+    process(identifier, type, action, evaluation, params) { }
+    validate(identifier, type, action, evaluation, params) {
         throw new Error('Method not implemented.');
     }
     findMissingRequiredParameter(params) {
@@ -327,16 +328,28 @@ var DV360_ENTITY_TYPE;
     DV360_ENTITY_TYPE["LINE_ITEM"] = "LINE_ITEM";
     DV360_ENTITY_TYPE["INSERTION_ORDER"] = "INSERTION_ORDER";
 })(DV360_ENTITY_TYPE || (DV360_ENTITY_TYPE = {}));
+var DV360_ACTION;
+(function (DV360_ACTION) {
+    DV360_ACTION["TOGGLE"] = "Activate/Pause";
+})(DV360_ACTION || (DV360_ACTION = {}));
 class DV360 extends TargetAgent {
     constructor() {
         super();
         this.requiredParameters = ['advertiserId'];
         this.baseUrl = 'https://displayvideo.googleapis.com/v2';
     }
-    process(identifier, type, evaluation, params) {
+    process(identifier, type, action, evaluation, params) {
         this.ensureRequiredParameters(params);
         const auth = new Auth(params.serviceAccount ?? undefined);
         this.authToken = auth.getAuthToken();
+        if (action === DV360_ACTION.TOGGLE) {
+            return this.handleToggle(identifier, type, evaluation, params);
+        }
+        else {
+            throw new Error(`Action '${action}' not supported in '${DV360.friendlyName}' agent`);
+        }
+    }
+    handleToggle(identifier, type, evaluation, params) {
         if (type === DV360_ENTITY_TYPE.LINE_ITEM) {
             this.setLineItemStatus(params.advertiserId, identifier, evaluation);
         }
@@ -344,7 +357,7 @@ class DV360 extends TargetAgent {
             this.setInsertionOrderStatus(params.advertiserId, identifier, evaluation);
         }
     }
-    validate(identifier, type, evaluation, params) {
+    validate(identifier, type, action, evaluation, params) {
         this.ensureRequiredParameters(params);
         const auth = new Auth(params.serviceAccount ?? undefined);
         this.authToken = auth.getAuthToken();
@@ -412,6 +425,10 @@ var GOOGLE_ADS_ENTITY_STATUS;
     GOOGLE_ADS_ENTITY_STATUS["ENABLED"] = "ENABLED";
     GOOGLE_ADS_ENTITY_STATUS["PAUSED"] = "PAUSED";
 })(GOOGLE_ADS_ENTITY_STATUS || (GOOGLE_ADS_ENTITY_STATUS = {}));
+var GOOGLE_ADS_ACTION;
+(function (GOOGLE_ADS_ACTION) {
+    GOOGLE_ADS_ACTION["TOGGLE"] = "Enable/Pause";
+})(GOOGLE_ADS_ACTION || (GOOGLE_ADS_ACTION = {}));
 class GoogleAds extends TargetAgent {
     constructor() {
         super();
@@ -420,13 +437,21 @@ class GoogleAds extends TargetAgent {
             'customerId',
             'developerToken',
         ];
-        this.baseUrl = 'https://googleads.googleapis.com/v13';
+        this.baseUrl = 'https://googleads.googleapis.com/v14';
     }
-    process(identifier, type, evaluation, params) {
+    process(identifier, type, action, evaluation, params) {
         this.ensureRequiredParameters(params);
         const auth = new Auth(params.serviceAccount ?? undefined);
         this.authToken = auth.getAuthToken();
         this.parameters = params;
+        if (action === GOOGLE_ADS_ACTION.TOGGLE) {
+            return this.handleToggle(identifier, type, evaluation, params);
+        }
+        else {
+            throw new Error(`Action '${action}' not supported in '${GoogleAds.friendlyName}' agent`);
+        }
+    }
+    handleToggle(identifier, type, evaluation, params) {
         const status = evaluation
             ? GOOGLE_ADS_ENTITY_STATUS.ENABLED
             : GOOGLE_ADS_ENTITY_STATUS.PAUSED;
@@ -445,7 +470,7 @@ class GoogleAds extends TargetAgent {
             this.updateAdGroupStatusByLabel(params.customerId, identifier, status);
         }
     }
-    validate(identifier, type, evaluation, params) {
+    validate(identifier, type, action, evaluation, params) {
         const auth = new Auth(params.serviceAccount ?? undefined);
         this.authToken = auth.getAuthToken();
         this.parameters = params;
@@ -723,7 +748,7 @@ function main(mode) {
                     return;
                 const params = columnHeaderHelper.getMappedValues(row, CONFIG.targetNamespace, false);
                 const targetAgent = getTargetAgent(row[CONFIG.rules.cols.targetAgent]);
-                targetAgent.process(row[CONFIG.rules.cols.targetId], row[CONFIG.rules.cols.targetIdType], evaluation, params);
+                targetAgent.process(row[CONFIG.rules.cols.targetId], row[CONFIG.rules.cols.targetIdType], row[CONFIG.rules.cols.targetAction], evaluation, params);
                 status = `Synchronized (${Utils.getCurrentDateString()})`;
                 SheetsService.getInstance().setCellValue(index + CONFIG.rules.startRow + 1, CONFIG.rules.cols.lastUpdate + 1, String(Date.now()), CONFIG.rules.sheetName);
             }
@@ -748,7 +773,7 @@ function validate() {
             if (evaluation === '')
                 return;
             const params = columnHeaderHelper.getMappedValues(row, CONFIG.targetNamespace, false);
-            errors = errors.concat(getTargetAgent(row[CONFIG.rules.cols.targetAgent]).validate(row[CONFIG.rules.cols.targetId], row[CONFIG.rules.cols.targetIdType], evaluation, params));
+            errors = errors.concat(getTargetAgent(row[CONFIG.rules.cols.targetAgent]).validate(row[CONFIG.rules.cols.targetId], row[CONFIG.rules.cols.targetIdType], row[CONFIG.rules.cols.targetAction], evaluation, params));
         }
         catch (err) {
             errors.push(JSON.stringify(err.message));
