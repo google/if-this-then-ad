@@ -117,9 +117,13 @@ A rule consists of the following elements:
 
     This can be various things depending on the Agent. It may be a DV360 Line Item ID, a Google Ads Ad Group Label or something entirely different.
 
-  - **Target ID Type**
+  - **Target Action**
 
-    Because the Target Identifier is not one thing for all, the Target ID Type is required to tell the tool what it is working with
+    The action to be taken upon evaluation, e.g. enabling or pausing an Ad
+
+  - **Target Identifier Type**
+
+    Because the Target Identifier is not one thing for all, the Target Identifier Type is required to tell the tool what it is working with
 
   - **Additional Parameters (optional)**
 
