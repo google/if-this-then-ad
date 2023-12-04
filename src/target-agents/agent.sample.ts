@@ -30,14 +30,16 @@ export class SampleAgent extends TargetAgent {
    *
    * @param {string} identifier
    * @param {string} type
+   * @param {string} action
    * @param {boolean} evaluation
    * @param {Parameters} params Additional parameters
    */
   process(
     identifier: string,
     type: string,
+    action: string,
     evaluation: boolean,
-    params: Parameters
+    params: Object
   ) {
     // Check for missing parameters
     this.ensureRequiredParameters(params);
@@ -48,6 +50,7 @@ export class SampleAgent extends TargetAgent {
    *
    * @param {string} identifier
    * @param {string} type
+   * @param {string} action
    * @param {boolean} evaluation
    * @param {Parameters} params Additional parameters
    * @returns {string[]}‚
@@ -55,8 +58,9 @@ export class SampleAgent extends TargetAgent {
   validate(
     identifier: string,
     type: string,
+    action: string,
     evaluation: boolean,
-    params: Parameters
+    params: Object
   ) {
     return [];
   }
