@@ -1,6 +1,6 @@
 {
   "name": "if-this-then-ad",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Automatic management of marketing campaigns based on real world events",
   "main": "src/index.ts",
   "scripts": {
