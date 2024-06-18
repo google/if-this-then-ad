@@ -470,6 +470,12 @@ Sadly no, according to the [official documentation](https://developers.google.co
 
 An easy workaround to this would be to put all the Line Items you want to control each in their designated Insertion Order which can then be managed by IFTTA. Note: This approach should _not_ affect campaign performance.
 
+### Can I manage Google Ads Video Campaigns with IFTTA?
+
+Sadly not, as [video campaigns cannot be mutated via the API](https://developers.google.com/google-ads/api/docs/campaigns/overview#differences_from_the_google_ads_ui).
+
+However, there is a workaround that uses Google Ads Script to make the changes to the ad group. See [ads-script-video-campaigns.js](./examples/ads-script-video-campaigns.js).
+
 ## Disclaimer
 
 This is not an officially supported Google product.
