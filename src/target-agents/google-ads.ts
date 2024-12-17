@@ -471,11 +471,9 @@ export class GoogleAds extends TargetAgent {
   /**
    * Retrieves an Ads entity using the provided query.
    *
-   * @param {} customerId Account ID to execute the query in.
-   * @param {} query GAQL query to execute.
-   * @param {Function} mapperFn Mapper callback function for mapping results to
-   *     the Entity.  Assume the results property path for each results is
-   *    `result.entity.xxx`.
+   * @param {string} customerId Account ID to execute the query in.
+   * @param {string} query GAQL query to execute.
+   * @param {string} entityName Name of the ads entity in the query result set.
    * @returns {Entity[]} Entities found by the query.
    */
   private getEntitiesByQuery(
