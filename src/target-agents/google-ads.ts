@@ -22,6 +22,8 @@ export enum GOOGLE_ADS_SELECTOR_TYPE {
   AD_LABEL = 'AD_LABEL',
   AD_GROUP_ID = 'AD_GROUP_ID',
   AD_GROUP_LABEL = 'AD_GROUP_LABEL',
+  CAMPAIGN_LABEL = 'CAMPAIGN_LABEL',
+  CAMPAIGN_ID = 'CAMPAIGN_ID',
 }
 
 export enum GOOGLE_ADS_ENTITY_STATUS {
@@ -58,7 +60,7 @@ export class GoogleAds extends TargetAgent {
   constructor() {
     super();
 
-    this.baseUrl = 'https://googleads.googleapis.com/v14';
+    this.baseUrl = 'https://googleads.googleapis.com/v18';
   }
 
   /**
@@ -108,6 +110,8 @@ export class GoogleAds extends TargetAgent {
     evaluation: boolean,
     params: Parameters
   ) {
+    console.log(`Identifier type = ${typeof identifier}`);
+
     const status = evaluation
       ? GOOGLE_ADS_ENTITY_STATUS.ENABLED
       : GOOGLE_ADS_ENTITY_STATUS.PAUSED;
@@ -132,6 +136,14 @@ export class GoogleAds extends TargetAgent {
         `Updating status of AdGroup by label '${identifier}' to '${status}'`
       );
       this.updateAdGroupStatusByLabel(params.customerId, identifier, status);
+    } else if (type === GOOGLE_ADS_SELECTOR_TYPE.CAMPAIGN_ID) {
+      this.updateCampaignStatusById(
+        params.customerId,
+        (identifier as string).split(';').map(id => String(id)),
+        status
+      );
+    } else if (type === GOOGLE_ADS_SELECTOR_TYPE.CAMPAIGN_LABEL) {
+      this.updateCampaignsByLabel(params.customerId, identifier, status);
     }
   }
 
@@ -299,6 +311,35 @@ export class GoogleAds extends TargetAgent {
   }
 
   /**
+   * Updates a campaign's status by its ID.
+   *
+   * @param {string} customerId
+   * @param {string[]} ids
+   * @param {string} status
+   */
+  private updateCampaignStatusById(
+    customerId: string,
+    ids: string[],
+    status: string
+  ) {
+    const query = `
+      SELECT 
+        campaign.id,
+        campaign.status
+      FROM campaign
+      WHERE 
+        campaign.id IN (${ids.join(',')})
+    `;
+
+    const campaigns = this.getEntitiesByQuery(customerId, query, 'campaign');
+
+    const path = `customers/${customerId}/campaigns:mutate`;
+    for (const campaign of campaigns) {
+      this.updateEntityStatus(path, campaign, status);
+    }
+  }
+
+  /**
    * Update Ad status by label.
    *
    * @param {string} customerId
@@ -336,6 +377,26 @@ export class GoogleAds extends TargetAgent {
 
     for (const adGroup of adGroups) {
       this.updateEntityStatus(path, adGroup, status);
+    }
+  }
+
+  /**
+   * Finds and updates the campaigns with the provided label.
+   *
+   * @param customerId
+   * @param label
+   * @param status
+   */
+  private updateCampaignsByLabel(
+    customerId: string,
+    label: string,
+    status: string
+  ) {
+    const campaigns = this.getCampaignsByLabel(customerId, label);
+
+    const path = `customers/${customerId}/campaigns:mutate`;
+    for (const campaign of campaigns) {
+      this.updateEntityStatus(path, campaign, status);
     }
   }
 
@@ -404,6 +465,38 @@ export class GoogleAds extends TargetAgent {
         resourceName: result.adGroup.resourceName,
         status: result.adGroup.status,
       };
+    });
+  }
+
+  /**
+   * Retrieves an Ads entity using the provided query.
+   *
+   * @param {} customerId Account ID to execute the query in.
+   * @param {} query GAQL query to execute.
+   * @param {Function} mapperFn Mapper callback function for mapping results to
+   *     the Entity.  Assume the results property path for each results is
+   *    `result.entity.xxx`.
+   * @returns {Entity[]} Entities found by the query.
+   */
+  private getEntitiesByQuery(
+    customerId: string,
+    query: string,
+    entityName: string
+  ): Entity[] {
+    const payload = {
+      query,
+    };
+
+    const path = `customers/${customerId}/googleAds:search`;
+    const res = this.fetchUrl(path, 'POST', payload, true) as {
+      results: Array<Record<string, Entity>>;
+    };
+
+    return res.results.map(result => {
+      return {
+        resourceName: result[entityName].resourceName,
+        status: result[entityName]?.status,
+      } as Entity;
     });
   }
 
@@ -541,5 +634,53 @@ export class GoogleAds extends TargetAgent {
     }
 
     return res.results[0].label.resourceName;
+  }
+
+  /**
+   * Retrieves 1 or more campaigns with the provided label.
+   *
+   * @param {string} customerId
+   * @param {string} label
+   * @returns {Entity[]}
+   */
+  private getCampaignsByLabel(customerId: string, label: string): Entity[] {
+    const labelResource = this.getCampaignLabelResourceByName(
+      customerId,
+      label
+    );
+
+    const query = `
+      SELECT 
+        campaign.id,
+        campaign.status
+      FROM campaign 
+      WHERE 
+        campaign.labels CONTAINS ANY ('${labelResource}')
+    `;
+
+    return this.getEntitiesByQuery(customerId, query, 'campaign');
+  }
+
+  /**
+   * Retrieves the campaign label resource name for the provided label name.
+   *
+   * @param customerId
+   * @param labelName
+   */
+  private getCampaignLabelResourceByName(
+    customerId: string,
+    labelName: string
+  ): string {
+    const query = `
+      SELECT
+        label.resource_name,
+        label.status
+      FROM label
+      WHERE 
+        label.name = '${labelName}'
+    `;
+
+    const campaignLabels = this.getEntitiesByQuery(customerId, query, 'label');
+    return campaignLabels[0].resourceName;
   }
 }
