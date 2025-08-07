@@ -22,6 +22,8 @@ export enum GOOGLE_ADS_SELECTOR_TYPE {
   AD_LABEL = 'AD_LABEL',
   AD_GROUP_ID = 'AD_GROUP_ID',
   AD_GROUP_LABEL = 'AD_GROUP_LABEL',
+  ASSET_GROUP_ID = 'ASSET_GROUP_ID',
+  ASSET_GROUP_NAME = 'ASSET_GROUP_NAME',
 }
 
 export enum GOOGLE_ADS_ENTITY_STATUS {
@@ -132,6 +134,20 @@ export class GoogleAds extends TargetAgent {
         `Updating status of AdGroup by label '${identifier}' to '${status}'`
       );
       this.updateAdGroupStatusByLabel(params.customerId, identifier, status);
+    } else if (type === GOOGLE_ADS_SELECTOR_TYPE.ASSET_GROUP_ID) {
+      console.log(
+        `Updating status of AssetGroup by id '${identifier}' to '${status}'`
+      );
+      this.updateAssetGroupStatusById(
+        params.customerId,
+        identifier.split(';').map(id => String(id)),
+        status
+      );
+    } else if (type === GOOGLE_ADS_SELECTOR_TYPE.ASSET_GROUP_NAME) {
+      console.log(
+        `Updating status of AssetGroup by name '${identifier}' to '${status}'`
+      );
+      this.updateAssetGroupStatusByName(params.customerId, identifier, status);
     }
   }
 
@@ -184,6 +200,17 @@ export class GoogleAds extends TargetAgent {
     } else if (type === GOOGLE_ADS_SELECTOR_TYPE.AD_GROUP_LABEL) {
       entitiesToBeChecked = entitiesToBeChecked.concat(
         this.getAdGroupsByLabel(params.customerId, identifier)
+      );
+    } else if (type === GOOGLE_ADS_SELECTOR_TYPE.ASSET_GROUP_ID) {
+      entitiesToBeChecked = entitiesToBeChecked.concat(
+        this.getAssetGroupsById(
+          params.customerId,
+          identifier.split(';').map(id => String(id))
+        )
+      );
+    } else if (type === GOOGLE_ADS_SELECTOR_TYPE.ASSET_GROUP_NAME) {
+      entitiesToBeChecked = entitiesToBeChecked.concat(
+        this.getAssetGroupsByName(params.customerId, identifier)
       );
     }
 
@@ -340,6 +367,46 @@ export class GoogleAds extends TargetAgent {
   }
 
   /**
+   * Update AssetGroup status by ID(s).
+   *
+   * @param {string} customerId
+   * @param {string[]} ids
+   * @param {string} status
+   */
+  private updateAssetGroupStatusById(
+    customerId: string,
+    ids: string[],
+    status: string
+  ) {
+    const assetGroups = this.getAssetGroupsById(customerId, ids);
+    const path = `customers/${customerId}/assetGroups:mutate`;
+
+    for (const assetGroup of assetGroups) {
+      this.updateEntityStatus(path, assetGroup, status);
+    }
+  }
+
+  /**
+   * Update AssetGroup status by name.
+   *
+   * @param {string} customerId
+   * @param {string} name
+   * @param {string} status
+   */
+  private updateAssetGroupStatusByName(
+    customerId: string,
+    name: string,
+    status: string
+  ) {
+    const assetGroups = this.getAssetGroupsByName(customerId, name);
+    const path = `customers/${customerId}/assetGroups:mutate`;
+
+    for (const assetGroup of assetGroups) {
+      this.updateEntityStatus(path, assetGroup, status);
+    }
+  }
+
+  /**
    * Get Ads status by ID(s).
    *
    * @param {string} customerId
@@ -403,6 +470,74 @@ export class GoogleAds extends TargetAgent {
       return {
         resourceName: result.adGroup.resourceName,
         status: result.adGroup.status,
+      };
+    });
+  }
+
+  /**
+   * Get AssetGroups status by ID(s).
+   *
+   * @param {string} customerId
+   * @param {string[]} ids
+   * @returns {Entity[]}
+   */
+  private getAssetGroupsById(customerId: string, ids: string[]): Entity[] {
+    const query = `
+          SELECT 
+            asset_group.id,
+            asset_group.status
+          FROM asset_group
+          WHERE 
+            asset_group.id IN (${ids.join(',')})
+        `;
+
+    const payload = {
+      query,
+    };
+
+    const path = `customers/${customerId}/googleAds:search`;
+    const res = this.fetchUrl(path, 'POST', payload, true) as {
+      results: Array<Record<'assetGroup', Entity>>;
+    };
+
+    return res.results.map(result => {
+      return {
+        resourceName: result.assetGroup.resourceName,
+        status: result.assetGroup.status,
+      };
+    });
+  }
+
+  /**
+   * Get AssetGroups status by name.
+   *
+   * @param {string} customerId
+   * @param {string} name
+   * @returns {Entity[]}
+   */
+  private getAssetGroupsByName(customerId: string, name: string): Entity[] {
+    const query = `
+          SELECT 
+            asset_group.id,
+            asset_group.status
+          FROM asset_group
+          WHERE 
+            asset_group.name = '${name}'
+        `;
+
+    const payload = {
+      query,
+    };
+
+    const path = `customers/${customerId}/googleAds:search`;
+    const res = this.fetchUrl(path, 'POST', payload, true) as {
+      results: Array<Record<'assetGroup', Entity>>;
+    };
+
+    return res.results.map(result => {
+      return {
+        resourceName: result.assetGroup.resourceName,
+        status: result.assetGroup.status,
       };
     });
   }
