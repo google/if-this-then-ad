@@ -480,13 +480,13 @@ class GoogleAds extends TargetAgent {
         let entitiesToBeChecked = [];
         const errors = [];
         if (type === GOOGLE_ADS_SELECTOR_TYPE.AD_ID) {
-            entitiesToBeChecked = entitiesToBeChecked.concat(this.getAdsById(params.customerId, identifier.split(',').map(id => String(id))));
+            entitiesToBeChecked = entitiesToBeChecked.concat(this.getAdsById(params.customerId, identifier.split(';').map(id => String(id))));
         }
         else if (type === GOOGLE_ADS_SELECTOR_TYPE.AD_LABEL) {
             entitiesToBeChecked = entitiesToBeChecked.concat(this.getAdsByLabel(params.customerId, identifier));
         }
         else if (type === GOOGLE_ADS_SELECTOR_TYPE.AD_GROUP_ID) {
-            entitiesToBeChecked = entitiesToBeChecked.concat(this.getAdGroupsById(params.customerId, identifier.split(',').map(id => String(id))));
+            entitiesToBeChecked = entitiesToBeChecked.concat(this.getAdGroupsById(params.customerId, identifier.split(';').map(id => String(id))));
         }
         else if (type === GOOGLE_ADS_SELECTOR_TYPE.AD_GROUP_LABEL) {
             entitiesToBeChecked = entitiesToBeChecked.concat(this.getAdGroupsByLabel(params.customerId, identifier));

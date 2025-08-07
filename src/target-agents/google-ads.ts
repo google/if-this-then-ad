@@ -167,7 +167,7 @@ export class GoogleAds extends TargetAgent {
       entitiesToBeChecked = entitiesToBeChecked.concat(
         this.getAdsById(
           params.customerId,
-          identifier.split(',').map(id => String(id))
+          identifier.split(';').map(id => String(id))
         )
       );
     } else if (type === GOOGLE_ADS_SELECTOR_TYPE.AD_LABEL) {
@@ -178,7 +178,7 @@ export class GoogleAds extends TargetAgent {
       entitiesToBeChecked = entitiesToBeChecked.concat(
         this.getAdGroupsById(
           params.customerId,
-          identifier.split(',').map(id => String(id))
+          identifier.split(';').map(id => String(id))
         )
       );
     } else if (type === GOOGLE_ADS_SELECTOR_TYPE.AD_GROUP_LABEL) {
