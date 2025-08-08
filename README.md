@@ -77,7 +77,7 @@ Why would you want to do this?
     - [Display & Video 360](https://console.cloud.google.com/apis/library/displayvideo.googleapis.com)
     - [Google Ads](https://console.cloud.google.com/apis/library/googleads.googleapis.com)
 
-1. Make a copy of the [IFTTA Template](https://docs.google.com/spreadsheets/d/1EKcPGQ1Vr6LyyQYeYE0-T2gPzNhemVTxsvpSNC5arhE)
+1. Make a copy of the [IFTTA Template](https://docs.google.com/spreadsheets/d/1xbSuuOhexPm6W0b4tFYks3wMpsvMxLGWUD4ID2SY4yk)
 
 1. Set your GCP Project Number at Extensions > Apps Script > Project Settings > Google Cloud Platform (GCP) Project
 
